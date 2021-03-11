@@ -10,12 +10,7 @@
     "dev": "concurrently \"npm run serve\" \"npm run server\""
   },
   "dependencies": {
-    "concurrently": "^6.0.0",
     "core-js": "^3.6.5",
-    "mongodb": "^3.6.4",
-    "mongoose": "^5.11.19",
-    "nodemon": "^2.0.7",
-    "querystring": "^0.2.1",
     "register-service-worker": "^1.7.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
@@ -31,7 +26,9 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0"
+    "eslint-plugin-vue": "^7.0.0-0",
+    "concurrently": "^6.0.0",
+    "nodemon": "^2.0.7"
   },
   "eslintConfig": {
     "root": true,
