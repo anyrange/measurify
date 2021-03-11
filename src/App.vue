@@ -1,11 +1,22 @@
 <template>
+  <button @click="login">Login</button>
   <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </div>
-  <router-view/>
+  <router-view />
 </template>
 
+<script>
+export default {
+  name: "App",
+  methods: {
+    login() {
+      window.location.href = "http://localhost:8888/login";
+    },
+  },
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
