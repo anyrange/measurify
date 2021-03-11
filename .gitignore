@@ -25,3 +25,4 @@ pnpm-debug.log*
 .env
 yarn.lock
 *.lock
+api.rest
