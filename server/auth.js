@@ -1,5 +1,6 @@
 const querystring = require("querystring");
 const request = require("request");
+const User = require("./models/User");
 
 let redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
@@ -35,9 +36,20 @@ const auth = {
       },
       json: true,
     };
-    request.post(authOptions, function(error, response, body) {
-      var access_token = body.access_token;
+    request.post(authOptions,  function(error, response, body) {
+      const access_token = body.access_token;
+      // const spotifyID = body.client_id;
+      // console.log(spotifyID)
       let uri = process.env.FRONTEND_URI || "http://localhost:3000";
+
+      const user = new User({
+        spotifyToken: access_token,
+        // spotifyID: spotifyID,
+      });
+      user.save(function(err) {
+        if (err) return handleError(err);
+      });
+
       res.redirect(uri + "?access_token=" + access_token);
     });
   },
