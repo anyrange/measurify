@@ -2,6 +2,10 @@
   "name": "spotify-worm-server",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -10,6 +14,7 @@
     "mongoose": "^5.11.19",
     "passport-spotify": "^2.0.0",
     "querystring": "^0.2.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "nodemon": "^2.0.7"
   }
 }
