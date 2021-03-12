@@ -36,12 +36,16 @@
     </div>
   </template>
   <template v-else>
-    <button
-      @click="login"
-      class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
-    >
-      Log in with Spotify
-    </button>
+    <div class="min-h-screen py-6 flex flex-col bg:gray sm:py-12">
+      <div class="relative sm:max-w-xl sm:mx-auto">
+        <button
+          @click="login"
+          class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
+        >
+          Log in with Spotify
+        </button>
+      </div>
+    </div>
   </template>
 </template>
 
