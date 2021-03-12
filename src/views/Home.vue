@@ -79,6 +79,7 @@ export default {
         })
         .then((response) => {
           this.$store.commit("mutateUser", response.data);
+          this.$router.push("/");
           console.log("Response from server: ");
           console.log(this.$store.state.user);
         });

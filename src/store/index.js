@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import createPersistedState from "vuex-persistedstate";
 import Home from "../views/Home";
 
 export default createStore({
@@ -19,4 +20,5 @@ export default createStore({
   modules: {
     Home,
   },
+  plugins: [createPersistedState()],
 });
