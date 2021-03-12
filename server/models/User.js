@@ -1,14 +1,14 @@
 const { Schema, model } = require("mongoose");
 
 const schema = new Schema({
-  spotifyToken: {
+  lastSpotifyToken: {
     type: String,
     required: true,
   },
-  // spotifyID: {
-  //   type: String,
-  //   required: true,
-  // },
+  spotifyID: {
+    type: String,
+    required: true,
+  },
   playlists: {
     type: Array,
     default: [],

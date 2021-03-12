@@ -36,18 +36,32 @@ const auth = {
       },
       json: true,
     };
-    request.post(authOptions,  function(error, response, body) {
+    request.post(authOptions, function(error, response, body) {
       const access_token = body.access_token;
       // const spotifyID = body.client_id;
       // console.log(spotifyID)
       let uri = process.env.FRONTEND_URI || "http://localhost:3000";
 
-      const user = new User({
-        spotifyToken: access_token,
-        // spotifyID: spotifyID,
-      });
-      user.save(function(err) {
-        if (err) return handleError(err);
+      let userDataGainOptions = {
+        url: "https://api.spotify.com/v1/me",
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+      };
+
+      request.get(userDataGainOptions, async function(err, response, body) {
+        if (!err) {
+          const userData = await JSON.parse(body);
+
+          const filter = { spotifyID: userData.id };
+          const update = { lastSpotifyToken: access_token };
+
+          await User.findOneAndUpdate(filter, update, {
+            new: true,
+            upsert: true,
+          });
+
+        }
       });
 
       res.redirect(uri + "?access_token=" + access_token);

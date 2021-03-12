@@ -9,6 +9,8 @@ app.use(router);
 
 console.log(`App listening on port: ${PORT}`);
 
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true }, () =>
-  console.log(`Database Successfully Connected`)
+mongoose.connect(
+  process.env.DB_URI,
+  { useNewUrlParser: true, useFindAndModify: false },
+  () => console.log(`Database Successfully Connected`)
 );
