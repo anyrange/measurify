@@ -13,6 +13,10 @@ const schema = new Schema({
     type: Array,
     default: [],
   },
+  userName: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = model("User", schema);

@@ -52,15 +52,18 @@ const auth = {
       request.get(userDataGainOptions, async function(err, response, body) {
         if (!err) {
           const userData = await JSON.parse(body);
+          console.log(userData);
 
           const filter = { spotifyID: userData.id };
-          const update = { lastSpotifyToken: access_token };
+          const update = {
+            lastSpotifyToken: access_token,
+            userName: userData.display_name,
+          };
 
           await User.findOneAndUpdate(filter, update, {
             new: true,
             upsert: true,
           });
-
         }
       });
 
