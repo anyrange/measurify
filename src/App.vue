@@ -1,6 +1,12 @@
 <template>
-  <Navbar />
-  <router-view />
+  <div class="flex flex-wrap bg-gray-100 w-full h-screen">
+    <div class="w-2/12 bg-white rounded p-3 shadow-lg">
+      <Navbar />
+    </div>
+    <div class="w-10/12">
+      <router-view />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -21,17 +27,7 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
+a.router-link-exact-active {
   color: #42b983;
 }
 </style>

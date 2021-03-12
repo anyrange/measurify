@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import About from "../views/About.vue";
 import Home from "../views/Home.vue";
-import Playlists from "../views/Playlists.vue";
-import Stats from "../views/Stats.vue";
 
 const routes = [
   {
@@ -12,18 +10,6 @@ const routes = [
     meta: {
       title: "Home",
     },
-    children: [
-      {
-        path: "playlists",
-        component: Playlists,
-      },
-      {
-        path: "stats",
-        components: {
-          default: Stats,
-        },
-      },
-    ],
   },
   {
     path: "/about",
