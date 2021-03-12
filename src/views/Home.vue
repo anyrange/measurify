@@ -39,11 +39,12 @@
       </div>
     </template>
     <template v-else>
-      <a
-        href="http://localhost:8888/login"
+      <button
+        @click="login"
         class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full"
-        >Log in with Spotify</a
-      ><br />
+      >
+        Log in with Spotify
+      </button>
     </template>
   </div>
 </template>
@@ -64,6 +65,9 @@ export default {
     },
   },
   methods: {
+    login() {
+      window.location.href = process.env.VUE_APP_REDIRECT_URI;
+    },
     logOut() {
       this.$store.commit("mutateUser", null);
       this.$router.push({ name: "Home" });
