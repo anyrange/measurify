@@ -1,33 +1,20 @@
 <template>
-  <div class="flex flex-wrap bg-gray-100 w-full h-screen">
-    <div class="w-2/12 bg-white rounded p-3 shadow-lg">
-      <Navbar />
-    </div>
-    <div class="w-10/12">
-      <router-view />
-    </div>
-  </div>
+  <router-view />
 </template>
 
 <script>
-import Navbar from "@/components/Navbar";
-
 export default {
   name: "App",
-  components: {
-    Navbar,
-  },
 };
 </script>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  font-family: "Inter", sans-serif;
 }
+
 a.router-link-exact-active {
-  color: #42b983;
+  background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
 }
 </style>

@@ -38,6 +38,7 @@ const auth = {
     };
     request.post(authOptions, function(error, response, body) {
       const access_token = body.access_token;
+      const refresh_token = body.refresh_token;
       // const spotifyID = body.client_id;
       // console.log(spotifyID)
       let uri = process.env.FRONTEND_URI || "http://localhost:3000";
