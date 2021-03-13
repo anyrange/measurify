@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --port 3000",
-    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "dev": "concurrently \"npm run serve\" \"npm run server\"",
-    "server": "nodemon index.js --prefix server"
+    "build": "vue-cli-service build",
+    "dist": "serve -s dist",
+    "serve": "vue-cli-service serve --port 3000",
+    "server": "nodemon index.js --prefix server",
+    "dev": "concurrently \"npm run serve\" \"npm run server\""
   },
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.2",
