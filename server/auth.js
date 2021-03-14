@@ -11,7 +11,7 @@ const auth = {
         querystring.stringify({
           response_type: "code",
           client_id: process.env.SPOTIFY_CLIENT_ID,
-          scope: "user-read-private user-read-email",
+          scope: "user-read-private user-read-email ugc-image-upload user-read-playback-state user-top-read playlist-modify-public user-modify-playback-state playlist-modify-private user-follow-modify user-read-currently-playing user-follow-read playlist-read-private user-library-read playlist-read-collaborative",
           redirect_uri,
         })
     );
