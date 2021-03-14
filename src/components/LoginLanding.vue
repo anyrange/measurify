@@ -20,6 +20,9 @@ export default {
     user() {
       return this.$store.getters.getUser;
     },
+    playlists() {
+      return this.$store.getters.getPlaylists;
+    },
   },
   methods: {
     login() {
@@ -29,18 +32,76 @@ export default {
       this.$store.commit("mutateUser", null);
       this.$router.push({ name: "Home" });
     },
-  },
-  created() {
-    if (this.$route.query) {
+    playlistsLoad(uri, access_token) {
       axios
-        .get("https://api.spotify.com/v1/me", {
+        .get(uri, {
           headers: {
-            Authorization: "Bearer " + this.$route.query.access_token,
+            Authorization: "Bearer " + access_token,
           },
         })
         .then((response) => {
-          response.data.refresh_token =this.$route.query.refresh_token
-          this.$store.commit("mutateUser", response.data );
+          let currentPlaylistList = this.$store.state.playlists;
+          currentPlaylistList.push(...response.data.items);
+
+          this.$store.commit("mutatePlaylists", currentPlaylistList);
+          if (response.data.total > this.$store.state.playlists.length) {
+            let leftover =
+              response.data.total - this.$store.state.playlists.length;
+            this.playlistsLoad(
+              `https://api.spotify.com/v1/users/${
+                this.$store.state.user.id
+              }/playlists?offset=${
+                this.$store.state.playlists.length
+              }&limit=${leftover < 20 ? leftover : 20}`,
+              access_token
+            );
+          }
+          console.log("Response from server: ");
+          console.log(response.data.items);
+        });
+    },
+  },
+   created() {
+    if (this.$route.query) {
+      let access_token = this.$route.query.access_token;
+      axios
+        .get("https://api.spotify.com/v1/me", {
+          headers: {
+            Authorization: "Bearer " + access_token,
+          },
+        })
+        .then((response) => {
+          response.data.refresh_token = this.$route.query.refresh_token;
+          this.$store.commit("mutateUser", response.data);
+          axios
+            .get(
+              `https://api.spotify.com/v1/users/${response.data.id}/playlists`,
+              {
+                headers: {
+                  Authorization: "Bearer " + access_token,
+                },
+              }
+            )
+            .then((response) => {
+              this.$store.commit("mutatePlaylists", response.data.items);
+              if (
+                response.data.total > this.$store.state.playlists.length
+              ) {
+                let leftover =
+                  response.data.total -
+                  this.$store.state.playlists.length;
+                 this.playlistsLoad(
+                  `https://api.spotify.com/v1/users/${
+                    this.$store.state.user.id
+                  }/playlists?offset=${
+                    this.$store.state.playlists.length
+                  }&limit=${leftover < 20 ? leftover : 20}`,
+                  access_token
+                );
+              }
+              console.log("Response from server: ");
+              console.log(response.data.items);
+            });
           this.$router.push("overview");
           console.log("Response from server: ");
           console.log(this.$store.state.user);
