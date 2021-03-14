@@ -9,7 +9,8 @@
         :src="playlist.images[0].url"
         class=" border border-gray-100 shadow-sm"
       />
-      {{ playlist.name }}
+      {{ playlist.name }}<br/>
+      Total tracks: {{playlist.tracks.total}}
     </div>
   </div>
 </template>
