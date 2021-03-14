@@ -39,7 +39,8 @@ export default {
           },
         })
         .then((response) => {
-          this.$store.commit("mutateUser", response.data);
+          response.data.refresh_token =this.$route.query.refresh_token
+          this.$store.commit("mutateUser", response.data );
           this.$router.push("overview");
           console.log("Response from server: ");
           console.log(this.$store.state.user);

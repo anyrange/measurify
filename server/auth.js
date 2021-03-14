@@ -39,8 +39,7 @@ const auth = {
     request.post(authOptions, function(error, response, body) {
       const access_token = body.access_token;
       const refresh_token = body.refresh_token;
-      // const spotifyID = body.client_id;
-      // console.log(spotifyID)
+
       let uri = process.env.FRONTEND_URI || "http://localhost:3000";
 
       let userDataGainOptions = {
@@ -59,6 +58,7 @@ const auth = {
           const update = {
             lastSpotifyToken: access_token,
             userName: userData.display_name,
+            refreshToken: refresh_token,
           };
 
           await User.findOneAndUpdate(filter, update, {
@@ -68,7 +68,9 @@ const auth = {
         }
       });
 
-      res.redirect(uri + "?access_token=" + access_token);
+      res.redirect(
+        `${uri}?access_token=${access_token}&refresh_token=${refresh_token}`
+      );
     });
   },
 };

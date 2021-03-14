@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const schema = new Schema({
-  lastSpotifyToken: {
+  userName: {
     type: String,
     required: true,
   },
@@ -9,13 +9,17 @@ const schema = new Schema({
     type: String,
     required: true,
   },
+  refreshToken: {
+    type: String,
+    required: true,
+  },
+  lastSpotifyToken: {
+    type: String,
+    required: true,
+  },
   playlists: {
     type: Array,
     default: [],
-  },
-  userName: {
-    type: String,
-    required: true,
   },
 });
 
