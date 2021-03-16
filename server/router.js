@@ -11,5 +11,6 @@ router.get("/", (req, res) => {
 
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
+router.post("/refresh", auth.refresh);
 
 module.exports = router;
