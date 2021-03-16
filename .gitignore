@@ -27,4 +27,3 @@ yarn.lock
 *.lock
 api.rest
 server/package-lock.json
-package.json
