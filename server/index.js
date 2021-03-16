@@ -1,10 +1,12 @@
 const express = require("express");
 const router = require("./router");
+const cors = require('cors')
 const mongoose = require("mongoose");
 
 const app = express();
 const PORT = process.env.PORT || 8888;
 app.listen(PORT);
+app.use(cors())
 app.use(router);
 
 console.log(`App listening on port: ${PORT}`);
