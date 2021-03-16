@@ -3,6 +3,7 @@ import About from "../views/About.vue";
 import Home from "../views/Home.vue";
 import Playlists from "../views/Playlists.vue";
 import Overview from "../views/Overview.vue";
+import History from "../views/History.vue";
 
 const routes = [
   {
@@ -22,6 +23,10 @@ const routes = [
       {
         path: "playlists",
         component: Playlists,
+      },
+      {
+        path: "history",
+        component: History,
       },
     ],
   },

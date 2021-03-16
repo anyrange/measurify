@@ -50,9 +50,9 @@ export default {
             this.playlistsLoad(
               `https://api.spotify.com/v1/users/${
                 this.$store.state.user.id
-              }/playlists?offset=${
-                this.$store.state.playlists.length
-              }&limit=${leftover < 20 ? leftover : 20}`,
+              }/playlists?offset=${this.$store.state.playlists.length}&limit=${
+                leftover < 20 ? leftover : 20
+              }`,
               access_token
             );
           }
@@ -61,7 +61,7 @@ export default {
         });
     },
   },
-   created() {
+  created() {
     if (this.$route.query) {
       let access_token = this.$route.query.access_token;
       axios
@@ -72,6 +72,7 @@ export default {
         })
         .then((response) => {
           response.data.refresh_token = this.$route.query.refresh_token;
+          response.data.access_token = this.$route.query.access_token;
           this.$store.commit("mutateUser", response.data);
           axios
             .get(
@@ -84,13 +85,10 @@ export default {
             )
             .then((response) => {
               this.$store.commit("mutatePlaylists", response.data.items);
-              if (
-                response.data.total > this.$store.state.playlists.length
-              ) {
+              if (response.data.total > this.$store.state.playlists.length) {
                 let leftover =
-                  response.data.total -
-                  this.$store.state.playlists.length;
-                 this.playlistsLoad(
+                  response.data.total - this.$store.state.playlists.length;
+                this.playlistsLoad(
                   `https://api.spotify.com/v1/users/${
                     this.$store.state.user.id
                   }/playlists?offset=${
