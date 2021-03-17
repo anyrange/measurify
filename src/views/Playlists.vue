@@ -9,12 +9,13 @@
         :src="playlist.images[0].url"
         class=" border border-gray-100 shadow-sm"
       />
-      {{ playlist.name }}<br/>
-      Total tracks: {{playlist.tracks.total}}
+      {{ playlist.name }}<br />
+      Total tracks: {{ playlist.tracks.total }}
     </div>
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   computed: {
     user() {
@@ -23,6 +24,70 @@ export default {
     playlists() {
       return this.$store.getters.getPlaylists;
     },
+  },
+  methods: {
+    playlistsLoad(uri) {
+      axios
+        .get(uri, {
+          headers: {
+            Authorization: "Bearer " + this.user.access_token,
+          },
+        })
+        .then((response) => {
+          let currentPlaylistList = this.playlists;
+          currentPlaylistList.push(...response.data.items);
+
+          this.$store.commit("mutatePlaylists", currentPlaylistList);
+          if (response.data.total > this.playlists.length) {
+            let leftover = response.data.total - this.playlists.length;
+            this.playlistsLoad(
+              `https://api.spotify.com/v1/users/${
+                this.user.id
+              }/playlists?offset=${this.playlists.length}&limit=${
+                leftover < 20 ? leftover : 20
+              }`
+            );
+          }
+          console.log("Response from server: ");
+          console.log(response.data.items);
+        });
+    },
+  },
+  created() {
+    axios
+      .get(`https://api.spotify.com/v1/users/${this.user.id}/playlists`, {
+        headers: {
+          Authorization: "Bearer " + this.user.access_token,
+        },
+      })
+      .catch((error) => {
+        console.log("Ашыбка: " + error);
+
+        axios
+          .post(
+            `${process.env.VUE_APP_REFRESH_URI}?refresh_token=${this.user.refresh_token}?id=${this.user.id}`
+          )
+          .then((response) => {
+            let user = this.user;
+            user.access_token = response.data;
+            this.$store.commit("mutateUser", user);
+          });
+      })
+      .then((response) => {
+        this.$store.commit("mutatePlaylists", response.data.items);
+        if (response.data.total > this.playlists.length) {
+          let leftover = response.data.total - this.playlists.length;
+          this.playlistsLoad(
+            `https://api.spotify.com/v1/users/${
+              this.user.id
+            }/playlists?offset=${this.playlists.length}&limit=${
+              leftover < 20 ? leftover : 20
+            }`
+          );
+        }
+        console.log("Response from server: ");
+        console.log(response.data.items);
+      });
   },
 };
 </script>
