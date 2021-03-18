@@ -60,19 +60,6 @@ export default {
           Authorization: "Bearer " + this.user.access_token,
         },
       })
-      .catch((error) => {
-        console.log("Ашыбка: " + error);
-
-        axios
-          .post(
-            `${process.env.VUE_APP_REFRESH_URI}?refresh_token=${this.user.refresh_token}?id=${this.user.id}`
-          )
-          .then((response) => {
-            let user = this.user;
-            user.access_token = response.data;
-            this.$store.commit("mutateUser", user);
-          });
-      })
       .then((response) => {
         this.$store.commit("mutatePlaylists", response.data.items);
         if (response.data.total > this.playlists.length) {

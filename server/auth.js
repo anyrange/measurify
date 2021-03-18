@@ -17,38 +17,13 @@ const auth = {
         })
     );
   },
-  refresh: function(req, res) {
-    let refresh_token = req.query.refresh_token;
-    let id = req.query.id;
-    let refreshOptions = {
-      url: "https://accounts.spotify.com/api/token",
-      form: {
-        refresh_token,
-        grant_type: "refresh_token",
-      },
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(
-            process.env.SPOTIFY_CLIENT_ID +
-              ":" +
-              process.env.SPOTIFY_CLIENT_SECRET
-          ).toString("base64"),
-      },
-      json: true,
-    };
-
-    request.post(refreshOptions, async function(error, response, body) {
-      const filter = { spotifyID: id };
-      const update = {
-        lastSpotifyToken: body.access_token,
-      };
-
-      await User.findOneAndUpdate(filter, update, {
-        new: true,
-        upsert: true,
-      });
-      await res.end(body.access_token);
+  getAccessToken: function(req, res) {
+    let spotifyID = req.query.spotifyID;
+    User.findOne({ spotifyID }, (err, user) => {
+      if(err){
+        console.log(err)
+      }
+      res.end(user.lastSpotifyToken);
     });
   },
   callback: function(req, res) {

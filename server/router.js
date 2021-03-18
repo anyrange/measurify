@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("./auth");
+const User = require("./models/User");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
@@ -11,6 +12,6 @@ router.get("/", (req, res) => {
 
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
-router.post("/refresh", auth.refresh);
+router.get("/getAccessToken", auth.getAccessToken);
 
 module.exports = router;

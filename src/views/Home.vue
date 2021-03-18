@@ -15,6 +15,7 @@
 <script>
 import DashboardNav from "@/components/DashboardNav.vue";
 import LoginLanding from "@/components/LoginLanding.vue";
+import axios from "axios";
 
 export default {
   name: "Login",
@@ -26,6 +27,16 @@ export default {
     user() {
       return this.$store.getters.getUser;
     },
+  },
+  created() {
+    axios
+      .get(`${process.env.VUE_APP_GET_TOKEN_URI}?spotifyID=${this.user.id}`)
+      .catch((err) => console.log(err))
+      .then((response) => {
+        let updatedUser = this.user;
+        updatedUser.access_token = response.data;
+        this.$store.commit("mutateUser", updatedUser);
+      });
   },
 };
 </script>
