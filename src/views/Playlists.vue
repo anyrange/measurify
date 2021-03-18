@@ -6,7 +6,7 @@
       class="box-border h-84 w-64 p-5 border-4"
     >
       <img
-        :src="playlist.images[0].url"
+        :src="playlist.images[0]?.url"
         class=" border border-gray-100 shadow-sm"
       />
       {{ playlist.name }}<br />
