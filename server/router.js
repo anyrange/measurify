@@ -14,4 +14,18 @@ router.get("/login", auth.login);
 router.get("/callback", auth.callback);
 router.get("/getAccessToken", auth.getAccessToken);
 
+router.get("/getPlayedHistory", (req, res) => {
+  const spotifyID = req.query.spotifyID;
+  const projection = {
+    recentlyPlayed: 1,
+  };
+  User.findOne({ spotifyID }, projection, (err, user) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    res.end(JSON.stringify(user.toJSON().recentlyPlayed));
+  });
+});
+
 module.exports = router;

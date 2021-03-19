@@ -1,5 +1,5 @@
 <template>
-  <!-- <ul class="container ">
+  <ul class="container ">
     <li v-for="item in recentlyPlayed" :key="item.track.id">
       <a
         :href="item.track.external_urls.spotify"
@@ -12,18 +12,17 @@
         <p class="pl-2">{{ item.track.name }}</p></a
       >
     </li>
-  </ul> -->
+  </ul>
   aboba
-  {{ data }}
 </template>
 
 <script>
-// import axios from "axios";
+import axios from "axios";
 
 export default {
   data() {
     return {
-      data: " ",
+      recentlyPlayed: [],
     };
   },
   computed: {
@@ -32,29 +31,14 @@ export default {
     },
   },
   created() {
-
-    // axios
-    //   .get("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
-    //     headers: {
-    //       Authorization: "Bearer " + this.user.access_token,
-    //     },
-    //   })
-    //   .catch((error) => {
-    //     console.log("Ашыбка: " + error);
-
-    //     axios
-    //       .post(
-    //         `${process.env.VUE_APP_REFRESH_URI}?refresh_token=${this.user.refresh_token}?id=${this.user.id}`
-    //       )
-    //       .then((response) => {
-    //         let user = this.user;
-    //         user.access_token = response.data;
-    //         this.$store.commit("mutateUser", user);
-    //       });
-    //   })
-    //   .then((response) => {
-    //     this.recentlyPlayed = response.data.items;
-    //   });
+    axios
+      .get(
+        `${process.env.VUE_APP_PLAYED_HISTORY_URI}?spotifyID=${this.user.id}`
+      )
+      .catch((err) => console.log(err))
+      .then((response) => {
+        this.recentlyPlayed = response.data;
+      });
   },
 };
 </script>
