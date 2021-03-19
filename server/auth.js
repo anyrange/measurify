@@ -22,6 +22,7 @@ const auth = {
     User.findOne({ spotifyID }, (err, user) => {
       if(err){
         console.log(err)
+        return
       }
       res.end(user.lastSpotifyToken);
     });

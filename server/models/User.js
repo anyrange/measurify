@@ -21,6 +21,10 @@ const schema = new Schema({
     type: Array,
     default: [],
   },
+  recentlyPlayed: {
+    type: Array,
+    default: [],
+  },
 });
 
 module.exports = model("User", schema);
