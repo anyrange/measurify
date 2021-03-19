@@ -29,14 +29,16 @@ export default {
     },
   },
   created() {
-    axios
-      .get(`${process.env.VUE_APP_GET_TOKEN_URI}?spotifyID=${this.user.id}`)
-      .catch((err) => console.log(err))
-      .then((response) => {
-        let updatedUser = this.user;
-        updatedUser.access_token = response.data;
-        this.$store.commit("mutateUser", updatedUser);
-      });
+    if (this.user) {
+      axios
+        .get(`${process.env.VUE_APP_GET_TOKEN_URI}?spotifyID=${this.user.id}`)
+        .catch((err) => console.log(err))
+        .then((response) => {
+          let updatedUser = this.user;
+          updatedUser.access_token = response.data;
+          this.$store.commit("mutateUser", updatedUser);
+        });
+    }
   },
 };
 </script>
