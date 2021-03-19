@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     login() {
-      window.location.href = process.env.VUE_APP_REDIRECT_URI;
+      window.location.href = `${process.env.VUE_APP_SERVER_URI}/login`;
     },
     logOut() {
       this.$store.commit("mutateUser", null);

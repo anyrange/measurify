@@ -33,7 +33,7 @@ export default {
   created() {
     axios
       .get(
-        `${process.env.VUE_APP_PLAYED_HISTORY_URI}?spotifyID=${this.user.id}`
+        `${process.env.VUE_APP_SERVER_URI}/getPlayedHistory?spotifyID=${this.user.id}`
       )
       .catch((err) => console.log(err))
       .then((response) => {
