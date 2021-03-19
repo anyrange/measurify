@@ -49,16 +49,11 @@ function rewriteTokens(refresh_token, spotifyID, cb) {
   });
 }
 
-User.find({}, { _id: 0, refreshToken: 1, spotifyID: 1 }, (err, usersRaw) => {
+User.find({}, { _id: 0, refreshToken: 1, spotifyID: 1 }, (err, users) => {
   if (err) {
     console.log(err);
     return;
   }
-  let users = usersRaw.filter((user) => {
-    if (user.refreshToken) {
-      return user;
-    }
-  });
 
   let requests = users.map((user) => {
     return new Promise((resolve) => {
@@ -66,5 +61,8 @@ User.find({}, { _id: 0, refreshToken: 1, spotifyID: 1 }, (err, usersRaw) => {
     });
   });
 
-  Promise.all(requests).then(() => process.exit());
+  Promise.all(requests).then(() => {
+    console.log(`All ${users.length} tokens are refreshed`);
+    process.exit();
+  });
 });

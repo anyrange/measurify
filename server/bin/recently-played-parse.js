@@ -9,35 +9,80 @@ mongoose.connect(
   () => console.log(`Database Successfully Connected`)
 );
 
-User.find({}, (err, users) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  users.forEach((user) => {
-    if (user.refreshToken) {
-      const recentlyPlayedOptions = {
-        uri: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
-        headers: {
-          Authorization: "Bearer " + user.lastSpotifyToken,
-        },
-        json: true,
+function parseRecentlyPlayed(user, cb) {
+  const recentlyPlayedOptions = {
+    uri: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+    headers: {
+      Authorization: "Bearer " + user.lastSpotifyToken,
+    },
+    json: true,
+  };
+
+  request.get(recentlyPlayedOptions, async (error, response, body) => {
+    if (!user.recentlyPlayed.length) {
+      const query = { spotifyID: user.spotifyID };
+      const update = {
+        recentlyPlayed: body.items,
       };
-
-      //   User.find({"userName": user.userName}, (err, t)=>{console.log(t)}).sort({recentlyPlayed:-1}).limit(1);
-
-      if (!user.recentlyPlayed.length) {
-        request.get(recentlyPlayedOptions, async (error, response, body) => {
-          const query = { spotifyID: user.spotifyID };
-          const update = {
-            recentlyPlayed: body.items,
-          };
-
-          await User.updateOne(query, update);
-          process.exit();
-        });
+      await User.updateOne(query, update);
+      cb();
+    } else {
+      let i = 0;
+      let newSongs = [];
+      while (
+        Date.parse(user.recentlyPlayed[0].played_at) <
+          Date.parse(body.items[i].played_at) &&
+        i < body.items.length
+      ) {
+        newSongs.push(body.items[i]);
+        i++;
       }
-      
+      user.recentlyPlayed.unshift(...newSongs);
+      const query = { spotifyID: user.spotifyID };
+      const update = {
+        recentlyPlayed: user.recentlyPlayed,
+      };
+      await User.updateOne(query, update);
+      cb();
     }
   });
-});
+}
+
+User.find(
+  {},
+  { _id: 0, spotifyID: 1, lastSpotifyToken: 1, recentlyPlayed: 1 },
+  (err, users) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+
+    // ## ONE TIME PROMISE (TASKS MAY BE EXECUTED IN RANDOM ORDER)
+
+    let requests = users.map((user) => {
+      return new Promise((resolve) => {
+        parseRecentlyPlayed(user, resolve);
+      });
+    });
+
+    Promise.all(requests).then(() => {
+      console.log(`All ${users.length} histories updated`);
+      process.exit();
+    });
+
+    // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)
+    // let requests = users.reduce((promiseChain, user) => {
+    //   return promiseChain.then(
+    //     () =>
+    //       new Promise((resolve) => {
+    //         parseRecentlyPlayed(user, resolve);
+    //       })
+    //   );
+    // }, Promise.resolve());
+
+    // requests.then(() => {
+    //   console.log(`All ${users.length} histories updated`);
+    //   process.exit();
+    // });
+  }
+);
