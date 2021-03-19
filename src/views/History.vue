@@ -13,7 +13,6 @@
       >
     </li>
   </ul>
-  aboba
 </template>
 
 <script>
