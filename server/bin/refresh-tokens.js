@@ -14,7 +14,7 @@ User.find({}, (err, users) => {
     console.log(err);
     return;
   }
-  users.forEach((user) => {
+  users.forEach(async (user) => {
     if (user.refreshToken) {
       let refresh_token = user.refreshToken;
       let spotifyID = user.spotifyID;
@@ -35,7 +35,7 @@ User.find({}, (err, users) => {
         },
         json: true,
       };
-      request.post(refreshOptions, async function(error, response, body) {
+      await request.post(refreshOptions, async function(error, response, body) {
         if (error) {
           console.log(error);
           return;
@@ -52,5 +52,6 @@ User.find({}, (err, users) => {
         });
       });
     }
+    process.exit()
   });
 })
