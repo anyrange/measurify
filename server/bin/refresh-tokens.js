@@ -53,7 +53,4 @@ User.find({}, (err, users) => {
       });
     }
   });
-}).then(() => {
-  mongoose.connection.close();
-  process.exit();
-});
+})
