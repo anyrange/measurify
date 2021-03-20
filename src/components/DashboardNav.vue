@@ -4,7 +4,7 @@
       <li>
         <router-link
           class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
-          to="/overview"
+          to="/"
         >
           <span class="text-gray-600">
             <svg
@@ -49,10 +49,10 @@
           <span>Playlists</span>
         </router-link>
       </li>
-       <li>
+      <li>
         <router-link
           class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
-          to="/history"
+          to="/listening-history"
         >
           <span class="text-gray-600">
             <svg
@@ -112,7 +112,7 @@ export default {
   methods: {
     logOut() {
       this.$store.commit("mutateUser", null);
-      this.$router.push({ name: "Home" });
+      this.$router.push("/");
     },
   },
 };

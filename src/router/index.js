@@ -1,41 +1,52 @@
 import { createRouter, createWebHistory } from "vue-router";
-import About from "../views/About.vue";
 import Home from "../views/Home.vue";
-import Playlists from "../views/Playlists.vue";
+import About from "../views/About.vue";
+import PageNotFound from "../views/PageNotFound.vue";
 import Overview from "../views/Overview.vue";
+import Playlists from "../views/Playlists.vue";
 import History from "../views/History.vue";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
+    redirect: "/",
     component: Home,
     meta: {
       title: "Home",
     },
     children: [
       {
-        path: "overview",
-        components: {
-          default: Overview,
+        path: "/",
+        component: Overview,
+      },
+      {
+        path: "/playlists",
+        component: Playlists,
+        meta: {
+          title: "My Playlists",
         },
       },
       {
-        path: "playlists",
-        component: Playlists,
-      },
-      {
-        path: "history",
+        path: "/listening-history",
         component: History,
+        meta: {
+          title: "Listening History",
+        },
       },
     ],
   },
   {
     path: "/about",
-    name: "About",
     component: About,
     meta: {
       title: "About",
+    },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: PageNotFound,
+    meta: {
+      title: "Page Not Found",
     },
   },
 ];

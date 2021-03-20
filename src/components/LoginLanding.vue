@@ -46,7 +46,7 @@ export default {
           response.data.refresh_token = this.$route.query.refresh_token;
           response.data.access_token = this.$route.query.access_token;
           this.$store.commit("mutateUser", response.data);
-          this.$router.push("overview");
+          this.$router.push("/");
           console.log("Response from server: ");
           console.log(this.$store.state.user);
         });

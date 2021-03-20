@@ -1,28 +1,75 @@
 <template>
-  <ul class="container ">
-    <li v-for="item in recentlyPlayed" :key="item.track.id">
-      <a
-        :href="item.track.external_urls.spotify"
-        class="p-5 flex bg-gray-50 flex-row shadow-lg sm:rounded-3x1 m-3"
-      >
-        <img
-          :src="item.track.album.images[0].url"
-          class="w-24	h-24 border border-gray-100 shadow-sm"
-        />
-        <p class="pl-2">{{ item.track.name }}</p></a
-      >
-    </li>
-  </ul>
+  <table class="min-w-full">
+    <thead>
+      <tr>
+        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
+          Title
+        </th>
+        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
+          Artist
+        </th>
+        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
+          Album
+        </th>
+        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
+          When
+        </th>
+        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
+          Duration
+        </th>
+      </tr>
+    </thead>
+    <tbody class="bg-white">
+      <tr v-for="track in recentlyPlayed" :key="track.id">
+        <td
+          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
+        >
+          {{ track.name }}
+        </td>
+        <td
+          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
+        >
+          {{ track.artists[0].name }}
+        </td>
+        <td
+          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
+        >
+          {{ track.album.name }}
+        </td>
+        <td
+          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
+        >
+          {{ getDateFromNow(track.played_at) }}
+        </td>
+        <td
+          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
+        >
+          {{ getTime(track.duration) }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script>
 import axios from "axios";
+import moment from "moment"; // fuck this shit, should be changed soon (gzipped 72.3K)
 
 export default {
   data() {
     return {
       recentlyPlayed: [],
     };
+  },
+  methods: {
+    getDateFromNow(date) {
+      return moment(date).fromNow();
+    },
+    getTime(time) {
+      return moment
+        .utc(moment.duration(time, "seconds").asMilliseconds())
+        .format("mm:ss");
+    },
   },
   computed: {
     user() {
@@ -36,7 +83,8 @@ export default {
       )
       .catch((err) => console.log(err))
       .then((response) => {
-        this.recentlyPlayed = response.data;
+        this.recentlyPlayed = response.data.tracks;
+        console.log(this.recentlyPlayed);
       });
   },
 };
