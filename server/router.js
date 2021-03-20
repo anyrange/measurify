@@ -25,8 +25,9 @@ router.get("/getPlayedHistory", (req, res) => {
       return;
     }
 
-    let formatedRecentlyPlayed = [
-      user.toJSON().recentlyPlayed.map(({ played_at, track }) => {
+    let formatedRecentlyPlayed = user
+      .toJSON()
+      .recentlyPlayed.map(({ played_at, track }) => {
         let album = {};
         album.name = track.album.name;
         album.id = track.album.id;
@@ -40,9 +41,9 @@ router.get("/getPlayedHistory", (req, res) => {
         let duration = track.duration_ms / 1000;
 
         return { played_at, album, artists, name, id, duration };
-      }),
-    ];
-    let tracks = {'tracks':formatedRecentlyPlayed}
+      });
+
+    let tracks = { tracks: formatedRecentlyPlayed };
     res.end(JSON.stringify(tracks));
   });
 });
