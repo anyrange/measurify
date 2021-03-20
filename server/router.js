@@ -42,8 +42,8 @@ router.get("/getPlayedHistory", (req, res) => {
         return { played_at, album, artists, name, id, duration };
       }),
     ];
-
-    res.end(JSON.stringify(formatedRecentlyPlayed));
+    let tracks = {'tracks':formatedRecentlyPlayed}
+    res.end(JSON.stringify(tracks));
   });
 });
 
