@@ -48,7 +48,6 @@ export default {
               }`
             );
           }
-          console.log("Response from server: ");
           console.log(response.data.items);
         });
     },
