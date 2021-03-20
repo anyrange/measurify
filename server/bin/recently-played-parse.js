@@ -18,7 +18,13 @@ function parseRecentlyPlayed(user, cb) {
     json: true,
   };
 
+  // delete smth from all users
+  // user.recentlyPlayed.forEach((item)=>delete item.track.available_markets);
+
   request.get(recentlyPlayedOptions, async (error, response, body) => {
+
+    body.items.forEach((item)=>delete item.track.available_markets);
+
     if (!user.recentlyPlayed.length) {
       const query = { spotifyID: user.spotifyID };
       const update = {
