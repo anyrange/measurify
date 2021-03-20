@@ -20,9 +20,9 @@ const auth = {
   getAccessToken: function(req, res) {
     let spotifyID = req.query.spotifyID;
     User.findOne({ spotifyID }, (err, user) => {
-      if(err){
-        console.log(err)
-        return
+      if (err) {
+        console.log(err);
+        return;
       }
       res.end(user.lastSpotifyToken);
     });
@@ -51,19 +51,25 @@ const auth = {
       const access_token = body.access_token;
       const refresh_token = body.refresh_token;
 
-      let uri = process.env.FRONTEND_URI || "http://localhost:3000";
+      const uri = process.env.FRONTEND_URI || "http://localhost:3000";
 
-      let userDataGainOptions = {
+      const userDataGainOptions = {
         url: "https://api.spotify.com/v1/me",
         headers: {
           Authorization: "Bearer " + access_token,
         },
       };
-
+      const recentlyPlayedOptions = {
+        uri: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+        json: true,
+      };
       request.get(userDataGainOptions, async function(err, response, body) {
         if (!err) {
           const userData = await JSON.parse(body);
-          console.log(userData);
+          console.log(userData.display_name + " logined");
 
           const filter = { spotifyID: userData.id };
           const update = {
@@ -71,11 +77,31 @@ const auth = {
             userName: userData.display_name,
             refreshToken: refresh_token,
           };
-
           await User.findOneAndUpdate(filter, update, {
             new: true,
             upsert: true,
           });
+
+          User.findOne(
+            { spotifyID: userData.id },
+            { _id: 0, recentlyPlayed: 1 },
+            (err, user) => {
+              if (!user.recentlyPlayed.length) {
+                request.get(
+                  recentlyPlayedOptions,
+                  async (error, response, body) => {
+                    if (!error) {
+                      const filter = { spotifyID: userData.id };
+                      const update = {
+                        recentlyPlayed: body.items,
+                      };
+                      await User.updateOne(filter, update);
+                    }
+                  }
+                );
+              }
+            }
+          );
         }
       });
 

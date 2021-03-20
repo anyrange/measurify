@@ -53,7 +53,7 @@ export default {
         });
     },
   },
-  created() {
+  mounted() {
     axios
       .get(`https://api.spotify.com/v1/users/${this.user.id}/playlists`, {
         headers: {
