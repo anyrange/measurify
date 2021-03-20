@@ -23,38 +23,19 @@ router.get("/getPlayedHistory", (req, res) => {
     "recentlyPlayed.track.album.name": 1,
     "recentlyPlayed.track.artists.id": 1,
     "recentlyPlayed.track.artists.name": 1,
-    "recentlyPlayed.track.duration_ms": 1,  
+    "recentlyPlayed.track.duration_ms": 1,
     "recentlyPlayed.track.id": 1,
     "recentlyPlayed.track.name": 1,
     "recentlyPlayed.played_at": 1,
-  }
-  
+  };
+
   User.findOne({ spotifyID }, projection, (err, user) => {
     if (err) {
       console.log(err);
       return;
     }
 
-    let formatedRecentlyPlayed = user
-      .toJSON()
-      .recentlyPlayed.map(({ played_at, track }) => {
-        let album = {};
-        album.name = track.album.name;
-        album.id = track.album.id;
-
-        let artists = track.artists.map(({ name, id }) => {
-          return { name, id };
-        });
-
-        let name = track.name;
-        let id = track.id;
-        let duration = track.duration_ms / 1000;
-
-        return { played_at, album, artists, name, id, duration };
-      });
-
-    let tracks = { tracks: formatedRecentlyPlayed };
-    res.end(JSON.stringify(tracks));
+    res.end(JSON.stringify(user.toJSON().recentlyPlayed));
   });
 });
 
