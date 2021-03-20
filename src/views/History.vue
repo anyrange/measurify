@@ -20,31 +20,37 @@
       </tr>
     </thead>
     <tbody class="bg-white">
-      <tr v-for="track in recentlyPlayed" :key="track.id">
+      <tr v-for="item in recentlyPlayed" :key="item.id">
         <td
           class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
         >
-          {{ track.name }}
+          {{ item.track.name }}
         </td>
         <td
           class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
         >
-          {{ track.artists[0].name }}
+          {{
+            item.track.artists
+              .map(({ name }) => {
+                return name;
+              })
+              .join(", ")
+          }}
         </td>
         <td
           class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
         >
-          {{ track.album.name }}
+          {{ item.track.album.name }}
         </td>
         <td
           class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
         >
-          {{ getDateFromNow(track.played_at) }}
+          {{ getDateFromNow(item.played_at) }}
         </td>
         <td
           class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
         >
-          {{ getTime(track.duration) }}
+          {{ getDuration(item.track.duration_ms) }}
         </td>
       </tr>
     </tbody>
@@ -53,7 +59,7 @@
 
 <script>
 import axios from "axios";
-import moment from "moment"; // fuck this shit, should be changed soon (gzipped 72.3K)
+import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
 
 export default {
   data() {
@@ -62,13 +68,12 @@ export default {
     };
   },
   methods: {
+    showArtists() {},
     getDateFromNow(date) {
-      return moment(date).fromNow();
+      return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
     },
-    getTime(time) {
-      return moment
-        .utc(moment.duration(time, "seconds").asMilliseconds())
-        .format("mm:ss");
+    getDuration(time) {
+      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
   },
   computed: {
@@ -83,7 +88,7 @@ export default {
       )
       .catch((err) => console.log(err))
       .then((response) => {
-        this.recentlyPlayed = response.data.tracks;
+        this.recentlyPlayed = response.data;
         console.log(this.recentlyPlayed);
       });
   },
