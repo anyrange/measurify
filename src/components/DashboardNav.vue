@@ -8,9 +8,9 @@
       >
         Statistics
       </h3>
-      <li class="border-l-4 border-green-600">
+      <li>
         <router-link class="flex items-center mx-4 mt-4 group" to="/">
-          <span class="ml-2 group-hover:text-white">Home</span>
+          <span class="ml-2 group-hover:text-white">Overview</span>
         </router-link>
       </li>
       <li>

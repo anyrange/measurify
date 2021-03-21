@@ -20,6 +20,12 @@ a.router-link-exact-active {
   color: rgba(255, 255, 255, var(--tw-text-opacity));
 }
 
+.active-route {
+  border-left-width: 4px;
+  --tw-border-opacity: 1;
+  border-color: rgba(5, 150, 105, var(--tw-border-opacity));
+}
+
 .sidebar-spotify::-webkit-scrollbar {
   width: 8px;
   background-color: #121212;
