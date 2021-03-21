@@ -1,102 +1,79 @@
 <template>
-  <div class="w-2/12 bg-white rounded p-4 shadow-lg">
-    <ul class="space-y-2 text-sm">
-      <li>
-        <router-link
-          class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
-          to="/"
-        >
-          <span class="text-gray-600">
-            <svg
-              class="h-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </span>
-          <span>Overview</span>
+  <div
+    class="sidebar bg-white dark:bg-gray-900-spotify w-48 flex-none flex flex-col font-semibold"
+  >
+    <ul class="py-6">
+      <h3
+        class="px-6 uppercase tracking-widest text-gray-500 font-normal text-xs"
+      >
+        Statistics
+      </h3>
+      <li class="border-l-4 border-green-600">
+        <router-link class="flex items-center mx-4 mt-4 group" to="/">
+          <span class="ml-2 group-hover:text-white">Home</span>
         </router-link>
       </li>
       <li>
         <router-link
-          class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
-          to="/playlists"
-        >
-          <span class="text-gray-600">
-            <svg
-              class="h-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-              />
-            </svg>
-          </span>
-          <span>Playlists</span>
-        </router-link>
-      </li>
-      <li>
-        <router-link
-          class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
+          class="flex items-center mx-4 mt-4 group"
           to="/listening-history"
         >
-          <span class="text-gray-600">
-            <svg
-              class="h-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-              />
-            </svg>
-          </span>
-          <span>History</span>
+          <span class="ml-2 group-hover:text-white">Listening History</span>
         </router-link>
       </li>
       <li>
+        <router-link class="flex items-center mx-4 mt-4 group" to="/playlists">
+          <span class="ml-2 group-hover:text-white">Playlists</span>
+        </router-link>
+      </li>
+      <h3
+        class="px-6 pt-6 uppercase tracking-widest text-gray-500 font-normal text-xs"
+      >
+        Info
+      </h3>
+      <li>
+        <router-link class="flex items-center mx-4 mt-4 group" to="/about">
+          <span class="ml-2 group-hover:text-white">About</span>
+        </router-link>
+      </li>
+      <h3
+        class="px-6 pt-6 uppercase tracking-widest text-gray-500 font-normal text-xs"
+      >
+        Logout
+      </h3>
+      <li>
         <a
-          class="flex items-center space-x-3 text-gray-700 p-2 rounded-md font-medium hover:bg-gray-200 focus:bg-gray-200 focus:shadow-outline"
+          class="flex items-center mx-4 mt-4 group"
           href=""
           v-on:click="logOut()"
         >
-          <span class="text-gray-600">
-            <svg
-              class="h-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-          </span>
-          <span>Logout</span>
+          <span class="ml-2 group-hover:text-white">Logout</span>
         </a>
+      </li>
+      <h3
+        class="px-6 pt-6 uppercase tracking-widest text-gray-500 font-normal text-xs"
+      >
+        Light theme
+      </h3>
+      <li>
+        <div class="flex items-center mx-4 mt-4 group">
+          <div
+            class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in outline-none"
+          >
+            <input
+              type="checkbox"
+              id="theme-toggle"
+              v-model="nightMode"
+              v-bind:class="{ 'bg-gray-100': nightMode }"
+              class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
+            />
+            <label
+              for="theme-toggle"
+              v-bind:class="{ 'bg-gray-300': nightMode }"
+              class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"
+            ></label>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -104,12 +81,31 @@
 
 <script>
 export default {
+  data() {
+    return {
+      nightMode: localStorage.getItem("nightMode") || false,
+    };
+  },
+  watch: {
+    nightMode: function() {
+      localStorage.setItem("nightMode", JSON.stringify(this.nightMode));
+      this.checkDarkTheme();
+    },
+  },
   computed: {
     user() {
       return this.$store.getters.getUser;
     },
   },
+  mounted() {
+    this.checkDarkTheme();
+  },
   methods: {
+    checkDarkTheme() {
+      localStorage.nightMode === "false" || !("nightMode" in localStorage)
+        ? document.documentElement.classList.add("dark")
+        : document.documentElement.classList.remove("dark");
+    },
     logOut() {
       this.$store.commit("mutateUser", null);
       this.$router.push("/");
@@ -117,3 +113,14 @@ export default {
   },
 };
 </script>
+<style>
+.toggle-checkbox:checked {
+  @apply: right-0 border-green-400;
+  right: 0;
+  border-color: #68d391;
+}
+.toggle-checkbox:checked + .toggle-label {
+  @apply: bg-green-400;
+  background-color: #68d391;
+}
+</style>

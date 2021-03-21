@@ -1,16 +1,20 @@
 <template>
-  <div class="grid grid-cols-3 gap-4">
-    <div
-      v-for="playlist in playlists"
-      :key="playlist.id"
-      class="box-border h-84 w-64 p-5 border-4"
-    >
-      <img
-        :src="playlist.images[0]?.url"
-        class=" border border-gray-100 shadow-sm"
-      />
-      {{ playlist.name }}<br />
-      Total tracks: {{ playlist.tracks.total }}
+  <div class="container mx-auto">
+    <div class="mt-12">
+      <div class="grid grid-cols-5 gap-3">
+        <div
+          v-for="playlist in playlists"
+          :key="playlist.id"
+          class="box-border h-84 w-64 p-5"
+        >
+          <img
+            :src="playlist.images[0]?.url"
+            class="border border-gray-800 shadow-sm object-fill h-48 w-48"
+          />
+          {{ playlist.name }}<br />
+          Total tracks: {{ playlist.tracks.total }}
+        </div>
+      </div>
     </div>
   </div>
 </template>

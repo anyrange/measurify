@@ -1,60 +1,78 @@
 <template>
-  <table class="min-w-full">
-    <thead>
-      <tr>
-        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
-          Title
-        </th>
-        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
-          Artist
-        </th>
-        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
-          Album
-        </th>
-        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
-          When
-        </th>
-        <th class="px-6 py-3 border-b-2 border-gray-300 text-left leading-4">
-          Duration
-        </th>
-      </tr>
-    </thead>
-    <tbody class="bg-white">
-      <tr v-for="item in recentlyPlayed" :key="item.id">
-        <td
-          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
-        >
-          {{ item.track.name }}
-        </td>
-        <td
-          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
-        >
-          {{
-            item.track.artists
-              .map(({ name }) => {
-                return name;
-              })
-              .join(", ")
-          }}
-        </td>
-        <td
-          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
-        >
-          {{ item.track.album.name }}
-        </td>
-        <td
-          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
-        >
-          {{ getDateFromNow(item.played_at) }}
-        </td>
-        <td
-          class="px-6 py-2 whitespace-no-wrap border-b text-blue-900 border-gray-200 text-sm leading-5"
-        >
-          {{ getDuration(item.track.duration_ms) }}
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="container mx-auto">
+    <div class="mt-12">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th
+              class="px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4"
+            >
+              Title
+            </th>
+            <th
+              class="px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4"
+            >
+              Artist
+            </th>
+            <th
+              class="px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4"
+            >
+              Album
+            </th>
+            <th
+              class="px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4"
+            >
+              When
+            </th>
+            <th
+              class="px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4"
+            >
+              Duration
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in recentlyPlayed"
+            :key="item.id"
+            class="hover:bg-gray-700-spotify"
+          >
+            <td
+              class="px-6 py-2 whitespace-no-wrap border-b border-gray-700-spotify text-sm leading-5 text-gray-100"
+            >
+              {{ item.track.name }}
+            </td>
+            <td
+              class="px-6 py-2 whitespace-no-wrap border-b border-gray-700-spotify text-sm leading-5 text-gray-100"
+            >
+              {{
+                item.track.artists
+                  .map(({ name }) => {
+                    return name;
+                  })
+                  .join(", ")
+              }}
+            </td>
+            <td
+              class="px-6 py-2 whitespace-no-wrap border-b border-gray-700-spotify text-sm leading-5 text-gray-100"
+            >
+              {{ item.track.album.name }}
+            </td>
+            <td
+              class="px-6 py-2 whitespace-no-wrap border-b border-gray-700-spotify text-sm leading-5 text-gray-100"
+            >
+              {{ getDateFromNow(item.played_at) }}
+            </td>
+            <td
+              class="px-6 py-2 whitespace-no-wrap border-b border-gray-700-spotify text-sm leading-5 text-gray-100"
+            >
+              {{ getDuration(item.track.duration_ms) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 
 <script>
