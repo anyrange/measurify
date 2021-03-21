@@ -17,7 +17,11 @@ const routes = [
     children: [
       {
         path: "/",
+        name: "overview",
         component: Overview,
+        meta: {
+          title: "Overview",
+        },
       },
       {
         path: "/playlists",

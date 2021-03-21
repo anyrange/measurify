@@ -30,31 +30,126 @@
       </div>
     </div>
     <div class="mt-8" v-else>
-      <tbody>
-        <tr v-for="item in overviewData" :key="item.date" class="history-tr">
-          <td class="history-td">
-            {{ item.plays }}
-          </td>
-          <td class="history-td">
-            {{ item.date }}
-          </td>
-          <td class="history-td">
-            {{ item.duration }}
-          </td>
-        </tr>
-      </tbody>
+      <div class="mx-4 mt-4 md:flex mb-6">
+        <div class="md:w-1/4 mb-6 md:mb-0">
+          <label class="total-played-listened">
+            Tracks Played
+          </label>
+          <label class="total-played-listened-number">
+            {{ totalTracksPlayed }}
+          </label>
+        </div>
+        <div class="md:w-1/2">
+          <label class="total-played-listened">
+            Minutes Listened
+          </label>
+          <label class="total-played-listened-number">
+            {{ totalMinutesListened }}
+          </label>
+        </div>
+      </div>
+
+      <apexchart
+        type="area"
+        height="350"
+        :options="chartOptions"
+        :series="series"
+      ></apexchart>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
+  components: {
+    apexchart: VueApexCharts,
+  },
   data() {
     return {
       overviewData: [],
+      durationMinutes: [],
+      timePeriods: [],
+
+      tacksPlayed: [],
+      totalTracksPlayed: 0,
+
+      minutesListened: [],
+      totalMinutesListened: 0,
+
       loading: true,
+      series: [
+        {
+          name: "duration",
+          data: [],
+        },
+      ],
+      chartOptions: {
+        chart: {
+          toolbar: {
+            show: false,
+          },
+          height: 350,
+          type: "area",
+          animations: {
+            enabled: false,
+            easing: "easein",
+            speed: 800,
+            animateGradually: {
+              enabled: true,
+              delay: 50,
+            },
+            dynamicAnimation: {
+              enabled: true,
+              speed: 350,
+            },
+          },
+        },
+        stroke: {
+          show: true,
+          curve: "smooth",
+          lineCap: "butt",
+          colors: undefined,
+          width: 2,
+          dashArray: 0,
+        },
+        legend: {
+          show: false,
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        xaxis: {
+          type: "datetime",
+          categories: [],
+        },
+        tooltip: {
+          enabled: true,
+          x: {
+            show: false,
+          },
+          marker: {
+            show: false,
+          },
+        },
+        grid: {
+          show: false,
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shade: "dark",
+            type: "vertical",
+            shadeIntensity: 0.4,
+            gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
+            inverseColors: true,
+            opacityFrom: 1,
+            opacityTo: 0.1,
+          },
+        },
+      },
     };
   },
   computed: {
@@ -65,17 +160,43 @@ export default {
       return this.$route.name === "overview";
     },
   },
-  created() {
-    axios
+  async created() {
+    await axios
       .get(
         `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
       )
-      .catch((err) => console.log(err))
       .then((response) => {
-        this.overviewData = response.data.plays;
-        console.log(this.overviewData);
+        for (const item of response.data.plays) {
+          this.series[0].data.push(item.duration);
+
+          this.minutesListened.push(item.duration);
+          this.tacksPlayed.push(item.plays);
+
+          this.chartOptions.xaxis.categories.push(item.date);
+
+          this.totalTracksPlayed = this.tacksPlayed.reduce(function(a, b) {
+            return a + b;
+          }, 0);
+          this.totalMinutesListened = this.minutesListened.reduce(function(
+            a,
+            b
+          ) {
+            return a + b;
+          },
+          0);
+        }
       })
+      .catch((err) => console.log(err))
       .finally(() => (this.loading = false));
   },
 };
 </script>
+
+<style>
+.total-played-listened {
+  @apply block text-2xl text-gray-100  font-light tracking-wide mb-2;
+}
+.total-played-listened-number {
+  @apply block text-4xl text-gray-100  font-bold tracking-wide mb-2;
+}
+</style>
