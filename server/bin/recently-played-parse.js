@@ -22,8 +22,7 @@ function parseRecentlyPlayed(user, cb) {
   // user.recentlyPlayed.forEach((item)=>delete item.track.available_markets);
 
   request.get(recentlyPlayedOptions, async (error, response, body) => {
-
-    body.items.forEach((item)=>delete item.track.available_markets);
+    body.items.forEach((item) => delete item.track.available_markets);
 
     if (!user.recentlyPlayed.length) {
       const query = { spotifyID: user.spotifyID };
