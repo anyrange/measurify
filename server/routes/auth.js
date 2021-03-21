@@ -1,6 +1,6 @@
 const querystring = require("querystring");
 const request = require("request");
-const User = require("./models/User");
+const User = require("../models/User");
 
 let redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
