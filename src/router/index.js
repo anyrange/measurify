@@ -33,21 +33,21 @@ const routes = [
           title: "Listening History",
         },
       },
+      {
+        path: "/about",
+        component: About,
+        meta: {
+          title: "About",
+        },
+      },
+      {
+        path: "/:pathMatch(.*)*",
+        component: PageNotFound,
+        meta: {
+          title: "Page Not Found",
+        },
+      },
     ],
-  },
-  {
-    path: "/about",
-    component: About,
-    meta: {
-      title: "About",
-    },
-  },
-  {
-    path: "/:pathMatch(.*)*",
-    component: PageNotFound,
-    meta: {
-      title: "Page Not Found",
-    },
   },
 ];
 
