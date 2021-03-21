@@ -2,33 +2,6 @@ module.exports = {
   purge: { content: ["./public/**/*.html", "./src/**/*.vue"] },
   darkMode: "class", // or 'media' or 'class'
   theme: {
-    typography: (theme) => ({
-      default: {
-        css: {
-          a: {
-            color: theme("colors.blue.600"),
-          },
-          img: {
-            display: "inline-block",
-          },
-          hr: {
-            borderColor: theme("colors.gray.400"),
-            marginTop: "2em",
-            marginBottom: "2em",
-          },
-        },
-      },
-    }),
-    minWidth: {
-      "0": "0",
-      "1/4": "25%",
-      "1/2": "50%",
-      "75": "75%",
-      "80": "80%",
-      "85": "85%",
-      "90": "90%",
-      full: "100%",
-    },
     extend: {
       colors: {
         "meetup-blue": "#00455D",
@@ -46,8 +19,13 @@ module.exports = {
         "200": "50rem",
       },
       width: {
-        "7/10": "70%",
+        "1/10": "10%",
+        "1.5/10": "15%",
+        "2/10": "20%",
+        "2.5/10": "25%",
         "3/10": "30%",
+        "3.5/10": "35%",
+        "7/10": "70%",
       },
       fontSize: {
         xxs: "0.5rem",
@@ -103,5 +81,4 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require("@tailwindcss/typography")],
 };
