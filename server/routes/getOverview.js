@@ -30,7 +30,6 @@ const getOverview = (req, res) => {
         playsCounter++;
         durationCounter += playDates[i].duration;
       } else {
-        plays.push({ plays: playsCounter, date: dateToCompare });
         plays.push({
           plays: playsCounter,
           date: dateToCompare,

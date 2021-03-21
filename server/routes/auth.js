@@ -2,7 +2,9 @@ const querystring = require("querystring");
 const request = require("request");
 const User = require("../models/User");
 
-let redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
+let redirect_uri =
+  `${process.env.VUE_APP_SERVER_URI}/callback` ||
+  "http://localhost:8888/callback";
 
 const auth = {
   login: function(req, res) {

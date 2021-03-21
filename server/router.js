@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require("./routes/auth");
 const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
+const top = require("./routes/top");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
@@ -18,5 +19,6 @@ router.get("/getAccessToken", auth.getAccessToken);
 router.get("/getPlayedHistory", getPlayedHistory);
 
 router.get("/getOverview", getOverview);
+router.get("/top", top);
 
 module.exports = router;
