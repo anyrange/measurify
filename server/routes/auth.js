@@ -2,15 +2,7 @@ const querystring = require("querystring");
 const request = require("request");
 const User = require("../models/User");
 
-/*
-let redirect_uri =
-  `${process.env.VUE_APP_SERVER_URI}/callback` ||
-  "http://localhost:8888/callback";
-
-*/
-// Ломает клиент, т.к там уже используеится VUE_APP_SERVER_URI, а тут получается он не нужен, поэтому давай извиняйся, я думал я прод наебнул
-
-let redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
+const redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
 const auth = {
   login: function(req, res) {
