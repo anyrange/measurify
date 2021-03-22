@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("./routes/auth");
+const friends = require("./routes/friends");
 const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
 const top = require("./routes/top");
@@ -17,8 +18,9 @@ router.get("/callback", auth.callback);
 router.get("/getAccessToken", auth.getAccessToken);
 
 router.get("/getPlayedHistory", getPlayedHistory);
-
 router.get("/getOverview", getOverview);
+router.get("/friends", friends);
+
 router.get("/top", top);
 
 module.exports = router;

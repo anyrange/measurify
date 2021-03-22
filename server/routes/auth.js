@@ -12,7 +12,7 @@ const auth = {
           response_type: "code",
           client_id: process.env.SPOTIFY_CLIENT_ID,
           scope:
-            "user-read-private user-read-email ugc-image-upload user-read-playback-state user-top-read playlist-modify-public user-read-recently-played user-modify-playback-state playlist-modify-private user-follow-modify user-read-currently-playing user-follow-read playlist-read-private user-library-read playlist-read-collaborative",
+            "user-read-private user-read-email ugc-image-upload user-top-read playlist-modify-public user-read-recently-played playlist-modify-private user-follow-read playlist-read-private user-library-read playlist-read-collaborative",
           redirect_uri,
         })
     );
