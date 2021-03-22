@@ -61,15 +61,10 @@
 
 <script>
 import axios from "axios";
-import VueApexCharts from "vue3-apexcharts";
 
 export default {
-  components: {
-    apexchart: VueApexCharts,
-  },
   data() {
     return {
-      overviewData: [],
       durationMinutes: [],
       timePeriods: [],
 
@@ -80,26 +75,27 @@ export default {
       totalMinutesListened: 0,
 
       loading: true,
+
       series: [
         {
-          name: "duration",
+          name: "Plays",
           data: [],
         },
       ],
       chartOptions: {
         chart: {
+          stacked: false,
+          type: "area",
           toolbar: {
             show: false,
           },
-          height: 350,
-          type: "area",
           animations: {
             enabled: false,
-            easing: "easein",
-            speed: 800,
+            easing: "linear",
+            speed: 70,
             animateGradually: {
               enabled: true,
-              delay: 50,
+              delay: 0,
             },
             dynamicAnimation: {
               enabled: true,
@@ -111,7 +107,7 @@ export default {
           show: true,
           curve: "smooth",
           lineCap: "butt",
-          colors: undefined,
+          colors: ["#1eb252"],
           width: 2,
           dashArray: 0,
         },
@@ -139,15 +135,18 @@ export default {
         },
         fill: {
           type: "gradient",
+          colors: ["#1eb252"],
           gradient: {
             shade: "dark",
             type: "vertical",
             shadeIntensity: 0.4,
             gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-            inverseColors: true,
             opacityFrom: 1,
             opacityTo: 0.1,
           },
+        },
+        noData: {
+          text: "Loading...",
         },
       },
     };
@@ -161,13 +160,16 @@ export default {
     },
   },
   async created() {
+    console.log(
+      `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
+    );
     await axios
       .get(
         `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
       )
       .then((response) => {
         for (const item of response.data.plays) {
-          this.series[0].data.push(item.duration);
+          this.series[0].data.push(item.plays);
 
           this.minutesListened.push(item.duration);
           this.tacksPlayed.push(item.plays);
