@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sidebar bg-white dark:bg-gray-900-spotify w-48 flex-none flex flex-col font-semibold"
+    class="sidebar bg-gray-200 dark:bg-gray-900-spotify w-48 flex-none flex flex-col font-semibold"
   >
     <ul class="py-6">
       <h3
@@ -10,7 +10,7 @@
       </h3>
       <li>
         <router-link class="flex items-center mx-4 mt-4 group" to="/">
-          <span class="ml-2 group-hover:text-white">Overview</span>
+          <span class="ml-2 group-hover:text-green-600-spotify">Overview</span>
         </router-link>
       </li>
       <li>
@@ -18,12 +18,14 @@
           class="flex items-center mx-4 mt-4 group"
           to="/listening-history"
         >
-          <span class="ml-2 group-hover:text-white">Listening History</span>
+          <span class="ml-2 group-hover:text-green-600-spotify"
+            >Listening History</span
+          >
         </router-link>
       </li>
       <li>
         <router-link class="flex items-center mx-4 mt-4 group" to="/playlists">
-          <span class="ml-2 group-hover:text-white">Playlists</span>
+          <span class="ml-2 group-hover:text-green-600-spotify">Playlists</span>
         </router-link>
       </li>
       <h3
@@ -33,7 +35,7 @@
       </h3>
       <li>
         <router-link class="flex items-center mx-4 mt-4 group" to="/about">
-          <span class="ml-2 group-hover:text-white">About</span>
+          <span class="ml-2 group-hover:text-green-600-spotify">About</span>
         </router-link>
       </li>
       <h3
@@ -47,7 +49,7 @@
           href=""
           v-on:click="logOut()"
         >
-          <span class="ml-2 group-hover:text-white">Logout</span>
+          <span class="ml-2 group-hover:text-green-600-spotify">Logout</span>
         </a>
       </li>
       <h3
@@ -56,21 +58,21 @@
         Light theme
       </h3>
       <li>
-        <div class="flex items-center mx-4 mt-4 group">
+        <div class="flex items-center mx-6 mt-4 group">
           <div
-            class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in outline-none"
+            class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in outline-none"
           >
             <input
               type="checkbox"
               id="theme-toggle"
               v-model="nightMode"
               v-bind:class="{ 'bg-gray-100': nightMode }"
-              class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
+              class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
             />
             <label
               for="theme-toggle"
               v-bind:class="{ 'bg-gray-300': nightMode }"
-              class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600 cursor-pointer"
+              class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-600 cursor-pointer"
             ></label>
           </div>
         </div>
@@ -86,20 +88,24 @@ export default {
       nightMode: localStorage.getItem("nightMode") || false,
     };
   },
+
   watch: {
     nightMode: function() {
       localStorage.setItem("nightMode", JSON.stringify(this.nightMode));
       this.checkDarkTheme();
     },
   },
+
   computed: {
     user() {
       return this.$store.getters.getUser;
     },
   },
+
   mounted() {
     this.checkDarkTheme();
   },
+
   methods: {
     checkDarkTheme() {
       localStorage.nightMode === "false" || !("nightMode" in localStorage)
@@ -113,6 +119,7 @@ export default {
   },
 };
 </script>
+
 <style>
 .toggle-checkbox:checked {
   @apply: right-0 border-green-400;
