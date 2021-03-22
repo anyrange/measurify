@@ -19,9 +19,6 @@ const routes = [
         path: "/",
         name: "overview",
         component: Overview,
-        meta: {
-          title: "Overview",
-        },
       },
       {
         path: "/playlists",
@@ -44,14 +41,14 @@ const routes = [
           title: "About",
         },
       },
-      {
-        path: "/:pathMatch(.*)*",
-        component: PageNotFound,
-        meta: {
-          title: "Page Not Found",
-        },
-      },
     ],
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: PageNotFound,
+    meta: {
+      title: "Page Not Found",
+    },
   },
 ];
 
