@@ -40,7 +40,9 @@ const top = (req, res) => {
 
     request.get(artistsOptions, async (error, resp, body) => {
       await response.artists.forEach((artist, index) => {
-        artist.image = body.artists[index].images[2].url;
+        if (body.artists[index].images[2]) {
+          artist.image = body.artists[index].images[2].url;
+        }
       });
       res.end(JSON.stringify(response));
     });
@@ -129,7 +131,7 @@ const tracks = (recentlyPlayed) => {
     .slice(0, 20);
 };
 
-const artists = (recentlyPlayed, lastSpotifyToken) => {
+const artists = (recentlyPlayed) => {
   let artists = [];
   let uniqueArtistsNames = [];
   let uniqueArtists = [];
