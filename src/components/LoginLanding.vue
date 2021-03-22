@@ -15,7 +15,6 @@
 import axios from "axios";
 
 export default {
-  name: "Stats",
   computed: {
     user() {
       return this.$store.getters.getUser;

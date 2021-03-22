@@ -14,11 +14,13 @@
   <template v-else>
     <LoginLanding />
   </template>
+  <UpdateNotification />
 </template>
 
 <script>
 import DashboardNav from "@/components/DashboardNav.vue";
 import LoginLanding from "@/components/LoginLanding.vue";
+import UpdateNotification from "@/components/UpdateNotification.vue";
 import axios from "axios";
 
 export default {
@@ -26,6 +28,7 @@ export default {
   components: {
     DashboardNav,
     LoginLanding,
+    UpdateNotification,
   },
   computed: {
     user() {
