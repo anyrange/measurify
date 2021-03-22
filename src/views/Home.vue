@@ -24,7 +24,7 @@ import UpdateNotification from "@/components/UpdateNotification.vue";
 import axios from "axios";
 
 export default {
-  name: "Login",
+  name: "Home",
   components: {
     DashboardNav,
     LoginLanding,
