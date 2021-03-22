@@ -1,7 +1,11 @@
 <template>
   <div class="container mx-auto">
-    <div class="mt-12">
-      <div class="grid grid-cols-5 gap-3">
+    <h2 class="h-title">
+      Playlists
+    </h2>
+
+    <div class="mt-10">
+      <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <div
           v-for="playlist in playlists"
           :key="playlist.id"
@@ -9,10 +13,16 @@
         >
           <img
             :src="playlist.images[0]?.url"
-            class="border border-gray-800 shadow-sm object-fill h-48 w-48"
+            class="border border-gray-800 shadow-sm object-fill h-48 w-48 rounded-lg"
           />
-          {{ playlist.name }}<br />
-          Total tracks: {{ playlist.tracks.total }}
+          <h1
+            class="mt-2 text-base text-gray-300 overflow-ellipsis overflow-hidden whitespace-nowrap"
+          >
+            {{ playlist.name }}
+          </h1>
+          <h1 class="text-sm text-gray-400">
+            Total tracks: {{ playlist.tracks.total }}
+          </h1>
         </div>
       </div>
     </div>

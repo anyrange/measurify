@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto">
-    <h2 class="mt-12 mx-4 text-5xl font-semibold text-white">
+    <h2 class="h-title">
       Listening History
     </h2>
     <h3 class="mx-4 mt-4 text-lg font-semibold text-gray-500">
@@ -13,11 +13,11 @@
             type="text"
             placeholder="Search"
             v-model="search"
-            class="bg-gray-700-spotify text-gray-300 placeholder-gray-400 rounded-md px-32 pl-8 py-2 outline-none"
+            class="dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md px-32 pl-8 py-2 outline-none"
           />
           <div class="absolute top-0">
             <svg
-              class="fill-current text-gray-300 h-7 w-7 pt-2 pl-3"
+              class="fill-current dark:text-gray-300 text-gray-400 h-7 w-7 pt-2 pl-3"
               viewBox="0 0 24 24"
               width="24"
               height="24"
@@ -89,13 +89,13 @@
 
 <style>
 .history-td {
-  @apply px-6 py-2 border-b border-gray-700-spotify text-sm leading-5 text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+  @apply px-6 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
 }
 .history-th {
-  @apply px-6 py-3 border-b-2 border-gray-700-spotify text-left leading-4;
+  @apply px-6 py-3 border-b-2 dark:border-gray-700-spotify text-left leading-4;
 }
 .history-tr {
-  @apply hover:bg-gray-700-spotify;
+  @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
 }
 </style>
 
@@ -108,6 +108,7 @@ export default {
   components: {
     LoadingSpinner,
   },
+
   data() {
     return {
       recentlyPlayed: [],
@@ -115,6 +116,7 @@ export default {
       loading: true,
     };
   },
+
   methods: {
     getDateFromNow(date) {
       return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
@@ -123,10 +125,12 @@ export default {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
   },
+
   computed: {
     user() {
       return this.$store.getters.getUser;
     },
+
     filteredTable() {
       return this.recentlyPlayed.filter((item) => {
         const song = item.track.name.toLowerCase();
@@ -146,6 +150,7 @@ export default {
       });
     },
   },
+
   created() {
     axios
       .get(

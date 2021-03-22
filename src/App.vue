@@ -15,31 +15,42 @@ export default {
   font-family: "Inter", sans-serif;
 }
 
+@media (prefers-color-scheme: dark) {
+  .sidebar-spotify::-webkit-scrollbar {
+    width: 8px;
+    background-color: #121212;
+  }
+  .sidebar-spotify::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: #535353;
+  }
+  .content-spotify::-webkit-scrollbar {
+    width: 8px;
+    background-color: #181818;
+  }
+  .content-spotify::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: #535353;
+  }
+}
+
 a.router-link-exact-active {
-  --tw-text-opacity: 1;
-  color: rgba(255, 255, 255, var(--tw-text-opacity));
+  color: #1db954;
 }
-
-.active-route {
-  border-left-width: 4px;
-  --tw-border-opacity: 1;
-  border-color: rgba(5, 150, 105, var(--tw-border-opacity));
-}
-
 .sidebar-spotify::-webkit-scrollbar {
   width: 8px;
-  background-color: #121212;
+  background-color: #e4e8ed;
 }
 .sidebar-spotify::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #535353;
+  background-color: #c7cdd4;
 }
 .content-spotify::-webkit-scrollbar {
   width: 8px;
-  background-color: #181818;
+  background-color: #e4e8ed;
 }
 .content-spotify::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #535353;
+  background-color: #c7cdd4;
 }
 </style>
