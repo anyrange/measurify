@@ -1,8 +1,5 @@
 <template>
-  <header
-    class="min-h-screen bg-cover bg-fixed"
-    style="background-image: url('https://i.ibb.co/qdm7CsK/1Cover.png');"
-  >
+  <header class="min-h-screen bg-cover bg-fixed" :style="cssProps">
     <div class="flex h-screen justify-center items-center">
       <div class="flex items-center justify-center flex-col">
         <h1 class="text-7xl text-gray-100">
@@ -30,6 +27,14 @@
 import axios from "axios";
 
 export default {
+  data() {
+    return {
+      cssProps: {
+        backgroundImage: `url(${require("@/assets/1Cover.png")})`,
+      },
+    };
+  },
+
   computed: {
     user() {
       return this.$store.getters.getUser;
