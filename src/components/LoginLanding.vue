@@ -1,20 +1,20 @@
 <template>
-  <header class="min-h-screen bg-cover bg-fixed" :style="cssProps">
-    <div class="flex h-screen justify-center items-center">
-      <div class="flex items-center justify-center flex-col">
-        <h1 class="text-7xl text-gray-100">
-          Spotify Worm
-        </h1>
-        <h1 class="text-xl mb-6 mt-6 text-gray-400">
-          Track your listening history and get stats
-        </h1>
-
-        <button @click="login" class="sign-in-button">
-          Sign in with Spotify
-        </button>
-      </div>
+  <div
+    class="min-h-screen bg-cover flex justify-center items-center"
+    :style="cssProps"
+  >
+    <div class="flex flex-col items-center justify-center w-3/4">
+      <h1 class="text-7xl text-gray-100">
+        Spotify Worm
+      </h1>
+      <h1 class="text-xl mb-6 mt-6 text-gray-300">
+        Track your listening history and get stats
+      </h1>
+      <button @click="login" class="sign-in-button">
+        Sign in with Spotify
+      </button>
     </div>
-  </header>
+  </div>
 </template>
 
 <style>
