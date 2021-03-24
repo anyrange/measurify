@@ -20,7 +20,7 @@ const getOverview = (req, res) => {
       return { date, duration };
     });
 
-    dateToCompare = playDates[0].date;
+    dateToCompare = playDates[0]?.date;
     let plays = [];
     let i = 0;
     let playsCounter = 0;
