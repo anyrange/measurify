@@ -3,38 +3,100 @@
     <h2 class="h-title">
       Overview
     </h2>
-    <div v-if="loading" class="mt-8">
-      <LoadingSpinner />
-    </div>
-    <div class="mt-8" v-else>
-      <div class="mx-4 mt-4 md:flex mb-6">
-        <div class="md:w-1/4 mb-6 md:mb-0">
-          <label class="total-played-listened">
-            Tracks Played
-          </label>
-          <label class="total-played-listened-number">
-            {{ totalTracksPlayed }}
-          </label>
+    <template v-if="!emptyData">
+      <template v-if="loading">
+        <div class="mt-8">
+          <LoadingSpinner />
         </div>
-        <div class="md:w-1/2">
-          <label class="total-played-listened">
-            Minutes Listened
-          </label>
-          <label class="total-played-listened-number">
-            {{ totalMinutesListened }}
-          </label>
+      </template>
+      <template v-else>
+        <div class="mt-8">
+          <div class="px-4">
+            <ul class="flex cursor-pointer">
+              <li
+                class="rounded-l-lg py-2 px-6 bg-white dark:bg-gray-700-spotify dark:text-gray-200 dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                @click="updateChartAllTime"
+              >
+                All Time
+              </li>
+              <li
+                class="py-2 px-6 text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                @click="updateChartCurrentWeek"
+              >
+                This Week
+              </li>
+              <li
+                class="rounded-r-lg py-2 px-6  text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+              >
+                This month
+              </li>
+            </ul>
+          </div>
+          <div class="mx-4 mt-6 md:flex mb-6">
+            <div class="md:w-1/4 mb-6 md:mb-0">
+              <label class="total-played-listened">
+                Tracks Played
+              </label>
+              <label class="total-played-listened-number">
+                {{ totalTracksPlayed }}
+              </label>
+            </div>
+            <div class="md:w-1/2">
+              <label class="total-played-listened">
+                Minutes Listened
+              </label>
+              <label class="total-played-listened-number">
+                {{ totalMinutesListened }}
+              </label>
+            </div>
+          </div>
+          <div class="w-full">
+            <apexchart
+              type="area"
+              height="350"
+              :options="chartOptions"
+              :series="overviewData"
+            ></apexchart>
+          </div>
+          <h2
+            class="mx-4 mt-5 mb-8 text-4xl font-semibold dark:text-gray-100 text-gray-900"
+          >
+            Top Played
+          </h2>
+          <div class="mt-6 px-4">
+            <ul class="flex cursor-pointer">
+              <li
+                class="rounded-l-lg py-2 px-6 bg-white dark:bg-gray-700-spotify dark:text-gray-200 dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+              >
+                Artists
+              </li>
+              <li
+                class="py-2 px-6 text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+              >
+                Albums
+              </li>
+              <li
+                class="rounded-r-lg py-2 px-6  text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+              >
+                Tracks
+              </li>
+            </ul>
+          </div>
+        </div>
+      </template>
+    </template>
+    <template v-else>
+      <div class="flex h-80 justify-center items-center">
+        <div class="text-center">
+          <h3 class="mx-4 mt-4 text-2xl font-semibold text-gray-200">
+            No listening data
+          </h3>
+          <h3 class="mx-4 mt-1 text-base font-semibold text-gray-500">
+            Start listening to music on Spotify and come back later!
+          </h3>
         </div>
       </div>
-      <div class="w-4/5 fixed">
-        <apexchart
-          type="area"
-          height="350"
-          width="90%"
-          :options="chartOptions"
-          :series="overviewData"
-        ></apexchart>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -54,11 +116,16 @@ export default {
     return {
       loading: true,
 
-      tracksPlayed: [],
-      totalTracksPlayed: 0,
+      totalOverview: [],
 
+      allDates: [],
+      tracksPlayed: [],
       minutesListened: [],
+      totalTracksPlayed: 0,
       totalMinutesListened: 0,
+
+      emptyData: false,
+      selected: null,
 
       overviewData: [
         {
@@ -86,35 +153,82 @@ export default {
         return a + b;
       }, 0);
     },
+    updateChartCurrentWeek() {
+      // mock data
+      const newDates = [
+        "2021-03-15",
+        "2021-03-16",
+        "2021-03-17",
+        "2021-03-18",
+        "2021-03-19",
+        "2021-03-20",
+        "2021-03-21",
+      ];
+      const newValues = [8, 18, 3, 13, 10, 4, 32];
+
+      this.chartOptions = {
+        xaxis: {
+          categories: newDates,
+        },
+      };
+
+      this.overviewData = [
+        {
+          data: newValues,
+        },
+      ];
+    },
+    updateChartAllTime() {
+      const newDates = this.allDates;
+      const newValues = this.minutesListened;
+      this.chartOptions = {
+        xaxis: {
+          categories: newDates,
+        },
+      };
+      this.overviewData = [
+        {
+          data: newValues,
+        },
+      ];
+    },
+    pushToChart() {
+      for (const item of this.totalOverview) {
+        this.overviewData[0].data.push(item.plays);
+        this.chartOptions.xaxis.categories.push(item.date);
+
+        this.allDates.push(item.date);
+        this.minutesListened.push(item.duration);
+        this.tracksPlayed.push(item.plays);
+
+        this.getTotalTracksPlayed();
+        this.getTotalMinutesListened();
+      }
+    },
+    getOverview() {
+      axios
+        .get(
+          `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
+        )
+        .then((response) => {
+          this.totalOverview = response.data;
+          this.pushToChart();
+          this.emptyData = this.totalOverview.length > 1 ? false : true;
+        })
+        .catch((err) => console.log(err))
+        .finally(() => (this.loading = false));
+    },
   },
-
-  async created() {
-    console.log(
-      `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
-    );
-    await axios
-      .get(
-        `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
-      )
-      .then((response) => {
-        for (const item of response.data) {
-          this.overviewData[0].data.push(item.plays);
-          this.chartOptions.xaxis.categories.push(item.date);
-
-          this.minutesListened.push(item.duration);
-          this.tracksPlayed.push(item.plays);
-
-          this.getTotalTracksPlayed();
-          this.getTotalMinutesListened();
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => (this.loading = false));
+  created() {
+    this.getOverview();
   },
 };
 </script>
 
 <style>
+.chart {
+  height: 50vh;
+}
 .total-played-listened {
   @apply block text-2xl text-gray-600 dark:text-gray-100 font-light tracking-wide mb-2;
 }
