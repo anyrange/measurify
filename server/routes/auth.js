@@ -21,8 +21,7 @@ const auth = {
     let spotifyID = req.query.spotifyID;
     User.findOne({ spotifyID }, (err, user) => {
       if (err) {
-        console.log(err);
-        return;
+        res.setStatus(400).end(err);
       }
       res.end(user.lastSpotifyToken);
     });

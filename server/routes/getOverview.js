@@ -47,7 +47,7 @@ const getOverview = (req, res) => {
       duration: Math.round(durationCounter),
     });
 
-    res.end(JSON.stringify({ plays }));
+    res.json( plays );
   });
 };
 

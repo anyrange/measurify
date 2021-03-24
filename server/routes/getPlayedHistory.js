@@ -21,7 +21,7 @@ const getPlayedHistory = (req, res) => {
       return;
     }
 
-    res.end(JSON.stringify(user.toJSON().recentlyPlayed));
+    res.json(user.toJSON().recentlyPlayed);
   });
 };
 

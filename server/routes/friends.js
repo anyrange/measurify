@@ -30,13 +30,16 @@ const friends = (req, res) => {
     { spotifyID: 1, _id: 0, lastSpotifyToken: 1, userName: 1 },
     (err, users) => {
       if (err) {
-        console.log(err);
-        return;
+        res.setStatus(400).end(err);
       }
+      // get user's access token
       const access_token = users.filter(
         ({ spotifyID }) => spotifyID === reqSpotifyID
       )[0].lastSpotifyToken;
+
+      // filter away user
       users = users.filter(({ spotifyID }) => spotifyID !== reqSpotifyID);
+
       const folowingOptions = {
         uri:
           "https://api.spotify.com/v1/me/following/contains?type=user&ids=" +
@@ -46,13 +49,21 @@ const friends = (req, res) => {
         },
         json: true,
       };
+      //check if users are friends 
       request.get(folowingOptions, async (err, response, body) => {
+        // adds parameter to the object of user
         await body.forEach((item, key) => {
-          if (item === false) {
-            users.splice(key, 1);
+          if (item) {
+            users[key].friend = true;
+            return;
           }
+          users[key].friend = false;
         });
 
+        // remains only friends
+        users = users.filter(({ friend }) => friend);
+
+        // adds images to friends
         let requests = users.reduce((promiseChain, user) => {
           return promiseChain.then(
             () =>
@@ -62,30 +73,14 @@ const friends = (req, res) => {
           );
         }, Promise.resolve());
 
+        // response
         requests.then(() => {
-          res.end(
-            JSON.stringify(
-              users.map(({ spotifyID, userName }, key) => {
-                return { spotifyID, userName, url: images[key] };
-              })
-            )
+          res.json(
+            users.map(({ spotifyID, userName }, key) => {
+              return { spotifyID, userName, url: images[key] };
+            })
           );
         });
-        // let requests = users.map((user) => {
-        //   return new Promise((resolve) => {
-        //     addImage(user, access_token, resolve);
-        //   });
-        // });
-
-        // Promise.all(requests).then(() => {
-        //   res.end(
-        //     JSON.stringify(
-        //       users.map(({ spotifyID, userName }, key) => {
-        //         return { spotifyID, userName, url: images[key] };
-        //       })
-        //     )
-        //   );
-        // });
       });
     }
   );

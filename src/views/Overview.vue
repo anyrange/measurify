@@ -97,7 +97,7 @@ export default {
         `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
       )
       .then((response) => {
-        for (const item of response.data.plays) {
+        for (const item of response.data) {
           this.overviewData[0].data.push(item.plays);
           this.chartOptions.xaxis.categories.push(item.date);
 
