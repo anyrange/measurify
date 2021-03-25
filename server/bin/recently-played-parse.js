@@ -50,7 +50,6 @@ function refresh_recently_played() {
         await User.updateOne(query, update);
         cb();
       }
-      console.log("Updated " + user.spotifyID + "s listening history");
     });
   }
 

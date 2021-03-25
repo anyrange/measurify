@@ -43,8 +43,6 @@ function refresh_tokens() {
         new: true,
         upsert: true,
       });
-
-      console.log("New token: " + body.access_token);
       cb();
     });
   }

@@ -21,7 +21,7 @@ mongoose.connect(
 );
 
 const job1 = new CronJob(
-  "0 */2 * * * *",
+  "0 */20 * * * *",
   () => {
     refresh_tokens();
   },
@@ -31,7 +31,7 @@ const job1 = new CronJob(
 );
 
 const job2 = new CronJob(
-  "0 */5 * * * *",
+  "0 */50 * * * *",
   () => {
     refresh_recently_played();
   },
