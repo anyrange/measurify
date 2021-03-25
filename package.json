@@ -12,6 +12,7 @@
     "refresh": "node server/bin/refresh-tokens.js",
     "updateRecentlyPlayed": "node server/bin/recently-played-parse.js"
   },
+  "heroku-run-build-script": false,
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.2",
     "apexcharts": "^3.26.0",
