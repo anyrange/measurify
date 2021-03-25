@@ -60,7 +60,7 @@ function refresh_tokens() {
     });
 
     Promise.all(requests).then(() => {
-      console.log(`All ${users.length} tokens are refreshed`);
+      console.log(`All ${users.length} tokens refreshed at ` + new Date());
     });
   });
 }

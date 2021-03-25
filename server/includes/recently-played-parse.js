@@ -71,7 +71,7 @@ function refresh_recently_played() {
       });
 
       Promise.all(requests).then(() => {
-        console.log(`All ${users.length} histories updated`);
+        console.log(`All ${users.length} histories updated at ` + new Date());
       });
 
       // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)
