@@ -24,13 +24,17 @@ Rename [.env.example](/.env.example) to `.env` and don't forget to set your vari
 
 ### Deployment
 
-We use heroku with `Heroku Scheduler` for backend and netlify for client
+You can use heroku + netlify setup
 
-`Heroku Scheduler` jobs
-```bash
-$ cd server && npm install && npm run refresh
-$ cd server && npm install && npm run updateHistory
+`Netlify` configuration
+
 ```
+Build command: npm run build
+Publish directory: dist/
+```
+
+`Heroku` will run properly automatically,
+but don't forget to configure config vars
 
 ## License
 
