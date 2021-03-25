@@ -10,7 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 8888;
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
-  console.log(process.env.NODE_ENV);
 });
 app.use(cors());
 app.use(router);
@@ -23,7 +22,7 @@ mongoose.connect(
 
 function startScheduledJobs() {
   const job1 = new CronJob(
-    "0 */50 * * * *",
+    "* * * * * *",
     () => {
       refresh_tokens();
     },
