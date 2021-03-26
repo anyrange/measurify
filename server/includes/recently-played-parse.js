@@ -17,6 +17,10 @@ function refresh_recently_played() {
     // user.recentlyPlayed.forEach((item)=>delete item.track.available_markets);
 
     request.get(recentlyPlayedOptions, async (error, response, body) => {
+      if (error) {
+        consol.log(error);
+        return;
+      }
       body.items.forEach((item) => delete item.track.available_markets);
 
       if (!user.recentlyPlayed.length) {
@@ -68,8 +72,7 @@ function refresh_recently_played() {
       Promise.all(requests).then(() => {
         console.log(
           `All ${users.length} histories updated at ` +
-            new Date()
-              .toLocaleString("en-US", { timeZone: "Asia/Almaty" })
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })
         );
         const end = new Date();
         console.log(

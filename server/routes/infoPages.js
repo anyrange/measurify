@@ -26,6 +26,7 @@ const infoPages = {
           res.status(400).end(err);
           return;
         }
+
         user.recentlyPlayed = user.recentlyPlayed.filter((item) => {
           for (let i = 0; i < item.track.artists.length; i++) {
             if (item.track.artists[i].id === artistID) {
@@ -33,7 +34,11 @@ const infoPages = {
             }
           }
         });
-
+        
+        if (!user.recentlyPlayed.length) {
+          res.status(200).end();
+          return;
+        }
         const artistsOptions = {
           uri: `https://api.spotify.com/v1/artists/${artistID}`,
           headers: {
@@ -49,10 +54,120 @@ const infoPages = {
               genres: body.genres,
               name: body.name,
               image: body.images[0].url,
-              link: body.external_urls.spotify
+              link: body.external_urls.spotify,
             },
             overview: plays(user),
             tracks: tracks(user.recentlyPlayed),
+          });
+        });
+      }
+    );
+  },
+  album: (req, res) => {
+    const spotifyID = req.query.spotifyID;
+    const albumID = req.query.albumID;
+
+    User.findOne(
+      { spotifyID },
+      {
+        _id: 0,
+        "recentlyPlayed.track.artists.id": 1,
+        "recentlyPlayed.track.artists.name": 1,
+        "recentlyPlayed.track.album.images.url": 1,
+        "recentlyPlayed.track.album.id": 1,
+        "recentlyPlayed.track.album.name": 1,
+        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.track.id": 1,
+        "recentlyPlayed.track.name": 1,
+        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.track.album.external_urls.spotify": 1,
+      },
+      (err, user) => {
+        if (err) {
+          res.status(400).end(err);
+          return;
+        }
+        user.recentlyPlayed = user.recentlyPlayed.filter(
+          (item) => item.track.album.id === albumID
+        );
+        if (!user.recentlyPlayed.length) {
+          res.status(200).end();
+          return;
+        }
+
+        res.json({
+          album: {
+            name: user.recentlyPlayed[0].track.album.name,
+            image: user.recentlyPlayed[0].track.album.images[0].url,
+            link: user.recentlyPlayed[0].track.album.external_urls.spotify,
+          },
+          overview: plays(user),
+          tracks: tracks(user.recentlyPlayed),
+        });
+      }
+    );
+  },
+  track: (req, res) => {
+    const spotifyID = req.query.spotifyID;
+    const trackID = req.query.trackID;
+
+    User.findOne(
+      { spotifyID },
+      {
+        _id: 0,
+        "recentlyPlayed.track.artists.id": 1,
+        "recentlyPlayed.track.artists.name": 1,
+        "recentlyPlayed.track.album.images.url": 1,
+        "recentlyPlayed.track.album.id": 1,
+        "recentlyPlayed.track.album.name": 1,
+        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.track.id": 1,
+        "recentlyPlayed.track.name": 1,
+        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.track.external_urls.spotify": 1,
+        lastSpotifyToken: 1,
+      },
+      (err, user) => {
+        if (err) {
+          res.status(400).end(err);
+          return;
+        }
+
+        user.recentlyPlayed = user.recentlyPlayed.filter(
+          (item) => item.track.id === trackID
+        );
+
+        if (!user.recentlyPlayed.length) {
+          res.status(200).end();
+          return;
+        }
+
+        const tracksOptions = {
+          uri: `https://api.spotify.com/v1/tracks/${trackID}`,
+          headers: {
+            Authorization: "Bearer " + user.lastSpotifyToken,
+          },
+          json: true,
+        };
+
+        request.get(tracksOptions, (error, resp, body) => {
+          res.json({
+            track: {
+              album: {
+                name: user.recentlyPlayed[0].track.album.name,
+                id: user.recentlyPlayed[0].track.album.id,
+              },
+              artist: {
+                name: user.recentlyPlayed[0].track.artists[0].name,
+                id: user.recentlyPlayed[0].track.artists[0].id,
+              },
+              name: user.recentlyPlayed[0].track.name,
+              image: user.recentlyPlayed[0].track.album.images[0].url,
+              link: user.recentlyPlayed[0].track.external_urls.spotify,
+              release: body.album.release_date,
+              duration_ms: user.recentlyPlayed[0].track.duration_ms,
+            },
+            overview: plays(user),
           });
         });
       }
