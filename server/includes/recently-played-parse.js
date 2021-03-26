@@ -1,14 +1,9 @@
 const request = require("request");
 const User = require("../models/User");
-const mongoose = require("mongoose");
 require("dotenv").config();
 
-mongoose.connect(process.env.DB_URI, {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-});
-
 function refresh_recently_played() {
+  const start = new Date();
   function parseRecentlyPlayed(user, cb) {
     const recentlyPlayedOptions = {
       uri: "https://api.spotify.com/v1/me/player/recently-played?limit=15",
@@ -71,7 +66,17 @@ function refresh_recently_played() {
       });
 
       Promise.all(requests).then(() => {
-        console.log(`All ${users.length} histories updated at ` + new Date());
+        console.log(
+          `All ${users.length} histories updated at ` +
+            new Date()
+              .toLocaleString("en-US", { timeZone: "Asia/Almaty" })
+        );
+        const end = new Date();
+        console.log(
+          "Operation took " +
+            ((end.getTime() - start.getTime()) / 1000).toFixed(2) +
+            " sec"
+        );
       });
 
       // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)

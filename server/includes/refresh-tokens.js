@@ -1,14 +1,9 @@
 const User = require("../models/User.js");
 const request = require("request");
-const mongoose = require("mongoose");
 require("dotenv").config();
 
-mongoose.connect(process.env.DB_URI, {
-  useNewUrlParser: true,
-  useFindAndModify: false,
-});
-
 function refresh_tokens() {
+  const start = new Date();
   function rewriteTokens(refresh_token, spotifyID, cb) {
     let refreshOptions = {
       url: "https://accounts.spotify.com/api/token",
@@ -60,7 +55,17 @@ function refresh_tokens() {
     });
 
     Promise.all(requests).then(() => {
-      console.log(`All ${users.length} tokens refreshed at ` + new Date());
+      console.log(
+        `All ${users.length} tokens refreshed at ` +
+          new Date()
+            .toLocaleString("en-US", { timeZone: "Asia/Almaty" })
+      );
+      const end = new Date();
+      console.log(
+        "Operation took " +
+          ((end.getTime() - start.getTime()) / 1000).toFixed(2) +
+          " sec"
+      );
     });
   });
 }

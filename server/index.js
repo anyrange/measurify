@@ -22,7 +22,7 @@ mongoose.connect(
 
 function startScheduledJobs() {
   const job1 = new CronJob(
-    "0 */50 * * * *",
+    "0 50 * * * *",
     () => {
       refresh_tokens();
     },
@@ -31,7 +31,7 @@ function startScheduledJobs() {
     "Asia/Almaty"
   );
   const job2 = new CronJob(
-    "0 */20 * * * *",
+    "0 */10 * * * *",
     () => {
       refresh_recently_played();
     },
@@ -44,5 +44,7 @@ function startScheduledJobs() {
 }
 
 if (process.env.NODE_ENV == "production") {
+  refresh_tokens();
+  refresh_recently_played();
   startScheduledJobs();
 }
