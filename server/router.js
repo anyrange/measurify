@@ -4,6 +4,7 @@ const auth = require("./routes/auth");
 const friends = require("./routes/friends");
 const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
+const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
 require("dotenv").config();
 
@@ -15,12 +16,16 @@ router.get("/", (req, res) => {
 
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
-router.get("/getAccessToken", auth.getAccessToken);
+router.get("/token", auth.getAccessToken);
 
-router.get("/getPlayedHistory", getPlayedHistory);
-router.get("/getOverview", getOverview);
+router.get("/listening-history", getPlayedHistory);
+router.get("/overview", getOverview);
 router.get("/friends", friends);
 
 router.get("/top", top);
+
+router.get("/artist", infoPages.artist);
+// router.get("/album", infoPages.album);
+// router.get("/track", infoPages.track);
 
 module.exports = router;

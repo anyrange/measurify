@@ -2,7 +2,8 @@ const querystring = require("querystring");
 const request = require("request");
 const User = require("../models/User");
 
-const redirect_uri = process.env.REDIRECT_URI || "http://localhost:8888/callback";
+const redirect_uri =
+  process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
 const auth = {
   login: function(req, res) {
@@ -21,7 +22,7 @@ const auth = {
     let spotifyID = req.query.spotifyID;
     User.findOne({ spotifyID }, (err, user) => {
       if (err) {
-        res.setStatus(400).end(err);
+        res.status(400).end(err);
       }
       res.end(user.lastSpotifyToken);
     });

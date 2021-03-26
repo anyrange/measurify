@@ -50,7 +50,7 @@ export default {
     if (this.user) {
       axios
         .get(
-          `${process.env.VUE_APP_SERVER_URI}/getAccessToken?spotifyID=${this.user.id}`
+          `${process.env.VUE_APP_SERVER_URI}/token?spotifyID=${this.user.id}`
         )
         .catch((err) => console.log(err))
         .then((response) => {

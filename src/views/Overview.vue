@@ -208,7 +208,7 @@ export default {
     getOverview() {
       axios
         .get(
-          `${process.env.VUE_APP_SERVER_URI}/getOverview?spotifyID=${this.user.id}`
+          `${process.env.VUE_APP_SERVER_URI}/overview?spotifyID=${this.user.id}`
         )
         .then((response) => {
           this.totalOverview = response.data;

@@ -10,8 +10,7 @@ const getOverview = (req, res) => {
 
   User.findOne({ spotifyID }, projection, (err, user) => {
     if (err) {
-      console.log(err);
-      return;
+      res.status(400).end(err);
     }
 
     const playDates = user.recentlyPlayed.map(({ played_at, track }) => {
@@ -19,8 +18,11 @@ const getOverview = (req, res) => {
       let duration = track.duration_ms / 1000 / 60;
       return { date, duration };
     });
-
-    dateToCompare = playDates[0]?.date;
+    if (!playDates.length) {
+      res.end();
+      return
+    }
+    dateToCompare = playDates[0].date;
     let plays = [];
     let i = 0;
     let playsCounter = 0;
@@ -47,7 +49,7 @@ const getOverview = (req, res) => {
       duration: Math.round(durationCounter),
     });
 
-    res.json( plays );
+    res.json(plays);
   });
 };
 
