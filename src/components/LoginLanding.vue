@@ -55,8 +55,11 @@ export default {
   },
 
   created() {
+    if(!this.user._id){
+      this.logOut()
+    }
     if (this.$route.query) {
-      let access_token = this.$route.query.access_token;
+      const access_token = this.$route.query.access_token;
       axios
         .get("https://api.spotify.com/v1/me", {
           headers: {
@@ -65,7 +68,8 @@ export default {
         })
         .then((response) => {
           response.data.refresh_token = this.$route.query.refresh_token;
-          response.data.access_token = this.$route.query.access_token;
+          response.data.access_token = access_token;
+          response.data._id = this.$route.query.id;
           this.$store.commit("mutateUser", response.data);
           this.$router.push("/");
           console.log("Response from server: ");

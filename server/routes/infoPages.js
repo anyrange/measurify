@@ -3,11 +3,15 @@ const User = require("../models/User");
 
 const infoPages = {
   artist: (req, res) => {
-    const spotifyID = req.query.spotifyID;
-    const artistID = req.query.artistID;
+    const _id = req.get("Authorization");
+    if (!_id) {
+      res.status(400).json({ message: `Unauthorized`, });
+      return
+    }
+    const artistID = req.params.id;
 
     User.findOne(
-      { spotifyID },
+      { _id },
       {
         _id: 0,
         "recentlyPlayed.track.artists.id": 1,
@@ -34,7 +38,7 @@ const infoPages = {
             }
           }
         });
-        
+
         if (!user.recentlyPlayed.length) {
           res.status(200).end();
           return;
@@ -64,11 +68,15 @@ const infoPages = {
     );
   },
   album: (req, res) => {
-    const spotifyID = req.query.spotifyID;
-    const albumID = req.query.albumID;
+    const _id = req.get("Authorization");
+    if (!_id) {
+      res.status(400).json({ message: `Unauthorized`, });
+      return
+    }
+    const albumID = req.params.id;
 
     User.findOne(
-      { spotifyID },
+      { _id },
       {
         _id: 0,
         "recentlyPlayed.track.artists.id": 1,
@@ -108,11 +116,15 @@ const infoPages = {
     );
   },
   track: (req, res) => {
-    const spotifyID = req.query.spotifyID;
-    const trackID = req.query.trackID;
+    const _id = req.get("Authorization");
+    if (!_id) {
+      res.status(400).json({ message: `Unauthorized`, });
+      return
+    }
+    const trackID = req.params.id;
 
     User.findOne(
-      { spotifyID },
+      { _id },
       {
         _id: 0,
         "recentlyPlayed.track.artists.id": 1,

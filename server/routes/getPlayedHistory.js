@@ -1,7 +1,11 @@
 const User = require("../models/User");
 
 const getPlayedHistory = (req, res) => {
-  const spotifyID = req.query.spotifyID;
+  let _id = req.get("Authorization");
+  if (!_id) {
+    res.status(400).json({ message: `Unauthorized`, });
+    return
+  }
   const projection = {
     _id: 0,
 
@@ -15,13 +19,13 @@ const getPlayedHistory = (req, res) => {
     "recentlyPlayed.played_at": 1,
   };
 
-  User.findOne({ spotifyID }, projection, (err, user) => {
+  User.findOne({ _id }, projection, (err, user) => {
     if (err) {
       console.log(err);
       return;
     }
 
-    res.json(user.toJSON().recentlyPlayed);
+    res.status(200).json(user.toJSON().recentlyPlayed);
   });
 };
 

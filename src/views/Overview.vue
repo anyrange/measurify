@@ -339,7 +339,12 @@ export default {
     getOverview() {
       axios
         .get(
-          `${process.env.VUE_APP_SERVER_URI}/overview?spotifyID=${this.user.id}`
+          `${process.env.VUE_APP_SERVER_URI}/overview`,
+          {
+            headers: {
+              Authorization: this.user._id,
+            },
+          }
         )
         .then((response) => {
           this.totalOverview = response.data;
@@ -351,7 +356,12 @@ export default {
     },
     getTop() {
       axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/top?spotifyID=${this.user.id}`)
+        .get(`${process.env.VUE_APP_SERVER_URI}/top`,
+          {
+            headers: {
+              Authorization: this.user._id
+            },
+          })
         .then((response) => {
           this.totalTop = response.data;
           console.log(this.totalTop);

@@ -1,14 +1,18 @@
 const User = require("../models/User");
 
 const getOverview = (req, res) => {
-  const spotifyID = req.query.spotifyID;
+  let _id = req.get("Authorization");
+  if (!_id) {
+    res.status(400).json({ message: `Unauthorized`, });
+    return
+  }
   const projection = {
     _id: 0,
     "recentlyPlayed.track.duration_ms": 1,
     "recentlyPlayed.played_at": 1,
   };
 
-  User.findOne({ spotifyID }, projection, (err, user) => {
+  User.findOne({ _id }, projection, (err, user) => {
     if (err) {
       res.status(400).end(err);
     }
@@ -20,7 +24,7 @@ const getOverview = (req, res) => {
     });
     if (!playDates.length) {
       res.end();
-      return
+      return;
     }
     dateToCompare = playDates[0].date;
     let plays = [];

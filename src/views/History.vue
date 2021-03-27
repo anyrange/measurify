@@ -143,7 +143,12 @@ export default {
     getListeningHistory() {
       axios
         .get(
-          `${process.env.VUE_APP_SERVER_URI}/listening-history?spotifyID=${this.user.id}`
+          `${process.env.VUE_APP_SERVER_URI}/listening-history`,
+          {
+            headers: {
+              Authorization: this.user._id
+            },
+          }
         )
         .catch((err) => console.log(err))
         .then((response) => {

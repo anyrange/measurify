@@ -23,23 +23,26 @@ const addImage = (user, access_token, cb) => {
 };
 
 const friends = (req, res) => {
-  const reqSpotifyID = req.query.spotifyID;
-
+  const req_id = req.get("Authorization");
+  if (!req_id) {
+    res.status(400).json({ message: `Unauthorized` });
+    return;
+  }
   User.find(
     {},
-    { spotifyID: 1, _id: 0, lastSpotifyToken: 1, userName: 1 },
+    { spotifyID: 1, lastSpotifyToken: 1, userName: 1 },
     (err, users) => {
       if (err) {
         res.setStatus(400).end(err);
+        return;
       }
+
+      
       // get user's access token
-      const access_token = users.filter(
-        ({ spotifyID }) => spotifyID === reqSpotifyID
-      )[0].lastSpotifyToken;
+      const access_token = users.filter(({ _id }) => _id == req_id)[0].lastSpotifyToken;
 
       // filter away user
-      users = users.filter(({ spotifyID }) => spotifyID !== reqSpotifyID);
-
+      users = users.filter(({ _id }) => _id != req_id);
       const folowingOptions = {
         uri:
           "https://api.spotify.com/v1/me/following/contains?type=user&ids=" +
@@ -49,7 +52,7 @@ const friends = (req, res) => {
         },
         json: true,
       };
-      //check if users are friends 
+      //check if users are friends
       request.get(folowingOptions, async (err, response, body) => {
         // adds parameter to the object of user
         await body.forEach((item, key) => {
@@ -75,7 +78,7 @@ const friends = (req, res) => {
 
         // response
         requests.then(() => {
-          res.json(
+          res.status(200).json(
             users.map(({ spotifyID, userName }, key) => {
               return { spotifyID, userName, url: images[key] };
             })

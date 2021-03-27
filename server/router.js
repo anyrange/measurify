@@ -24,8 +24,8 @@ router.get("/friends", friends);
 
 router.get("/top", top);
 
-router.get("/artist", infoPages.artist);
-router.get("/album", infoPages.album);
-router.get("/track", infoPages.track);
+router.get("/artist/:id", infoPages.artist);
+router.get("/album/:id", infoPages.album);
+router.get("/track/:id", infoPages.track);
 
 module.exports = router;

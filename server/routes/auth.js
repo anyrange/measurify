@@ -19,8 +19,12 @@ const auth = {
     );
   },
   getAccessToken: function(req, res) {
-    let spotifyID = req.query.spotifyID;
-    User.findOne({ spotifyID }, (err, user) => {
+    let _id = req.get("Authorization");
+    if (!_id) {
+      res.status(400).json({ message: `Unauthorized`, });
+      return
+    }
+    User.findOne({ _id }, (err, user) => {
       if (err) {
         res.status(400).end(err);
       }
@@ -60,7 +64,7 @@ const auth = {
         },
       };
       const recentlyPlayedOptions = {
-        uri: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+        url: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
         headers: {
           Authorization: "Bearer " + access_token,
         },
@@ -77,14 +81,14 @@ const auth = {
             userName: userData.display_name,
             refreshToken: refresh_token,
           };
-          await User.findOneAndUpdate(filter, update, {
+          User.findOneAndUpdate(filter, update, {
             new: true,
             upsert: true,
           });
 
           User.findOne(
             { spotifyID: userData.id },
-            { _id: 0, recentlyPlayed: 1 },
+            { recentlyPlayed: { $slice: [0, 1] } },
             (err, user) => {
               if (!user.recentlyPlayed.length) {
                 request.get(
@@ -102,12 +106,13 @@ const auth = {
               }
             }
           );
+          User.findOne({ spotifyID: userData.id }, { _id: 1 }, (err, user) => {
+            res.redirect(
+              `${uri}?access_token=${access_token}&refresh_token=${refresh_token}&id=${user._id}`
+            );
+          });
         }
       });
-
-      res.redirect(
-        `${uri}?access_token=${access_token}&refresh_token=${refresh_token}`
-      );
     });
   },
 };

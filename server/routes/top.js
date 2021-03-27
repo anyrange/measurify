@@ -2,7 +2,12 @@ const User = require("../models/User");
 const request = require("request");
 
 const top = (req, res) => {
-  const spotifyID = req.query.spotifyID;
+  let _id = req.get("Authorization");
+  if (!_id) {
+    res.status(400).json({ message: `Unauthorized`, });
+    return
+  }
+  const period = req.query.period;
   const projection = {
     _id: 0,
 
@@ -17,7 +22,7 @@ const top = (req, res) => {
     lastSpotifyToken: 1,
   };
 
-  User.findOne({ spotifyID }, projection, async (err, user) => {
+  User.findOne({ _id }, projection, async (err, user) => {
     if (err) {
       console.log(err);
       return;
