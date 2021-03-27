@@ -1,14 +1,14 @@
 const express = require("express");
 const router = require("./router");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const CronJob = require("cron").CronJob;
 const refresh_tokens = require("./includes/refresh-tokens.js");
 const refresh_recently_played = require("./includes/recently-played-parse.js");
-const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 8888;
-const FRONTEND_URI = process.env.FRONTEND_URI;
+const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
 
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
