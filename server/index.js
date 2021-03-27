@@ -1,6 +1,5 @@
 const express = require("express");
 const router = require("./router");
-const cors = require("cors");
 const mongoose = require("mongoose");
 const CronJob = require("cron").CronJob;
 const refresh_tokens = require("./includes/refresh-tokens.js");
@@ -13,26 +12,9 @@ app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
 });
 
-// let corsOptions = {};
-// if (process.env.NODE_ENV == "production") {
-//   const whitelist = [process.env.FRONTEND_URI];
-//   corsOptions = {
-//     origin: function(origin, callback) {
-//       if (!origin) return callback(null, true);
-//       if (whitelist.indexOf(origin) === -1) {
-//         const message =
-//           "The CORS policy for this origin doesnt allow access from the particular origin.";
-//         return callback(new Error(message), false);
-//       }
-//       return callback(null, true);
-//     },
-//   };
-// }
-// app.use(cors(corsOptions));
-
 if (process.env.NODE_ENV == "production") {
   app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://spotiworm.netlify.app");
+    res.header("Access-Control-Allow-Origin", process.env.FRONTEND_URI);
     next();
   });
 }
