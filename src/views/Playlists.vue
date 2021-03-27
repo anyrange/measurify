@@ -13,7 +13,7 @@
         >
           <img
             :src="playlist.images[0]?.url"
-            class="border border-gray-800 shadow-sm object-fill h-48 w-48 rounded-lg"
+            class="border border-gray-800 shadow-sm object-cover h-48 w-48 rounded-lg"
           />
           <h1
             class="mt-2 text-base text-gray-300 overflow-ellipsis overflow-hidden whitespace-nowrap"

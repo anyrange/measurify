@@ -45,16 +45,16 @@
                 <th class="history-th w-3/10">
                   Title
                 </th>
-                <th class="history-th w-2.5/10">
+                <th class="history-th w-2.5/10 sm:table-cell hidden">
                   Artist
                 </th>
-                <th class="history-th w-2/10">
+                <th class="history-th w-2/10 md:table-cell hidden">
                   Album
                 </th>
                 <th class="history-th w-1.5/10">
                   When
                 </th>
-                <th class="history-th w-1/10">
+                <th class="history-th w-1/10 lg:table-cell hidden">
                   Duration
                 </th>
               </tr>
@@ -68,7 +68,7 @@
                 <td class="history-td">
                   {{ item.track.name }}
                 </td>
-                <td class="history-td">
+                <td class="history-td sm:table-cell hidden">
                   {{
                     item.track.artists
                       .map(({ name }) => {
@@ -77,13 +77,13 @@
                       .join(", ")
                   }}
                 </td>
-                <td class="history-td">
+                <td class="history-td md:table-cell hidden">
                   {{ item.track.album.name }}
                 </td>
                 <td class="history-td">
                   {{ getDateFromNow(item.played_at) }}
                 </td>
-                <td class="history-td">
+                <td class="history-td lg:table-cell hidden">
                   {{ getDuration(item.track.duration_ms) }}
                 </td>
               </tr>
@@ -112,7 +112,7 @@
   @apply px-6 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
 }
 .history-th {
-  @apply px-6 py-3 border-b-2 dark:border-gray-700-spotify text-left leading-4;
+  @apply px-6 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
 }
 .history-tr {
   @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;

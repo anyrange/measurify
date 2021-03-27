@@ -4,7 +4,7 @@
       <template v-if="this.user.images[0]?.url">
         <img
           :src="this.user.images[0]?.url"
-          class="object-fill w-6 h-6 rounded-full"
+          class="object-cover w-6 h-6 rounded-full"
         />
       </template>
       <template v-else>
