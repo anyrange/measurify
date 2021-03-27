@@ -88,9 +88,7 @@ function refresh_recently_played() {
         );
         const end = new Date();
         console.log(
-          "Operation took " +
-            ((end.getTime() - start.getTime()) / 1000).toFixed(2) +
-            " sec"
+          `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(2)} sec`
         );
       });
 

@@ -4,9 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
-    "refresh": "node bin/refresh-tokens.js",
-    "updateHistory": "node bin/recently-played-parse.js"
+    "start": "nodemon index.js"
   },
   "license": "MIT",
   "dependencies": {

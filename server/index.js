@@ -6,12 +6,25 @@ const CronJob = require("cron").CronJob;
 const refresh_tokens = require("./includes/refresh-tokens.js");
 const refresh_recently_played = require("./includes/recently-played-parse.js");
 
+if (process.env.NODE_ENV == "production") {
+  var whitelist = [process.env.FRONTEND_URI];
+  var corsOptions = {
+    origin: function(origin, callback) {
+      if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback("Not allowed by CORS");
+      }
+    },
+  };
+}
+
 const app = express();
 const PORT = process.env.PORT || 8888;
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
 });
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(router);
 
 mongoose.connect(
