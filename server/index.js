@@ -13,7 +13,23 @@ app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
 });
 
-app.use(cors());
+let corsOptions = {};
+if (process.env.NODE_ENV == "production") {
+  const whitelist = [process.env.FRONTEND_URI];
+  corsOptions = {
+    origin: function(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (whitelist.indexOf(origin) === -1) {
+        const message =
+          "The CORS policy for this origin doesnt allow access from the particular origin.";
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+  };
+}
+
+app.use(cors(corsOptions));
 app.use(router);
 
 mongoose.connect(
