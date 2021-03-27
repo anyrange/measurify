@@ -12,21 +12,30 @@
       <template v-else>
         <div class="mt-8">
           <div class="px-4">
-            <ul class="flex cursor-pointer">
+            <ul class="flex">
               <li
-                class="rounded-l-lg py-2 px-6 bg-white dark:bg-gray-700-spotify dark:text-gray-200 dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                :class="[
+                  selectedPeriod === 'alltime' ? 'is-active' : 'not-active',
+                ]"
                 @click="updateChartAllTime"
+                class="tab rounded-l-lg"
               >
                 All Time
               </li>
               <li
-                class="py-2 px-6 text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                class="tab"
+                :class="[
+                  selectedPeriod === 'week' ? 'is-active' : 'not-active',
+                ]"
                 @click="updateChartCurrentWeek"
               >
                 This Week
               </li>
               <li
-                class="rounded-r-lg py-2 px-6  text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                :class="[
+                  selectedPeriod === 'month' ? 'is-active' : 'not-active',
+                ]"
+                class="tab rounded-r-lg"
               >
                 This month
               </li>
@@ -64,23 +73,141 @@
             Top Played
           </h2>
           <div class="mt-6 px-4">
-            <ul class="flex cursor-pointer">
+            <ul class="flex">
               <li
-                class="rounded-l-lg py-2 px-6 bg-white dark:bg-gray-700-spotify dark:text-gray-200 dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                :class="[
+                  selectedTop === 'artists' ? 'is-active' : 'not-active',
+                ]"
+                @click="selectedTop = 'artists'"
+                class="tab rounded-l-lg"
               >
                 Artists
               </li>
               <li
-                class="py-2 px-6 text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
-              >
-                Albums
-              </li>
-              <li
-                class="rounded-r-lg py-2 px-6  text-gray-500 bg-gray-200 hover:bg-white dark:bg-gray-900-spotify dark:hover:bg-gray-700-spotify dark:hover:text-gray-200"
+                :class="[selectedTop === 'tracks' ? 'is-active' : 'not-active']"
+                @click="selectedTop = 'tracks'"
+                class="tab"
               >
                 Tracks
               </li>
+              <li
+                :class="[selectedTop === 'albums' ? 'is-active' : 'not-active']"
+                @click="selectedTop = 'albums'"
+                class="tab rounded-r-lg"
+              >
+                Albums
+              </li>
             </ul>
+            <div class="mt-4">
+              <div v-if="selectedTop === 'artists'">
+                <table class="w-full table-fixed">
+                  <thead>
+                    <tr>
+                      <th class="history-th w-7/10 text-left">
+                        Artist
+                      </th>
+                      <th class="history-th w-3/10 text-right">
+                        Minutes Played
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in totalTop.artists"
+                      :key="item.id"
+                      class="history-tr"
+                    >
+                      <td class="history-td text-left">
+                        <div class="flex items-center">
+                          <div class="mr-5">
+                            {{ index + 1 }}
+                          </div>
+                          <img :src="item?.image" class="table-image" />
+                          <div class="ml-4">
+                            {{ item.name }}
+                          </div>
+                        </div>
+                      </td>
+                      <td class="history-td text-right">
+                        {{ item.playtime }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div v-if="selectedTop === 'albums'">
+                <table class="w-full table-fixed">
+                  <thead>
+                    <tr>
+                      <th class="history-th w-7/10 text-left">
+                        Artist
+                      </th>
+                      <th class="history-th w-3/10 text-right">
+                        Minutes Played
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in totalTop.albums"
+                      :key="item.id"
+                      class="history-tr"
+                    >
+                      <td class="history-td text-left">
+                        <div class="flex items-center">
+                          <div class="mr-5">
+                            {{ index + 1 }}
+                          </div>
+                          <img :src="item?.image" class="table-image" />
+                          <div class="ml-4">
+                            {{ item.name }}
+                          </div>
+                        </div>
+                      </td>
+                      <td class="history-td text-right">
+                        {{ item.playtime }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div v-if="selectedTop === 'tracks'">
+                <table class="w-full table-fixed">
+                  <thead>
+                    <tr>
+                      <th class="history-th w-7/10 text-left">
+                        Artist
+                      </th>
+                      <th class="history-th w-3/10 text-right">
+                        Minutes Played
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in totalTop.tracks"
+                      :key="item.id"
+                      class="history-tr"
+                    >
+                      <td class="history-td text-left">
+                        <div class="flex items-center">
+                          <div class="mr-5">
+                            {{ index + 1 }}
+                          </div>
+                          <img :src="item?.image" class="table-image" />
+                          <div class="ml-4">
+                            {{ item.name }}
+                          </div>
+                        </div>
+                      </td>
+                      <td class="history-td text-right">
+                        {{ item.playtime }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -115,8 +242,11 @@ export default {
   data() {
     return {
       loading: true,
+      selectedTop: "artists",
+      selectedPeriod: "alltime",
 
       totalOverview: [],
+      totalTop: [],
 
       allDates: [],
       tracksPlayed: [],
@@ -125,7 +255,6 @@ export default {
       totalMinutesListened: 0,
 
       emptyData: false,
-      selected: null,
 
       overviewData: [
         {
@@ -154,6 +283,7 @@ export default {
       }, 0);
     },
     updateChartCurrentWeek() {
+      this.selectedPeriod = "week";
       // mock data
       const newDates = [
         "2021-03-15",
@@ -179,6 +309,7 @@ export default {
       ];
     },
     updateChartAllTime() {
+      this.selectedPeriod = "alltime";
       const newDates = this.allDates;
       const newValues = this.minutesListened;
       this.chartOptions = {
@@ -218,14 +349,37 @@ export default {
         .catch((err) => console.log(err))
         .finally(() => (this.loading = false));
     },
+    getTop() {
+      axios
+        .get(`${process.env.VUE_APP_SERVER_URI}/top?spotifyID=${this.user.id}`)
+        .then((response) => {
+          this.totalTop = response.data;
+          console.log(this.totalTop);
+        })
+        .catch((err) => console.log(err))
+        .finally(() => (this.loading = false));
+    },
   },
   created() {
     this.getOverview();
+    this.getTop();
   },
 };
 </script>
 
 <style>
+.table-image {
+  @apply object-cover w-9 h-9 rounded-full;
+}
+.tab {
+  @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200;
+}
+.is-active {
+  @apply bg-white dark:bg-gray-600-spotify dark:text-gray-200;
+}
+.not-active {
+  @apply dark:bg-gray-900-spotify bg-gray-200;
+}
 .chart {
   height: 50vh;
 }
@@ -237,9 +391,12 @@ export default {
 }
 .apexcharts-zoomin-icon,
 .apexcharts-zoomout-icon,
-.apexcharts-zoom-icon.apexcharts-selected,
+.apexcharts-zoom-icon.apexcharts-selectedTop,
 .apexcharts-pan-icon,
 .apexcharts-menu-icon {
+  display: none;
+}
+.apexcharts-zoom-icon.apexcharts-selected {
   display: none;
 }
 .apexcharts-tooltip.apexcharts-theme-light {

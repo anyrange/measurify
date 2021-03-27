@@ -10,9 +10,12 @@ module.exports = {
         "gray-850": "#222733",
         "green-600-spotify": "#1db954",
         "green-700-spotify": "#1b8b42",
+        "gray-1000-spotify": "#121212",
+        "gray-950-spotify": "#191414",
         "gray-900-spotify": "#121212",
         "gray-800-spotify": "#181818",
         "gray-700-spotify": "#282828",
+        "gray-600-spotify": "#333333",
       },
       spacing: {
         "14": "3.5rem",

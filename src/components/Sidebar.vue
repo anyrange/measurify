@@ -54,7 +54,7 @@
             <span class="sidebar-label">Logout</span>
           </a>
         </li>
-        <h3 class="pt-6 title-uppercase">
+        <!-- <h3 class="pt-6 title-uppercase">
           Light theme
         </h3>
         <li>
@@ -76,7 +76,7 @@
               ></label>
             </div>
           </div>
-        </li>
+        </li> -->
       </ul>
     </div>
   </transition>
