@@ -53,7 +53,7 @@ const getOverview = (req, res) => {
       duration: Math.round(durationCounter),
     });
 
-    res.json(plays);
+    res.status(200).json(plays);
   });
 };
 

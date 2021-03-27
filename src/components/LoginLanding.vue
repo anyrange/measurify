@@ -55,9 +55,6 @@ export default {
   },
 
   created() {
-    if(!this.user._id){
-      this.logOut()
-    }
     if (this.$route.query) {
       const access_token = this.$route.query.access_token;
       axios

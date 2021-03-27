@@ -40,7 +40,7 @@ const infoPages = {
         });
 
         if (!user.recentlyPlayed.length) {
-          res.status(200).end();
+          res.status(200).json();
           return;
         }
         const artistsOptions = {
@@ -52,7 +52,7 @@ const infoPages = {
         };
 
         request.get(artistsOptions, (error, resp, body) => {
-          res.json({
+          res.status(200).json({
             artist: {
               followers: body.followers.total,
               genres: body.genres,
@@ -99,11 +99,11 @@ const infoPages = {
           (item) => item.track.album.id === albumID
         );
         if (!user.recentlyPlayed.length) {
-          res.status(200).end();
+          res.status(200).json();
           return;
         }
 
-        res.json({
+        res.status(200).json({
           album: {
             name: user.recentlyPlayed[0].track.album.name,
             image: user.recentlyPlayed[0].track.album.images[0].url,
@@ -150,7 +150,7 @@ const infoPages = {
         );
 
         if (!user.recentlyPlayed.length) {
-          res.status(200).end();
+          res.status(200).json();
           return;
         }
 
@@ -163,7 +163,7 @@ const infoPages = {
         };
 
         request.get(tracksOptions, (error, resp, body) => {
-          res.json({
+          res.status(200).json({
             track: {
               album: {
                 name: user.recentlyPlayed[0].track.album.name,

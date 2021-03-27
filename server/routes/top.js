@@ -49,7 +49,7 @@ const top = (req, res) => {
           artist.image = body.artists[index].images[2].url;
         }
       });
-      res.json(response);
+      res.status(200).json(response);
     });
   });
 };

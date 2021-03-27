@@ -28,7 +28,7 @@ const auth = {
       if (err) {
         res.status(400).end(err);
       }
-      res.end(user.lastSpotifyToken);
+      res.status(200).end(user.lastSpotifyToken);
     });
   },
   callback: function(req, res) {
@@ -70,6 +70,7 @@ const auth = {
         },
         json: true,
       };
+
       request.get(userDataGainOptions, async function(err, response, body) {
         if (!err) {
           const userData = await JSON.parse(body);
