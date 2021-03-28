@@ -3,8 +3,8 @@ const User = require("../models/User");
 const getOverview = (req, res) => {
   let _id = req.get("Authorization");
   if (!_id) {
-    res.status(400).json({ message: `Unauthorized`, });
-    return
+    res.status(400).json({ message: `Unauthorized` });
+    return;
   }
   const projection = {
     _id: 0,

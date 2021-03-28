@@ -57,62 +57,76 @@ function refresh_recently_played() {
     });
   }
 
-  User.find(
-    {},
+  const agg = [
     {
-      _id: 0,
-      spotifyID: 1,
-      lastSpotifyToken: 1,
-      recentlyPlayed: { $slice: [0, 1] },
-      userName: 1,
+      $match: {},
     },
-    (err, users) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-
-      // ## ONE TIME PROMISE (TASKS MAY BE EXECUTED IN RANDOM ORDER)
-
-      let requests = users.map((user) => {
-        return new Promise((resolve, reject) => {
-          parseRecentlyPlayed(user, resolve, reject);
-        }).catch((user) => {
-          console.log(user + " died");
-          console.log("error: " + error);
-          console.log("body: " + body);
-        });
-      });
-
-      Promise.all(requests).then(() => {
-        console.log(
-          `All ${requests.length} histories updated at ` +
-            new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })
-        );
-        const end = new Date();
-        console.log(
-          `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(
-            2
-          )} sec`
-        );
-      });
-
-      // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)
-      // let requests = users.reduce((promiseChain, user) => {
-      //   return promiseChain.then(
-      //     () =>
-      //       new Promise((resolve) => {
-      //         parseRecentlyPlayed(user, resolve);
-      //       })
-      //   );
-      // }, Promise.resolve());
-
-      // requests.then(() => {
-      //   console.log(`All ${users.length} histories updated`);
-      //   process.exit();
-      // });
+    {
+      $project: {
+        _id: 0,
+        spotifyID: 1,
+        lastSpotifyToken: 1,
+        recentlyPlayed: {
+          $slice: ["$recentlyPlayed", 1],
+        },
+        userName: 1,
+      },
+    },
+    {
+      $project: {
+        spotifyID: 1,
+        lastSpotifyToken: 1,
+        userName: 1,
+        "recentlyPlayed.played_at": 1,
+      },
+    },
+  ];
+  User.aggregate(agg, (err, users) => {
+    if (err) {
+      console.log(err);
+      return;
     }
-  );
+
+    // ## ONE TIME PROMISE (TASKS MAY BE EXECUTED IN RANDOM ORDER)
+
+    let requests = users.map((user) => {
+      return new Promise((resolve, reject) => {
+        parseRecentlyPlayed(user, resolve, reject);
+      }).catch((user) => {
+        console.log(user + " died");
+        console.log("error: " + error);
+        console.log("body: " + body);
+      });
+    });
+
+    Promise.all(requests).then(() => {
+      console.log(
+        `All ${requests.length} histories updated at ` +
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })
+      );
+      const end = new Date();
+      console.log(
+        `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(
+          2
+        )} sec`
+      );
+    });
+
+    // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)
+    // let requests = users.reduce((promiseChain, user) => {
+    //   return promiseChain.then(
+    //     () =>
+    //       new Promise((resolve) => {
+    //         parseRecentlyPlayed(user, resolve);
+    //       })
+    //   );
+    // }, Promise.resolve());
+
+    // requests.then(() => {
+    //   console.log(`All ${users.length} histories updated`);
+    //   process.exit();
+    // });
+  });
 }
 
 module.exports = refresh_recently_played;
