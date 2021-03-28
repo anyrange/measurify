@@ -8,7 +8,7 @@
     "dist": "serve -s dist",
     "serve": "vue-cli-service serve --port 3000",
     "server": "nodemon index.js --prefix server",
-    "dev": "concurrently \"npm run serve\" \"npm run server\"",
+    "dev": "concurrently \"npm run serve\" \"npm run server\""
   },
   "heroku-run-build-script": false,
   "dependencies": {
