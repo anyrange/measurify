@@ -48,13 +48,13 @@ export default {
     login() {
       window.location.href = `${process.env.VUE_APP_SERVER_URI}/login`;
     },
-    logOut() {
-      this.$store.commit("mutateUser", null);
-      this.$router.push({ name: "Home" });
-    },
   },
 
   created() {
+    if (!this.user._id) {
+      this.$store.commit("mutateUser", null);
+      this.$router.push({ name: "Home" });
+    }
     if (this.$route.query) {
       const access_token = this.$route.query.access_token;
       axios
