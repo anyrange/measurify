@@ -31,9 +31,11 @@ const top = (req, res) => {
         res.status(400).json({});
         return;
       }
-      user.recentlyPlayed = user.recentlyPlayed.filter(
-        ({ played_at }) => played_at > period
-      );
+      if (period) {
+        user.recentlyPlayed = user.recentlyPlayed.filter(
+          ({ played_at }) => played_at > period
+        );
+      }
       if (!user.recentlyPlayed.length) {
         res.status(200).json({ albums: [], artists: [], tracks: [] });
         return;
