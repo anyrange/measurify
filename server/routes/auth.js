@@ -21,8 +21,8 @@ const auth = {
   getAccessToken: function(req, res) {
     let _id = req.get("Authorization");
     if (!_id) {
-      res.status(400).json({ message: `Unauthorized`, });
-      return
+      res.status(400).json({ message: `Unauthorized` });
+      return;
     }
     User.findOne({ _id }, (err, user) => {
       if (err) {
@@ -73,7 +73,6 @@ const auth = {
 
       request.get(userDataGainOptions, async function(err, response, body) {
         if (!err) {
-          
           const userData = await JSON.parse(body);
           console.log(userData.display_name + " logined");
 
@@ -97,6 +96,10 @@ const auth = {
                   recentlyPlayedOptions,
                   async (error, response, body) => {
                     if (!error) {
+                      body.items.forEach((item) => {
+                        delete item.track.available_markets;
+                        delete item.track.album.available_markets;
+                      });
                       const filter = { spotifyID: userData.id };
                       const update = {
                         recentlyPlayed: body.items,

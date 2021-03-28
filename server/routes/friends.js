@@ -1,24 +1,53 @@
 const request = require("request");
 const User = require("../models/User");
 
-const images = [];
-
-const addImage = (user, access_token, cb) => {
-  const imageGetOptions = {
-    uri: `https://api.spotify.com/v1/users/${user.spotifyID}`,
+const addImage = (user, access_token, cb, id) => {
+  const folowingOptions = {
+    uri: "https://api.spotify.com/v1/me/following/contains?type=user&ids=" + id,
     headers: {
-      Authorization: "Bearer " + access_token,
+      Authorization: "Bearer " + user.lastSpotifyToken,
     },
     json: true,
   };
-
-  request.get(imageGetOptions, async (error, response, body) => {
-    if (body.images.length) {
-      images.push(body.images[0].url);
-    } else {
-      images.push("");
+  //check if user follow main user
+  request.get(folowingOptions, async (err, response, body) => {
+    let friend = false;
+    let image = "";
+    if (!body[0]) {
+      user = {
+        _id: user._id,
+        spotifyID: user.spotifyID,
+        userName: user.userName,
+        url: image,
+        friend,
+      };
+      cb(user);
+      return;
     }
-    cb();
+    friend = true;
+
+    //get image for friend
+    const imageGetOptions = {
+      uri: `https://api.spotify.com/v1/users/${user.spotifyID}`,
+      headers: {
+        Authorization: "Bearer " + access_token,
+      },
+      json: true,
+    };
+
+    request.get(imageGetOptions, async (error, response, body) => {
+      if (body.images.length) {
+        image = body.images[0].url;
+      }
+      user = {
+        _id: user._id,
+        spotifyID: user.spotifyID,
+        userName: user.userName,
+        url: image,
+        friend,
+      };
+      cb(user);
+    });
   });
 };
 
@@ -37,12 +66,13 @@ const friends = (req, res) => {
         return;
       }
 
-      
-      // get user's access token
-      const access_token = users.filter(({ _id }) => _id == req_id)[0].lastSpotifyToken;
-
+      // get user's info
+      const access_token = users.filter(({ _id }) => _id == req_id)[0]
+        .lastSpotifyToken;
+      const id = users.filter(({ _id }) => _id == req_id)[0].spotifyID;
       // filter away user
       users = users.filter(({ _id }) => _id != req_id);
+
       const folowingOptions = {
         uri:
           "https://api.spotify.com/v1/me/following/contains?type=user&ids=" +
@@ -52,36 +82,29 @@ const friends = (req, res) => {
         },
         json: true,
       };
-      //check if users are friends
+
+      //check if users are followed
       request.get(folowingOptions, async (err, response, body) => {
-        // adds parameter to the object of user
-        await body.forEach((item, key) => {
-          if (item) {
-            users[key].friend = true;
-            return;
-          }
-          users[key].friend = false;
-        });
-
-        // remains only friends
-        users = users.filter(({ friend }) => friend);
-
-        // adds images to friends
+        users = users.filter((user, key) => body[key]);
+        // check if followers and adds images to followees
         let requests = users.reduce((promiseChain, user) => {
-          return promiseChain.then(
-            () =>
-              new Promise((resolve) => {
-                addImage(user, access_token, resolve);
-              })
+          return promiseChain.then(() =>
+            new Promise((resolve) => {
+              addImage(user, access_token, resolve, id);
+            }).then((user) => {
+              users.push(user);
+            })
           );
         }, Promise.resolve());
-
+        users = [];
         // response
         requests.then(() => {
           res.status(200).json(
-            users.map(({ spotifyID, userName }, key) => {
-              return { spotifyID, userName, url: images[key] };
-            })
+            users
+              .filter(({ friend }) => friend )
+              .map(({ _id, spotifyID, userName, url }) => {
+                return { _id, spotifyID, userName, url };
+              })
           );
         });
       });
