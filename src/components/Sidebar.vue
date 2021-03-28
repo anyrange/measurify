@@ -24,17 +24,17 @@
           Statistics
         </h3>
         <li>
-          <router-link class="sidebar-link" to="/">
+          <router-link class="rlink sidebar-link" to="/">
             <span class="sidebar-label">Overview</span>
           </router-link>
         </li>
         <li>
-          <router-link class="sidebar-link" to="/listening-history">
+          <router-link class="rlink sidebar-link" to="/listening-history">
             <span class="sidebar-label">Listening History</span>
           </router-link>
         </li>
         <li>
-          <router-link class="sidebar-link" to="/playlists">
+          <router-link class="rlink sidebar-link" to="/playlists">
             <span class="sidebar-label">Playlists</span>
           </router-link>
         </li>
@@ -42,17 +42,9 @@
           Info
         </h3>
         <li>
-          <router-link class="sidebar-link" to="/about">
+          <router-link class="rlink sidebar-link" to="/about">
             <span class="sidebar-label">About</span>
           </router-link>
-        </li>
-        <h3 class="pt-6 title-uppercase">
-          Logout
-        </h3>
-        <li>
-          <a class="sidebar-link" href="" v-on:click="logOut()">
-            <span class="sidebar-label">Logout</span>
-          </a>
         </li>
         <!-- <h3 class="pt-6 title-uppercase">
           Light theme

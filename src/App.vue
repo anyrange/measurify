@@ -15,7 +15,7 @@ export default {
   font-family: "Inter", sans-serif;
 }
 
-a.router-link-exact-active {
+.rlink.router-link-exact-active {
   color: #1db954;
 }
 .sidebar-spotify::-webkit-scrollbar {

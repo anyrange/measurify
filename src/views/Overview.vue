@@ -14,11 +14,11 @@
           <div class="px-4">
             <ul class="flex">
               <li
+                class="tab rounded-l-lg"
                 :class="[
                   selectedPeriod === 'alltime' ? 'is-active' : 'not-active',
                 ]"
-                @click="updateChartAllTime"
-                class="tab rounded-l-lg"
+                @click="updateOverview('alltime')"
               >
                 All Time
               </li>
@@ -27,15 +27,16 @@
                 :class="[
                   selectedPeriod === 'week' ? 'is-active' : 'not-active',
                 ]"
-                @click="updateChartCurrentWeek"
+                @click="updateOverview('week')"
               >
                 This Week
               </li>
               <li
+                class="tab rounded-r-lg"
                 :class="[
                   selectedPeriod === 'month' ? 'is-active' : 'not-active',
                 ]"
-                class="tab rounded-r-lg"
+                @click="updateOverview('month')"
               >
                 This month
               </li>
@@ -107,7 +108,7 @@
                         Artist
                       </th>
                       <th class="history-th w-3/10 text-right">
-                        Minutes Played
+                        Minutes Listened
                       </th>
                     </tr>
                   </thead>
@@ -135,21 +136,21 @@
                   </tbody>
                 </table>
               </div>
-              <div v-if="selectedTop === 'albums'">
+              <div v-if="selectedTop === 'tracks'">
                 <table class="w-full table-fixed">
                   <thead>
                     <tr>
                       <th class="history-th w-7/10 text-left">
-                        Artist
+                        Track
                       </th>
                       <th class="history-th w-3/10 text-right">
-                        Minutes Played
+                        Minutes Listened
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(item, index) in totalTop.albums"
+                      v-for="(item, index) in totalTop.tracks"
                       :key="item.id"
                       class="history-tr"
                     >
@@ -171,21 +172,21 @@
                   </tbody>
                 </table>
               </div>
-              <div v-if="selectedTop === 'tracks'">
+              <div v-if="selectedTop === 'albums'">
                 <table class="w-full table-fixed">
                   <thead>
                     <tr>
                       <th class="history-th w-7/10 text-left">
-                        Artist
+                        Album
                       </th>
                       <th class="history-th w-3/10 text-right">
-                        Minutes Played
+                        Minutes Listened
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(item, index) in totalTop.tracks"
+                      v-for="(item, index) in totalTop.albums"
                       :key="item.id"
                       class="history-tr"
                     >
@@ -231,6 +232,7 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
 import chartOptions from "@/mixins/chartOptions";
 import axios from "axios";
+// import { format } from "date-fns";
 
 export default {
   components: {
@@ -272,56 +274,78 @@ export default {
   },
 
   methods: {
-    getTotalTracksPlayed() {
-      this.totalTracksPlayed = this.tracksPlayed.reduce(function(a, b) {
+    getTotals(totalPlayed, totalPlayedArray) {
+      totalPlayed = totalPlayedArray.reduce(function(a, b) {
         return a + b;
       }, 0);
     },
-    getTotalMinutesListened() {
-      this.totalMinutesListened = this.minutesListened.reduce(function(a, b) {
+    getTotalTracksPlayed(arr) {
+      this.totalTracksPlayed = arr.reduce(function(a, b) {
         return a + b;
       }, 0);
     },
-    updateChartCurrentWeek() {
-      this.selectedPeriod = "week";
-      // mock data
-      const newDates = [
-        "2021-03-15",
-        "2021-03-16",
-        "2021-03-17",
-        "2021-03-18",
-        "2021-03-19",
-        "2021-03-20",
-        "2021-03-21",
-      ];
-      const newValues = [8, 18, 3, 13, 10, 4, 32];
-
-      this.chartOptions = {
-        xaxis: {
-          categories: newDates,
-        },
-      };
-
-      this.overviewData = [
-        {
-          data: newValues,
-        },
-      ];
+    getTotalMinutesListened(arr) {
+      this.totalMinutesListened = arr.reduce(function(a, b) {
+        return a + b;
+      }, 0);
     },
-    updateChartAllTime() {
-      this.selectedPeriod = "alltime";
-      const newDates = this.allDates;
-      const newValues = this.minutesListened;
-      this.chartOptions = {
-        xaxis: {
-          categories: newDates,
-        },
-      };
-      this.overviewData = [
-        {
-          data: newValues,
-        },
-      ];
+    updateChart(period) {
+      if (period == "alltime") {
+        const newDates = this.allDates;
+        const newValues = this.minutesListened;
+
+        console.log(this.allDates);
+
+        // const todayDate = format(new Date(), "yyyy-MM-dd");
+
+        this.chartOptions = {
+          xaxis: {
+            categories: newDates,
+          },
+        };
+        this.overviewData = [
+          {
+            data: newValues,
+          },
+        ];
+      }
+      if (period == "week") {
+        const newDates = [
+          "2021-03-15",
+          "2021-03-16",
+          "2021-03-17",
+          "2021-03-18",
+          "2021-03-19",
+          "2021-03-20",
+          "2021-03-21",
+        ];
+        const newValues = [8, 18, 3, 13, 10, 4, 32];
+
+        this.chartOptions = {
+          xaxis: {
+            categories: newDates,
+          },
+        };
+        this.overviewData = [
+          {
+            data: newValues,
+          },
+        ];
+      }
+    },
+    updateOverview(period) {
+      this.selectedPeriod = period;
+
+      if (period == "alltime") {
+        this.updateChart(period);
+      }
+      if (period == "week") {
+        this.updateChart(period);
+      }
+      if (period == "month") {
+        this.selectedPeriod = "alltime";
+        alert("Not yet");
+      }
     },
     pushToChart() {
       for (const item of this.totalOverview) {
@@ -329,42 +353,37 @@ export default {
         this.chartOptions.xaxis.categories.push(item.date);
 
         this.allDates.push(item.date);
-        this.minutesListened.push(item.duration);
         this.tracksPlayed.push(item.plays);
+        this.minutesListened.push(item.duration);
 
-        this.getTotalTracksPlayed();
-        this.getTotalMinutesListened();
+        this.getTotalTracksPlayed(this.tracksPlayed);
+        this.getTotalMinutesListened(this.minutesListened);
       }
     },
     getOverview() {
       axios
-        .get(
-          `${process.env.VUE_APP_SERVER_URI}/overview`,
-          {
-            headers: {
-              Authorization: this.user._id,
-            },
-          }
-        )
+        .get(`${process.env.VUE_APP_SERVER_URI}/overview`, {
+          headers: {
+            Authorization: this.user._id,
+          },
+        })
         .then((response) => {
           this.totalOverview = response.data;
           this.pushToChart();
           this.emptyData = this.totalOverview.length > 1 ? false : true;
         })
-        .catch((err) => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch((err) => console.log(err));
+      // .finally(() => (this.loading = false));
     },
     getTop() {
       axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/top`,
-          {
-            headers: {
-              Authorization: this.user._id
-            },
-          })
+        .get(`${process.env.VUE_APP_SERVER_URI}/top`, {
+          headers: {
+            Authorization: this.user._id,
+          },
+        })
         .then((response) => {
           this.totalTop = response.data;
-          console.log(this.totalTop);
         })
         .catch((err) => console.log(err))
         .finally(() => (this.loading = false));
@@ -390,14 +409,17 @@ export default {
 .not-active {
   @apply dark:bg-gray-900-spotify bg-gray-200;
 }
-.chart {
-  height: 50vh;
-}
 .total-played-listened {
   @apply block text-2xl text-gray-600 dark:text-gray-100 font-light tracking-wide mb-2;
 }
 .total-played-listened-number {
   @apply block text-4xl text-gray-600 dark:text-gray-100 font-bold tracking-wide mb-2;
+}
+</style>
+
+<style>
+.apexcharts-text {
+  font-family: "Inter", sans-serif !important;
 }
 .apexcharts-zoomin-icon,
 .apexcharts-zoomout-icon,
