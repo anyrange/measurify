@@ -4,13 +4,13 @@ const request = require("request");
 const top = (req, res) => {
   let _id = req.get("Authorization");
   if (!_id) {
-    res.status(400).json({ message: `Unauthorized`, });
-    return
+    res.status(400).json({ message: `Unauthorized` });
+    return;
   }
   const period = req.query.period;
   const projection = {
     _id: 0,
-
+    "recentlyPlayed.played_at": 1,
     "recentlyPlayed.track.album.id": 1,
     "recentlyPlayed.track.album.name": 1,
     "recentlyPlayed.track.album.images.url": 1,
@@ -21,42 +21,53 @@ const top = (req, res) => {
     "recentlyPlayed.track.name": 1,
     lastSpotifyToken: 1,
   };
+  User.findOne(
+    {
+      _id,
+    },
+    projection,
+    async (err, user) => {
+      if (err || !user) {
+        res.status(400).json({});
+        return;
+      }
+      user.recentlyPlayed = user.recentlyPlayed.filter(
+        ({ played_at }) => played_at > period
+      );
+      if (!user.recentlyPlayed.length) {
+        res.status(200).json({ albums: [], artists: [], tracks: [] });
+        return;
+      }
+      let response = {};
+      response.albums = await albums(user.recentlyPlayed);
+      response.tracks = await tracks(user.recentlyPlayed);
+      response.artists = await artists(user.recentlyPlayed);
 
-  User.findOne({ _id }, projection, async (err, user) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    let response = {};
-    response.albums = albums(user.recentlyPlayed);
-    response.tracks = tracks(user.recentlyPlayed);
-    response.artists = await artists(user.recentlyPlayed);
+      // get images for artists
+      const artistsOptions = {
+        uri:
+          "https://api.spotify.com/v1/artists?ids=" +
+          response.artists.map((artist) => artist.id).join(),
+        headers: {
+          Authorization: "Bearer " + user.lastSpotifyToken,
+        },
+        json: true,
+      };
 
-    // get images for artists
-    const artistsOptions = {
-      uri:
-        "https://api.spotify.com/v1/artists?ids=" +
-        response.artists.map((artist) => artist.id).join(),
-      headers: {
-        Authorization: "Bearer " + user.lastSpotifyToken,
-      },
-      json: true,
-    };
-
-    request.get(artistsOptions, async (error, resp, body) => {
-      await response.artists.forEach((artist, index) => {
-        if (body.artists[index].images[2]) {
-          artist.image = body.artists[index].images[2].url;
-        }
+      request.get(artistsOptions, async (error, resp, body) => {
+        await response.artists.forEach((artist, index) => {
+          if (body.artists[index].images[2]) {
+            artist.image = body.artists[index].images[2].url;
+          }
+        });
+        res.status(200).json(response);
       });
-      res.status(200).json(response);
-    });
-  });
+    }
+  );
 };
 
 const albums = (recentlyPlayed) => {
   let albums = [];
-
   while (recentlyPlayed.length) {
     // get array of tracks from one album
     const filteredHistory = recentlyPlayed.filter(
