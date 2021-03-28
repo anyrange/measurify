@@ -73,6 +73,10 @@ const auth = {
 
       request.get(userDataGainOptions, async function(err, response, body) {
         if (!err) {
+          body.items.forEach((item) => {
+            delete item.track.available_markets;
+            delete item.track.album.available_markets;
+          });
           const userData = await JSON.parse(body);
           console.log(userData.display_name + " logined");
 

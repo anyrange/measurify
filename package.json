@@ -9,8 +9,6 @@
     "serve": "vue-cli-service serve --port 3000",
     "server": "nodemon index.js --prefix server",
     "dev": "concurrently \"npm run serve\" \"npm run server\"",
-    "refresh": "node server/bin/refresh-tokens.js",
-    "updateRecentlyPlayed": "node server/bin/recently-played-parse.js"
   },
   "heroku-run-build-script": false,
   "dependencies": {

@@ -17,7 +17,10 @@ function refresh_recently_played() {
       if (error || !body.items) {
         reject(user.userName, error, body);
       }
-      body.items.forEach((item) => delete item.track.available_markets);
+      body.items.forEach((item) => {
+        delete item.track.available_markets;
+        delete item.track.album.available_markets;
+      });
 
       if (!user.recentlyPlayed.length) {
         const query = { spotifyID: user.spotifyID };
@@ -60,7 +63,7 @@ function refresh_recently_played() {
       _id: 0,
       spotifyID: 1,
       lastSpotifyToken: 1,
-      recentlyPlayed: { $slice: [0,1] },
+      recentlyPlayed: { $slice: [0, 1] },
       userName: 1,
     },
     (err, users) => {
@@ -68,7 +71,7 @@ function refresh_recently_played() {
         console.log(err);
         return;
       }
-      
+
       // ## ONE TIME PROMISE (TASKS MAY BE EXECUTED IN RANDOM ORDER)
 
       let requests = users.map((user) => {
@@ -88,7 +91,9 @@ function refresh_recently_played() {
         );
         const end = new Date();
         console.log(
-          `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(2)} sec`
+          `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(
+            2
+          )} sec`
         );
       });
 
