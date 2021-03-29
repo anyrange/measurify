@@ -35,7 +35,7 @@ app.use(router);
 
 mongoose.connect(
   process.env.DB_URI,
-  { useNewUrlParser: true, useFindAndModify: false },
+  { useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true },
   () => console.log(`Database successfully connected`)
 );
 

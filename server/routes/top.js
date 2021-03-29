@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const request = require("request");
+const fetch = require("node-fetch");
 
 const top = (req, res) => {
   let _id = req.get("Authorization");
@@ -27,10 +27,10 @@ const top = (req, res) => {
       _id,
     },
     projection,
-    
+
     async (err, user) => {
-      if (err || !user) {
-        res.status(408).json({errorMessage:err.toString()});
+      if (err) {
+        res.status(408).json({ errorMessage: err.toString() });
         return;
       }
       if (period) {
@@ -48,24 +48,25 @@ const top = (req, res) => {
       response.artists = await artists(user.recentlyPlayed);
 
       // get images for artists
-      const artistsOptions = {
-        uri:
-          "https://api.spotify.com/v1/artists?ids=" +
-          response.artists.map((artist) => artist.id).join(),
-        headers: {
-          Authorization: "Bearer " + user.lastSpotifyToken,
-        },
-        json: true,
-      };
-
-      request.get(artistsOptions, async (error, resp, body) => {
-        await response.artists.forEach((artist, index) => {
-          if (body.artists[index].images[2]) {
-            artist.image = body.artists[index].images[2].url;
-          }
+      fetch(
+        `https://api.spotify.com/v1/artists?ids=${response.artists
+          .map((artist) => artist.id)
+          .join()}`,
+        {
+          method: "GET",
+          headers: { Authorization: "Bearer " + user.lastSpotifyToken },
+        }
+      )
+        .catch((err) => res.status(400).json(err))
+        .then((res) => res.json())
+        .then(async (body) => {
+          await response.artists.forEach((artist, index) => {
+            if (body.artists[index].images[2]) {
+              artist.image = body.artists[index].images[2].url;
+            }
+          });
+          res.status(200).json(response);
         });
-        res.status(200).json(response);
-      });
     }
   );
 };

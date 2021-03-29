@@ -1,5 +1,6 @@
 const querystring = require("querystring");
-const request = require("request");
+const { URLSearchParams } = require("url");
+const fetch = require("node-fetch");
 const User = require("../models/User");
 
 const redirect_uri =
@@ -25,8 +26,8 @@ const auth = {
       return;
     }
     User.findOne({ _id }, (err, user) => {
-      if (err || !user) {
-        res.status(408).json({errorMessage:err.toString(),user});
+      if (err) {
+        res.status(408).json({ errorMessage: err.toString(), user });
         return;
       }
       res.status(200).end(user.lastSpotifyToken);
@@ -34,13 +35,16 @@ const auth = {
   },
   callback: function(req, res) {
     let code = req.query.code || null;
-    let authOptions = {
-      url: "https://accounts.spotify.com/api/token",
-      form: {
-        code: code,
-        redirect_uri,
-        grant_type: "authorization_code",
-      },
+
+    const params = new URLSearchParams();
+    params.append("code", code);
+    params.append("redirect_uri", redirect_uri);
+    params.append("grant_type", "authorization_code");
+
+    //get tokens
+    fetch(`https://accounts.spotify.com/api/token`, {
+      method: "POST",
+      body: params,
       headers: {
         Authorization:
           "Basic " +
@@ -50,84 +54,89 @@ const auth = {
               process.env.SPOTIFY_CLIENT_SECRET
           ).toString("base64"),
       },
-      json: true,
-    };
-    request.post(authOptions, function(error, response, body) {
-      const access_token = body.access_token;
-      const refresh_token = body.refresh_token;
+    })
+      .then((res) => res.json())
+      .then((body) => {
+        const access_token = body.access_token;
+        const refresh_token = body.refresh_token;
 
-      const uri = process.env.FRONTEND_URI || "http://localhost:3000";
+        const uri = process.env.FRONTEND_URI || "http://localhost:3000";
 
-      const userDataGainOptions = {
-        url: "https://api.spotify.com/v1/me",
-        headers: {
-          Authorization: "Bearer " + access_token,
-        },
-      };
-      const recentlyPlayedOptions = {
-        url: "https://api.spotify.com/v1/me/player/recently-played?limit=50",
-        headers: {
-          Authorization: "Bearer " + access_token,
-        },
-        json: true,
-      };
+        //get user info
+        fetch(`https://api.spotify.com/v1/me`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + access_token,
+          },
+        })
+          .then((res) => res.json())
+          .then(async (body) => {
+            console.log(body.display_name + " logined");
 
-      request.get(userDataGainOptions, async function(err, response, body) {
-        if (!err) {
-          const userData = await JSON.parse(body);
-          console.log(userData.display_name + " logined");
+            const filter = { spotifyID: body.id };
+            const update = {
+              lastSpotifyToken: access_token,
+              userName: body.display_name,
+              refreshToken: refresh_token,
+            };
 
-          const filter = { spotifyID: userData.id };
-          const update = {
-            lastSpotifyToken: access_token,
-            userName: userData.display_name,
-            refreshToken: refresh_token,
-          };
-          User.findOneAndUpdate(filter, update, {
-            new: true,
-            upsert: true,
-          });
+            User.findOneAndUpdate(filter, update, {
+              new: true,
+              upsert: true,
+            });
 
-          User.findOne(
-            { spotifyID: userData.id },
-            { recentlyPlayed: { $slice: [0, 1] } },
-            (err, user) => {
-              if (err || !user) {
-                res.status(408).json({errorMessage:err.toString()});
+            // get recentlyPlayed if it is empty
+            User.findOne(
+              { spotifyID: body.id },
+              { recentlyPlayed: { $slice: [0, 1] } },
+              (err, user) => {
+                if (err) {
+                  res.status(408).json({ errorMessage: err.toString() });
+                  return;
+                }
+                if (!user) {
+                  res.status(408).json({ errorMessage: "user: " + user });
+                  return;
+                }
+                if (user.recentlyPlayed.length) {
+                  return;
+                }
+
+                fetch(
+                  `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: "Bearer " + access_token,
+                    },
+                  }
+                )
+                  .then((res) => res.json())
+                  .then((body) => {
+                    body.items.forEach((item) => {
+                      delete item.track.available_markets;
+                      delete item.track.album.available_markets;
+                    });
+                    const filter = { spotifyID: body.id };
+                    const update = {
+                      recentlyPlayed: body.items,
+                    };
+                    User.updateOne(filter, update);
+                  });
+              }
+            );
+
+            User.findOne({ spotifyID: body.id }, { _id: 1 }, (err, user) => {
+              if (err) {
+                res.status(408).json({ errorMessage: err.toString() });
                 return;
               }
-              if (!user.recentlyPlayed.length) {
-                request.get(
-                  recentlyPlayedOptions,
-                  async (error, response, body) => {
-                    if (!error) {
-                      body.items.forEach((item) => {
-                        delete item.track.available_markets;
-                        delete item.track.album.available_markets;
-                      });
-                      const filter = { spotifyID: userData.id };
-                      const update = {
-                        recentlyPlayed: body.items,
-                      };
-                      await User.updateOne(filter, update);
-                    }
-                  }
-                );
-              }
-            }
-          );
-          User.findOne({ spotifyID: userData.id }, { _id: 1 }, (err, user) => {
-            if (err || !user) {
-              res.status(408).json({errorMessage:err.toString()});
-              return;
-            }
-            res.redirect(
-              `${uri}?access_token=${access_token}&id=${user._id}`
-            );
+              res.redirect(
+                `${uri}?access_token=${access_token}&id=${user._id}`
+              );
+            });
           });
-        }
       });
-    });
   },
 };
 

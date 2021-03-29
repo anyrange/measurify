@@ -1,12 +1,12 @@
-const request = require("request");
 const User = require("../models/User");
+const fetch = require("node-fetch");
 
 const infoPages = {
   artist: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(401).json({ message: `Unauthorized`, });
-      return
+      res.status(401).json({ message: `Unauthorized` });
+      return;
     }
     const artistID = req.params.id;
 
@@ -26,8 +26,8 @@ const infoPages = {
         lastSpotifyToken: 1,
       },
       (err, user) => {
-        if (err || !user) {
-          res.status(408).json({errorMessage:err.toString()});
+        if (err) {
+          res.status(408).json({ errorMessage: err.toString() });
           return;
         }
 
@@ -43,35 +43,33 @@ const infoPages = {
           res.status(204).json();
           return;
         }
-        const artistsOptions = {
-          uri: `https://api.spotify.com/v1/artists/${artistID}`,
+        fetch(`https://api.spotify.com/v1/artists/${artistID}`, {
           headers: {
             Authorization: "Bearer " + user.lastSpotifyToken,
           },
-          json: true,
-        };
-
-        request.get(artistsOptions, (error, resp, body) => {
-          res.status(200).json({
-            artist: {
-              followers: body.followers.total,
-              genres: body.genres,
-              name: body.name,
-              image: body.images[0].url,
-              link: body.external_urls.spotify,
-            },
-            overview: plays(user),
-            tracks: tracks(user.recentlyPlayed),
+        })
+          .then((res) => res.json())
+          .then((body) => {
+            res.status(200).json({
+              artist: {
+                followers: body.followers.total,
+                genres: body.genres,
+                name: body.name,
+                image: body.images[0].url,
+                link: body.external_urls.spotify,
+              },
+              overview: plays(user),
+              tracks: tracks(user.recentlyPlayed),
+            });
           });
-        });
       }
     );
   },
   album: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(401).json({ message: `Unauthorized`, });
-      return
+      res.status(401).json({ message: `Unauthorized` });
+      return;
     }
     const albumID = req.params.id;
 
@@ -91,8 +89,8 @@ const infoPages = {
         "recentlyPlayed.track.album.external_urls.spotify": 1,
       },
       (err, user) => {
-        if (err || !user) {
-          res.status(408).json({errorMessage:err.toString()});
+        if (err) {
+          res.status(408).json({ errorMessage: err.toString() });
           return;
         }
         user.recentlyPlayed = user.recentlyPlayed.filter(
@@ -118,8 +116,8 @@ const infoPages = {
   track: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(401).json({ message: `Unauthorized`, });
-      return
+      res.status(401).json({ message: `Unauthorized` });
+      return;
     }
     const trackID = req.params.id;
 
@@ -140,8 +138,8 @@ const infoPages = {
         lastSpotifyToken: 1,
       },
       (err, user) => {
-        if (err || !user) {
-          res.status(408).json({errorMessage:err.toString()});
+        if (err) {
+          res.status(408).json({ errorMessage: err.toString() });
           return;
         }
 
@@ -154,34 +152,32 @@ const infoPages = {
           return;
         }
 
-        const tracksOptions = {
-          uri: `https://api.spotify.com/v1/tracks/${trackID}`,
+        fetch(`https://api.spotify.com/v1/tracks/${trackID}`, {
           headers: {
             Authorization: "Bearer " + user.lastSpotifyToken,
           },
-          json: true,
-        };
-
-        request.get(tracksOptions, (error, resp, body) => {
-          res.status(200).json({
-            track: {
-              album: {
-                name: user.recentlyPlayed[0].track.album.name,
-                id: user.recentlyPlayed[0].track.album.id,
+        })
+          .then((res) => res.json())
+          .then((body) => {
+            res.status(200).json({
+              track: {
+                album: {
+                  name: user.recentlyPlayed[0].track.album.name,
+                  id: user.recentlyPlayed[0].track.album.id,
+                },
+                artist: {
+                  name: user.recentlyPlayed[0].track.artists[0].name,
+                  id: user.recentlyPlayed[0].track.artists[0].id,
+                },
+                name: user.recentlyPlayed[0].track.name,
+                image: user.recentlyPlayed[0].track.album.images[0].url,
+                link: user.recentlyPlayed[0].track.external_urls.spotify,
+                release: body.album.release_date,
+                duration_ms: user.recentlyPlayed[0].track.duration_ms,
               },
-              artist: {
-                name: user.recentlyPlayed[0].track.artists[0].name,
-                id: user.recentlyPlayed[0].track.artists[0].id,
-              },
-              name: user.recentlyPlayed[0].track.name,
-              image: user.recentlyPlayed[0].track.album.images[0].url,
-              link: user.recentlyPlayed[0].track.external_urls.spotify,
-              release: body.album.release_date,
-              duration_ms: user.recentlyPlayed[0].track.duration_ms,
-            },
-            overview: plays(user),
+              overview: plays(user),
+            });
           });
-        });
       }
     );
   },

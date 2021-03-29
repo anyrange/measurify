@@ -1,35 +1,39 @@
-const request = require("request");
+const fetch = require("node-fetch");
 const User = require("../models/User");
 require("dotenv").config();
 
 function refresh_recently_played() {
   const start = new Date();
   function parseRecentlyPlayed(user, cb, reject) {
-    const recentlyPlayedOptions = {
-      uri: "https://api.spotify.com/v1/me/player/recently-played?limit=15",
+    fetch("https://api.spotify.com/v1/me/player/recently-played?limit=15", {
+      method: "GET",
       headers: {
         Authorization: "Bearer " + user.lastSpotifyToken,
       },
-      json: true,
-    };
-
-    request.get(recentlyPlayedOptions, async (error, response, body) => {
-      if (error || !body.items) {
-        reject(user.userName, error, body);
-      }
-      body.items.forEach((item) => {
-        delete item.track.available_markets;
-        delete item.track.album.available_markets;
-      });
-
-      if (!user.recentlyPlayed.length) {
-        const query = { spotifyID: user.spotifyID };
-        const update = {
-          recentlyPlayed: body.items,
-        };
-        await User.updateOne(query, update);
-        cb();
-      } else {
+    })
+      .catch((err) => {
+        reject(user.userName, err);
+      })
+      .then((res) => res.json())
+      .then(async (body) => {
+        if (!body.items.length) {
+          cb();
+          return;
+        }
+        body.items.forEach((item) => {
+          delete item.track.available_markets;
+          delete item.track.album.available_markets;
+        });
+        console.log(body.items[0].track.name);
+        if (!user.recentlyPlayed.length) {
+          const query = { spotifyID: user.spotifyID };
+          const update = {
+            recentlyPlayed: body.items,
+          };
+          await User.updateOne(query, update);
+          cb();
+          return;
+        }
         let i = 0;
         let newSongs = [];
         while (
@@ -50,11 +54,9 @@ function refresh_recently_played() {
             },
           },
         };
-
         await User.updateOne(query, update);
         cb();
-      }
-    });
+      });
   }
 
   const agg = [
@@ -92,10 +94,9 @@ function refresh_recently_played() {
     let requests = users.map((user) => {
       return new Promise((resolve, reject) => {
         parseRecentlyPlayed(user, resolve, reject);
-      }).catch((user) => {
+      }).catch((user, error) => {
         console.log(user + " died");
         console.log("error: " + error);
-        console.log("body: " + body);
       });
     });
 

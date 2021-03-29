@@ -13,7 +13,7 @@ const getOverview = (req, res) => {
   };
 
   User.findOne({ _id }, projection, (err, user) => {
-    if (err || !user) {
+    if (err) {
       res.status(408).json({errorMessage:err.toString()});
       return;
     }
