@@ -231,6 +231,12 @@
 <script>
 import LoadingSpinner from "@/components/LoadingSpinner";
 import chartOptions from "@/mixins/chartOptions";
+import {
+  getFirstDayOfWeek,
+  getLastDateOfWeek,
+  getFirstDayOfMonth,
+  getLastDayOfMonth,
+} from "@/utils/dates";
 import axios from "axios";
 // import { format } from "date-fns";
 
@@ -274,29 +280,43 @@ export default {
   },
 
   methods: {
-    getTotals(totalPlayed, totalPlayedArray) {
-      totalPlayed = totalPlayedArray.reduce(function(a, b) {
-        return a + b;
-      }, 0);
-    },
     getTotalTracksPlayed(arr) {
       this.totalTracksPlayed = arr.reduce(function(a, b) {
         return a + b;
       }, 0);
     },
+
     getTotalMinutesListened(arr) {
       this.totalMinutesListened = arr.reduce(function(a, b) {
         return a + b;
       }, 0);
     },
+
     updateChart(period) {
+      const filterTotalOverview = (array, firstDate, lastDate) =>
+        array.filter((item) => {
+          let date = new Date(item.date).getTime();
+          return firstDate < date && date < lastDate;
+        });
+      const firstDayOfWeek = getFirstDayOfWeek();
+      const lastDayOfWeek = getLastDateOfWeek();
+      const firstDayOfMonth = getFirstDayOfMonth();
+      const lastDayOfMonth = getLastDayOfMonth();
+
       if (period == "alltime") {
-        const newDates = this.allDates;
-        const newValues = this.minutesListened;
+        const newDates = [];
+        const newValues = [];
+        this.tracksPlayed = [];
+        this.minutesListened = [];
 
-        console.log(this.allDates);
-
-        // const todayDate = format(new Date(), "yyyy-MM-dd");
+        for (const item of this.totalOverview) {
+          newDates.push(item.date);
+          newValues.push(item.plays);
+          this.tracksPlayed.push(item.plays);
+          this.minutesListened.push(item.duration);
+        }
+        this.getTotalTracksPlayed(this.tracksPlayed);
+        this.getTotalMinutesListened(this.minutesListened);
 
         this.chartOptions = {
           xaxis: {
@@ -310,16 +330,57 @@ export default {
         ];
       }
       if (period == "week") {
-        const newDates = [
-          "2021-03-15",
-          "2021-03-16",
-          "2021-03-17",
-          "2021-03-18",
-          "2021-03-19",
-          "2021-03-20",
-          "2021-03-21",
+        const filtetedOverviewByWeek = filterTotalOverview(
+          this.totalOverview,
+          firstDayOfWeek,
+          lastDayOfWeek
+        );
+
+        const newDates = [];
+        const newValues = [];
+        this.tracksPlayed = [];
+        this.minutesListened = [];
+
+        for (const item of filtetedOverviewByWeek) {
+          newDates.push(item.date);
+          newValues.push(item.plays);
+          this.tracksPlayed.push(item.plays);
+          this.minutesListened.push(item.duration);
+        }
+
+        this.updateNumbers();
+
+        this.chartOptions = {
+          xaxis: {
+            categories: newDates,
+          },
+        };
+        this.overviewData = [
+          {
+            data: newValues,
+          },
         ];
-        const newValues = [8, 18, 3, 13, 10, 4, 32];
+      }
+      if (period == "month") {
+        const filtetedOverviewByMonth = filterTotalOverview(
+          this.totalOverview,
+          firstDayOfMonth,
+          lastDayOfMonth
+        );
+
+        const newDates = [];
+        const newValues = [];
+        this.tracksPlayed = [];
+        this.minutesListened = [];
+
+        for (const item of filtetedOverviewByMonth) {
+          newDates.push(item.date);
+          newValues.push(item.plays);
+          this.tracksPlayed.push(item.plays);
+          this.minutesListened.push(item.duration);
+        }
+
+        this.updateNumbers();
 
         this.chartOptions = {
           xaxis: {
@@ -335,7 +396,6 @@ export default {
     },
     updateOverview(period) {
       this.selectedPeriod = period;
-
       if (period == "alltime") {
         this.updateChart(period);
       }
@@ -343,22 +403,22 @@ export default {
         this.updateChart(period);
       }
       if (period == "month") {
-        this.selectedPeriod = "alltime";
-        alert("Not yet");
+        this.updateChart(period);
       }
+    },
+    updateNumbers() {
+      this.getTotalTracksPlayed(this.tracksPlayed);
+      this.getTotalMinutesListened(this.minutesListened);
     },
     pushToChart() {
       for (const item of this.totalOverview) {
         this.overviewData[0].data.push(item.plays);
         this.chartOptions.xaxis.categories.push(item.date);
-
         this.allDates.push(item.date);
         this.tracksPlayed.push(item.plays);
         this.minutesListened.push(item.duration);
-
-        this.getTotalTracksPlayed(this.tracksPlayed);
-        this.getTotalMinutesListened(this.minutesListened);
       }
+      this.updateNumbers();
     },
     getOverview() {
       axios
@@ -372,8 +432,8 @@ export default {
           this.pushToChart();
           this.emptyData = this.totalOverview.length > 1 ? false : true;
         })
-        .catch((err) => console.log(err));
-      // .finally(() => (this.loading = false));
+        .catch((err) => console.log(err))
+        .finally(() => (this.loading = false));
     },
     getTop() {
       axios
@@ -385,8 +445,8 @@ export default {
         .then((response) => {
           this.totalTop = response.data;
         })
-        .catch((err) => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch((err) => console.log(err));
+      // .finally(() => (this.loading = false))
     },
   },
   created() {
