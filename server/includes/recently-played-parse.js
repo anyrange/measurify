@@ -87,7 +87,7 @@ function refresh_recently_played() {
       return;
     }
 
-    // ## ONE TIME PROMISE (TASKS MAY BE EXECUTED IN RANDOM ORDER)
+    // ## PARALLEL EXECUTION (TASKS MAY BE EXECUTED IN RANDOM ORDER)
 
     let requests = users.map((user) => {
       return new Promise((resolve, reject) => {
@@ -112,7 +112,7 @@ function refresh_recently_played() {
       );
     });
 
-    // ## CHAIN PROMISE (1 TASK->2 TASK->3 TASK->4 TASK)
+    // ## CHAIN EXECUTION (1 TASK->2 TASK->3 TASK->4 TASK)
     // let requests = users.reduce((promiseChain, user) => {
     //   return promiseChain.then(
     //     () =>

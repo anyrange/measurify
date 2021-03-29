@@ -87,21 +87,21 @@ const friends = (req, res) => {
       request.get(folowingOptions, async (err, response, body) => {
         users = users.filter((user, key) => body[key]);
         // check if followers and adds images to followees
-        let requests = users.reduce((promiseChain, user) => {
-          return promiseChain.then(() =>
-            new Promise((resolve) => {
-              addImage(user, access_token, resolve, id);
-            }).then((user) => {
-              users.push(user);
-            })
-          );
-        }, Promise.resolve());
+
+        let requests = users.map((user) => {
+          return new Promise((resolve) => {
+            addImage(user, access_token, resolve, id);
+          }).then((user) => {
+            users.push(user);
+          });
+        });
+
         users = [];
-        // response
-        requests.then(() => {
+
+        Promise.all(requests).then(() => {
           res.status(200).json(
             users
-              .filter(({ friend }) => friend )
+              .filter(({ friend }) => friend)
               .map(({ _id, spotifyID, userName, url }) => {
                 return { _id, spotifyID, userName, url };
               })
