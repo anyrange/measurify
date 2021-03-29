@@ -24,7 +24,7 @@ function refresh_recently_played() {
           delete item.track.available_markets;
           delete item.track.album.available_markets;
         });
-        console.log(body.items[0].track.name);
+
         if (!user.recentlyPlayed.length) {
           const query = { spotifyID: user.spotifyID };
           const update = {
