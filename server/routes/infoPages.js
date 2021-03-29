@@ -5,7 +5,7 @@ const infoPages = {
   artist: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(400).json({ message: `Unauthorized`, });
+      res.status(401).json({ message: `Unauthorized`, });
       return
     }
     const artistID = req.params.id;
@@ -27,7 +27,7 @@ const infoPages = {
       },
       (err, user) => {
         if (err || !user) {
-          res.status(400).json({errorMessage:err.toString()});
+          res.status(408).json({errorMessage:err.toString()});
           return;
         }
 
@@ -40,7 +40,7 @@ const infoPages = {
         });
 
         if (!user.recentlyPlayed.length) {
-          res.status(200).json();
+          res.status(204).json();
           return;
         }
         const artistsOptions = {
@@ -70,7 +70,7 @@ const infoPages = {
   album: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(400).json({ message: `Unauthorized`, });
+      res.status(401).json({ message: `Unauthorized`, });
       return
     }
     const albumID = req.params.id;
@@ -92,14 +92,14 @@ const infoPages = {
       },
       (err, user) => {
         if (err || !user) {
-          res.status(400).json({errorMessage:err.toString()});
+          res.status(408).json({errorMessage:err.toString()});
           return;
         }
         user.recentlyPlayed = user.recentlyPlayed.filter(
           (item) => item.track.album.id === albumID
         );
         if (!user.recentlyPlayed.length) {
-          res.status(200).json();
+          res.status(204).json({});
           return;
         }
 
@@ -118,7 +118,7 @@ const infoPages = {
   track: (req, res) => {
     const _id = req.get("Authorization");
     if (!_id) {
-      res.status(400).json({ message: `Unauthorized`, });
+      res.status(401).json({ message: `Unauthorized`, });
       return
     }
     const trackID = req.params.id;
@@ -141,7 +141,7 @@ const infoPages = {
       },
       (err, user) => {
         if (err || !user) {
-          res.status(400).json({errorMessage:err.toString()});
+          res.status(408).json({errorMessage:err.toString()});
           return;
         }
 

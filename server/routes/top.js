@@ -4,7 +4,7 @@ const request = require("request");
 const top = (req, res) => {
   let _id = req.get("Authorization");
   if (!_id) {
-    res.status(400).json({ message: `Unauthorized` });
+    res.status(401).json({ message: `Unauthorized` });
     return;
   }
   const period = req.query.period;
@@ -30,7 +30,7 @@ const top = (req, res) => {
     
     async (err, user) => {
       if (err || !user) {
-        res.status(400).json({errorMessage:err.toString()});
+        res.status(408).json({errorMessage:err.toString()});
         return;
       }
       if (period) {
@@ -40,7 +40,7 @@ const top = (req, res) => {
       }
       let response = { albums: [], tracks: [], artists: [] };
       if (!user.recentlyPlayed.length) {
-        res.status(200).json(response);
+        res.status(204).json({});
         return;
       }
       response.albums = await albums(user.recentlyPlayed);

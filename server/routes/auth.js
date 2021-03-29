@@ -21,12 +21,12 @@ const auth = {
   getAccessToken: function(req, res) {
     let _id = req.get("Authorization");
     if (!_id) {
-      res.status(400).json({ message: `Unauthorized` });
+      res.status(401).json({ message: `Unauthorized` });
       return;
     }
     User.findOne({ _id }, (err, user) => {
       if (err || !user) {
-        res.status(400).json({errorMessage:err.toString(),user});
+        res.status(408).json({errorMessage:err.toString(),user});
         return;
       }
       res.status(200).end(user.lastSpotifyToken);
@@ -93,7 +93,7 @@ const auth = {
             { recentlyPlayed: { $slice: [0, 1] } },
             (err, user) => {
               if (err || !user) {
-                res.status(400).json({errorMessage:err.toString()});
+                res.status(408).json({errorMessage:err.toString()});
                 return;
               }
               if (!user.recentlyPlayed.length) {
@@ -118,7 +118,7 @@ const auth = {
           );
           User.findOne({ spotifyID: userData.id }, { _id: 1 }, (err, user) => {
             if (err || !user) {
-              res.status(400).json({errorMessage:err.toString()});
+              res.status(408).json({errorMessage:err.toString()});
               return;
             }
             res.redirect(

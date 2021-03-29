@@ -54,7 +54,7 @@ const addImage = (user, access_token, cb, id) => {
 const friends = (req, res) => {
   const req_id = req.get("Authorization");
   if (!req_id) {
-    res.status(400).json({ message: `Unauthorized` });
+    res.status(401).json({ message: `Unauthorized` });
     return;
   }
   User.find(
@@ -62,7 +62,7 @@ const friends = (req, res) => {
     { spotifyID: 1, lastSpotifyToken: 1, userName: 1 },
     (err, users) => {
       if (err || !user) {
-        res.status(400).json({errorMessage:err.toString()});
+        res.status(408).json({errorMessage:err.toString()});
         return;
       }
 

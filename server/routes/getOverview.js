@@ -3,7 +3,7 @@ const User = require("../models/User");
 const getOverview = (req, res) => {
   let _id = req.get("Authorization");
   if (!_id) {
-    res.status(400).json({ message: `Unauthorized` });
+    res.status(401).json({ message: `Unauthorized` });
     return;
   }
   const projection = {
@@ -14,7 +14,7 @@ const getOverview = (req, res) => {
 
   User.findOne({ _id }, projection, (err, user) => {
     if (err || !user) {
-      res.status(400).json({errorMessage:err.toString()});
+      res.status(408).json({errorMessage:err.toString()});
       return;
     }
 
@@ -24,7 +24,7 @@ const getOverview = (req, res) => {
       return { date, duration };
     });
     if (!playDates.length) {
-      res.status(200).json({});
+      res.status(204).json({});
       return;
     }
     dateToCompare = playDates[0].date;
