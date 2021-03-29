@@ -47,11 +47,11 @@ export default {
     },
   },
   created() {
-    if (!this.user._id) {
-      this.$store.commit("mutateUser", null);
-      this.$router.push({ name: "Home" });
-    }
     if (this.user) {
+      if (!this.user._id) {
+        this.$store.commit("mutateUser", null);
+        this.$router.push({ name: "Home" });
+      }
       axios
         .get(`${process.env.VUE_APP_SERVER_URI}/token`, {
           headers: {

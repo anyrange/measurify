@@ -113,7 +113,7 @@ const auth = {
           );
           User.findOne({ spotifyID: userData.id }, { _id: 1 }, (err, user) => {
             res.redirect(
-              `${uri}?access_token=${access_token}&refresh_token=${refresh_token}&id=${user._id}`
+              `${uri}?access_token=${access_token}&id=${user._id}`
             );
           });
         }

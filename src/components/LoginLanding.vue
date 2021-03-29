@@ -64,7 +64,6 @@ export default {
           },
         })
         .then((response) => {
-          response.data.refresh_token = this.$route.query.refresh_token;
           response.data.access_token = access_token;
           response.data._id = this.$route.query.id;
           this.$store.commit("mutateUser", response.data);
