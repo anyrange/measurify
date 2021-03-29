@@ -5,12 +5,12 @@
   "scripts": {
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build",
+    "heroku-postbuild": "echo Skip builds on Heroku",
     "dist": "serve -s dist",
     "serve": "vue-cli-service serve --port 3000",
     "server": "nodemon index.js --prefix server",
     "dev": "concurrently \"npm run serve\" \"npm run server\""
   },
-  "heroku-run-build-script": false,
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.2",
     "apexcharts": "^3.26.0",
