@@ -13,8 +13,9 @@ const getOverview = (req, res) => {
   };
 
   User.findOne({ _id }, projection, (err, user) => {
-    if (err) {
-      res.status(400).end(err);
+    if (err || !user) {
+      res.status(400).json({errorMessage:err.toString()});
+      return;
     }
 
     const playDates = user.recentlyPlayed.map(({ played_at, track }) => {
@@ -23,7 +24,7 @@ const getOverview = (req, res) => {
       return { date, duration };
     });
     if (!playDates.length) {
-      res.end();
+      res.status(200).json({});
       return;
     }
     dateToCompare = playDates[0].date;

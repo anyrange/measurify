@@ -20,8 +20,8 @@ const getPlayedHistory = (req, res) => {
   };
 
   User.findOne({ _id }, projection, (err, user) => {
-    if (err) {
-      console.log(err);
+    if (err || !user) {
+      res.status(400).json({errorMessage:err.toString()});
       return;
     }
 

@@ -25,8 +25,9 @@ const auth = {
       return;
     }
     User.findOne({ _id }, (err, user) => {
-      if (err) {
-        res.status(400).end(err);
+      if (err || !user) {
+        res.status(400).json({errorMessage:err.toString(),user});
+        return;
       }
       res.status(200).end(user.lastSpotifyToken);
     });
@@ -91,6 +92,10 @@ const auth = {
             { spotifyID: userData.id },
             { recentlyPlayed: { $slice: [0, 1] } },
             (err, user) => {
+              if (err || !user) {
+                res.status(400).json({errorMessage:err.toString()});
+                return;
+              }
               if (!user.recentlyPlayed.length) {
                 request.get(
                   recentlyPlayedOptions,
@@ -112,6 +117,10 @@ const auth = {
             }
           );
           User.findOne({ spotifyID: userData.id }, { _id: 1 }, (err, user) => {
+            if (err || !user) {
+              res.status(400).json({errorMessage:err.toString()});
+              return;
+            }
             res.redirect(
               `${uri}?access_token=${access_token}&id=${user._id}`
             );

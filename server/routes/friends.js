@@ -61,8 +61,8 @@ const friends = (req, res) => {
     {},
     { spotifyID: 1, lastSpotifyToken: 1, userName: 1 },
     (err, users) => {
-      if (err) {
-        res.setStatus(400).end(err);
+      if (err || !user) {
+        res.status(400).json({errorMessage:err.toString()});
         return;
       }
 

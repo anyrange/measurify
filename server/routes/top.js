@@ -21,14 +21,16 @@ const top = (req, res) => {
     "recentlyPlayed.track.name": 1,
     lastSpotifyToken: 1,
   };
+
   User.findOne(
     {
       _id,
     },
     projection,
+    
     async (err, user) => {
       if (err || !user) {
-        res.status(400).json({});
+        res.status(400).json({errorMessage:err.toString()});
         return;
       }
       if (period) {
@@ -36,11 +38,11 @@ const top = (req, res) => {
           ({ played_at }) => played_at > period
         );
       }
+      let response = { albums: [], tracks: [], artists: [] };
       if (!user.recentlyPlayed.length) {
-        res.status(200).json({ albums: [], artists: [], tracks: [] });
+        res.status(200).json(response);
         return;
       }
-      let response = {};
       response.albums = await albums(user.recentlyPlayed);
       response.tracks = await tracks(user.recentlyPlayed);
       response.artists = await artists(user.recentlyPlayed);

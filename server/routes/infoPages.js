@@ -26,8 +26,8 @@ const infoPages = {
         lastSpotifyToken: 1,
       },
       (err, user) => {
-        if (err) {
-          res.status(400).end(err);
+        if (err || !user) {
+          res.status(400).json({errorMessage:err.toString()});
           return;
         }
 
@@ -91,8 +91,8 @@ const infoPages = {
         "recentlyPlayed.track.album.external_urls.spotify": 1,
       },
       (err, user) => {
-        if (err) {
-          res.status(400).end(err);
+        if (err || !user) {
+          res.status(400).json({errorMessage:err.toString()});
           return;
         }
         user.recentlyPlayed = user.recentlyPlayed.filter(
@@ -140,8 +140,8 @@ const infoPages = {
         lastSpotifyToken: 1,
       },
       (err, user) => {
-        if (err) {
-          res.status(400).end(err);
+        if (err || !user) {
+          res.status(400).json({errorMessage:err.toString()});
           return;
         }
 
