@@ -41,7 +41,7 @@ mongoose.connect(
 
 function startScheduledJobs() {
   const job1 = new CronJob(
-    "0 55 * * * *",
+    "0 */30 * * * *",
     () => {
       refresh_tokens();
     },
