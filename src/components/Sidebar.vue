@@ -142,9 +142,7 @@ export default {
         if (window.innerWidth > 768) {
           this.isOpen = true;
         }
-      });
-      window.addEventListener("resize", () => {
-        if (window.outerWidth < 768) {
+        if (window.innerWidth < 768) {
           this.isOpen = false;
         }
       });
