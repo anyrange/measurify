@@ -6,7 +6,9 @@
       <div class="flex-1 flex overflow-y-hidden">
         <Sidebar />
         <div class="dark:bg-gray-800-spotify bg-gray-100 flex-1 flex flex-col">
-          <UserBar />
+          <div class="top-bar flex items-center justify-end px-4">
+            <UserBar />
+          </div>
           <div class="content-spotify overflow-y-auto">
             <router-view />
           </div>
@@ -19,12 +21,6 @@
   </template>
   <UpdateNotification />
 </template>
-
-<style>
-.h-title {
-  @apply mx-4 text-5xl font-semibold dark:text-white text-gray-900;
-}
-</style>
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";

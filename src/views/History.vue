@@ -10,7 +10,7 @@
         </div>
       </template>
       <template v-else>
-        <h3 class="mx-4 mt-4 text-lg font-semibold text-gray-500">
+        <h3 class="h-subtitle">
           Click the song's title, artist, or album name to get more info
         </h3>
         <div class="top-bar flex items-center justify-between pt-4">
@@ -20,7 +20,7 @@
                 type="text"
                 placeholder="Search"
                 v-model="search"
-                class="dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md px-32 pl-8 py-2 outline-none"
+                class="search-field"
               />
               <div class="absolute top-0">
                 <svg
@@ -42,7 +42,7 @@
           <table class="w-full table-fixed">
             <thead>
               <tr>
-                <th class="history-th w-3/10">
+                <th class="history-th md:w-3/10 w-1.5/10">
                   Title
                 </th>
                 <th class="history-th w-2.5/10 sm:table-cell hidden">
@@ -51,7 +51,7 @@
                 <th class="history-th w-2/10 md:table-cell hidden">
                   Album
                 </th>
-                <th class="history-th w-1.5/10">
+                <th class="history-th md:w-1.5/10 w-1/10">
                   When
                 </th>
                 <th class="history-th w-1/10 lg:table-cell hidden">
@@ -117,6 +117,9 @@
 .history-tr {
   @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
 }
+.search-field {
+  @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
+}
 </style>
 
 <script>
@@ -142,14 +145,11 @@ export default {
   methods: {
     getListeningHistory() {
       axios
-        .get(
-          `${process.env.VUE_APP_SERVER_URI}/listening-history`,
-          {
-            headers: {
-              Authorization: this.user._id
-            },
-          }
-        )
+        .get(`${process.env.VUE_APP_SERVER_URI}/listening-history`, {
+          headers: {
+            Authorization: this.user._id,
+          },
+        })
         .catch((err) => console.log(err))
         .then((response) => {
           this.recentlyPlayed = response.data;

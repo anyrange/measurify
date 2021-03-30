@@ -1,7 +1,7 @@
 <template>
-  <div class="opacity-80 h-80 flex items-center justify-center">
+  <div class="loading-spinner">
     <svg
-      class="animate-spin -ml-1 mr-3 h-12 w-12 dark:text-white"
+      class="loading-spinner-animate"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -22,3 +22,12 @@
     </svg>
   </div>
 </template>
+
+<style>
+.loading-spinner {
+  @apply opacity-80 h-80 flex items-center justify-center;
+}
+.loading-spinner-animate {
+  @apply animate-spin -ml-1 mr-3 h-12 w-12 dark:text-white;
+}
+</style>

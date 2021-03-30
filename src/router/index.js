@@ -44,7 +44,7 @@ const routes = [
         },
       },
       {
-        path: "/profile",
+        path: "/me",
         component: Profile,
         meta: {
           title: "Profile",

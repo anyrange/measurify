@@ -1,9 +1,9 @@
 <template>
   <transition
-    enter-active-class="updb-transition_entering updb-transition_entering_from"
-    enter-to-class="updb-transition_entering_to"
-    leave-active-class="updb-transition_leaving updb-transition_leaving_to"
-    leave-to-class="updb-transition_leaving_to"
+    enter-active-class="transition-entering transition-entering-from"
+    enter-to-class="transition-entering-to"
+    leave-active-class="transition-leaving transition-leaving-from"
+    leave-to-class="transition-leaving-to"
   >
     <div class="static" v-if="updateExists">
       <div
@@ -61,23 +61,23 @@ export default {
 };
 </script>
 
-<style>
-.updb-transition_entering {
+<style scoped>
+.transition-entering {
   @apply transition ease-out duration-100;
 }
-.updb-transition_entering_from {
+.transition-entering-from {
   @apply transform opacity-0 -translate-x-5;
 }
-.updb-transition_entering_to {
+.transition-entering-to {
   @apply transform opacity-100 scale-100;
 }
-.updb-transition_leaving {
+.transition-leaving {
   @apply transition ease-in duration-75;
 }
-.updb-transition_leaving_from {
+.transition-leaving-from {
   @apply transform opacity-100 scale-100;
 }
-.updb-transition_leaving_to {
+.transition-leaving-to {
   @apply transform opacity-0 scale-100 -translate-x-5;
 }
 </style>
