@@ -23,6 +23,12 @@ function refresh_tokens() {
           ).toString("base64"),
       },
     })
+      .catch((err) => {
+        console.log("user " + spotifyID + " havent got his token");
+        console.log(err);
+        cb();
+        return;
+      })
       .then((res) => res.json())
       .then(async (body) => {
         if (body.error) {
