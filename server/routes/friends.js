@@ -12,8 +12,22 @@ const addImage = (user, access_token, cb, id) => {
       },
     }
   )
+    .catch((err) => {
+      res.status(400).json(err);
+      return;
+    })
     .then((res) => res.json())
     .then((body) => {
+      if (body.error) {
+        console.log(
+          body.error.message +
+            "; Error by " +
+            user.userName +
+            " while getting friendlist"
+        );
+        cb();
+        return;
+      }
       let friend = false;
       let image = "";
       if (!body[0]) {
@@ -38,6 +52,16 @@ const addImage = (user, access_token, cb, id) => {
       })
         .then((res) => res.json())
         .then((body) => {
+          if (body.error) {
+            console.log(
+              body.error.message +
+                "; Error by " +
+                user.userName +
+                " while getting friendlist"
+            );
+            cb();
+            return;
+          }
           if (body.images.length) {
             image = body.images[0].url;
           }
@@ -88,6 +112,10 @@ const friends = (req, res) => {
       )
         .then((res) => res.json())
         .then((body) => {
+          if (body.error) {
+            res.status(body.error.status).json({ message: body.error.message });
+            return;
+          }
           users = users.filter((user, key) => body[key]);
           // check if followers and adds images to followees
 
@@ -95,19 +123,23 @@ const friends = (req, res) => {
             return new Promise((resolve) => {
               addImage(user, access_token, resolve, id);
             }).then((user) => {
-              users.push(user);
+              if (user && user.friend) {
+                users.push(user);
+              }
             });
           });
 
           users = [];
 
           Promise.all(requests).then(() => {
+            if (!users.length) {
+              res.status(200).json(users);
+              return;
+            }
             res.status(200).json(
-              users
-                .filter(({ friend }) => friend)
-                .map(({ _id, spotifyID, userName, url }) => {
-                  return { _id, spotifyID, userName, url };
-                })
+              users.map(({ _id, spotifyID, userName, url }) => {
+                return { _id, spotifyID, userName, url };
+              })
             );
           });
         });

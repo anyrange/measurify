@@ -27,7 +27,7 @@ const infoPages = {
       },
       (err, user) => {
         if (err) {
-          res.status(408).json({ errorMessage: err.toString() });
+          res.status(408).json({ message: err.toString() });
           return;
         }
 
@@ -50,6 +50,12 @@ const infoPages = {
         })
           .then((res) => res.json())
           .then((body) => {
+            if (body.error) {
+              res
+                .status(body.error.status)
+                .json({ message: body.error.message });
+              return;
+            }
             res.status(200).json({
               artist: {
                 followers: body.followers.total,
@@ -159,6 +165,12 @@ const infoPages = {
         })
           .then((res) => res.json())
           .then((body) => {
+            if (body.error) {
+              res
+                .status(body.error.status)
+                .json({ message: body.error.message });
+              return;
+            }
             res.status(200).json({
               track: {
                 album: {

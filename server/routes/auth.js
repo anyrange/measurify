@@ -57,6 +57,10 @@ const auth = {
     })
       .then((res) => res.json())
       .then((body) => {
+        if (body.error) {
+          res.status(body.error.status).json({ message: body.error.message });
+          return;
+        }
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
 
@@ -71,6 +75,12 @@ const auth = {
         })
           .then((res) => res.json())
           .then(async (body) => {
+            if (body.error) {
+              res
+                .status(body.error.status)
+                .json({ message: body.error.message });
+              return;
+            }
             console.log(body.display_name + " logined");
 
             const filter = { spotifyID: body.id };
@@ -91,11 +101,11 @@ const auth = {
               { recentlyPlayed: { $slice: [0, 1] } },
               (err, user) => {
                 if (err) {
-                  res.status(408).json({ errorMessage: err.toString() });
+                  res.status(408).json({ message: err.toString() });
                   return;
                 }
                 if (!user) {
-                  res.status(408).json({ errorMessage: "user: " + user });
+                  res.status(404).json({ message: "user: " + user });
                   return;
                 }
                 if (user.recentlyPlayed.length) {
@@ -113,6 +123,9 @@ const auth = {
                 )
                   .then((res) => res.json())
                   .then((body) => {
+                    if (body.error ||!body.items.length) {
+                      return; 
+                    }
                     body.items.forEach((item) => {
                       delete item.track.available_markets;
                       delete item.track.album.available_markets;
@@ -128,7 +141,7 @@ const auth = {
 
             User.findOne({ spotifyID: body.id }, { _id: 1 }, (err, user) => {
               if (err) {
-                res.status(408).json({ errorMessage: err.toString() });
+                res.status(408).json({ message: err.toString() });
                 return;
               }
               res.redirect(

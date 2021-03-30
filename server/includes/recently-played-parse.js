@@ -13,9 +13,14 @@ function refresh_recently_played() {
     })
       .catch((err) => {
         reject(user.userName, err);
+        return;
       })
       .then((res) => res.json())
       .then(async (body) => {
+        if (body.error) {
+          reject(user.userName, body.error.message);
+          return;
+        }
         if (!body.items.length) {
           cb();
           return;
@@ -96,7 +101,7 @@ function refresh_recently_played() {
         parseRecentlyPlayed(user, resolve, reject);
       }).catch((user, error) => {
         console.log(user + " died");
-        console.log("error: " + error);
+        console.log("message: " + error);
       });
     });
 

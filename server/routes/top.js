@@ -30,7 +30,7 @@ const top = (req, res) => {
 
     async (err, user) => {
       if (err) {
-        res.status(408).json({ errorMessage: err.toString() });
+        res.status(408).json({ message: err.toString() });
         return;
       }
       if (period) {
@@ -57,9 +57,13 @@ const top = (req, res) => {
           headers: { Authorization: "Bearer " + user.lastSpotifyToken },
         }
       )
-        .catch((err) => res.status(400).json(err))
         .then((res) => res.json())
         .then(async (body) => {
+          if (body.error) {
+            response.message = body.error.message;
+            res.status(200).json(response);
+            return;
+          }
           await response.artists.forEach((artist, index) => {
             if (body.artists[index].images[2]) {
               artist.image = body.artists[index].images[2].url;

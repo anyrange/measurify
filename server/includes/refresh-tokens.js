@@ -25,6 +25,12 @@ function refresh_tokens() {
     })
       .then((res) => res.json())
       .then(async (body) => {
+        if (body.error) {
+          console.log("user " + spotifyID + " havent got his token");
+          console.log("message: " + body.error.message);
+          cb();
+          return;
+        }
         const filter = { spotifyID };
         const update = {
           lastSpotifyToken: body.access_token,

@@ -55,7 +55,7 @@ export default {
   },
 
   created() {
-    if (this.$route.query) {
+    if (this.$route.query.access_token) {
       const access_token = this.$route.query.access_token;
       axios
         .get("https://api.spotify.com/v1/me", {
@@ -68,8 +68,6 @@ export default {
           response.data._id = this.$route.query.id;
           this.$store.commit("mutateUser", response.data);
           this.$router.push("/");
-          console.log("Response from server: ");
-          console.log(this.$store.state.user);
         });
     }
   },
