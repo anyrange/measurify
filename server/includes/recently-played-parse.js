@@ -106,15 +106,14 @@ function refresh_recently_played() {
     });
 
     Promise.all(requests).then(() => {
-      console.log(
-        `All ${requests.length} histories updated at ` +
-          new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })
-      );
       const end = new Date();
       console.log(
-        `Operation took ${((end.getTime() - start.getTime()) / 1000).toFixed(
-          2
-        )} sec`
+        `All ${requests.length} histories updated in ${(
+          (end.getTime() - start.getTime()) /
+          1000
+        ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Almaty",
+        })}]`
       );
     });
 

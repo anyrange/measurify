@@ -57,15 +57,14 @@ function refresh_tokens() {
     });
 
     Promise.all(requests).then(() => {
-      console.log(
-        `All ${users.length} tokens refreshed at ` +
-          new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" })
-      );
       const end = new Date();
       console.log(
-        "Operation took " +
-          ((end.getTime() - start.getTime()) / 1000).toFixed(2) +
-          " sec"
+        `All ${requests.length} tokens refreshed in ${(
+          (end.getTime() - start.getTime()) /
+          1000
+        ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Almaty",
+        })}]`
       );
     });
   });
