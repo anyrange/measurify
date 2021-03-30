@@ -21,11 +21,6 @@ export default {
             },
             autoSelected: "zoom",
           },
-          animations: {
-            enabled: false,
-            easing: "linear",
-            speed: 100,
-          },
           foreColor: "#373d3f",
           redrawOnWindowResize: true,
           redrawOnParentResize: true,
@@ -46,7 +41,7 @@ export default {
           enabled: false,
         },
         xaxis: {
-          type: "datetime",
+          // type: "datetime",
           axisBorder: {
             show: true,
             color: "#404040",
@@ -57,6 +52,32 @@ export default {
           },
           tooltip: {
             enabled: false,
+          },
+          labels: {
+            show: true,
+            rotate: 0,
+            rotateAlways: false,
+            hideOverlappingLabels: true,
+            showDuplicates: false,
+            trim: false,
+            minHeight: undefined,
+            maxHeight: 120,
+            offsetX: 0,
+            offsetY: 0,
+            formatter: function(value) {
+              if (typeof value == "undefined") {
+                return value;
+              }
+              const options = {
+                month: "short",
+                day: "numeric",
+              };
+
+              const date = new Date(value);
+              const dateTimeFormat = new Intl.DateTimeFormat("en-US", options);
+              let out = dateTimeFormat.format(date);
+              return out;
+            },
           },
           categories: [],
         },

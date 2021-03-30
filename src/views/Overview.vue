@@ -11,10 +11,10 @@
       </template>
       <template v-else>
         <div class="mt-8">
-          <div class="px-4">
-            <ul class="flex">
+          <div class="sm:mx-4 mx-4">
+            <ul class="sm:flex">
               <li
-                class="tab rounded-l-lg"
+                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
                 :class="[
                   selectedPeriod === 'alltime' ? 'is-active' : 'not-active',
                 ]"
@@ -32,7 +32,7 @@
                 This Week
               </li>
               <li
-                class="tab rounded-r-lg"
+                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
                 :class="[
                   selectedPeriod === 'month' ? 'is-active' : 'not-active',
                 ]"
@@ -73,14 +73,14 @@
           >
             Top Played
           </h2>
-          <div class="mt-6 px-4">
-            <ul class="flex">
+          <div class="mt-6 sm:mx-4 mx-4">
+            <ul class="sm:flex">
               <li
                 :class="[
                   selectedTop === 'artists' ? 'is-active' : 'not-active',
                 ]"
                 @click="selectedTop = 'artists'"
-                class="tab rounded-l-lg"
+                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
               >
                 Artists
               </li>
@@ -94,7 +94,7 @@
               <li
                 :class="[selectedTop === 'albums' ? 'is-active' : 'not-active']"
                 @click="selectedTop = 'albums'"
-                class="tab rounded-r-lg"
+                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
               >
                 Albums
               </li>
@@ -321,6 +321,25 @@ export default {
         this.chartOptions = {
           xaxis: {
             categories: newDates,
+            labels: {
+              formatter: function(value) {
+                if (typeof value == "undefined") {
+                  return value;
+                }
+                const options = {
+                  month: "short",
+                  day: "numeric",
+                };
+
+                const date = new Date(value);
+                const dateTimeFormat = new Intl.DateTimeFormat(
+                  "en-US",
+                  options
+                );
+                let out = dateTimeFormat.format(date);
+                return out;
+              },
+            },
           },
         };
         this.overviewData = [
@@ -341,6 +360,8 @@ export default {
         this.tracksPlayed = [];
         this.minutesListened = [];
 
+        console.log(filtetedOverviewByWeek.length);
+
         for (const item of filtetedOverviewByWeek) {
           newDates.push(item.date);
           newValues.push(item.plays);
@@ -353,6 +374,25 @@ export default {
         this.chartOptions = {
           xaxis: {
             categories: newDates,
+            labels: {
+              formatter: function(value) {
+                if (typeof value == "undefined") {
+                  return value;
+                }
+                const options = {
+                  month: "short",
+                  day: "numeric",
+                };
+
+                const date = new Date(value);
+                const dateTimeFormat = new Intl.DateTimeFormat(
+                  "en-US",
+                  options
+                );
+                let out = dateTimeFormat.format(date);
+                return out;
+              },
+            },
           },
         };
         this.overviewData = [
@@ -385,6 +425,25 @@ export default {
         this.chartOptions = {
           xaxis: {
             categories: newDates,
+            labels: {
+              formatter: function(value) {
+                if (typeof value == "undefined") {
+                  return value;
+                }
+                const options = {
+                  month: "short",
+                  day: "numeric",
+                };
+
+                const date = new Date(value);
+                const dateTimeFormat = new Intl.DateTimeFormat(
+                  "en-US",
+                  options
+                );
+                let out = dateTimeFormat.format(date);
+                return out;
+              },
+            },
           },
         };
         this.overviewData = [
@@ -430,10 +489,11 @@ export default {
         .then((response) => {
           this.totalOverview = response.data;
           this.pushToChart();
+          // this.updateChart("alltime");
           this.emptyData = this.totalOverview.length > 1 ? false : true;
         })
         .catch((err) => console.log(err))
-        .finally(() => (this.loading = false));
+        // .finally(() => (this.loading = false));
     },
     getTop() {
       axios
@@ -445,8 +505,8 @@ export default {
         .then((response) => {
           this.totalTop = response.data;
         })
-        .catch((err) => console.log(err));
-      // .finally(() => (this.loading = false))
+        .catch((err) => console.log(err))
+        .finally(() => (this.loading = false));
     },
   },
   created() {
