@@ -1,5 +1,8 @@
 <template>
-  <div class="top-bar flex items-center justify-end px-4 py-4">
+  <div
+    class="top-bar flex items-center justify-end px-4 py-4"
+    @mouseleave="hover = false"
+  >
     <div class="relative inline-block text-left">
       <div class="flex items-center" @mouseover="hover = true">
         <template v-if="this.user.images[0]?.url">
@@ -38,37 +41,38 @@
           </svg>
         </button>
       </div>
-      <div
-        v-if="hover"
-        @mouseleave="hover = false"
-        class="z-10 bg-gray-700-spotify origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-600-spotify focus:outline-none"
-        role="menu"
-        aria-orientation="vertical"
-        aria-labelledby="options-menu"
+      <transition
+        enter-active-class="transition_entering transition_entering_from"
+        enter-to-class="transition_entering_to"
+        leave-active-class="transition_leaving transition_leaving_to"
+        leave-to-class="transition_leaving_to"
       >
-        <div class="py-1" role="none">
-          <router-link
-            class="cursor-pointer block px-4 py-2 text-sm text-gray-500-spotify hover:bg-gray-600-spotify hover:text-gray-400-spotify"
-            to="/profile"
-          >
-            Account
-          </router-link>
-          <!-- <router-link
-            class="cursor-pointer block px-4 py-2 text-sm text-gray-500-spotify hover:bg-gray-600-spotify hover:text-gray-400-spotify"
+        <div
+          v-if="hover"
+          @mouseleave="hover = false"
+          class="z-10 bg-gray-700-spotify origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-600-spotify focus:outline-none"
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="options-menu"
+        >
+          <div class="py-1" role="none">
+            <router-link class="userbar-link" to="/profile">
+              Account
+            </router-link>
+            <!-- <router-link
+            class="userbar-link"
             :to="{ name: 'Profile', params: { id: this.user.id } }"
           >
             Account
           </router-link> -->
+          </div>
+          <div class="py-1" role="none">
+            <a @click="logOut()" class="userbar-link" role="menuitem"
+              >Sign out</a
+            >
+          </div>
         </div>
-        <div class="py-1" role="none">
-          <a
-            @click="logOut()"
-            class="cursor-pointer block px-4 py-2 text-sm text-gray-500-spotify hover:bg-gray-600-spotify hover:text-gray-400-spotify"
-            role="menuitem"
-            >Sign out</a
-          >
-        </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -93,3 +97,27 @@ export default {
   },
 };
 </script>
+
+<style>
+.userbar-link {
+  @apply cursor-pointer block px-4 py-2 text-sm text-gray-500-spotify hover:bg-gray-600-spotify hover:text-gray-400-spotify transition ease-in-out duration-100;
+}
+.transition_entering {
+  @apply transition ease-out duration-100;
+}
+.transition_entering_from {
+  @apply transform opacity-0 scale-95;
+}
+.transition_entering_to {
+  @apply transform opacity-100 scale-100;
+}
+.transition_leaving {
+  @apply transition ease-in duration-75;
+}
+.transition_leaving_from {
+  @apply transform opacity-100 scale-100;
+}
+.transition_leaving_to {
+  @apply transform opacity-0 scale-95;
+}
+</style>

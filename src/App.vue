@@ -13,6 +13,7 @@ export default {
 
 #app {
   font-family: "Inter", sans-serif;
+  background-color: #181818;
 }
 
 .rlink.router-link-exact-active {

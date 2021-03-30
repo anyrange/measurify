@@ -461,7 +461,7 @@ export default {
   @apply object-cover w-9 h-9 rounded-full;
 }
 .tab {
-  @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200;
+  @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200 transition ease-in-out duration-75;
 }
 .is-active {
   @apply bg-white dark:bg-gray-600-spotify dark:text-gray-200;

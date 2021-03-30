@@ -1,43 +1,33 @@
 <template>
   <div class="absolute z-40 bottom-0 left-0 py-5 px-5 md:hidden nav-transition">
     <button
+      class="flex items-center align-middle w-16 h-10 focus:outline-none text-gray-500 bg-gray-700-spotify rounded text-teal-lighter"
       @click="toggle"
-      class="flex items-center bg-gray-700-spotify px-4 py-2 rounded text-teal-lighter focus:outline-none"
     >
-      <template v-if="isOpen">
-        <svg
-          class="fill-current h-5 w-5 p-1"
-          width="9"
-          height="9"
-          viewBox="0 0 9 9"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <title>Menu</title>
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M0.0383889 0.0383889C0.0895741 -0.0127963 0.172562 -0.0127963 0.223747 0.0383889L4.5 4.31464L8.77625 0.0383889C8.82744 -0.0127963 8.91043 -0.0127963 8.96161 0.0383889C9.0128 0.0895741 9.0128 0.172562 8.96161 0.223747L4.68536 4.5L8.96161 8.77625C9.0128 8.82744 9.0128 8.91043 8.96161 8.96161C8.91043 9.0128 8.82744 9.0128 8.77625 8.96161L4.5 4.68536L0.223747 8.96161C0.172562 9.0128 0.0895741 9.0128 0.0383889 8.96161C-0.0127963 8.91043 -0.0127963 8.82744 0.0383889 8.77625L4.31464 4.5L0.0383889 0.223747C-0.0127963 0.172562 -0.0127963 0.0895741 0.0383889 0.0383889Z"
-          />
-        </svg>
-      </template>
-      <template v-else>
-        <svg
-          class="fill-current h-5 w-5"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <title>Menu</title>
-          <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-        </svg>
-      </template>
+      <span class="sr-only">Open main menu</span>
+      <div
+        class="w-5 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+      >
+        <span
+          aria-hidden="true"
+          class="menu-burger-item"
+          :class="{ 'rotate-45': isOpen, ' -translate-y-1.5': !isOpen }"
+        ></span>
+        <span
+          aria-hidden="true"
+          class="menu-burger-item"
+          :class="{ 'opacity-0': isOpen }"
+        ></span>
+        <span
+          aria-hidden="true"
+          class="menu-burger-item"
+          :class="{ '-rotate-45': isOpen, ' translate-y-1.5': !isOpen }"
+        ></span>
+      </div>
     </button>
   </div>
   <transition name="slide-fade">
-    <div
-      v-if="isOpen"
-      class="block absolute z-30 h-screen md:flex md:flex-row md:min-h-screen relaive bg-gray-200 dark:bg-gray-900-spotify w-48 flex-none flex-col font-semibold"
-    >
+    <div v-if="isOpen" class="nav-mobile nav-desktop nav">
       <ul class="py-6">
         <h3 class="title-uppercase">
           Statistics
@@ -123,6 +113,12 @@ export default {
     this.responsiveWindowSidebar();
   },
 
+  created() {
+    if (window.innerWidth < 768) {
+      this.isOpen = false;
+    }
+  },
+
   methods: {
     checkDarkTheme() {
       localStorage.nightMode === "false" || !("nightMode" in localStorage)
@@ -147,12 +143,29 @@ export default {
           this.isOpen = true;
         }
       });
+      window.addEventListener("resize", () => {
+        if (window.outerWidth < 768) {
+          this.isOpen = false;
+        }
+      });
     },
   },
 };
 </script>
 
 <style>
+.menu-burger-item {
+  @apply block absolute h-0.5 w-5 bg-current transform transition duration-300 ease-in-out;
+}
+.nav {
+  @apply h-screen bg-gray-200 dark:bg-gray-900-spotify w-48 font-semibold;
+}
+.nav-mobile {
+  @apply block absolute z-30;
+}
+.nav-desktop {
+  @apply md:flex md:flex-row md:relative;
+}
 .slide-fade-enter-active {
   transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
 }
