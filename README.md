@@ -5,7 +5,7 @@
 ![Heroku](https://pyheroku-badge.herokuapp.com/?app=spotify-worm-server&style=flat)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2b93b34b-9fc4-47e4-ab20-bca6b8d6c6dd/deploy-status)](https://app.netlify.com/sites/spotiworm/deploys)
 
-> Just another app using Spotify Web API
+> Yet another app using Spotify Web API
 
 ## Development
 
