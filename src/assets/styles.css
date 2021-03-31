@@ -2,29 +2,29 @@
 
 #app {
   font-family: "Inter", sans-serif;
-  @apply dark:bg-gray-800-spotify;
+  @apply dark:bg-gray-800-spotify no-tap-highlight;
 }
 
-.sidebar-spotify::-webkit-scrollbar {
-  width: 8px;
-  background-color: #121212;
+@media only screen and (max-width: 1024px) {
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
 }
-.sidebar-spotify::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background-color: #535353;
-}
+
+.sidebar-spotify::-webkit-scrollbar,
 .content-spotify::-webkit-scrollbar {
-  width: 8px;
-  background-color: #181818;
+  @apply w-2 dark:bg-gray-900-spotify;
 }
+
+.sidebar-spotify::-webkit-scrollbar-thumb,
 .content-spotify::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background-color: #535353;
+  @apply rounded-lg dark:bg-gray-450-spotify;
 }
 
 .h-title {
   @apply mx-4 text-5xl font-semibold dark:text-white text-gray-900;
 }
+
 .h-subtitle {
   @apply mx-4 mt-4 text-lg font-semibold text-gray-500;
 }
