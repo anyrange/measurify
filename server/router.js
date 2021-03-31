@@ -6,6 +6,7 @@ const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
 const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
+const users = require("./routes/users");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
@@ -19,9 +20,11 @@ router.get("/callback", auth.callback);
 router.get("/token", auth.getAccessToken);
 
 router.get("/listening-history", getPlayedHistory);
-router.get("/overview", getOverview);
-router.get("/friends", friends);
 
+router.get("/friends", friends);
+router.get("/users", users);
+
+router.get("/overview", getOverview);
 router.get("/top", top);
 
 router.get("/artist/:id", infoPages.artist);
