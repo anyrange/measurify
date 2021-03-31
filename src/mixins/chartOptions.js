@@ -1,6 +1,12 @@
 export default {
   data() {
     return {
+      overviewData: [
+        {
+          name: "Plays",
+          data: [],
+        },
+      ],
       chartOptions: {
         chart: {
           responsive: true,
@@ -72,11 +78,8 @@ export default {
                 month: "short",
                 day: "numeric",
               };
-
               const date = new Date(value);
-              const dateTimeFormat = new Intl.DateTimeFormat("en-US", options);
-              let out = dateTimeFormat.format(date);
-              return out;
+              return new Intl.DateTimeFormat("en-US", options).format(date);
             },
           },
           categories: [],
@@ -121,7 +124,7 @@ export default {
           },
         },
         noData: {
-          text: "Loading...",
+          text: "No listening data",
         },
       },
     };

@@ -42,22 +42,166 @@
               </li>
             </ul>
           </div>
-          <div class="mx-4 mt-6 md:flex mb-6">
-            <div class="md:w-1/4 mb-6 md:mb-0">
-              <label class="total-played-listened">
-                Tracks Played
-              </label>
-              <label class="total-played-listened-number">
-                {{ totalTracksPlayed }}
-              </label>
+          <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mx-4 mb-2 mt-6">
+            <div class="p-5 bg-gray-700-spotify rounded-lg shadow-sm">
+              <div class="text-xl text-gray-400-spotify">Tracks Played</div>
+              <div class="flex items-center pt-1">
+                <div class="text-2xl font-bold text-gray-100">
+                  {{ totalTracksPlayed }}
+                </div>
+                <template
+                  v-if="
+                    (selectedPeriod == 'month' || selectedPeriod == 'week') &&
+                      totalTracksPlayedPrev > 0 &&
+                      totalMinutesListenedPrev > 0
+                  "
+                >
+                  <template
+                    v-if="totalTracksPlayed - totalTracksPlayedPrev > 0"
+                  >
+                    <span
+                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-green-900 bg-green-200 rounded-full"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M18 15L12 9L6 15"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                      <span>
+                        {{
+                          (
+                            ((totalTracksPlayed - totalTracksPlayedPrev) /
+                              totalTracksPlayedPrev) *
+                            100
+                          ).toLocaleString("fullwide", {
+                            maximumFractionDigits: 0,
+                          })
+                        }}%
+                      </span>
+                    </span>
+                  </template>
+                  <template v-else>
+                    <span
+                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-red-600 bg-red-100 rounded-full"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M6 9L12 15L18 9"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                      <span>
+                        {{
+                          (
+                            ((totalTracksPlayed - totalTracksPlayedPrev) /
+                              totalTracksPlayedPrev) *
+                            100
+                          ).toLocaleString("fullwide", {
+                            maximumFractionDigits: 0,
+                          })
+                        }}%
+                      </span>
+                    </span>
+                  </template>
+                </template>
+              </div>
             </div>
-            <div class="md:w-1/2">
-              <label class="total-played-listened">
-                Minutes Listened
-              </label>
-              <label class="total-played-listened-number">
-                {{ totalMinutesListened }}
-              </label>
+            <div class="p-5 bg-gray-700-spotify rounded-xl shadow-sm">
+              <div class="text-xl text-gray-400-spotify">Minutes Listened</div>
+              <div class="flex items-center pt-1">
+                <div class="text-2xl font-bold text-gray-100">
+                  {{ totalMinutesListened }}
+                </div>
+                <template
+                  v-if="
+                    (selectedPeriod == 'month' || selectedPeriod == 'week') &&
+                      totalTracksPlayedPrev > 0 &&
+                      totalMinutesListenedPrev > 0
+                  "
+                >
+                  <template
+                    v-if="totalMinutesListened - totalMinutesListenedPrev > 0"
+                  >
+                    <span
+                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-green-900 bg-green-200 rounded-full"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M18 15L12 9L6 15"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                      <span>
+                        {{
+                          (
+                            ((totalMinutesListened - totalMinutesListenedPrev) /
+                              totalMinutesListenedPrev) *
+                            100
+                          ).toLocaleString("fullwide", {
+                            maximumFractionDigits: 0,
+                          })
+                        }}%
+                      </span>
+                    </span>
+                  </template>
+                  <template v-else>
+                    <span
+                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-red-600 bg-red-100 rounded-full"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M6 9L12 15L18 9"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                      <span>
+                        {{
+                          (
+                            ((totalMinutesListened - totalMinutesListenedPrev) /
+                              totalMinutesListenedPrev) *
+                            100
+                          ).toLocaleString("fullwide", {
+                            maximumFractionDigits: 0,
+                          })
+                        }}%
+                      </span>
+                    </span>
+                  </template>
+                </template>
+              </div>
             </div>
           </div>
           <div class="w-full">
@@ -229,11 +373,10 @@
 </template>
 
 <script>
+import axios from "axios";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import chartOptions from "@/mixins/chartOptions";
-import * as djs from "@/utils/dates";
-import axios from "axios";
-// import { format } from "date-fns";
+import * as fd from "@/utils/dates";
 
 export default {
   components: {
@@ -245,38 +388,44 @@ export default {
   data() {
     return {
       loading: true,
-      selectedTop: "artists",
-      selectedPeriod: "alltime",
-
-      totalOverview: [],
-      totalTop: [],
-
-      allDates: [],
-      tracksPlayed: [],
-      minutesListened: [],
-      totalTracksPlayed: 0,
-      totalMinutesListened: 0,
-
       emptyData: false,
 
-      overviewData: [
-        {
-          name: "Plays",
-          data: [],
-        },
-      ],
+      selectedPeriod: "alltime",
+      selectedTop: "artists",
 
       newDates: [],
       newValues: [],
 
+      totalOverview: [],
+      totalTop: [],
+
+      tracksPlayed: [],
+      minutesListened: [],
+      prevTracksPlayed: [],
+      prevMinutesListened: [],
+
       week: [],
       month: [],
+      prevWeek: [],
+      prevMonth: [],
     };
   },
 
   computed: {
     user() {
       return this.$store.getters.getUser;
+    },
+    totalTracksPlayed() {
+      return this.tracksPlayed.reduce((a, b) => a + b, 0);
+    },
+    totalMinutesListened() {
+      return this.minutesListened.reduce((a, b) => a + b, 0);
+    },
+    totalTracksPlayedPrev() {
+      return this.prevTracksPlayed.reduce((a, b) => a + b, 0);
+    },
+    totalMinutesListenedPrev() {
+      return this.prevMinutesListened.reduce((a, b) => a + b, 0);
     },
   },
 
@@ -294,45 +443,39 @@ export default {
       }
     },
     updateChart(period) {
-      this.tracksPlayed = [];
-      this.minutesListened = [];
       this.newDates = [];
       this.newValues = [];
 
-      if (period == "alltime") {
-        this.filterChart(this.totalOverview);
+      this.tracksPlayed = [];
+      this.minutesListened = [];
+      this.prevTracksPlayed = [];
+      this.prevMinutesListened = [];
+
+      if (period === "alltime") {
+        this.updateTotals(this.totalOverview);
       }
-      if (period == "week") {
-        this.filterChart(this.week);
+      if (period === "week") {
+        this.updateTotals(this.week, this.prevWeek);
       }
-      if (period == "month") {
-        this.filterChart(this.month);
+      if (period === "month") {
+        this.updateTotals(this.month, this.prevMonth);
       }
 
-      this.setTotals();
       this.updateChartValues();
     },
-    filterChart(arr) {
+    updateTotals(arr, prev) {
       for (const item of arr) {
         this.newDates.push(item.date);
         this.newValues.push(item.plays);
         this.tracksPlayed.push(item.plays);
         this.minutesListened.push(item.duration);
       }
-    },
-    setTotals() {
-      const getTotalTracksPlayed = (arr) => {
-        this.totalTracksPlayed = arr.reduce(function(a, b) {
-          return a + b;
-        }, 0);
-      };
-      const getTotalMinutesListened = (arr) => {
-        this.totalMinutesListened = arr.reduce(function(a, b) {
-          return a + b;
-        }, 0);
-      };
-      getTotalTracksPlayed(this.tracksPlayed);
-      getTotalMinutesListened(this.minutesListened);
+      if (prev) {
+        for (const item of prev) {
+          this.prevTracksPlayed.push(item.plays);
+          this.prevMinutesListened.push(item.duration);
+        }
+      }
     },
     updateChartValues() {
       this.chartOptions = {
@@ -347,11 +490,8 @@ export default {
                 month: "short",
                 day: "numeric",
               };
-
               const date = new Date(value);
-              const dateTimeFormat = new Intl.DateTimeFormat("en-US", options);
-              let out = dateTimeFormat.format(date);
-              return out;
+              return new Intl.DateTimeFormat("en-US", options).format(date);
             },
           },
         },
@@ -366,57 +506,64 @@ export default {
       for (const item of this.totalOverview) {
         this.overviewData[0].data.push(item.plays);
         this.chartOptions.xaxis.categories.push(item.date);
-        this.allDates.push(item.date);
         this.tracksPlayed.push(item.plays);
         this.minutesListened.push(item.duration);
       }
-      this.setTotals();
     },
-    preCalculateFilterArrays() {
-      this.week = djs.getFilteredArray(
+    preCalculateFilteredArrays() {
+      this.week = fd.getFilteredArray(
         this.totalOverview,
-        djs.firstDayOfWeek,
-        djs.lastDayOfWeek
+        fd.firstDayOfWeek,
+        fd.lastDayOfWeek
       );
-      this.month = djs.getFilteredArray(
+      this.month = fd.getFilteredArray(
         this.totalOverview,
-        djs.firstDayOfMonth,
-        djs.lastDayOfMonth
+        fd.firstDayOfMonth,
+        fd.lastDayOfMonth
+      );
+      this.prevWeek = fd.getFilteredArray(
+        this.totalOverview,
+        fd.firstDayOfPreviousWeek,
+        fd.lastDayOfPreviousWeek
+      );
+      this.prevMonth = fd.getFilteredArray(
+        this.totalOverview,
+        fd.firstDayOfPreviousMonth,
+        fd.lastDayOfPreviousMonth
       );
     },
-    getOverview() {
-      axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/overview`, {
+    fetchData() {
+      const overview = `${process.env.VUE_APP_SERVER_URI}/overview`;
+      const top = `${process.env.VUE_APP_SERVER_URI}/top`;
+
+      const fetchedData = (url) =>
+        axios.get(url, {
           headers: {
             Authorization: this.user._id,
           },
-        })
+        });
+
+      const promises = [overview, top].map(fetchedData);
+
+      Promise.all(promises)
         .then((response) => {
-          this.totalOverview = response.data;
-          this.totalOverview.reverse();
+          this.emptyData = response[0].data.length > 1 ? false : true;
+
+          this.totalOverview = response[0].data.reverse();
+          this.totalTop = response[1].data;
+
           this.pushToChart();
-          this.preCalculateFilterArrays();
-          this.emptyData = this.totalOverview.length > 1 ? false : true;
+          this.preCalculateFilteredArrays();
+
+          this.loading = false;
         })
-        .catch((err) => console.log(err));
-    },
-    getTop() {
-      axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/top`, {
-          headers: {
-            Authorization: this.user._id,
-          },
-        })
-        .then((response) => {
-          this.totalTop = response.data;
-        })
-        .catch((err) => console.log(err))
-        .finally(() => (this.loading = false));
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   created() {
-    this.getOverview();
-    this.getTop();
+    this.fetchData();
   },
 };
 </script>
