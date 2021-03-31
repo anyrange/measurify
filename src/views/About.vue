@@ -4,7 +4,7 @@
       About
     </h2>
     <h3 class="h-subtitle">
-      Just another app using Spotify Web API
+      Yet another app using Spotify Web API
     </h3>
   </div>
 </template>

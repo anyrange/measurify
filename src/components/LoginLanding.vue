@@ -4,9 +4,12 @@
       <h1 class="app-title">
         Spotiworm
       </h1>
+      <p v-if="usersQuantity" class="text-center users">
+        <span class="font-bold">{{ usersQuantity }}</span>
+        people already joined
+      </p>
       <h1 class="app-description">
         Track your listening history and get stats
-        <p v-if='usersQuantity'>Number of our users - {{usersQuantity}}</p>
       </h1>
       <button @click="login" class="login-button">
         Sign in with Spotify
@@ -25,11 +28,14 @@
 .app-title {
   @apply text-7xl text-gray-100;
 }
+.users {
+  @apply text-lg text-gray-300 mb-4 font-medium border rounded-full px-2;
+}
 .app-description {
-  @apply text-lg mb-6 mt-6 text-gray-300;
+  @apply text-2xl mb-2 mt-2 text-gray-300;
 }
 .login-button {
-  @apply py-2 px-6 bg-green-600-spotify text-lg rounded-full hover:bg-green-700-spotify transition-colors duration-150 text-white font-semibold focus:outline-none;
+  @apply py-2 px-6 mt-4 bg-green-600-spotify text-lg rounded-full hover:bg-green-700-spotify transition-colors duration-150 text-white font-semibold focus:outline-none;
 }
 </style>
 

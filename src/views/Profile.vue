@@ -7,7 +7,7 @@
       <div class="">
         <img
           :src="this.user.images[0].url"
-          class="rounded-full object-cover w-24 h-24 border shadow-sm animate-picture"
+          class="rounded-full object-cover w-24 h-24 border-2 border-white shadow-sm"
         />
       </div>
       <div class="ml-2">
@@ -36,9 +36,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.animate-picture {
-  @apply transform-gpu h-64 bg-blue-400 w-1/5 hover:bg-blue-600 transition duration-500 hover:scale-125;
-}
-</style>

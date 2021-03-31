@@ -47,13 +47,13 @@
             >
           </router-link>
         </li>
-        <li>
+        <!-- <li>
           <router-link class="sidebar-link" to="/playlists">
             <span class="sidebar-label" @click="toggleSidebarMobile"
               >Playlists</span
             >
           </router-link>
-        </li>
+        </li> -->
         <h3 class="pt-6 sidebar-title-uppercase">
           Info
         </h3>
