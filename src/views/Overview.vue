@@ -373,13 +373,11 @@ export default {
       this.setTotals();
     },
     preCalculateFilterArrays() {
-      this.week = djs
-        .getFilteredArray(
-          this.totalOverview,
-          djs.firstDayOfWeek,
-          djs.lastDayOfWeek
-        )
-        .reverse();
+      this.week = djs.getFilteredArray(
+        this.totalOverview,
+        djs.firstDayOfWeek,
+        djs.lastDayOfWeek
+      );
       this.month = djs.getFilteredArray(
         this.totalOverview,
         djs.firstDayOfMonth,
