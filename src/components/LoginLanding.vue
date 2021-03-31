@@ -6,6 +6,7 @@
       </h1>
       <h1 class="app-description">
         Track your listening history and get stats
+        <p v-if='usersQuantity'>Number of our users - {{usersQuantity}}</p>
       </h1>
       <button @click="login" class="login-button">
         Sign in with Spotify
@@ -41,6 +42,7 @@ export default {
       landingImage: {
         backgroundImage: `url(${require("@/assets/images/banner.png")})`,
       },
+      usersQuantity: 0,
     };
   },
   computed: {
@@ -69,6 +71,9 @@ export default {
           this.$router.push("/");
         });
     }
+    axios.get(`${process.env.VUE_APP_SERVER_URI}/users`).then((response) => {
+      this.usersQuantity = response.data.usersQuantity;
+    });
   },
 };
 </script>
