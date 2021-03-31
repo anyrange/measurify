@@ -27,7 +27,7 @@ const auth = {
     }
     User.findOne({ _id }, (err, user) => {
       if (err) {
-        res.status(408).json({ errorMessage: err.toString(), user });
+        res.status(408).json({ message: err.toString(), user });
         return;
       }
       res.status(200).end(user.lastSpotifyToken);
@@ -55,12 +55,19 @@ const auth = {
           ).toString("base64"),
       },
     })
-      .then((res) => res.json())
-      .then((body) => {
+      .catch((err) => {
+        res.status(400).json({ message: err.message });
+      })
+      .then(async (body) => {
+        if (!body) {
+          return;
+        }
+        body = await body.json();
         if (body.error) {
           res.status(body.error.status).json({ message: body.error.message });
           return;
         }
+
         const access_token = body.access_token;
         const refresh_token = body.refresh_token;
 
@@ -73,8 +80,14 @@ const auth = {
             Authorization: "Bearer " + access_token,
           },
         })
-          .then((res) => res.json())
+          .catch((err) => {
+            res.status(400).json({ message: err.message });
+          })
           .then(async (body) => {
+            if (!body) {
+              return;
+            }
+            body = await body.json();
             if (body.error) {
               res
                 .status(body.error.status)
@@ -121,10 +134,16 @@ const auth = {
                     },
                   }
                 )
-                  .then((res) => res.json())
-                  .then((body) => {
-                    if (body.error ||!body.items.length) {
-                      return; 
+                  .catch(() => {
+                    return;
+                  })
+                  .then(async (body) => {
+                    if (!body) {
+                      return;
+                    }
+                    body = await body.json();
+                    if (body.error || !body.items.length) {
+                      return;
                     }
                     body.items.forEach((item) => {
                       delete item.track.available_markets;

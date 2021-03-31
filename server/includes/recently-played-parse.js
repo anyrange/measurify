@@ -12,11 +12,13 @@ function refresh_recently_played() {
       },
     })
       .catch((err) => {
-        reject(user.userName, err);
-        return;
+        reject(user.userName, err.message);
       })
-      .then((res) => res.json())
       .then(async (body) => {
+        if (!body) {
+          return;
+        }
+        body = await body.json();
         if (body.error) {
           reject(user.userName, body.error.message);
           return;

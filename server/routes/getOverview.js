@@ -14,45 +14,36 @@ const getOverview = (req, res) => {
 
   User.findOne({ _id }, projection, (err, user) => {
     if (err) {
-      res.status(408).json({errorMessage:err.toString()});
+      res.status(408).json({ message: err.toString() });
       return;
     }
 
-    const playDates = user.recentlyPlayed.map(({ played_at, track }) => {
+    let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
       let date = played_at.split("T")[0];
       let duration = track.duration_ms / 1000 / 60;
       return { date, duration };
     });
-    if (!playDates.length) {
-      res.status(204).json({});
-      return;
-    }
-    dateToCompare = playDates[0].date;
+
     let plays = [];
-    let i = 0;
-    let playsCounter = 0;
-    let durationCounter = 0;
-    while (i < playDates.length) {
-      if (dateToCompare === playDates[i].date) {
-        playsCounter++;
-        durationCounter += playDates[i].duration;
-      } else {
-        plays.push({
-          plays: playsCounter,
-          date: dateToCompare,
-          duration: Math.round(durationCounter),
-        });
-        playsCounter = 1;
-        durationCounter = playDates[i].duration;
-        dateToCompare = playDates[i].date;
-      }
-      i++;
+    
+    while (recentlyPlayed.length) {
+      const dateToCheck = recentlyPlayed[0].date;
+
+      currentDateTracks = recentlyPlayed.filter(
+        (track) => track.date === dateToCheck
+      );
+
+      const duration = currentDateTracks.reduce((accumulator, currentTrack) => {
+        return accumulator + currentTrack.duration;
+      }, 0);
+
+      plays.push({
+        plays: currentDateTracks.length,
+        date: dateToCheck,
+        duration: Math.round(duration),
+      });
+      recentlyPlayed = recentlyPlayed.slice(currentDateTracks.length);
     }
-    plays.push({
-      plays: playsCounter,
-      date: dateToCompare,
-      duration: Math.round(durationCounter),
-    });
 
     res.status(200).json(plays);
   });

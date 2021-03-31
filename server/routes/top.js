@@ -57,15 +57,22 @@ const top = (req, res) => {
           headers: { Authorization: "Bearer " + user.lastSpotifyToken },
         }
       )
-        .then((res) => res.json())
+        .catch((err) => {
+          response.message = err.message;
+          res.status(200).json(response);
+        })
         .then(async (body) => {
+          if (!body) {
+            return;
+          }
+          body = await body.json();
           if (body.error) {
-            response.message = body.error.message;
+            response.message = `${body.error.message} [${body.error.status}]`;
             res.status(200).json(response);
             return;
           }
-          await response.artists.forEach((artist, index) => {
-            if (body.artists[index].images[2]) {
+          response.artists.forEach((artist, index) => {
+            if (body.artists[index].images.length&&body.artists[index].images[2]) {
               artist.image = body.artists[index].images[2].url;
             }
           });

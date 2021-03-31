@@ -25,12 +25,14 @@ function refresh_tokens() {
     })
       .catch((err) => {
         console.log("user " + spotifyID + " havent got his token");
-        console.log(err);
+        console.log(err.message);
         cb();
-        return;
       })
-      .then((res) => res.json())
       .then(async (body) => {
+        if (!body) {
+          return;
+        }
+        body = await body.json();
         if (body.error) {
           console.log("user " + spotifyID + " havent got his token");
           console.log("message: " + body.error.message);
@@ -65,12 +67,12 @@ function refresh_tokens() {
     Promise.all(requests).then(() => {
       const end = new Date();
       console.log(
-        `All ${requests.length} tokens refreshed in ${(
+        `--All ${requests.length} tokens refreshed in ${(
           (end.getTime() - start.getTime()) /
           1000
         ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
           timeZone: "Asia/Almaty",
-        })}]`
+        })}]--`
       );
     });
   });

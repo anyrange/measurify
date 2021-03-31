@@ -13,14 +13,24 @@ const addImage = (user, access_token, cb, id) => {
     }
   )
     .catch((err) => {
-      res.status(400).json(err);
+      console.log(
+        err.message +
+          "; Error by " +
+          user.userName +
+          " while getting friendlist of " +
+          id
+      );
+      cb();
       return;
     })
-    .then((res) => res.json())
-    .then((body) => {
+    .then(async (body) => {
+      if (!body) {
+        return;
+      }
+      body = await body.json();
       if (body.error) {
         console.log(
-          body.error.message +
+          `${body.error.message} [${body.error.status}]` +
             "; Error by " +
             user.userName +
             " while getting friendlist"
@@ -28,21 +38,21 @@ const addImage = (user, access_token, cb, id) => {
         cb();
         return;
       }
-      let friend = false;
-      let image = "";
+
+      //friend schema
+
+      let friend = {
+        _id: user._id,
+        spotifyID: user.spotifyID,
+        userName: user.userName,
+        url: "",
+        friend: false,
+      };
       if (!body[0]) {
-        user = {
-          _id: user._id,
-          spotifyID: user.spotifyID,
-          userName: user.userName,
-          url: image,
-          friend,
-        };
-        cb(user);
+        cb(friend);
         return;
       }
-      friend = true;
-
+      friend.friend = true;
       //get image for friend
       fetch(`https://api.spotify.com/v1/users/${user.spotifyID}`, {
         method: "GET",
@@ -50,29 +60,24 @@ const addImage = (user, access_token, cb, id) => {
           Authorization: "Bearer " + access_token,
         },
       })
-        .then((res) => res.json())
-        .then((body) => {
-          if (body.error) {
-            console.log(
-              body.error.message +
-                "; Error by " +
-                user.userName +
-                " while getting friendlist"
-            );
-            cb();
+        .catch((err) => {
+          friend.message = err.message;
+          cb(friend);
+        })
+        .then(async (body) => {
+          if (!body) {
             return;
           }
-          if (body.images.length) {
-            image = body.images[0].url;
+          body = await body.json();
+          if (body.error) {
+            friend.message = `${body.error.message} [${body.error.status}]`;
+            cb(friend);
+            return;
           }
-          user = {
-            _id: user._id,
-            spotifyID: user.spotifyID,
-            userName: user.userName,
-            url: image,
-            friend,
-          };
-          cb(user);
+          friend.url =
+            body.images && body.images.length ? body.images[0].url : "";
+          friend.message = body.error ? body.error.message : "";
+          cb(friend);
         });
     });
 };
@@ -88,14 +93,14 @@ const friends = (req, res) => {
     { spotifyID: 1, lastSpotifyToken: 1, userName: 1 },
     (err, users) => {
       if (err) {
-        res.status(408).json({ errorMessage: err.toString() });
+        res.status(408).json({ message: err.toString() });
         return;
       }
 
       // get user's info
-      const access_token = users.filter(({ _id }) => _id == req_id)[0]
+      const access_token = users.find(({ _id }) => _id == req_id)
         .lastSpotifyToken;
-      const id = users.filter(({ _id }) => _id == req_id)[0].spotifyID;
+      const id = users.find(({ _id }) => _id == req_id).spotifyID;
       // filter away user
       users = users.filter(({ _id }) => _id != req_id);
 
@@ -110,12 +115,21 @@ const friends = (req, res) => {
           },
         }
       )
-        .then((res) => res.json())
-        .then((body) => {
-          if (body.error) {
-            res.status(body.error.status).json({ message: body.error.message });
+        .catch((err) => {
+          res.status(400).json({ message: err.message });
+        })
+        .then(async (body) => {
+          if (!body) {
             return;
           }
+          body = await body.json();
+          if (body.error) {
+            res.status(body.error.status).json({
+              message: body.error.message,
+            });
+            return;
+          }
+
           users = users.filter((user, key) => body[key]);
           // check if followers and adds images to followees
 
@@ -124,6 +138,10 @@ const friends = (req, res) => {
               addImage(user, access_token, resolve, id);
             }).then((user) => {
               if (user && user.friend) {
+                delete user.friend;
+                if (!user.message) {
+                  delete user.message;
+                }
                 users.push(user);
               }
             });
@@ -132,15 +150,7 @@ const friends = (req, res) => {
           users = [];
 
           Promise.all(requests).then(() => {
-            if (!users.length) {
-              res.status(200).json(users);
-              return;
-            }
-            res.status(200).json(
-              users.map(({ _id, spotifyID, userName, url }) => {
-                return { _id, spotifyID, userName, url };
-              })
-            );
+            res.status(200).json(users);
           });
         });
     }

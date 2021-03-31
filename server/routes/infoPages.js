@@ -9,13 +9,13 @@ const infoPages = {
       return;
     }
     const artistID = req.params.id;
-
     User.findOne(
       { _id },
       {
         _id: 0,
         "recentlyPlayed.track.artists.id": 1,
         "recentlyPlayed.track.artists.name": 1,
+        "recentlyPlayed.track.artists.external_urls.spotify": 1,
         "recentlyPlayed.track.album.images.url": 1,
         "recentlyPlayed.track.album.id": 1,
         "recentlyPlayed.track.album.name": 1,
@@ -38,35 +38,55 @@ const infoPages = {
             }
           }
         });
-
         if (!user.recentlyPlayed.length) {
-          res.status(204).json();
+          res.status(204).json({});
           return;
+        }
+        // response schema
+        let response = {
+          artist: {
+            followers: "",
+            genres: [],
+            name: "",
+            image: "",
+            link: "",
+          },
+          overview: plays(user),
+          tracks: tracks(user.recentlyPlayed),
+        };
+
+        for (let i = 0; i < user.recentlyPlayed[0].track.artists.length; i++) {
+          if (user.recentlyPlayed[0].track.artists[i].id === artistID) {
+            response.artist.name = user.recentlyPlayed[0].track.artists[i].name;
+            response.artist.link =
+              user.recentlyPlayed[0].track.artists[i].external_urls.spotify;
+          }
         }
         fetch(`https://api.spotify.com/v1/artists/${artistID}`, {
           headers: {
             Authorization: "Bearer " + user.lastSpotifyToken,
           },
         })
-          .then((res) => res.json())
-          .then((body) => {
-            if (body.error) {
-              res
-                .status(body.error.status)
-                .json({ message: body.error.message });
+          .catch((err) => {
+            response.message = err.message;
+            res.status(200).json(response);
+          })
+          .then(async (body) => {
+            if (!body) {
               return;
             }
-            res.status(200).json({
-              artist: {
-                followers: body.followers.total,
-                genres: body.genres,
-                name: body.name,
-                image: body.images[0].url,
-                link: body.external_urls.spotify,
-              },
-              overview: plays(user),
-              tracks: tracks(user.recentlyPlayed),
-            });
+            body = await body.json();
+            if (body.error) {
+              response.message = `${body.error.message} [${body.error.status}]`;
+              res.status(200).json(response);
+              return;
+            }
+            response.artist.followers = body.followers.total;
+            response.artist.genres = body.genres;
+            response.artist.image = body.images.length
+              ? body.images[0].url
+              : "";
+            res.status(200).json(response);
           });
       }
     );
@@ -96,7 +116,7 @@ const infoPages = {
       },
       (err, user) => {
         if (err) {
-          res.status(408).json({ errorMessage: err.toString() });
+          res.status(408).json({ message: err.toString() });
           return;
         }
         user.recentlyPlayed = user.recentlyPlayed.filter(
@@ -145,7 +165,7 @@ const infoPages = {
       },
       (err, user) => {
         if (err) {
-          res.status(408).json({ errorMessage: err.toString() });
+          res.status(408).json({ message: err.toString() });
           return;
         }
 
@@ -157,38 +177,44 @@ const infoPages = {
           res.status(200).json();
           return;
         }
-
+        let response = {
+          track: {
+            album: {
+              name: user.recentlyPlayed[0].track.album.name,
+              id: user.recentlyPlayed[0].track.album.id,
+            },
+            artist: {
+              name: user.recentlyPlayed[0].track.artists[0].name,
+              id: user.recentlyPlayed[0].track.artists[0].id,
+            },
+            name: user.recentlyPlayed[0].track.name,
+            image: user.recentlyPlayed[0].track.album.images[0].url,
+            link: user.recentlyPlayed[0].track.external_urls.spotify,
+            duration_ms: user.recentlyPlayed[0].track.duration_ms,
+          },
+          overview: plays(user),
+        };
         fetch(`https://api.spotify.com/v1/tracks/${trackID}`, {
           headers: {
             Authorization: "Bearer " + user.lastSpotifyToken,
           },
         })
-          .then((res) => res.json())
-          .then((body) => {
-            if (body.error) {
-              res
-                .status(body.error.status)
-                .json({ message: body.error.message });
+          .catch((err) => {
+            response.message = err.message;
+            res.status(200).json(response);
+          })
+          .then(async (body) => {
+            if (!body) {
               return;
             }
-            res.status(200).json({
-              track: {
-                album: {
-                  name: user.recentlyPlayed[0].track.album.name,
-                  id: user.recentlyPlayed[0].track.album.id,
-                },
-                artist: {
-                  name: user.recentlyPlayed[0].track.artists[0].name,
-                  id: user.recentlyPlayed[0].track.artists[0].id,
-                },
-                name: user.recentlyPlayed[0].track.name,
-                image: user.recentlyPlayed[0].track.album.images[0].url,
-                link: user.recentlyPlayed[0].track.external_urls.spotify,
-                release: body.album.release_date,
-                duration_ms: user.recentlyPlayed[0].track.duration_ms,
-              },
-              overview: plays(user),
-            });
+            body = await body.json();
+            if (body.error) {
+              response.message = `${body.error.message} [${body.error.status}]`;
+              res.status(200).json(response);
+              return;
+            }
+            response.track.release = body.album.release_date;
+            res.status(200).json(response);
           });
       }
     );
@@ -196,40 +222,32 @@ const infoPages = {
 };
 
 const plays = (user) => {
-  const playDates = user.recentlyPlayed.map(({ played_at, track }) => {
+  let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
     let date = played_at.split("T")[0];
     let duration = track.duration_ms / 1000 / 60;
     return { date, duration };
   });
-  if (!playDates.length) {
-    return;
-  }
-  dateToCompare = playDates[0].date;
+
   let plays = [];
-  let i = 0;
-  let playsCounter = 0;
-  let durationCounter = 0;
-  while (i < playDates.length) {
-    if (dateToCompare === playDates[i].date) {
-      playsCounter++;
-      durationCounter += playDates[i].duration;
-    } else {
-      plays.push({
-        plays: playsCounter,
-        date: dateToCompare,
-        duration: Math.round(durationCounter),
-      });
-      playsCounter = 1;
-      durationCounter = playDates[i].duration;
-      dateToCompare = playDates[i].date;
-    }
-    i++;
+
+  while (recentlyPlayed.length) {
+    const dateToCheck = recentlyPlayed[0].date;
+
+    currentDateTracks = recentlyPlayed.filter(
+      (track) => track.date === dateToCheck
+    );
+
+    const duration = currentDateTracks.reduce((accumulator, currentTrack) => {
+      return accumulator + currentTrack.duration;
+    }, 0);
+
+    plays.push({
+      plays: currentDateTracks.length,
+      date: dateToCheck,
+      duration: Math.round(duration),
+    });
+    recentlyPlayed = recentlyPlayed.slice(currentDateTracks.length);
   }
-  plays.push({
-    plays: playsCounter,
-    date: dateToCompare,
-    duration: Math.round(durationCounter),
-  });
   return plays;
 };
 
