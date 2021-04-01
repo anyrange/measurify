@@ -95,7 +95,7 @@ const auth = {
               return;
             }
             console.log(body.display_name + " logined");
-            
+
             const filter = { spotifyID: body.id };
             const update = {
               lastSpotifyToken: access_token,
@@ -122,9 +122,7 @@ const auth = {
                   res.status(404).json({ message: "user: " + user });
                   return;
                 }
-                if (user.recentlyPlayed.length) {
-                  return;
-                }
+                if (user.recentlyPlayed.length) return;
 
                 fetch(
                   `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
@@ -139,13 +137,10 @@ const auth = {
                     return;
                   })
                   .then(async (body) => {
-                    if (!body) {
-                      return;
-                    }
+                    if (!body) return;
                     body = await body.json();
-                    if (body.error || !body.items.length) {
-                      return;
-                    }
+                    if (body.error || !body.items.length) return;
+
                     body.items.forEach((item) => {
                       delete item.track.available_markets;
                       delete item.track.album.available_markets;
