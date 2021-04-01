@@ -7,7 +7,8 @@ const top = (req, res) => {
     res.status(401).json({ message: `Unauthorized` });
     return;
   }
-  const period = req.query.period;
+  const firstDate = req.query.firstDate;
+  const lastDate = req.query.lastDate;
   const projection = {
     _id: 0,
     "recentlyPlayed.played_at": 1,
@@ -33,9 +34,14 @@ const top = (req, res) => {
         res.status(408).json({ message: err.toString() });
         return;
       }
-      if (period) {
+      if (firstDate) {
         user.recentlyPlayed = user.recentlyPlayed.filter(
-          ({ played_at }) => played_at > period
+          ({ played_at }) => played_at > firstDate
+        );
+      }
+      if (lastDate) {
+        user.recentlyPlayed = user.recentlyPlayed.filter(
+          ({ played_at }) => played_at < lastDate
         );
       }
       let response = { albums: [], tracks: [], artists: [] };
@@ -63,7 +69,7 @@ const top = (req, res) => {
         })
         .then(async (body) => {
           if (!body) return;
-          
+
           body = await body.json();
           if (body.error) {
             response.message = `${body.error.message} [${body.error.status}]`;
@@ -71,7 +77,10 @@ const top = (req, res) => {
             return;
           }
           response.artists.forEach((artist, index) => {
-            if (body.artists[index].images.length&&body.artists[index].images[2]) {
+            if (
+              body.artists[index].images.length &&
+              body.artists[index].images[2]
+            ) {
               artist.image = body.artists[index].images[2].url;
             }
           });
