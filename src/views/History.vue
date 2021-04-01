@@ -109,10 +109,10 @@
 
 <style>
 .history-td {
-  @apply px-6 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+  @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
 }
 .history-th {
-  @apply px-6 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
+  @apply px-4 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
 }
 .history-tr {
   @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;

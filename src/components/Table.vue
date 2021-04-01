@@ -1,0 +1,41 @@
+<template>
+  <table class="w-full table-fixed">
+    <thead>
+      <tr>
+        <th class="history-th w-7/10 text-left">
+          {{ title }}
+        </th>
+        <th class="history-th w-3/10 text-right">
+          Minutes Listened
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in data" :key="item.id" class="history-tr">
+        <td class="history-td text-left">
+          <div class="flex items-center">
+            <div class="mr-5">
+              {{ index + 1 }}
+            </div>
+            <img :src="item?.image" class="table-image" />
+            <div class="ml-4">
+              {{ item.name }}
+            </div>
+          </div>
+        </td>
+        <td class="history-td text-right">
+          {{ item.playtime }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
+
+<script>
+export default {
+  props: {
+    title: String,
+    data: Object,
+  },
+};
+</script>

@@ -4,10 +4,15 @@
       <h1 class="app-title">
         Spotiworm
       </h1>
-      <p v-if="usersQuantity" class="text-center users">
-        <span class="font-bold">{{ usersQuantity }}</span>
-        people already joined
-      </p>
+      <template v-if="loading">
+        <p class="text-center users animate-pulse loading px-28 py-3"></p>
+      </template>
+      <template v-else>
+        <p v-if="usersQuantity" class="text-center users">
+          <span class="font-semibold">{{ usersQuantity }}</span>
+          people already joined
+        </p>
+      </template>
       <h1 class="app-description">
         Track your listening history and get stats
       </h1>
@@ -29,7 +34,10 @@
   @apply text-7xl text-gray-100;
 }
 .users {
-  @apply text-lg text-gray-300 mb-4 font-medium border rounded-full px-2;
+  @apply text-lg text-gray-300 mb-4 font-normal border border-gray-700-spotify rounded-full px-2;
+}
+.loading {
+  @apply bg-gray-600-spotify border-gray-800-spotify;
 }
 .app-description {
   @apply text-2xl mb-2 mt-2 text-gray-300;
@@ -49,6 +57,7 @@ export default {
         backgroundImage: `url(${require("@/assets/images/banner.png")})`,
       },
       usersQuantity: 0,
+      loading: true,
     };
   },
   computed: {
@@ -77,9 +86,12 @@ export default {
           this.$router.push("/");
         });
     } else {
-      axios.get(`${process.env.VUE_APP_SERVER_URI}/users`).then((response) => {
-        this.usersQuantity = response.data.usersQuantity;
-      });
+      axios
+        .get(`${process.env.VUE_APP_SERVER_URI}/users`)
+        .then((response) => {
+          this.usersQuantity = response.data.usersQuantity;
+        })
+        .finally(() => (this.loading = false));
     }
   },
 };
