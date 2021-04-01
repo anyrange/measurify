@@ -148,8 +148,13 @@ const auth = {
                   .then(async (body) => {
                     if (!body) return;
                     body = await body.json();
-                    if (body.error || !body.items.length) return;
-
+                    if (body.error || !body.items.length) {
+                      res.redirect(
+                        `${uri}?access_token=${access_token}&id=${user._id}`
+                      );
+                      return;
+                    }
+                    conaole.log(body);
                     await body.items.forEach((item) => {
                       delete item.track.available_markets;
                       delete item.track.album.available_markets;
