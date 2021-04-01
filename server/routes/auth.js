@@ -101,7 +101,6 @@ const auth = {
               lastSpotifyToken: access_token,
               userName: body.display_name,
               refreshToken: refresh_token,
-              image: body.images.length ? body.images[0].url : "",
             };
 
             User.findOneAndUpdate(filter, update, {
