@@ -18,7 +18,7 @@ const getOverview = (req, res) => {
       return;
     }
 
-    if (!user.recentlyPlayed) {
+    if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
       res.status(204).json({});
       return;
     }

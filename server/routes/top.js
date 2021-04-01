@@ -45,7 +45,8 @@ const top = (req, res) => {
         );
       }
       let response = { albums: [], tracks: [], artists: [] };
-      if (!user.recentlyPlayed.length) {
+
+      if (!user.recentlyPlayed || !user.recentlyPlayed.length) {
         res.status(204).json({});
         return;
       }

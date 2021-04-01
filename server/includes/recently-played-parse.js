@@ -32,7 +32,7 @@ function refresh_recently_played() {
           delete item.track.album.available_markets;
         });
 
-        if (!user.recentlyPlayed.length) {
+        if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
           const query = { spotifyID: user.spotifyID };
           const update = {
             recentlyPlayed: body.items,

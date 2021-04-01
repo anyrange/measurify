@@ -24,7 +24,10 @@ const getPlayedHistory = (req, res) => {
       res.status(408).json({message:err.toString()});
       return;
     }
-
+    if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
+      res.status(204).json({});
+      return;
+    }
     res.status(200).json(user.toJSON().recentlyPlayed);
   });
 };

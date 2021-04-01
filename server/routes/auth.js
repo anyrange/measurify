@@ -123,7 +123,7 @@ const auth = {
                   res.status(404).json({ message: "user: " + user });
                   return;
                 }
-                if (user.recentlyPlayed.length) return;
+                if (user.recentlyPlayed && user.recentlyPlayed.length) return;
 
                 fetch(
                   `https://api.spotify.com/v1/me/player/recently-played?limit=50`,

@@ -38,7 +38,7 @@ const infoPages = {
             }
           }
         });
-        if (!user.recentlyPlayed.length) {
+        if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
           res.status(204).json({});
           return;
         }
