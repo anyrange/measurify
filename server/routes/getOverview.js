@@ -18,7 +18,10 @@ const getOverview = (req, res) => {
       return;
     }
 
-    if (!user.recentlyPlayed) res.status(204).json({});
+    if (!user.recentlyPlayed) {
+      res.status(204).json({});
+      return;
+    }
 
     let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
       let date = played_at.split("T")[0];
