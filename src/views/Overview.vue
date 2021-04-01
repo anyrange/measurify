@@ -308,7 +308,7 @@ export default {
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
 
-          this.emptyData = this.totalOverview.length > 1 ? false : true;
+          this.emptyData = response[0].data.length >= 1 ? false : true;
 
           this.pushToChart();
           this.preCalculateFilteredArrays();
