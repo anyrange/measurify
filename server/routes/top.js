@@ -47,7 +47,7 @@ const top = (req, res) => {
       let response = { albums: [], tracks: [], artists: [] };
 
       if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
-        res.status(204);
+        res.status(204).json();
         return;
       }
       response.albums = await albums(user.recentlyPlayed);

@@ -39,7 +39,7 @@ const infoPages = {
           }
         });
         if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
-          res.status(204);
+          res.status(204).json();
           return;
         }
         // response schema
@@ -123,7 +123,7 @@ const infoPages = {
           (item) => item.track.album.id === albumID
         );
         if (!user.recentlyPlayed.length) {
-          res.status(204).json({});
+          res.status(204).json();
           return;
         }
 
