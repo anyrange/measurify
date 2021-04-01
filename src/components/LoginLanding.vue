@@ -76,10 +76,11 @@ export default {
           this.$store.commit("mutateUser", response.data);
           this.$router.push("/");
         });
+    } else {
+      axios.get(`${process.env.VUE_APP_SERVER_URI}/users`).then((response) => {
+        this.usersQuantity = response.data.usersQuantity;
+      });
     }
-    axios.get(`${process.env.VUE_APP_SERVER_URI}/users`).then((response) => {
-      this.usersQuantity = response.data.usersQuantity;
-    });
   },
 };
 </script>

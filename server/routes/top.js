@@ -62,9 +62,8 @@ const top = (req, res) => {
           res.status(200).json(response);
         })
         .then(async (body) => {
-          if (!body) {
-            return;
-          }
+          if (!body) return;
+          
           body = await body.json();
           if (body.error) {
             response.message = `${body.error.message} [${body.error.status}]`;

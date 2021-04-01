@@ -25,6 +25,10 @@ const schema = new Schema({
     type: Array,
     default: [],
   },
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = model("User", schema);
