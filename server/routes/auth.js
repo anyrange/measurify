@@ -154,7 +154,7 @@ const auth = {
                       );
                       return;
                     }
-                    conaole.log(body);
+
                     await body.items.forEach((item) => {
                       delete item.track.available_markets;
                       delete item.track.album.available_markets;
