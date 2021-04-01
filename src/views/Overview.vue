@@ -305,6 +305,8 @@ export default {
 
       Promise.all(promises)
         .then((response) => {
+          this.emptyData = response[0].status === 204 ? true : false;
+          
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
 
@@ -314,9 +316,7 @@ export default {
           this.loading = false;
         })
         .catch((err) => {
-          if (err.response) {
-            this.emptyData = err.response.status === 204 ? true : false;
-          }
+          console.log(err);
         });
     },
   },
