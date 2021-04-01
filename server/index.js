@@ -22,8 +22,9 @@ if (process.env.NODE_ENV == "production") {
       if (!origin) return callback(null, true);
       if (whitelist.indexOf(origin) === -1) {
         const message =
-          "The CORS policy for this origin doesnt allow access from the particular origin.";
-        return callback(new Error(message), false);
+          "The CORS policy for this origin doesnt allow access from the particular origin. Origin:" +
+          origin;
+        return callback(message, false);
       }
       return callback(null, true);
     },
