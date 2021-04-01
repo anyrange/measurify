@@ -38,8 +38,8 @@ const infoPages = {
             }
           }
         });
-        if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
-          res.status(204).json({});
+        if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
+          res.status(204);
           return;
         }
         // response schema

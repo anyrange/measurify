@@ -30,6 +30,10 @@ const auth = {
         res.status(408).json({ message: err.toString(), user });
         return;
       }
+      if (!user) {
+        res.status(204).end();
+        return;
+      }
       res.status(200).end(user.lastSpotifyToken);
     });
   },
@@ -120,10 +124,16 @@ const auth = {
                   return;
                 }
                 if (!user) {
-                  res.status(404).json({ message: "user: " + user });
+                  res.status(404).json({ message: "user not found " });
                   return;
                 }
-                if (user.recentlyPlayed && user.recentlyPlayed.length) return;
+
+                if (user.recentlyPlayed && user.recentlyPlayed.length) {
+                  res.redirect(
+                    `${uri}?access_token=${access_token}&id=${user._id}`
+                  );
+                  return;
+                }
 
                 fetch(
                   `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
@@ -142,28 +152,22 @@ const auth = {
                     body = await body.json();
                     if (body.error || !body.items.length) return;
 
-                    body.items.forEach((item) => {
+                    await body.items.forEach((item) => {
                       delete item.track.available_markets;
                       delete item.track.album.available_markets;
                     });
+
                     const filter = { spotifyID: body.id };
                     const update = {
                       recentlyPlayed: body.items,
                     };
-                    User.updateOne(filter, update);
+                    await User.updateOne(filter, update);
+                    res.redirect(
+                      `${uri}?access_token=${access_token}&id=${user._id}`
+                    );
                   });
               }
             );
-
-            User.findOne({ spotifyID: body.id }, { _id: 1 }, (err, user) => {
-              if (err) {
-                res.status(408).json({ message: err.toString() });
-                return;
-              }
-              res.redirect(
-                `${uri}?access_token=${access_token}&id=${user._id}`
-              );
-            });
           });
       });
   },

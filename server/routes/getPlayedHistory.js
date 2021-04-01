@@ -3,8 +3,8 @@ const User = require("../models/User");
 const getPlayedHistory = (req, res) => {
   let _id = req.get("Authorization");
   if (!_id) {
-    res.status(401).json({ message: `Unauthorized`, });
-    return
+    res.status(401).json({ message: `Unauthorized` });
+    return;
   }
   const projection = {
     _id: 0,
@@ -21,11 +21,11 @@ const getPlayedHistory = (req, res) => {
 
   User.findOne({ _id }, projection, (err, user) => {
     if (err) {
-      res.status(408).json({message:err.toString()});
+      res.status(408).json({ message: err.toString() });
       return;
     }
-    if (!user.recentlyPlayed ||!user.recentlyPlayed.length) {
-      res.status(204).json({});
+    if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
+      res.status(204);
       return;
     }
     res.status(200).json(user.toJSON().recentlyPlayed);
