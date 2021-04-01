@@ -88,9 +88,7 @@ const auth = {
             res.status(400).json({ message: err.message });
           })
           .then(async (body) => {
-            if (!body) {
-              return;
-            }
+            if (!body) return;
             body = await body.json();
             if (body.error) {
               res
@@ -117,7 +115,7 @@ const auth = {
             // get recentlyPlayed if it is empty
             User.findOne(
               { spotifyID: body.id },
-              { recentlyPlayed: { $slice: [0, 1] } },
+              { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } },
               (err, user) => {
                 if (err) {
                   res.status(408).json({ message: err.toString() });
@@ -157,11 +155,13 @@ const auth = {
                       delete item.track.album.available_markets;
                     });
 
-                    const filter = { spotifyID: body.id };
+                    const query = { _id: user._id };
                     const update = {
                       recentlyPlayed: body.items,
                     };
-                    await User.updateOne(filter, update);
+
+                    await User.updateOne(query, update);
+
                     res.redirect(
                       `${uri}?access_token=${access_token}&id=${user._id}`
                     );
