@@ -12,7 +12,7 @@
       <template v-else>
         <div class="mt-8">
           <div class="sm:mx-4 mx-4">
-            <ul class="sm:flex">
+            <ul class="tabs sm:flex">
               <li
                 class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
                 :class="[
@@ -70,139 +70,40 @@
             Top Played
           </h2>
           <div class="mt-6 sm:mx-4 mx-4">
-            <ul class="sm:flex">
+            <ul class="tabs sm:flex">
               <li
+                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
                 :class="[
                   selectedTop === 'artists' ? 'is-active' : 'not-active',
                 ]"
                 @click="selectedTop = 'artists'"
-                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
               >
                 Artists
               </li>
               <li
+                class="tab"
                 :class="[selectedTop === 'tracks' ? 'is-active' : 'not-active']"
                 @click="selectedTop = 'tracks'"
-                class="tab"
               >
                 Tracks
               </li>
               <li
+                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
                 :class="[selectedTop === 'albums' ? 'is-active' : 'not-active']"
                 @click="selectedTop = 'albums'"
-                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
               >
                 Albums
               </li>
             </ul>
             <div class="mt-4">
               <div v-if="selectedTop === 'artists'">
-                <table class="w-full table-fixed">
-                  <thead>
-                    <tr>
-                      <th class="history-th w-7/10 text-left">
-                        Artist
-                      </th>
-                      <th class="history-th w-3/10 text-right">
-                        Minutes Listened
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(item, index) in totalTop.artists"
-                      :key="item.id"
-                      class="history-tr"
-                    >
-                      <td class="history-td text-left">
-                        <div class="flex items-center">
-                          <div class="mr-5">
-                            {{ index + 1 }}
-                          </div>
-                          <img :src="item?.image" class="table-image" />
-                          <div class="ml-4">
-                            {{ item.name }}
-                          </div>
-                        </div>
-                      </td>
-                      <td class="history-td text-right">
-                        {{ item.playtime }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <Table :title="selectedTop" :data="totalTop.artists" />
               </div>
               <div v-if="selectedTop === 'tracks'">
-                <table class="w-full table-fixed">
-                  <thead>
-                    <tr>
-                      <th class="history-th w-7/10 text-left">
-                        Track
-                      </th>
-                      <th class="history-th w-3/10 text-right">
-                        Minutes Listened
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(item, index) in totalTop.tracks"
-                      :key="item.id"
-                      class="history-tr"
-                    >
-                      <td class="history-td text-left">
-                        <div class="flex items-center">
-                          <div class="mr-5">
-                            {{ index + 1 }}
-                          </div>
-                          <img :src="item?.image" class="table-image" />
-                          <div class="ml-4">
-                            {{ item.name }}
-                          </div>
-                        </div>
-                      </td>
-                      <td class="history-td text-right">
-                        {{ item.playtime }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <Table :title="selectedTop" :data="totalTop.tracks" />
               </div>
               <div v-if="selectedTop === 'albums'">
-                <table class="w-full table-fixed">
-                  <thead>
-                    <tr>
-                      <th class="history-th w-7/10 text-left">
-                        Album
-                      </th>
-                      <th class="history-th w-3/10 text-right">
-                        Minutes Listened
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(item, index) in totalTop.albums"
-                      :key="item.id"
-                      class="history-tr"
-                    >
-                      <td class="history-td text-left">
-                        <div class="flex items-center">
-                          <div class="mr-5">
-                            {{ index + 1 }}
-                          </div>
-                          <img :src="item?.image" class="table-image" />
-                          <div class="ml-4">
-                            {{ item.name }}
-                          </div>
-                        </div>
-                      </td>
-                      <td class="history-td text-right">
-                        {{ item.playtime }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <Table :title="selectedTop" :data="totalTop.albums" />
               </div>
             </div>
           </div>
@@ -228,6 +129,7 @@
 import axios from "axios";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Card from "@/components/Card";
+import Table from "@/components/Table";
 import chartOptions from "@/mixins/chartOptions";
 import * as fd from "@/utils/dates";
 
@@ -235,6 +137,7 @@ export default {
   components: {
     LoadingSpinner,
     Card,
+    Table,
   },
 
   mixins: [chartOptions],
@@ -317,6 +220,7 @@ export default {
 
       this.updateChartValues();
     },
+    // updateTop(period) {},
     updateTotals(arr, prev) {
       for (const item of arr) {
         this.newDates.push(item.date);
@@ -408,7 +312,7 @@ export default {
 
           this.pushToChart();
           this.preCalculateFilteredArrays();
-
+          
           this.loading = false;
         })
         .catch((err) => {
@@ -443,46 +347,4 @@ export default {
 }
 </style>
 
-<style>
-.apexcharts-text {
-  font-family: "Inter", sans-serif !important;
-}
-.apexcharts-zoomin-icon,
-.apexcharts-zoomout-icon,
-.apexcharts-zoom-icon.apexcharts-selectedTop,
-.apexcharts-pan-icon,
-.apexcharts-menu-icon {
-  display: none;
-}
-.apexcharts-zoom-icon.apexcharts-selected {
-  display: none;
-}
-.apexcharts-tooltip.apexcharts-theme-light {
-  background-color: #181818 !important;
-  border: 1px solid #464846 !important;
-  box-shadow: 0px 0px 0px 0px #fff !important;
-  border-radius: 0px !important;
-  color: #1cd460;
-  padding: 4px !important;
-  font-family: "Inter", sans-serif !important;
-}
-.apexcharts-tooltip-text {
-  font-size: 14px !important;
-}
-.apexcharts-tooltip-text-value {
-  font-weight: normal !important;
-}
-.apexcharts-tooltip-title {
-  border: 0 !important;
-  font-size: 16px !important;
-  color: #fff;
-  background-color: #181818 !important;
-  margin-bottom: 0px !important;
-}
-.apexcharts-tooltip-y-group {
-  padding: 0 !important;
-}
-.apexcharts-tooltip-marker {
-  background-color: #1da14b !important;
-}
-</style>
+<style src="@/assets/chart.css"></style>
