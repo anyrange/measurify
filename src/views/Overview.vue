@@ -308,15 +308,15 @@ export default {
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
 
-          this.emptyData = response[0].data.length >= 1 ? false : true;
-
           this.pushToChart();
           this.preCalculateFilteredArrays();
 
           this.loading = false;
         })
         .catch((err) => {
-          console.log(err);
+          if (err.response) {
+            this.emptyData = err.response.status === 204 ? true : false;
+          }
         });
     },
   },
