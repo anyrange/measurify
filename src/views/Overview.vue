@@ -43,166 +43,18 @@
             </ul>
           </div>
           <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mx-4 mb-2 mt-6">
-            <div class="p-5 bg-gray-700-spotify rounded-lg shadow-sm">
-              <div class="text-xl text-gray-400-spotify">Tracks Played</div>
-              <div class="flex items-center pt-1">
-                <div class="text-2xl font-bold text-gray-100">
-                  {{ totalTracksPlayed }}
-                </div>
-                <template
-                  v-if="
-                    (selectedPeriod == 'month' || selectedPeriod == 'week') &&
-                      totalTracksPlayedPrev > 0 &&
-                      totalMinutesListenedPrev > 0
-                  "
-                >
-                  <template
-                    v-if="totalTracksPlayed - totalTracksPlayedPrev > 0"
-                  >
-                    <span
-                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-green-900 bg-green-200 rounded-full"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M18 15L12 9L6 15"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></path>
-                      </svg>
-                      <span>
-                        {{
-                          (
-                            ((totalTracksPlayed - totalTracksPlayedPrev) /
-                              totalTracksPlayedPrev) *
-                            100
-                          ).toLocaleString("fullwide", {
-                            maximumFractionDigits: 0,
-                          })
-                        }}%
-                      </span>
-                    </span>
-                  </template>
-                  <template v-else>
-                    <span
-                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-red-600 bg-red-100 rounded-full"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6 9L12 15L18 9"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></path>
-                      </svg>
-                      <span>
-                        {{
-                          (
-                            ((totalTracksPlayed - totalTracksPlayedPrev) /
-                              totalTracksPlayedPrev) *
-                            100
-                          ).toLocaleString("fullwide", {
-                            maximumFractionDigits: 0,
-                          })
-                        }}%
-                      </span>
-                    </span>
-                  </template>
-                </template>
-              </div>
-            </div>
-            <div class="p-5 bg-gray-700-spotify rounded-xl shadow-sm">
-              <div class="text-xl text-gray-400-spotify">Minutes Listened</div>
-              <div class="flex items-center pt-1">
-                <div class="text-2xl font-bold text-gray-100">
-                  {{ totalMinutesListened }}
-                </div>
-                <template
-                  v-if="
-                    (selectedPeriod == 'month' || selectedPeriod == 'week') &&
-                      totalTracksPlayedPrev > 0 &&
-                      totalMinutesListenedPrev > 0
-                  "
-                >
-                  <template
-                    v-if="totalMinutesListened - totalMinutesListenedPrev > 0"
-                  >
-                    <span
-                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-green-900 bg-green-200 rounded-full"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M18 15L12 9L6 15"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></path>
-                      </svg>
-                      <span>
-                        {{
-                          (
-                            ((totalMinutesListened - totalMinutesListenedPrev) /
-                              totalMinutesListenedPrev) *
-                            100
-                          ).toLocaleString("fullwide", {
-                            maximumFractionDigits: 0,
-                          })
-                        }}%
-                      </span>
-                    </span>
-                  </template>
-                  <template v-else>
-                    <span
-                      class="flex items-center px-2 py-0.5 mx-2 text-sm text-red-600 bg-red-100 rounded-full"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6 9L12 15L18 9"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        ></path>
-                      </svg>
-                      <span>
-                        {{
-                          (
-                            ((totalMinutesListened - totalMinutesListenedPrev) /
-                              totalMinutesListenedPrev) *
-                            100
-                          ).toLocaleString("fullwide", {
-                            maximumFractionDigits: 0,
-                          })
-                        }}%
-                      </span>
-                    </span>
-                  </template>
-                </template>
-              </div>
-            </div>
+            <Card
+              :title="'Tracks Played'"
+              :selected="selectedPeriod"
+              :value="totalTracksPlayed"
+              :previousValue="totalTracksPlayedPrev"
+            />
+            <Card
+              :title="'Minutes Listened'"
+              :selected="selectedPeriod"
+              :value="totalMinutesListened"
+              :previousValue="totalMinutesListenedPrev"
+            />
           </div>
           <div class="w-full">
             <apexchart
@@ -375,12 +227,14 @@
 <script>
 import axios from "axios";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Card from "@/components/Card";
 import chartOptions from "@/mixins/chartOptions";
 import * as fd from "@/utils/dates";
 
 export default {
   components: {
     LoadingSpinner,
+    Card,
   },
 
   mixins: [chartOptions],

@@ -124,7 +124,7 @@ export default {
           },
         },
         noData: {
-          text: "No listening data",
+          text: "Start listening to music on Spotify and come back later!",
         },
       },
     };
