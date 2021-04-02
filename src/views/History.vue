@@ -66,7 +66,15 @@
                 class="history-tr"
               >
                 <td class="history-td">
-                  {{ item.track.name }}
+                  <router-link
+                    class="hover:underline"
+                    :to="{ name: 'track', params: { id: item.track.id } }"
+                  >
+                    {{ item.track.name }}
+                  </router-link>
+                  <!-- <router-link :to="'/track/' + item.track.id">{{
+                    item.track.name
+                  }}</router-link> -->
                 </td>
                 <td class="history-td sm:table-cell hidden">
                   {{
@@ -107,7 +115,7 @@
   </div>
 </template>
 
-<style>
+<style lang="postcss">
 .history-td {
   @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
 }

@@ -63,7 +63,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="postcss">
 .wrapper {
   @apply flex flex-col h-screen text-sm dark:text-gray-400 text-gray-900;
 }

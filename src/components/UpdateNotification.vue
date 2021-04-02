@@ -61,7 +61,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 .transition-entering {
   @apply transition ease-out duration-100;
 }

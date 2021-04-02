@@ -61,7 +61,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 .slide-fade-enter-active {
   transition: all 0.2s ease-out;
 }

@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<style>
+<style lang="postcss">
 .loading-spinner {
   @apply opacity-80 h-80 flex items-center justify-center;
 }

@@ -149,7 +149,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="postcss">
 .sidebar {
   @apply flex flex-row absolute md:relative h-screen w-48 min-w-max z-30 font-semibold bg-gray-200 dark:bg-gray-900-spotify;
 }

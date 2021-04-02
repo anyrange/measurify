@@ -94,7 +94,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="postcss">
 .userbar:hover .arrow {
   transition: all 0.1s ease-in-out;
   transform: rotate(180deg);
