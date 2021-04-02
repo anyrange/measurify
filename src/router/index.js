@@ -57,7 +57,7 @@ const routes = [
         component: Track,
         name: "track",
         meta: {
-          title: "Track",
+          title: "...",
         },
       },
     ],
@@ -74,6 +74,11 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  document.title = to.params.title ? to.params.title : to.meta.title;
+  next();
 });
 
 export default router;

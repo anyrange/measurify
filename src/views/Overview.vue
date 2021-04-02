@@ -241,7 +241,7 @@ export default {
           categories: this.newDates,
           labels: {
             formatter: function(value) {
-              if (typeof value == "undefined") {
+              if (typeof value === "undefined") {
                 return value;
               }
               const options = {
@@ -309,7 +309,7 @@ export default {
 
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
-
+          console.log(this.totalTop);
           this.pushToChart();
           this.preCalculateFilteredArrays();
 
@@ -326,7 +326,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style>
 .table-image {
   @apply object-cover w-9 h-9 rounded-full;
 }

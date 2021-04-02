@@ -71,7 +71,7 @@ export default {
             offsetX: 0,
             offsetY: 0,
             formatter: function(value) {
-              if (typeof value == "undefined") {
+              if (typeof value === "undefined") {
                 return value;
               }
               const options = {
