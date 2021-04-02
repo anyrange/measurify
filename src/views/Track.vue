@@ -52,7 +52,7 @@
             </li>
           </ul>
         </div>
-        <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mx-4 mb-2 mt-6">
+        <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
           <Card
             :title="'Times Played'"
             :selected="selectedPeriod"
@@ -66,7 +66,7 @@
             :previousValue="totalMinutesListenedPrev"
           />
         </div>
-        <div class="w-full">
+        <div class="-mx-4 w-full">
           <apexchart
             type="area"
             height="350"
