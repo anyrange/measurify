@@ -7,6 +7,8 @@ import Overview from "../views/Overview.vue";
 import Playlists from "../views/Playlists.vue";
 import History from "../views/History.vue";
 
+import Track from "../views/Track.vue";
+
 const routes = [
   {
     path: "/",
@@ -48,6 +50,14 @@ const routes = [
         component: Profile,
         meta: {
           title: "Profile",
+        },
+      },
+      {
+        path: "/track/:id",
+        component: Track,
+        name: "track",
+        meta: {
+          title: "Track",
         },
       },
     ],
