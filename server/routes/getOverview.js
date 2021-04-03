@@ -30,10 +30,9 @@ const getOverview = (req, res) => {
     });
 
     let plays = [];
-
-    while (recentlyPlayed.length) {
-      const dateToCheck = recentlyPlayed[0].date;
-
+    let dateToCheck = new Date();
+    dateToCheck = dateToCheck.toISOString().split("T")[0];
+    while (dateToCheck >= recentlyPlayed[recentlyPlayed.length - 1].date) {
       currentDateTracks = recentlyPlayed.filter(
         (track) => track.date === dateToCheck
       );
@@ -47,7 +46,9 @@ const getOverview = (req, res) => {
         date: dateToCheck,
         duration: Math.round(duration),
       });
-      recentlyPlayed = recentlyPlayed.slice(currentDateTracks.length);
+      dateToCheck = new Date(dateToCheck);
+      dateToCheck.setDate(dateToCheck.getDate() - 1);
+      dateToCheck = dateToCheck.toISOString().split("T")[0];
     }
 
     res.status(200).json(plays);
