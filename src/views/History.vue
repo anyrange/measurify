@@ -68,7 +68,13 @@
                 <td class="history-td">
                   <router-link
                     class="hover:underline"
-                    :to="{ name: 'track', params: { id: item.track.id } }"
+                    :to="{
+                      name: 'track',
+                      params: {
+                        id: item.track.id,
+                        title: item.track.name,
+                      },
+                    }"
                   >
                     {{ item.track.name }}
                   </router-link>

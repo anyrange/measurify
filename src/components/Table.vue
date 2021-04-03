@@ -19,7 +19,23 @@
             </div>
             <img :src="item?.image" class="table-image" />
             <div class="ml-4">
-              {{ item.name }}
+              <template v-if="this.title == 'tracks'">
+                <router-link
+                  class="hover:underline"
+                  :to="{
+                    name: 'track',
+                    params: {
+                      id: item.id,
+                      title: item.name,
+                    },
+                  }"
+                >
+                  {{ item.name }}
+                </router-link>
+              </template>
+              <template v-else>
+                {{ item.name }}
+              </template>
             </div>
           </div>
         </td>
