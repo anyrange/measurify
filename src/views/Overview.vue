@@ -38,7 +38,7 @@
                 ]"
                 @click="updateOverview('month')"
               >
-                This month
+                This Month
               </li>
             </ul>
           </div>
@@ -127,7 +127,6 @@
 
 <script>
 import axios from "axios";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import Card from "@/components/Card";
 import Table from "@/components/Table";
 import chartOptions from "@/mixins/chartOptions";
@@ -135,7 +134,6 @@ import * as fd from "@/utils/dates";
 
 export default {
   components: {
-    LoadingSpinner,
     Card,
     Table,
   },

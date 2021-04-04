@@ -48,7 +48,7 @@
               :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
               @click="updateOverview('month')"
             >
-              This month
+              This Month
             </li>
           </ul>
         </div>

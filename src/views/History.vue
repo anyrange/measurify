@@ -137,40 +137,20 @@
 </style>
 
 <script>
-import LoadingSpinner from "@/components/LoadingSpinner";
-import axios from "axios";
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
+import service from "@/api/services";
 
 export default {
-  components: {
-    LoadingSpinner,
-  },
-
   data() {
     return {
       recentlyPlayed: [],
       search: "",
       loading: true,
-
       emptyData: false,
     };
   },
 
   methods: {
-    getListeningHistory() {
-      axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/listening-history`, {
-          headers: {
-            Authorization: this.user._id,
-          },
-        })
-        .catch((err) => console.log(err))
-        .then((response) => {
-          this.recentlyPlayed = response.data;
-          this.emptyData = this.recentlyPlayed.length > 1 ? false : true;
-        })
-        .finally(() => (this.loading = false));
-    },
     getDateFromNow(date) {
       return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
     },
@@ -183,7 +163,6 @@ export default {
     user() {
       return this.$store.getters.getUser;
     },
-
     filteredTable() {
       return this.recentlyPlayed.filter((item) => {
         const song = item.track.name.toLowerCase();
@@ -204,8 +183,12 @@ export default {
     },
   },
 
-  created() {
-    this.getListeningHistory();
+  async created() {
+    this.recentlyPlayed = await service
+      .getListeningHistory(this.user._id)
+      .finally(() => {
+        this.loading = false;
+      });
   },
 };
 </script>

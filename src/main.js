@@ -5,9 +5,14 @@ import router from "./router";
 import store from "./store";
 import "./assets/tailwind.css";
 import VueApexCharts from "vue3-apexcharts";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
-createApp(App)
+const app = createApp(App);
+
+app
   .use(store)
   .use(VueApexCharts)
   .use(router)
   .mount("#app");
+
+app.component("LoadingSpinner", LoadingSpinner);

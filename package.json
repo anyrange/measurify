@@ -1,34 +1,30 @@
 {
   "name": "spotify-worm",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.8.0",
   "scripts": {
+    "heroku-postbuild": "echo Skip builds on Heroku",
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build",
-    "heroku-postbuild": "echo Skip builds on Heroku",
-    "dist": "serve -s dist",
     "serve": "vue-cli-service serve --port 3000",
     "server": "nodemon index.js --prefix server",
-    "dev": "concurrently \"npm run serve\" \"npm run server\""
+    "dev": "concurrently \"npm run serve\" \"npm run server\"",
+    "dist": "concurrently \"npm run build && serve -l 3000 -s dist\" \"npm run server\""
   },
   "dependencies": {
-    "@tailwindcss/postcss7-compat": "^2.0.2",
-    "apexcharts": "^3.26.0",
-    "autoprefixer": "^9",
-    "axios": "^0.21.1",
-    "core-js": "^3.6.5",
-    "date-fns": "^2.19.0",
-    "echarts": "^5.0.2",
-    "postcss": "^7",
+    "vue": "^3.0.0",
+    "vuex": "^4.0.0-0",
+    "vue-router": "^4.0.0-0",
+    "vuex-persistedstate": "^4.0.0-beta.3",
     "register-service-worker": "^1.7.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
-    "vue": "^3.0.0",
-    "vue-echarts": "^6.0.0-rc.3",
-    "vue-router": "^4.0.0-0",
+    "@tailwindcss/postcss7-compat": "^2.0.2",
+    "postcss": "^7",
+    "autoprefixer": "^9",
+    "core-js": "^3.6.5",
+    "apexcharts": "^3.26.0",
     "vue3-apexcharts": "^1.2.1",
-    "vue3-echarts": "^1.0.3",
-    "vuex": "^4.0.0-0",
-    "vuex-persistedstate": "^4.0.0-beta.3"
+    "axios": "^0.21.1",
+    "date-fns": "^2.19.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -39,11 +35,11 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
-    "concurrently": "^6.0.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
-    "nodemon": "^2.0.7",
-    "vue-cli-plugin-tailwind": "~2.0.6"
+    "vue-cli-plugin-tailwind": "~2.0.6",
+    "concurrently": "^6.0.0",
+    "nodemon": "^2.0.7"
   },
   "eslintConfig": {
     "root": true,
