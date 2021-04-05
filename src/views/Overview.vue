@@ -88,11 +88,20 @@
                 Tracks
               </li>
               <li
-                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
+                class="tab"
                 :class="[selectedTop === 'albums' ? 'is-active' : 'not-active']"
                 @click="selectedTop = 'albums'"
               >
                 Albums
+              </li>
+              <li
+                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
+                :class="[
+                  selectedTop === 'playlists' ? 'is-active' : 'not-active',
+                ]"
+                @click="selectedTop = 'playlists'"
+              >
+                Playlists
               </li>
             </ul>
             <div class="mt-4">
@@ -104,6 +113,9 @@
               </div>
               <div v-if="selectedTop === 'albums'">
                 <Table :title="selectedTop" :data="totalTop.albums" />
+              </div>
+              <div v-if="selectedTop === 'playlists'">
+                <Table :title="selectedTop" :data="totalTop.playlists" />
               </div>
             </div>
           </div>
