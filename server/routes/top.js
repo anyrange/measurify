@@ -20,6 +20,8 @@ const top = (req, res) => {
     "recentlyPlayed.track.duration_ms": 1,
     "recentlyPlayed.track.id": 1,
     "recentlyPlayed.track.name": 1,
+    "recentlyPlayed.context.uri": 1,
+    "recentlyPlayed.context.type": 1,
     lastSpotifyToken: 1,
   };
 
@@ -53,40 +55,68 @@ const top = (req, res) => {
       response.albums = await albums(user.recentlyPlayed);
       response.tracks = await tracks(user.recentlyPlayed);
       response.artists = await artists(user.recentlyPlayed);
+      response.playlists = await playlists(user.recentlyPlayed);
 
-      // get images for artists
-      fetch(
-        `https://api.spotify.com/v1/artists?ids=${response.artists
-          .map((artist) => artist.id)
-          .join()}`,
-        {
-          method: "GET",
-          headers: { Authorization: "Bearer " + user.lastSpotifyToken },
-        }
-      )
-        .catch((err) => {
-          response.message = err.message;
-          res.status(200).json(response);
-        })
-        .then(async (body) => {
-          if (!body) return;
+      let requests = response.playlists.map((playlist) => {
+        return new Promise((resolve) => {
+          addPlaylistInfo(playlist, user.lastSpotifyToken, resolve);
+        }).then((res) => {
+          if (!res) return;
 
-          body = await body.json();
-          if (body.error) {
-            response.message = `${body.error.message} [${body.error.status}]`;
-            res.status(200).json(response);
-            return;
-          }
-          response.artists.forEach((artist, index) => {
-            if (
-              body.artists[index].images.length &&
-              body.artists[index].images[2]
-            ) {
-              artist.image = body.artists[index].images[2].url;
-            }
+          response.playlists.push({
+            name: res.name,
+            id: res.id,
+            image: res.images.length ? res.images[0].url : "",
+            playtime: res.playtime,
           });
-          res.status(200).json(response);
         });
+      });
+
+      response.playlists = [];
+
+      Promise.all(requests).then(() => {
+        response.playlists.sort(function(a, b) {
+          if (a.playtime < b.playtime) {
+            return 1;
+          }
+          if (a.playtime > b.playtime) {
+            return -1;
+          }
+          return 0;
+        });
+        // get images for artists
+        fetch(
+          `https://api.spotify.com/v1/artists?ids=${response.artists
+            .map((artist) => artist.id)
+            .join()}`,
+          {
+            method: "GET",
+            headers: { Authorization: "Bearer " + user.lastSpotifyToken },
+          }
+        )
+          .catch((err) => {
+            response.message = err.message;
+            res.status(200).json(response);
+          })
+          .then(async (body) => {
+            if (!body) return;
+            body = await body.json();
+            if (body.error) {
+              response.message = `${body.error.message} [${body.error.status}]`;
+              res.status(200).json(response);
+              return;
+            }
+            response.artists.forEach((artist, index) => {
+              if (
+                body.artists[index].images.length &&
+                body.artists[index].images[2]
+              ) {
+                artist.image = body.artists[index].images[2].url;
+              }
+            });
+            res.status(200).json(response);
+          });
+      });
     }
   );
 };
@@ -233,4 +263,84 @@ const artists = (recentlyPlayed) => {
   return sortedArtists;
 };
 
+const playlists = (recentlyPlayed) => {
+  let playlists = [];
+  let uniquePlaylists = [];
+
+  recentlyPlayed.forEach(({ context }) => {
+    if (
+      context &&
+      context.type === "playlist" &&
+      !uniquePlaylists.includes(context.uri)
+    ) {
+      uniquePlaylists.push(context.uri);
+    }
+  });
+
+  while (uniquePlaylists.length) {
+    let playtime = 0;
+
+    // checks if artist is array of artists
+    const filteredHistory = recentlyPlayed.filter((item) => {
+      if (
+        item.context &&
+        item.context.type === "playlist" &&
+        item.context.uri === uniquePlaylists[0]
+      ) {
+        return item;
+      }
+    });
+
+    // calculate duration
+    const reducer = (accumulator, currentValue) =>
+      accumulator + currentValue.track.duration_ms;
+
+    if (filteredHistory.length) {
+      playtime += Math.round(filteredHistory.reduce(reducer, 0) / 1000 / 60);
+    }
+
+    playlists.push({
+      id: uniquePlaylists[0].split(":")[2],
+      playtime,
+    });
+
+    uniquePlaylists.shift();
+  }
+
+  // sort by time and get first 20 elements
+  return playlists
+    .sort(function(a, b) {
+      if (a.playtime < b.playtime) {
+        return 1;
+      }
+      if (a.playtime > b.playtime) {
+        return -1;
+      }
+      return 0;
+    })
+    .slice(0, 20);
+};
+
+const addPlaylistInfo = (playlist, access_token, cb) => {
+  fetch(`https://api.spotify.com/v1/playlists/${playlist.id}`, {
+    method: "GET",
+    headers: { Authorization: "Bearer " + access_token },
+  })
+    .catch((err) => {
+      response.message = err.message;
+      cb();
+    })
+    .then(async (body) => {
+      if (!body) return;
+
+      body = await body.json();
+      if (body.error) {
+        response.message = `${body.error.message} [${body.error.status}]`;
+        cb();
+        return;
+      }
+      body.playtime = playlist.playtime;
+      cb(body);
+    });
+};
 module.exports = top;
