@@ -167,7 +167,7 @@ const tracks = (recentlyPlayed) => {
   while (recentlyPlayed.length) {
     // get array of simillar tracks
     const filteredHistory = recentlyPlayed.filter(
-      (item) => item.track.name === recentlyPlayed[0].track.name
+      (item) => item.track.id === recentlyPlayed[0].track.id
     );
 
     // calculate duration
