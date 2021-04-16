@@ -25,9 +25,9 @@ const auth = {
       res.status(401).json({ message: `Unauthorized` });
       return;
     }
-    User.findOne({ _id }, (err, user) => {
+    User.findOne({ _id }, { lastSpotifyToken: 1 }, (err, user) => {
       if (err) {
-        res.status(408).json({ message: err.toString(), user });
+        res.status(408).json({ message: err.toString() });
         return;
       }
       if (!user) {
