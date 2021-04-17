@@ -1,230 +1,231 @@
 const User = require("../models/User");
 const fetch = require("node-fetch");
+const { ObjectId } = require("mongodb");
 
 const infoPages = {
-  artist: (req, res) => {
+  artist: async (req, res) => {
     const _id = req.get("Authorization");
-    if (!_id) {
-      res.status(401).json({ message: `Unauthorized` });
+    const artistID = req.params.id;
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(_id),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          "recentlyPlayed.track.artists.id": 1,
+          "recentlyPlayed.track.id": 1,
+          "recentlyPlayed.track.name": 1,
+          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.played_at": 1,
+          lastSpotifyToken: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+          includeArrayIndex: "arrayIndex",
+        },
+      },
+      {
+        $match: {
+          "recentlyPlayed.track.artists.id": artistID,
+        },
+      },
+    ];
+
+    const tracks = await User.aggregate(agg);
+
+    if (!tracks || !tracks.length) {
+      res.status(204).json();
       return;
     }
-    const artistID = req.params.id;
-    User.findOne(
-      { _id },
-      {
-        _id: 0,
-        "recentlyPlayed.track.artists.id": 1,
-        "recentlyPlayed.track.artists.name": 1,
-        "recentlyPlayed.track.artists.external_urls.spotify": 1,
-        "recentlyPlayed.track.album.images.url": 1,
-        "recentlyPlayed.track.album.id": 1,
-        "recentlyPlayed.track.album.name": 1,
-        "recentlyPlayed.track.duration_ms": 1,
-        "recentlyPlayed.track.id": 1,
-        "recentlyPlayed.track.name": 1,
-        "recentlyPlayed.played_at": 1,
-        lastSpotifyToken: 1,
-      },
-      (err, user) => {
-        if (err) {
-          res.status(408).json({ message: err.toString() });
-          return;
-        }
+    // response schema
 
-        user.recentlyPlayed = user.recentlyPlayed.filter((item) => {
-          for (let i = 0; i < item.track.artists.length; i++) {
-            if (item.track.artists[i].id === artistID) {
-              return item;
-            }
-          }
-        });
-        if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
-          res.status(204).json();
+    fetch(`https://api.spotify.com/v1/artists/${artistID}`, {
+      headers: {
+        Authorization: "Bearer " + tracks[0].lastSpotifyToken,
+      },
+    })
+      .catch((err) => {
+        response.message = err.message;
+        res.status(200).json(response);
+      })
+      .then(async (body) => {
+        if (!body) {
           return;
         }
-        // response schema
+        body = await body.json();
+        if (body.error) {
+          response.message = `${body.error.message} [${body.error.status}]`;
+          res.status(200).json(response);
+          return;
+        }
         let response = {
           artist: {
-            followers: "",
-            genres: [],
-            name: "",
-            image: "",
-            link: "",
+            followers: body.followers.total,
+            genres: body.genres,
+            name: body.name,
+            image: body.images.length ? body.images[0].url : "",
+            link: body.external_urls.spotify,
           },
-          overview: plays(user),
-          tracks: tracks(user.recentlyPlayed),
+          overview: plays(tracks),
+          tracks: await history(_id, artistID),
         };
-
-        for (let i = 0; i < user.recentlyPlayed[0].track.artists.length; i++) {
-          if (user.recentlyPlayed[0].track.artists[i].id === artistID) {
-            response.artist.name = user.recentlyPlayed[0].track.artists[i].name;
-            response.artist.link =
-              user.recentlyPlayed[0].track.artists[i].external_urls.spotify;
-          }
-        }
-        fetch(`https://api.spotify.com/v1/artists/${artistID}`, {
-          headers: {
-            Authorization: "Bearer " + user.lastSpotifyToken,
-          },
-        })
-          .catch((err) => {
-            response.message = err.message;
-            res.status(200).json(response);
-          })
-          .then(async (body) => {
-            if (!body) {
-              return;
-            }
-            body = await body.json();
-            if (body.error) {
-              response.message = `${body.error.message} [${body.error.status}]`;
-              res.status(200).json(response);
-              return;
-            }
-            response.artist.followers = body.followers.total;
-            response.artist.genres = body.genres;
-            response.artist.image = body.images.length
-              ? body.images[0].url
-              : "";
-            res.status(200).json(response);
-          });
-      }
-    );
+        res.status(200).json(response);
+      });
   },
-  album: (req, res) => {
+  album: async (req, res) => {
     const _id = req.get("Authorization");
-    if (!_id) {
-      res.status(401).json({ message: `Unauthorized` });
-      return;
-    }
     const albumID = req.params.id;
-
-    User.findOne(
-      { _id },
+    const agg = [
       {
-        _id: 0,
-        "recentlyPlayed.track.artists.id": 1,
-        "recentlyPlayed.track.artists.name": 1,
-        "recentlyPlayed.track.album.images.url": 1,
-        "recentlyPlayed.track.album.id": 1,
-        "recentlyPlayed.track.album.name": 1,
-        "recentlyPlayed.track.duration_ms": 1,
-        "recentlyPlayed.track.id": 1,
-        "recentlyPlayed.track.name": 1,
-        "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.track.album.external_urls.spotify": 1,
+        $match: {
+          _id: new ObjectId(_id),
+        },
       },
-      (err, user) => {
-        if (err) {
-          res.status(408).json({ message: err.toString() });
-          return;
-        }
-        user.recentlyPlayed = user.recentlyPlayed.filter(
-          (item) => item.track.album.id === albumID
-        );
-        if (!user.recentlyPlayed.length) {
-          res.status(204).json();
-          return;
-        }
+      {
+        $project: {
+          _id: 0,
+          "recentlyPlayed.track.artists.id": 1,
+          "recentlyPlayed.track.artists.name": 1,
+          "recentlyPlayed.track.album.external_urls.spotify": 1,
+          "recentlyPlayed.track.album.images.url": 1,
+          "recentlyPlayed.track.album.id": 1,
+          "recentlyPlayed.track.album.name": 1,
+          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.track.id": 1,
+          "recentlyPlayed.track.name": 1,
+          "recentlyPlayed.played_at": 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+          includeArrayIndex: "arrayIndex",
+        },
+      },
+      {
+        $match: {
+          "recentlyPlayed.track.album.id": albumID,
+        },
+      },
+    ];
 
-        res.status(200).json({
-          album: {
-            name: user.recentlyPlayed[0].track.album.name,
-            image: user.recentlyPlayed[0].track.album.images[0].url,
-            link: user.recentlyPlayed[0].track.album.external_urls.spotify,
-          },
-          overview: plays(user),
-          tracks: tracks(user.recentlyPlayed),
-        });
-      }
-    );
-  },
-  track: (req, res) => {
-    const _id = req.get("Authorization");
-    if (!_id) {
-      res.status(401).json({ message: `Unauthorized` });
+    const tracks = await User.aggregate(agg);
+
+    if (!tracks || !tracks.length) {
+      res.status(204).json();
       return;
     }
-    const trackID = req.params.id;
 
-    User.findOne(
-      { _id },
-      {
-        _id: 0,
-        "recentlyPlayed.track.artists.id": 1,
-        "recentlyPlayed.track.artists.name": 1,
-        "recentlyPlayed.track.album.images.url": 1,
-        "recentlyPlayed.track.album.id": 1,
-        "recentlyPlayed.track.album.name": 1,
-        "recentlyPlayed.track.duration_ms": 1,
-        "recentlyPlayed.track.id": 1,
-        "recentlyPlayed.track.name": 1,
-        "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.track.external_urls.spotify": 1,
-        lastSpotifyToken: 1,
+    res.status(200).json({
+      album: {
+        name: tracks[0].recentlyPlayed.track.album.name,
+        image: tracks[0].recentlyPlayed.track.album.images[0].url,
+        link: tracks[0].recentlyPlayed.track.album.external_urls.spotify,
+        artist: {
+          name: tracks[0].recentlyPlayed.track.artists[0].name,
+          id: tracks[0].recentlyPlayed.track.artists[0].id,
+        },
       },
-      (err, user) => {
-        if (err) {
-          res.status(408).json({ message: err.toString() });
+      overview: plays(tracks),
+      tracks: await history(_id, albumID),
+    });
+  },
+  track: async (req, res) => {
+    const _id = req.get("Authorization");
+    const trackID = req.params.id;
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(_id),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          "recentlyPlayed.track.artists.id": 1,
+          "recentlyPlayed.track.artists.name": 1,
+          "recentlyPlayed.track.external_urls.spotify": 1,
+          "recentlyPlayed.track.album.images.url": 1,
+          "recentlyPlayed.track.album.id": 1,
+          "recentlyPlayed.track.album.name": 1,
+          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.track.id": 1,
+          "recentlyPlayed.track.name": 1,
+          "recentlyPlayed.played_at": 1,
+          lastSpotifyToken: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+          includeArrayIndex: "arrayIndex",
+        },
+      },
+      {
+        $match: {
+          "recentlyPlayed.track.id": trackID,
+        },
+      },
+    ];
+
+    const tracks = await User.aggregate(agg);
+
+    if (!tracks || !tracks.length) {
+      res.status(204).json();
+      return;
+    }
+
+    let response = {
+      track: {
+        album: {
+          name: tracks[0].recentlyPlayed.track.album.name,
+          id: tracks[0].recentlyPlayed.track.album.id,
+        },
+        artist: {
+          name: tracks[0].recentlyPlayed.track.artists[0].name,
+          id: tracks[0].recentlyPlayed.track.artists[0].id,
+        },
+        name: tracks[0].recentlyPlayed.track.name,
+        image: tracks[0].recentlyPlayed.track.album.images[0].url,
+        link: tracks[0].recentlyPlayed.track.external_urls.spotify,
+        duration_ms: tracks[0].recentlyPlayed.track.duration_ms,
+      },
+      overview: plays(tracks),
+    };
+    fetch(`https://api.spotify.com/v1/tracks/${trackID}`, {
+      headers: {
+        Authorization: "Bearer " + tracks[0].lastSpotifyToken,
+      },
+    })
+      .catch((err) => {
+        response.message = err.message;
+        res.status(200).json(response);
+      })
+      .then(async (body) => {
+        if (!body) {
           return;
         }
-
-        user.recentlyPlayed = user.recentlyPlayed.filter(
-          (item) => item.track.id === trackID
-        );
-
-        if (!user.recentlyPlayed.length) {
-          res.status(200).json();
+        body = await body.json();
+        if (body.error) {
+          response.message = `${body.error.message} [${body.error.status}]`;
+          res.status(200).json(response);
           return;
         }
-        let response = {
-          track: {
-            album: {
-              name: user.recentlyPlayed[0].track.album.name,
-              id: user.recentlyPlayed[0].track.album.id,
-            },
-            artist: {
-              name: user.recentlyPlayed[0].track.artists[0].name,
-              id: user.recentlyPlayed[0].track.artists[0].id,
-            },
-            name: user.recentlyPlayed[0].track.name,
-            image: user.recentlyPlayed[0].track.album.images[0].url,
-            link: user.recentlyPlayed[0].track.external_urls.spotify,
-            duration_ms: user.recentlyPlayed[0].track.duration_ms,
-          },
-          overview: plays(user),
-        };
-        fetch(`https://api.spotify.com/v1/tracks/${trackID}`, {
-          headers: {
-            Authorization: "Bearer " + user.lastSpotifyToken,
-          },
-        })
-          .catch((err) => {
-            response.message = err.message;
-            res.status(200).json(response);
-          })
-          .then(async (body) => {
-            if (!body) {
-              return;
-            }
-            body = await body.json();
-            if (body.error) {
-              response.message = `${body.error.message} [${body.error.status}]`;
-              res.status(200).json(response);
-              return;
-            }
-            response.track.release = body.album.release_date;
-            res.status(200).json(response);
-          });
-      }
-    );
+        response.track.release = body.album.release_date;
+        res.status(200).json(response);
+      });
   },
 };
 
-const plays = (user) => {
-  let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
-    let date = played_at.split("T")[0];
-    let duration = track.duration_ms / 1000 / 60;
+const plays = (tracks) => {
+  let recentlyPlayed = tracks.map(({ recentlyPlayed }) => {
+    let date = recentlyPlayed.played_at.split("T")[0];
+    let duration = recentlyPlayed.track.duration_ms / 1000 / 60;
     return { date, duration };
   });
 
@@ -254,46 +255,67 @@ const plays = (user) => {
   return plays;
 };
 
-const tracks = (recentlyPlayed) => {
-  let tracks = [];
-
-  while (recentlyPlayed.length) {
-    // get array of simillar tracks
-    const filteredHistory = recentlyPlayed.filter(
-      (item) => item.track.name === recentlyPlayed[0].track.name
-    );
-
-    tracks.push({
-      album: {
-        name: recentlyPlayed[0].track.album.name,
-        id: recentlyPlayed[0].track.album.id,
-        image: recentlyPlayed[0].track.album.images[2].url,
+const history = async (_id, filterId) => {
+  const agg = [
+    {
+      $match: {
+        _id: ObjectId(_id),
       },
-      artists: recentlyPlayed[0].track.artists,
-      name: recentlyPlayed[0].track.name,
-      id: recentlyPlayed[0].track.id,
-      duration_ms: recentlyPlayed[0].track.duration_ms,
-      plays: filteredHistory.length,
-      played_at: recentlyPlayed[0].played_at,
-    });
-
-    recentlyPlayed = recentlyPlayed.filter(
-      (item) => item.track.name !== recentlyPlayed[0].track.name
-    );
-  }
-
-  // sort by number of plays and get first 20 elements
-  return tracks
-    .sort(function(a, b) {
-      if (a.plays < b.plays) {
-        return 1;
-      }
-      if (a.plays > b.plays) {
-        return -1;
-      }
-      return 0;
-    })
-    .slice(0, 20);
+    },
+    {
+      $project: {
+        _id: 0,
+        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.track.artists.id": 1,
+        "recentlyPlayed.track.album.id": 1,
+        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.track.id": 1,
+        "recentlyPlayed.track.name": 1,
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed",
+        includeArrayIndex: "arrayIndex",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          { "recentlyPlayed.track.artists.id": filterId },
+          { "recentlyPlayed.track.album.id": filterId },
+        ],
+      },
+    },
+    {
+      $group: {
+        _id: {
+          id: "$recentlyPlayed.track.id",
+          name: "$recentlyPlayed.track.name",
+        },
+        playtime: {
+          $sum: "$recentlyPlayed.track.duration_ms",
+        },
+      },
+    },
+    {
+      $sort: {
+        playtime: -1,
+      },
+    },
+    {
+      $limit: 20,
+    },
+  ];
+  const tracks = await User.aggregate(agg);
+  console.log(tracks);
+  return tracks.map((track) => {
+    return {
+      id: track._id.id,
+      name: track._id.name,
+      playtime: Math.round(track.playtime / 1000 / 60),
+    };
+  });
 };
 
 module.exports = infoPages;

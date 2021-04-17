@@ -20,11 +20,7 @@ const auth = {
     );
   },
   getAccessToken: function(req, res) {
-    let _id = req.get("Authorization");
-    if (!_id) {
-      res.status(401).json({ message: `Unauthorized` });
-      return;
-    }
+    const _id = req.get("Authorization");
     User.findOne({ _id }, { lastSpotifyToken: 1 }, (err, user) => {
       if (err) {
         res.status(408).json({ message: err.toString() });

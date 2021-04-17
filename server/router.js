@@ -7,6 +7,7 @@ const getPlayedHistory = require("./routes/getPlayedHistory");
 const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
 const users = require("./routes/users");
+const authMiddleware = require("./middlewares/authMiddleware");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
@@ -17,18 +18,18 @@ router.get("/", (req, res) => {
 
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
-router.get("/token", auth.getAccessToken);
+router.get("/token", authMiddleware, auth.getAccessToken);
 
-router.get("/listening-history", getPlayedHistory);
+router.get("/listening-history", authMiddleware, getPlayedHistory);
 
-router.get("/friends", friends);
+router.get("/friends", authMiddleware, friends);
 router.get("/users", users);
 
-router.get("/overview", getOverview);
-router.get("/top", top);
+router.get("/overview", authMiddleware, getOverview);
+router.get("/top", authMiddleware, top);
 
-router.get("/artist/:id", infoPages.artist);
-router.get("/album/:id", infoPages.album);
-router.get("/track/:id", infoPages.track);
+router.get("/artist/:id", authMiddleware, infoPages.artist);
+router.get("/album/:id", authMiddleware, infoPages.album);
+router.get("/track/:id", authMiddleware, infoPages.track);
 
 module.exports = router;

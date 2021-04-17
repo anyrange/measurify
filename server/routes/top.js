@@ -1,15 +1,10 @@
 const User = require("../models/User");
 const fetch = require("node-fetch");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+const { ObjectId } = require("mongodb");
 
 const top = async (req, res) => {
   try {
     let _id = req.get("Authorization");
-    if (!_id) {
-      res.status(401).json({ message: `Unauthorized` });
-      return;
-    }
     const firstDate = req.query.firstDate;
     let lastDate = req.query.lastDate;
 
@@ -341,7 +336,7 @@ const artists = async (_id, firstDate, lastDate) => {
     },
   ];
 
-  let artists = await User.aggregate(agg);
+  const artists = await User.aggregate(agg);
 
   return artists.map((track) => {
     return {

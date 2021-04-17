@@ -1,11 +1,7 @@
 const User = require("../models/User");
 
 const getOverview = (req, res) => {
-  let _id = req.get("Authorization");
-  if (!_id) {
-    res.status(401).json({ message: `Unauthorized` });
-    return;
-  }
+  const _id = req.get("Authorization");
   const projection = {
     _id: 0,
     "recentlyPlayed.track.duration_ms": 1,
