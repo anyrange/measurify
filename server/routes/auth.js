@@ -120,7 +120,6 @@ const auth = {
                   res.status(404).json({ message: "user not found " });
                   return;
                 }
-                console.log(user);
                 if (user.recentlyPlayed && user.recentlyPlayed.length) {
                   res.redirect(
                     `${uri}?access_token=${access_token}&id=${user._id}`
