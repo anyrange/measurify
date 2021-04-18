@@ -55,15 +55,9 @@
             <router-link class="userbar-link outline-none" to="/me">
               Account
             </router-link>
-            <!-- <router-link
-            class="userbar-link"
-            :to="{ name: 'Profile', params: { id: this.user.id } }"
-          >
-            Account
-          </router-link> -->
           </div>
           <div class="py-1" role="none">
-            <a @click="logOut()" class="userbar-link" role="menuitem"
+            <a @click="logout()" class="userbar-link" role="menuitem"
               >Sign out</a
             >
           </div>
@@ -86,8 +80,8 @@ export default {
     },
   },
   methods: {
-    logOut() {
-      this.$store.commit("mutateUser", null);
+    logout() {
+      this.$store.dispatch("logout");
       this.$router.push("/");
     },
   },

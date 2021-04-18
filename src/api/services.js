@@ -1,6 +1,9 @@
 import axios from "axios";
+import store from "@/store/index.js";
 
-const url = process.env.VUE_APP_SERVER_URI || "http://localhost:8888/";
+const ENV_URI = store.getters.getBackendURL;
+
+const url = ENV_URI || "http://localhost:8888/";
 
 export default {
   getListeningHistory(id) {

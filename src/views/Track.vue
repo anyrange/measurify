@@ -140,7 +140,7 @@ export default {
   },
   created() {
     axios
-      .get(`${process.env.VUE_APP_SERVER_URI}/track/${this.$route.params.id}`, {
+      .get(`${this.$store.getters.getBackendURL}/track/${this.$route.params.id}`, {
         headers: {
           Authorization: this.user._id,
         },

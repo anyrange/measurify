@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     login() {
-      window.location.href = `${process.env.VUE_APP_SERVER_URI}/login`;
+      window.location.href = `${this.$store.getters.getBackendURL}/login`;
     },
   },
   created() {
@@ -90,7 +90,7 @@ export default {
         });
     } else {
       axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/users`)
+        .get(`${this.$store.getters.getBackendURL}/users`)
         .then((response) => {
           this.usersQuantity = response.data.usersQuantity;
         })
