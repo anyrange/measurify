@@ -4,9 +4,18 @@ const { ObjectId } = require("mongodb");
 
 const top = async (req, res) => {
   try {
-    let _id = req.get("Authorization");
+    const _id = req.get("Authorization");
     const firstDate = req.query.firstDate;
     let lastDate = req.query.lastDate;
+    const document = await User.findOne(
+      { _id },
+      { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
+    );
+
+    if (!document.recentlyPlayed || !document.recentlyPlayed.length) {
+      res.status(204).json();
+      return;
+    }
 
     if (lastDate) {
       lastDate = new Date(lastDate);
@@ -37,7 +46,6 @@ const top = async (req, res) => {
     });
 
     response.playlists = [];
-
     Promise.all(requests).then(() => {
       response.playlists.sort(function(a, b) {
         if (a.playtime < b.playtime) {

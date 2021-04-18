@@ -6,6 +6,8 @@ const User = require("../models/User");
 const redirect_uri =
   process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
+const uri = process.env.FRONTEND_URI || "http://localhost:3000";
+
 const auth = {
   login: function(req, res) {
     res.redirect(
@@ -19,156 +21,123 @@ const auth = {
         })
     );
   },
-  getAccessToken: function(req, res) {
-    const _id = req.get("Authorization");
-    User.findOne({ _id }, { lastSpotifyToken: 1 }, (err, user) => {
-      if (err) {
-        res.status(408).json({ message: err.toString() });
-        return;
-      }
-      if (!user) {
-        res.status(204).end();
-        return;
-      }
-      res.status(200).end(user.lastSpotifyToken);
-    });
+  getAccessToken: async function(req, res) {
+    try {
+      const _id = req.get("Authorization");
+      const response = await User.findOne({ _id }, { lastSpotifyToken: 1 });
+      res.status(200).end(response.lastSpotifyToken);
+    } catch (e) {
+      res.status(404).json();
+      console.log(e);
+    }
   },
-  callback: function(req, res) {
-    let code = req.query.code || null;
+  callback: async function(req, res) {
+    try {
+      const code = req.query.code || null;
 
-    const params = new URLSearchParams();
-    params.append("code", code);
-    params.append("redirect_uri", redirect_uri);
-    params.append("grant_type", "authorization_code");
-    //get tokens
-    fetch(`https://accounts.spotify.com/api/token`, {
-      method: "POST",
-      body: params,
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(
-            process.env.SPOTIFY_CLIENT_ID +
-              ":" +
-              process.env.SPOTIFY_CLIENT_SECRET
-          ).toString("base64"),
-      },
-    })
-      .catch((err) => {
-        res.status(400).json({ message: err.message });
-      })
-      .then(async (body) => {
-        if (!body) {
-          return;
-        }
-        body = await body.json();
-        if (body.error) {
-          res.status(400).json({ message: body });
-          return;
-        }
+      //get tokens
+      const tokens = await fetchTokens(code);
 
-        const access_token = body.access_token;
-        const refresh_token = body.refresh_token;
+      const access_token = tokens.access_token;
+      const refresh_token = tokens.refresh_token;
 
-        const uri = process.env.FRONTEND_URI || "http://localhost:3000";
+      //get user info
+      const user = await fetch(`https://api.spotify.com/v1/me`, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+      });
+      const userJSON = await user.json();
 
-        //get user info
-        fetch(`https://api.spotify.com/v1/me`, {
+      if (userJSON.error) throw new Error(JSON.stringify(userJSON.error));
+
+      console.log(userJSON.display_name + " logined");
+
+      const filter = { spotifyID: userJSON.id };
+      const upsert = {
+        lastSpotifyToken: access_token,
+        userName: userJSON.display_name,
+        refreshToken: refresh_token,
+        image: userJSON.images.length ? userJSON.images[0].url : "",
+        __v: 1,
+      };
+
+      await User.updateOne(filter, upsert, {
+        new: true,
+        upsert: true,
+      });
+
+      // get recentlyPlayed if it is empty
+      const document = await User.findOne(
+        { spotifyID: userJSON.id },
+        { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
+      );
+
+      if (document.recentlyPlayed && document.recentlyPlayed.length) {
+        res.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
+        return;
+      }
+
+      const history = await fetch(
+        `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
+        {
           method: "GET",
           headers: {
             Authorization: "Bearer " + access_token,
           },
-        })
-          .catch((err) => {
-            res.status(400).json({ message: err.message });
-          })
-          .then(async (body) => {
-            if (!body) return;
-            body = await body.json();
-            if (body.error) {
-              res
-                .status(body.error.status)
-                .json({ message: body.error.message });
-              return;
-            }
-            console.log(body.display_name + " logined");
+        }
+      );
 
-            const filter = { spotifyID: body.id };
-            const update = {
-              lastSpotifyToken: access_token,
-              userName: body.display_name,
-              refreshToken: refresh_token,
-              image: body.images.length ? body.images[0].url : "",
-              __v: 1,
-            };
+      const historyJSON = await history.json();
 
-            await User.findOneAndUpdate(filter, update, {
-              new: true,
-              upsert: true,
-            });
+      if (!historyJSON.error && historyJSON.items.length) {
+        historyJSON.items.forEach((item) => {
+          delete item.track.available_markets;
+          delete item.track.album.available_markets;
+        });
 
-            // get recentlyPlayed if it is empty
-            User.findOne(
-              { spotifyID: body.id },
-              { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } },
-              (err, user) => {
-                if (err) {
-                  res.status(408).json({ message: err.toString() });
-                  return;
-                }
-                if (!user) {
-                  res.status(404).json({ message: "user not found " });
-                  return;
-                }
-                if (user.recentlyPlayed && user.recentlyPlayed.length) {
-                  res.redirect(
-                    `${uri}?access_token=${access_token}&id=${user._id}`
-                  );
-                  return;
-                }
-                fetch(
-                  `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
-                  {
-                    method: "GET",
-                    headers: {
-                      Authorization: "Bearer " + access_token,
-                    },
-                  }
-                )
-                  .catch(() => {
-                    return;
-                  })
-                  .then(async (body) => {
-                    if (!body) return;
-                    body = await body.json();
-                    if (body.error || !body.items.length) {
-                      res.redirect(
-                        `${uri}?access_token=${access_token}&id=${user._id}`
-                      );
-                      return;
-                    }
+        const query = { _id: document._id };
+        const update = {
+          recentlyPlayed: historyJSON.items,
+        };
 
-                    await body.items.forEach((item) => {
-                      delete item.track.available_markets;
-                      delete item.track.album.available_markets;
-                    });
+        await User.updateOne(query, update);
+      }
 
-                    const query = { _id: user._id };
-                    const update = {
-                      recentlyPlayed: body.items,
-                    };
-
-                    await User.updateOne(query, update);
-
-                    res.redirect(
-                      `${uri}?access_token=${access_token}&id=${user._id}`
-                    );
-                  });
-              }
-            );
-          });
-      });
+      res.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
+    } catch (e) {
+      res.status(404).json();
+      console.log(e);
+    }
   },
+};
+
+const fetchTokens = async (code, res) => {
+  const params = new URLSearchParams();
+  params.append("code", code);
+  params.append("redirect_uri", redirect_uri);
+  params.append("grant_type", "authorization_code");
+
+  const response = await fetch(`https://accounts.spotify.com/api/token`, {
+    method: "POST",
+    body: params,
+    headers: {
+      Authorization:
+        "Basic " +
+        Buffer.from(
+          process.env.SPOTIFY_CLIENT_ID +
+            ":" +
+            process.env.SPOTIFY_CLIENT_SECRET
+        ).toString("base64"),
+    },
+  });
+
+  if (!response) throw new Error("no spotify response");
+
+  const body = await response.json();
+  if (body.error) throw new Error(JSON.stringify(body.error));
+  return body;
 };
 
 module.exports = auth;
