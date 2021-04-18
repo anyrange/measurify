@@ -1,18 +1,15 @@
 const User = require("../models/User");
 
-const getOverview = (req, res) => {
-  const _id = req.get("Authorization");
-  const projection = {
-    _id: 0,
-    "recentlyPlayed.track.duration_ms": 1,
-    "recentlyPlayed.played_at": 1,
-  };
+const getOverview = async (req, res) => {
+  try {
+    const _id = req.get("Authorization");
+    const projection = {
+      _id: 0,
+      "recentlyPlayed.track.duration_ms": 1,
+      "recentlyPlayed.played_at": 1,
+    };
 
-  User.findOne({ _id }, projection, (err, user) => {
-    if (err) {
-      res.status(408).json({ message: err.toString() });
-      return;
-    }
+    const user = await User.findOne({ _id }, projection);
 
     if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
       res.status(204).json();
@@ -48,7 +45,10 @@ const getOverview = (req, res) => {
     }
 
     res.status(200).json(plays);
-  });
+  } catch (e) {
+    res.status(404).json();
+    console.log(e);
+  }
 };
 
 module.exports = getOverview;

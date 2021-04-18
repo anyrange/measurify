@@ -67,42 +67,13 @@ const auth = {
         new: true,
         upsert: true,
       });
-
-      // get recentlyPlayed if it is empty
+      // check if recentlyPlayed  is empty
       const document = await User.findOne(
         { spotifyID: userJSON.id },
         { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
       );
-
-      if (document.recentlyPlayed && document.recentlyPlayed.length) {
-        res.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
-        return;
-      }
-
-      const history = await fetch(
-        `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
-        }
-      );
-
-      const historyJSON = await history.json();
-
-      if (!historyJSON.error && historyJSON.items.length) {
-        historyJSON.items.forEach((item) => {
-          delete item.track.available_markets;
-          delete item.track.album.available_markets;
-        });
-
-        const query = { _id: document._id };
-        const update = {
-          recentlyPlayed: historyJSON.items,
-        };
-
-        await User.updateOne(query, update);
+      if (!document.recentlyPlayed || !document.recentlyPlayed.length) {
+        await fetchHistory(access_token, document._id);
       }
 
       res.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
@@ -113,7 +84,7 @@ const auth = {
   },
 };
 
-const fetchTokens = async (code, res) => {
+const fetchTokens = async (code) => {
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", redirect_uri);
@@ -138,6 +109,35 @@ const fetchTokens = async (code, res) => {
   const body = await response.json();
   if (body.error) throw new Error(JSON.stringify(body.error));
   return body;
+};
+
+const fetchHistory = async (access_token, _id) => {
+  const history = await fetch(
+    `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + access_token,
+      },
+    }
+  );
+
+  const historyJSON = await history.json();
+
+  if (historyJSON.error || !historyJSON.items.length) {
+    return;
+  }
+  historyJSON.items.forEach((item) => {
+    delete item.track.available_markets;
+    delete item.track.album.available_markets;
+  });
+
+  const query = { _id };
+  const update = {
+    recentlyPlayed: historyJSON.items,
+  };
+
+  await User.updateOne(query, update);
 };
 
 module.exports = auth;
