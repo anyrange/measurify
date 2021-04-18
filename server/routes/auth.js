@@ -40,7 +40,6 @@ const auth = {
     params.append("code", code);
     params.append("redirect_uri", redirect_uri);
     params.append("grant_type", "authorization_code");
-
     //get tokens
     fetch(`https://accounts.spotify.com/api/token`, {
       method: "POST",
@@ -64,7 +63,7 @@ const auth = {
         }
         body = await body.json();
         if (body.error) {
-          res.status(body.error.status).json({ message: body.error.message });
+          res.status(400).json({ message: body });
           return;
         }
 
@@ -121,14 +120,13 @@ const auth = {
                   res.status(404).json({ message: "user not found " });
                   return;
                 }
-
+                console.log(user);
                 if (user.recentlyPlayed && user.recentlyPlayed.length) {
                   res.redirect(
                     `${uri}?access_token=${access_token}&id=${user._id}`
                   );
                   return;
                 }
-
                 fetch(
                   `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
                   {
