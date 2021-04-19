@@ -44,7 +44,7 @@ const friends = async (req, res) => {
 
     let requests = users.map((user) => {
       return new Promise((resolve) => {
-        addImage(user, access_token, resolve, id);
+        addImage(user, resolve, id);
       }).then((user) => {
         if (user && user.friend) {
           delete user.friend;
@@ -67,7 +67,7 @@ const friends = async (req, res) => {
   }
 };
 
-const addImage = (user, access_token, cb, id) => {
+const addImage = (user, cb, id) => {
   //check if user follow main user
   fetch(
     "https://api.spotify.com/v1/me/following/contains?type=user&ids=" + id,

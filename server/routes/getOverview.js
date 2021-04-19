@@ -16,39 +16,41 @@ const getOverview = async (req, res) => {
       return;
     }
 
-    let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
-      let date = played_at.split("T")[0];
-      let duration = track.duration_ms / 1000 / 60;
-      return { date, duration };
-    });
-
-    let plays = [];
-    let dateToCheck = new Date();
-    dateToCheck = dateToCheck.toISOString().split("T")[0];
-    while (dateToCheck >= recentlyPlayed[recentlyPlayed.length - 1].date) {
-      currentDateTracks = recentlyPlayed.filter(
-        (track) => track.date === dateToCheck
-      );
-
-      const duration = currentDateTracks.reduce((accumulator, currentTrack) => {
-        return accumulator + currentTrack.duration;
-      }, 0);
-
-      plays.push({
-        plays: currentDateTracks.length,
-        date: dateToCheck,
-        duration: Math.round(duration),
-      });
-      dateToCheck = new Date(dateToCheck);
-      dateToCheck.setDate(dateToCheck.getDate() - 1);
-      dateToCheck = dateToCheck.toISOString().split("T")[0];
-    }
-
-    res.status(200).json(plays);
+    res.status(200).json(plays(user));
   } catch (e) {
     res.status(404).json();
     console.log(e);
   }
 };
 
+const plays = (user) => {
+  let recentlyPlayed = user.recentlyPlayed.map(({ played_at, track }) => {
+    let date = played_at.split("T")[0];
+    let duration = track.duration_ms / 1000 / 60;
+    return { date, duration };
+  });
+
+  let plays = [];
+  let dateToCheck = new Date();
+  dateToCheck = dateToCheck.toISOString().split("T")[0];
+  while (dateToCheck >= recentlyPlayed[recentlyPlayed.length - 1].date) {
+    currentDateTracks = recentlyPlayed.filter(
+      (track) => track.date === dateToCheck
+    );
+
+    const duration = currentDateTracks.reduce((accumulator, currentTrack) => {
+      return accumulator + currentTrack.duration;
+    }, 0);
+
+    plays.push({
+      plays: currentDateTracks.length,
+      date: dateToCheck,
+      duration: Math.round(duration),
+    });
+    dateToCheck = new Date(dateToCheck);
+    dateToCheck.setDate(dateToCheck.getDate() - 1);
+    dateToCheck = dateToCheck.toISOString().split("T")[0];
+  }
+  return plays;
+};
 module.exports = getOverview;
