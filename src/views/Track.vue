@@ -8,7 +8,14 @@
     <template v-else>
       <div class="mt-4">
         <div class="md:flex items-center">
-          <img :src="object.track.image" class="w-56 h-56 mr-6 object-cover" />
+          <kinesis-container>
+            <kinesis-element :strength="10" type="depth">
+              <img
+                :src="object.track.image"
+                class="w-56 h-56 mr-6 object-cover"
+              />
+            </kinesis-element>
+          </kinesis-container>
           <div class="flex flex-col space-y-2 text-gray-500-spotify">
             <span class="text-5xl font-semibold mt-2 md:mt-0">
               {{ object.track.name }}
@@ -140,11 +147,14 @@ export default {
   },
   created() {
     axios
-      .get(`${this.$store.getters.getBackendURL}/track/${this.$route.params.id}`, {
-        headers: {
-          Authorization: this.user._id,
-        },
-      })
+      .get(
+        `${this.$store.getters.getBackendURL}/track/${this.$route.params.id}`,
+        {
+          headers: {
+            Authorization: this.user._id,
+          },
+        }
+      )
       .catch((err) => console.log(err))
       .then((response) => {
         console.log(response.data);
@@ -152,7 +162,7 @@ export default {
         this.totalOverview = response.data.overview.reverse();
         this.pushToChart();
         this.preCalculateFilteredArrays();
-        document.title = this.object.track.name;
+        document.title = `${this.object.track.name} - Spotiworm`;
       })
       .finally(() => (this.loading = false));
   },
