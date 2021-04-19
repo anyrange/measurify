@@ -8,12 +8,11 @@ const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
 const users = require("./routes/users");
 const authMiddleware = require("./middlewares/authMiddleware");
+const path = require("path");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Hello, you're not supposed to be here",
-  });
+  res.status(200).sendFile(path.dirname(__filename) + "/assets/Home.html");
 });
 
 router.get("/login", auth.login);
@@ -31,5 +30,9 @@ router.get("/top", authMiddleware, top);
 router.get("/artist/:id", authMiddleware, infoPages.artist);
 router.get("/album/:id", authMiddleware, infoPages.album);
 router.get("/track/:id", authMiddleware, infoPages.track);
+
+router.all("*", function(req, res) {
+  res.status(404).end("Service not found");
+});
 
 module.exports = router;
