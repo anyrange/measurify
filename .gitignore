@@ -23,5 +23,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.rest
+*.lock
 .env
 server/package-lock.json
