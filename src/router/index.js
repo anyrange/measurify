@@ -15,7 +15,7 @@ const routes = [
     redirect: "/",
     component: MainLayout,
     meta: {
-      title: "Contest Tracker",
+      title: "Spotiworm",
     },
     children: [
       {
