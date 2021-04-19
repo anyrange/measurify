@@ -47,7 +47,7 @@ export default {
         this.$router.push({ name: "Home" });
       }
       axios
-        .get(`${process.env.VUE_APP_SERVER_URI}/token`, {
+        .get(`${this.$store.getters.getBackendURL}/token`, {
           headers: {
             Authorization: this.user._id,
           },

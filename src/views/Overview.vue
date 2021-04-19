@@ -89,20 +89,27 @@
               </li>
               <li
                 class="tab"
-                :class="[selectedTop === 'albums' ? 'is-active' : 'not-active']"
+                :class="[
+                  selectedTop === 'albums' ? 'is-active' : 'not-active',
+                  !playlistsExist
+                    ? 'sm:rounded-r-lg sm:rounded-b-none rounded-b-lg'
+                    : '',
+                ]"
                 @click="selectedTop = 'albums'"
               >
                 Albums
               </li>
-              <li
-                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-                :class="[
-                  selectedTop === 'playlists' ? 'is-active' : 'not-active',
-                ]"
-                @click="selectedTop = 'playlists'"
-              >
-                Playlists
-              </li>
+              <template v-if="playlistsExist">
+                <li
+                  class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
+                  :class="[
+                    selectedTop === 'playlists' ? 'is-active' : 'not-active',
+                  ]"
+                  @click="selectedTop = 'playlists'"
+                >
+                  Playlists
+                </li>
+              </template>
             </ul>
             <div class="mt-4">
               <div v-if="selectedTop === 'artists'">
@@ -179,6 +186,12 @@ export default {
   },
 
   computed: {
+    playlistsExist() {
+      if (this.totalTop.playlists.length) {
+        return true;
+      }
+      return false;
+    },
     user() {
       return this.$store.getters.getUser;
     },
@@ -301,8 +314,8 @@ export default {
       );
     },
     fetchData() {
-      const overview = `${process.env.VUE_APP_SERVER_URI}/overview`;
-      const top = `${process.env.VUE_APP_SERVER_URI}/top`;
+      const overview = `${this.$store.getters.getBackendURL}/overview`;
+      const top = `${this.$store.getters.getBackendURL}/top`;
 
       const fetchedData = (url) =>
         axios.get(url, {
@@ -319,7 +332,7 @@ export default {
 
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
-          console.log(this.totalTop);
+
           this.pushToChart();
           this.preCalculateFilteredArrays();
 

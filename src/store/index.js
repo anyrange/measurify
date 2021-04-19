@@ -2,11 +2,16 @@ import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 import Home from "../views/Home";
 
+const getDefaultState = () => {
+  return {
+    user: {},
+    playlists: null,
+    backendurl: process.env.VUE_APP_SERVER_URI,
+  };
+};
+
 export default createStore({
-  state: {
-    user: null,
-    playlists: null
-  },
+  state: getDefaultState(),
   mutations: {
     mutateUser(state, payload) {
       state.user = payload;
@@ -22,8 +27,15 @@ export default createStore({
     getPlaylists(state) {
       return state.playlists;
     },
+    getBackendURL(state) {
+      return state.backendurl;
+    },
   },
-  actions: {},
+  actions: {
+    logout: ({ commit }) => {
+      commit("mutateUser", null);
+    },
+  },
   modules: {
     Home,
   },
