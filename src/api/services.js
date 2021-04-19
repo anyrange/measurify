@@ -13,6 +13,6 @@ export default {
           Authorization: id,
         },
       })
-      .then((response) => response.data.history);
+      .then((response) => response.data);
   },
 };
