@@ -14,9 +14,6 @@ const routes = [
     path: "/",
     redirect: "/",
     component: MainLayout,
-    meta: {
-      title: "Spotiworm",
-    },
     children: [
       {
         path: "/",
@@ -57,7 +54,7 @@ const routes = [
         component: Track,
         name: "track",
         meta: {
-          title: "...",
+          title: "?",
         },
       },
     ],
@@ -77,7 +74,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.params.title ? to.params.title : to.meta.title;
+  if (to.meta.title) {
+    document.title = `${to.meta.title} - Spotiworm`;
+  } else {
+    document.title = "Spotiworm";
+  }
   next();
 });
 
