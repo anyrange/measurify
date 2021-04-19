@@ -147,7 +147,8 @@ export default {
     return {
       recentlyPlayed: [],
       search: "",
-      pages: 0,
+
+      pagesMax: 1,
       page: 1,
 
       loading: true,
@@ -195,6 +196,7 @@ export default {
           },
         })
         .then((response) => {
+          this.pagesMax = response.data.numberOfPages;
           this.recentlyPlayed = response.data.history;
         })
         .finally(() => {
@@ -204,17 +206,13 @@ export default {
     getNextHistoryPage() {
       const windowScroll = document.querySelector(".content-spotify");
       windowScroll.onscroll = () => {
-        let bottomOfWindow = false;
-        if (
+        let bottomOfWindow =
           windowScroll.offsetHeight + windowScroll.scrollTop >=
           windowScroll.scrollHeight
-        ) {
-          bottomOfWindow = true;
-        } else {
-          bottomOfWindow = false;
-        }
+            ? true
+            : false;
         if (bottomOfWindow) {
-          this.page++;
+          this.page <= this.pagesMax ? this.page++ : this.page;
           axios
             .get(this.url, {
               headers: {
@@ -223,16 +221,16 @@ export default {
             })
             .then((response) => {
               this.recentlyPlayed.push(...response.data.history);
-            })
+            });
         }
       };
     },
   },
-  beforeMount() {
-    this.getInitialHistory();
+  created() {
+    this.getNextHistoryPage();
   },
   mounted() {
-    this.getNextHistoryPage();
+    this.getInitialHistory();
   },
 };
 </script>
