@@ -187,7 +187,7 @@ export default {
     getDuration(time) {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
-    getInitialUsers() {
+    getInitialHistory() {
       axios
         .get(this.url, {
           headers: {
@@ -201,7 +201,7 @@ export default {
           this.loading = false;
         });
     },
-    getNextUser() {
+    getNextHistoryPage() {
       const windowScroll = document.querySelector(".content-spotify");
       windowScroll.onscroll = () => {
         let bottomOfWindow = false;
@@ -223,16 +223,16 @@ export default {
             })
             .then((response) => {
               this.recentlyPlayed.push(...response.data.history);
-            });
+            })
         }
       };
     },
   },
   beforeMount() {
-    this.getInitialUsers();
+    this.getInitialHistory();
   },
   mounted() {
-    this.getNextUser();
+    this.getNextHistoryPage();
   },
 };
 </script>
