@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
+import MainLayout from "@/layouts/MainLayout.vue";
 import About from "../views/About.vue";
 import Profile from "../views/Profile.vue";
 import PageNotFound from "../views/PageNotFound.vue";
@@ -13,9 +13,9 @@ const routes = [
   {
     path: "/",
     redirect: "/",
-    component: Home,
+    component: MainLayout,
     meta: {
-      title: "Home",
+      title: "Contest Tracker",
     },
     children: [
       {

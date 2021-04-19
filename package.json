@@ -11,20 +11,22 @@
     "dist": "concurrently \"npm run build && serve -l 3000 -s dist\" \"npm run server\""
   },
   "dependencies": {
-    "vue": "^3.0.0",
-    "vuex": "^4.0.0-0",
-    "vue-router": "^4.0.0-0",
-    "vuex-persistedstate": "^4.0.0-beta.3",
+    "@tailwindcss/postcss7-compat": "^2.0.2",
+    "apexcharts": "^3.26.0",
+    "autoprefixer": "^9",
+    "axios": "^0.21.1",
+    "core-js": "^3.6.5",
+    "date-fns": "^2.19.0",
+    "infinite-loading-vue3": "^1.0.1",
+    "postcss": "^7",
     "register-service-worker": "^1.7.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
-    "@tailwindcss/postcss7-compat": "^2.0.2",
-    "postcss": "^7",
-    "autoprefixer": "^9",
-    "core-js": "^3.6.5",
-    "apexcharts": "^3.26.0",
+    "vue": "^3.0.0",
+    "vue-infinite-loading": "^2.4.5",
+    "vue-router": "^4.0.0-0",
     "vue3-apexcharts": "^1.2.1",
-    "axios": "^0.21.1",
-    "date-fns": "^2.19.0"
+    "vuex": "^4.0.0-0",
+    "vuex-persistedstate": "^4.0.0-beta.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -35,11 +37,11 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
+    "concurrently": "^6.0.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
-    "vue-cli-plugin-tailwind": "~2.0.6",
-    "concurrently": "^6.0.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "vue-cli-plugin-tailwind": "~2.0.6"
   },
   "eslintConfig": {
     "root": true,

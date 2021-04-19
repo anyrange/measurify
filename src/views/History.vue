@@ -137,28 +137,23 @@
 </style>
 
 <script>
+//import service from "@/api/services";
+/* eslint-disable no-unused-vars */
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
-import service from "@/api/services";
+import axios from "axios";
 
 export default {
   data() {
     return {
       recentlyPlayed: [],
       search: "",
+      pages: 0,
+      page: 1,
+
       loading: true,
       emptyData: false,
     };
   },
-
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
-    },
-    getDuration(time) {
-      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
-    },
-  },
-
   computed: {
     user() {
       return this.$store.getters.getUser;
@@ -181,14 +176,63 @@ export default {
         );
       });
     },
+    url() {
+      return `${this.$store.getters.getBackendURL}/listening-history?page=${this.page}`;
+    },
   },
-
-  async created() {
-    this.recentlyPlayed = await service
-      .getListeningHistory(this.user._id)
-      .finally(() => {
-        this.loading = false;
-      });
+  methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
+    },
+    getDuration(time) {
+      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
+    },
+    getInitialUsers() {
+      axios
+        .get(this.url, {
+          headers: {
+            Authorization: this.user._id,
+          },
+        })
+        .then((response) => {
+          this.recentlyPlayed = response.data.history;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    getNextUser() {
+      const windowScroll = document.querySelector(".content-spotify");
+      windowScroll.onscroll = () => {
+        let bottomOfWindow = false;
+        if (
+          windowScroll.offsetHeight + windowScroll.scrollTop >=
+          windowScroll.scrollHeight
+        ) {
+          bottomOfWindow = true;
+        } else {
+          bottomOfWindow = false;
+        }
+        if (bottomOfWindow) {
+          this.page++;
+          axios
+            .get(this.url, {
+              headers: {
+                Authorization: this.user._id,
+              },
+            })
+            .then((response) => {
+              this.recentlyPlayed.push(...response.data.history);
+            });
+        }
+      };
+    },
+  },
+  beforeMount() {
+    this.getInitialUsers();
+  },
+  mounted() {
+    this.getNextUser();
   },
 };
 </script>

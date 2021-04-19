@@ -1,6 +1,5 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import Home from "../views/Home";
 
 const getDefaultState = () => {
   return {
@@ -35,9 +34,6 @@ export default createStore({
     logout: ({ commit }) => {
       commit("mutateUser", null);
     },
-  },
-  modules: {
-    Home,
   },
   plugins: [createPersistedState()],
 });
