@@ -26,6 +26,7 @@ const getPlayedHistory = async (req, res) => {
       },
       {
         $project: {
+          tracksLength: { $size: "$recentlyPlayed" },
           recentlyPlayed: {
             $slice: ["$recentlyPlayed", page * 50, 50],
           },
@@ -38,7 +39,10 @@ const getPlayedHistory = async (req, res) => {
       res.status(204).json();
       return;
     }
-    res.status(200).json(user[0].recentlyPlayed);
+    res.status(200).json({
+      numberOfPages: Math.ceil(user[0].tracksLength / 50),
+      history: user[0].recentlyPlayed,
+    });
   } catch (e) {
     console.log(e);
   }
