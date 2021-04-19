@@ -103,6 +103,13 @@
               </tr>
             </tbody>
           </table>
+          <template v-if="loadingNextPage">
+            <h3
+              class="text-lg font-medium leading-6 text-center mb-6 skeleton w-full rounded"
+            >
+              &nbsp;
+            </h3>
+          </template>
         </div>
       </template>
     </template>
@@ -134,6 +141,27 @@
 .search-field {
   @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
 }
+.skeleton {
+  --text-opacity: 0;
+  background-image: linear-gradient(
+    100deg,
+    #191414 0%,
+    #121212 20%,
+    #181818 40%
+  );
+  background-position: 50%;
+  background-size: 200%;
+  animation: skeleton 1.25s infinite linear;
+}
+@keyframes skeleton {
+  0% {
+    background-position: 50%;
+  }
+  50%,
+  100% {
+    background-position: -100%;
+  }
+}
 </style>
 
 <script>
@@ -152,6 +180,8 @@ export default {
       page: 1,
 
       loading: true,
+      loadingNextPage: true,
+
       emptyData: false,
     };
   },
@@ -213,6 +243,11 @@ export default {
             : false;
         if (bottomOfWindow) {
           this.page <= this.pagesMax ? this.page++ : this.page;
+
+          if (this.page <= this.pagesMax) {
+            this.loadingNextPage = true;
+          }
+
           axios
             .get(this.url, {
               headers: {
@@ -221,16 +256,19 @@ export default {
             })
             .then((response) => {
               this.recentlyPlayed.push(...response.data.history);
+            })
+            .finally(() => {
+              this.loadingNextPage = false;
             });
         }
       };
     },
   },
   created() {
-    this.getNextHistoryPage();
+    this.getInitialHistory();
   },
   mounted() {
-    this.getInitialHistory();
+    this.getNextHistoryPage();
   },
 };
 </script>
