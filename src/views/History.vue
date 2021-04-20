@@ -20,6 +20,7 @@
                 type="text"
                 placeholder="Search"
                 v-model="search"
+                v-on:input="performHistoryLoading"
                 class="search-field"
               />
               <div class="absolute top-0">
@@ -166,7 +167,6 @@
 
 <script>
 //import service from "@/api/services";
-/* eslint-disable no-unused-vars */
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
 import axios from "axios";
 
@@ -180,7 +180,7 @@ export default {
       page: 1,
 
       loading: true,
-      loadingNextPage: true,
+      loadingNextPage: false,
 
       emptyData: false,
     };
@@ -218,6 +218,9 @@ export default {
     getDuration(time) {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
+    performHistoryLoading() {
+      this.getNextHistoryPage(true);
+    },
     getInitialHistory() {
       axios
         .get(this.url, {
@@ -233,7 +236,24 @@ export default {
           this.loading = false;
         });
     },
-    getNextHistoryPage() {
+    getNextHistoryPage(force) {
+      // terrible crutch
+      if (force) {
+        for (this.page; this.page <= this.pagesMax; this.page++) {
+          axios
+            .get(this.url, {
+              headers: {
+                Authorization: this.user._id,
+              },
+            })
+            .then((response) => {
+              this.recentlyPlayed.push(...response.data.history);
+            })
+            .finally(() => {
+              this.loadingNextPage = false;
+            });
+        }
+      }
       const windowScroll = document.querySelector(".content-spotify");
       windowScroll.onscroll = () => {
         let bottomOfWindow =
@@ -242,12 +262,10 @@ export default {
             ? true
             : false;
         if (bottomOfWindow) {
-          this.page <= this.pagesMax ? this.page++ : this.page;
-
           if (this.page <= this.pagesMax) {
+            this.page++;
             this.loadingNextPage = true;
           }
-
           axios
             .get(this.url, {
               headers: {
