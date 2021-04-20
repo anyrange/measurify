@@ -7,48 +7,14 @@ const infoPages = {
     try {
       const _id = req.get("Authorization");
       const artistID = req.params.id;
-      const agg = [
-        {
-          $match: {
-            _id: new ObjectId(_id),
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            "recentlyPlayed.track.artists.id": 1,
-            "recentlyPlayed.track.id": 1,
-            "recentlyPlayed.track.name": 1,
-            "recentlyPlayed.track.duration_ms": 1,
-            "recentlyPlayed.played_at": 1,
-            lastSpotifyToken: 1,
-          },
-        },
-        {
-          $unwind: {
-            path: "$recentlyPlayed",
-            includeArrayIndex: "arrayIndex",
-          },
-        },
-        {
-          $match: {
-            "recentlyPlayed.track.artists.id": artistID,
-          },
-        },
-      ];
 
-      const tracks = await User.aggregate(agg);
-
-      if (!tracks || !tracks.length) {
-        res.status(204).json();
-        return;
-      }
+      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
       const body = await fetch(
         `https://api.spotify.com/v1/artists/${artistID}`,
         {
           headers: {
-            Authorization: "Bearer " + tracks[0].lastSpotifyToken,
+            Authorization: "Bearer " + user.lastSpotifyToken,
           },
         }
       );
@@ -71,7 +37,7 @@ const infoPages = {
           image: json.images.length ? json.images[0].url : "",
           link: json.external_urls.spotify,
         },
-        overview: plays(tracks),
+        overview: await plays(_id, artistID),
         tracks: await history(_id, artistID),
       };
       res.status(200).json(response);
@@ -84,6 +50,7 @@ const infoPages = {
     try {
       const _id = req.get("Authorization");
       const albumID = req.params.id;
+
       const agg = [
         {
           $match: {
@@ -94,21 +61,17 @@ const infoPages = {
           $project: {
             _id: 0,
             "recentlyPlayed.track.artists.id": 1,
-            "recentlyPlayed.track.artists.name": 1,
-            "recentlyPlayed.track.album.external_urls.spotify": 1,
-            "recentlyPlayed.track.album.images.url": 1,
-            "recentlyPlayed.track.album.id": 1,
             "recentlyPlayed.track.album.name": 1,
-            "recentlyPlayed.track.duration_ms": 1,
-            "recentlyPlayed.track.id": 1,
-            "recentlyPlayed.track.name": 1,
+            "recentlyPlayed.track.album.images.url": 1,
+            "recentlyPlayed.track.album.external_urls.spotify": 1,
+            "recentlyPlayed.track.album.id": 1,
+            "recentlyPlayed.track.artists.name": 1,
             "recentlyPlayed.played_at": 1,
           },
         },
         {
           $unwind: {
             path: "$recentlyPlayed",
-            includeArrayIndex: "arrayIndex",
           },
         },
         {
@@ -116,26 +79,24 @@ const infoPages = {
             "recentlyPlayed.track.album.id": albumID,
           },
         },
+        {
+          $limit: 1,
+        },
       ];
 
-      const tracks = await User.aggregate(agg);
-
-      if (!tracks || !tracks.length) {
-        res.status(204).json();
-        return;
-      }
+      const user = await User.aggregate(agg);
 
       res.status(200).json({
         album: {
-          name: tracks[0].recentlyPlayed.track.album.name,
-          image: tracks[0].recentlyPlayed.track.album.images[0].url,
-          link: tracks[0].recentlyPlayed.track.album.external_urls.spotify,
+          name: user[0].recentlyPlayed.track.album.name,
+          image: user[0].recentlyPlayed.track.album.images[0].url,
+          link: user[0].recentlyPlayed.track.album.external_urls.spotify,
           artist: {
-            name: tracks[0].recentlyPlayed.track.artists[0].name,
-            id: tracks[0].recentlyPlayed.track.artists[0].id,
+            name: user[0].recentlyPlayed.track.artists[0].name,
+            id: user[0].recentlyPlayed.track.artists[0].id,
           },
         },
-        overview: plays(tracks),
+        overview: await plays(_id, albumID),
         tracks: await history(_id, albumID),
       });
     } catch (e) {
@@ -147,69 +108,12 @@ const infoPages = {
     try {
       const _id = req.get("Authorization");
       const trackID = req.params.id;
-      const agg = [
-        {
-          $match: {
-            _id: new ObjectId(_id),
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            "recentlyPlayed.track.artists.id": 1,
-            "recentlyPlayed.track.artists.name": 1,
-            "recentlyPlayed.track.external_urls.spotify": 1,
-            "recentlyPlayed.track.album.images.url": 1,
-            "recentlyPlayed.track.album.id": 1,
-            "recentlyPlayed.track.album.name": 1,
-            "recentlyPlayed.track.duration_ms": 1,
-            "recentlyPlayed.track.id": 1,
-            "recentlyPlayed.track.name": 1,
-            "recentlyPlayed.played_at": 1,
-            lastSpotifyToken: 1,
-          },
-        },
-        {
-          $unwind: {
-            path: "$recentlyPlayed",
-            includeArrayIndex: "arrayIndex",
-          },
-        },
-        {
-          $match: {
-            "recentlyPlayed.track.id": trackID,
-          },
-        },
-      ];
 
-      const tracks = await User.aggregate(agg);
-
-      if (!tracks || !tracks.length) {
-        res.status(204).json();
-        return;
-      }
-
-      let response = {
-        track: {
-          album: {
-            name: tracks[0].recentlyPlayed.track.album.name,
-            id: tracks[0].recentlyPlayed.track.album.id,
-          },
-          artist: {
-            name: tracks[0].recentlyPlayed.track.artists[0].name,
-            id: tracks[0].recentlyPlayed.track.artists[0].id,
-          },
-          name: tracks[0].recentlyPlayed.track.name,
-          image: tracks[0].recentlyPlayed.track.album.images[0].url,
-          link: tracks[0].recentlyPlayed.track.external_urls.spotify,
-          duration_ms: tracks[0].recentlyPlayed.track.duration_ms,
-        },
-        overview: plays(tracks),
-      };
+      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
       const body = await fetch(`https://api.spotify.com/v1/tracks/${trackID}`, {
         headers: {
-          Authorization: "Bearer " + tracks[0].lastSpotifyToken,
+          Authorization: "Bearer " + user.lastSpotifyToken,
         },
       });
 
@@ -222,7 +126,25 @@ const infoPages = {
         throw new Error(json.error);
       }
 
-      response.track.release = json.album.release_date;
+      let response = {
+        track: {
+          album: {
+            name: json.album.name,
+            id: json.album.id,
+          },
+          artist: {
+            name: json.artists[0].name,
+            id: json.artists[0].id,
+          },
+          name: json.name,
+          image: json.album.images[0].url,
+          link: json.external_urls.spotify,
+          duration_ms: json.duration_ms,
+          release: json.album.release_date,
+        },
+        overview: await plays(_id, trackID),
+      };
+
       res.status(200).json(response);
     } catch (e) {
       res.status(404).json();
@@ -231,38 +153,100 @@ const infoPages = {
   },
 };
 
-const plays = (tracks) => {
+const plays = async (id, filterId) => {
   try {
-    let recentlyPlayed = tracks.map(({ recentlyPlayed }) => {
-      let date = recentlyPlayed.played_at.split("T")[0];
-      let duration = recentlyPlayed.track.duration_ms / 1000 / 60;
-      return { date, duration };
-    });
+    const agg = [
+      {
+        $match: {
+          _id: new ObjectId(id),
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          "recentlyPlayed.track.artists.id": 1,
+          "recentlyPlayed.track.album.id": 1,
+          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.track.id": 1,
+          "recentlyPlayed.played_at": 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "recentlyPlayed.track.artists.id": filterId },
+            { "recentlyPlayed.track.album.id": filterId },
+            { "recentlyPlayed.track.id": filterId },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          "recentlyPlayed.played_at": {
+            $toDate: "$recentlyPlayed.played_at",
+          },
+        },
+      },
+      {
+        $project: {
+          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.played_at": {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$recentlyPlayed.played_at",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            date: "$recentlyPlayed.played_at",
+          },
+          plays: {
+            $sum: 1,
+          },
+          playtime: {
+            $sum: "$recentlyPlayed.track.duration_ms",
+          },
+        },
+      },
+      {
+        $sort: {
+          "_id.date": -1,
+        },
+      },
+    ];
+    const plays = await User.aggregate(agg);
+    let overview = [];
+    const firstDate = plays[plays.length - 1]._id.date;
+    const date = new Date();
+    let day = date.toISOString().split("T")[0];
 
-    let plays = [];
+    while (day >= firstDate) {
+      const play = plays.find((play) => play._id.date === day);
 
-    let dateToCheck = new Date();
-    dateToCheck = dateToCheck.toISOString().split("T")[0];
-    while (dateToCheck >= recentlyPlayed[recentlyPlayed.length - 1].date) {
-      currentDateTracks = recentlyPlayed.filter(
-        (track) => track.date === dateToCheck
-      );
+      if (play) {
+        overview.push({
+          date: play._id.date,
+          plays: play.plays,
+          duration: Math.round(play.playtime / 1000 / 60),
+        });
+      } else {
+        overview.push({ date: day, plays: 0, duration: 0 });
+      }
 
-      const duration = currentDateTracks.reduce((accumulator, currentTrack) => {
-        return accumulator + currentTrack.duration;
-      }, 0);
-
-      plays.push({
-        plays: currentDateTracks.length,
-        date: dateToCheck,
-        duration: Math.round(duration),
-      });
-      dateToCheck = new Date(dateToCheck);
-      dateToCheck.setDate(dateToCheck.getDate() - 1);
-      dateToCheck = dateToCheck.toISOString().split("T")[0];
+      day = new Date(day);
+      day.setDate(day.getDate() - 1);
+      day = day.toISOString().split("T")[0];
     }
 
-    return plays;
+    return overview;
   } catch (e) {
     console.log(e);
   }
