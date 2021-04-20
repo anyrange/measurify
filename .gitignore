@@ -22,9 +22,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-.env
-yarn.lock
-*.lock
-api.rest
-server/package-lock.json
 *.rest
+*.lock
+.env
+server/package-lock.json
