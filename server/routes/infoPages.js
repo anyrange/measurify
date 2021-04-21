@@ -223,6 +223,7 @@ const plays = async (id, filterId) => {
       },
     ];
     const plays = await User.aggregate(agg);
+    if (!plays.length) return [];
     let overview = [];
     const firstDate = plays[plays.length - 1]._id.date;
     const date = new Date();
