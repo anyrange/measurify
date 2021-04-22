@@ -1,18 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
 import MainLayout from "@/layouts/MainLayout.vue";
-import About from "../views/About.vue";
-import Profile from "../views/Profile.vue";
-import PageNotFound from "../views/PageNotFound.vue";
-import Overview from "../views/Overview.vue";
-import Playlists from "../views/Playlists.vue";
-import History from "../views/History.vue";
-
-import Track from "../views/Track.vue";
+import About from "@/views/About.vue";
+import Profile from "@/views/Profile.vue";
+import Overview from "@/views/Overview.vue";
+import Playlists from "@/views/Playlists.vue";
+import History from "@/views/History.vue";
+import Track from "@/views/Track.vue";
 
 const routes = [
   {
     path: "/",
-    redirect: "/",
+    redirect: { name: "overview" },
+    name: "home",
     component: MainLayout,
     children: [
       {
@@ -22,13 +21,15 @@ const routes = [
       },
       {
         path: "/playlists",
+        name: "playlists",
         component: Playlists,
         meta: {
           title: "My Playlists",
         },
       },
       {
-        path: "/listening-history",
+        path: "/history",
+        name: "listening-history",
         component: History,
         meta: {
           title: "Listening History",
@@ -36,14 +37,15 @@ const routes = [
       },
       {
         path: "/about",
-        component: About,
         name: "about",
+        component: About,
         meta: {
           title: "About",
         },
       },
       {
         path: "/me",
+        name: "profile",
         component: Profile,
         meta: {
           title: "Profile",
@@ -51,8 +53,8 @@ const routes = [
       },
       {
         path: "/track/:id",
-        component: Track,
         name: "track",
+        component: Track,
         meta: {
           title: "?",
         },
@@ -61,10 +63,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
-    component: PageNotFound,
-    meta: {
-      title: "Page Not Found",
-    },
+    redirect: { name: "home" },
   },
 ];
 

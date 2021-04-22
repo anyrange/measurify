@@ -52,7 +52,10 @@
           aria-labelledby="options-menu"
         >
           <div class="py-1" role="none" @click="hover = false">
-            <router-link class="userbar-link outline-none" to="/me">
+            <router-link
+              class="userbar-link outline-none"
+              :to="{ name: 'profile' }"
+            >
               Account
             </router-link>
           </div>

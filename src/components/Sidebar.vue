@@ -34,14 +34,14 @@
           Statistics
         </h3>
         <li>
-          <router-link class="sidebar-link" to="/">
+          <router-link class="sidebar-link" :to="{ name: 'overview' }">
             <span class="sidebar-label" @click="toggleSidebarMobile"
               >Overview</span
             >
           </router-link>
         </li>
         <li>
-          <router-link class="sidebar-link" to="/listening-history">
+          <router-link class="sidebar-link" :to="{ name: 'listening-history' }">
             <span class="sidebar-label" @click="toggleSidebarMobile"
               >Listening History</span
             >
@@ -58,7 +58,7 @@
           Info
         </h3>
         <li>
-          <router-link class="sidebar-link" to="/about">
+          <router-link class="sidebar-link" :to="{ name: 'about' }">
             <span class="sidebar-label" @click="toggleSidebarMobile"
               >About</span
             >
