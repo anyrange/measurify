@@ -60,12 +60,13 @@ const auth = {
         userName: userJSON.display_name,
         refreshToken: refresh_token,
         image: userJSON.images.length ? userJSON.images[0].url : "",
-        __v: 1,
+        __v: 2,
       };
 
       await User.updateOne(filter, upsert, {
         new: true,
         upsert: true,
+        setDefaultsOnInsert: true,
       });
       // check if recentlyPlayed  is empty
       const document = await User.findOne(

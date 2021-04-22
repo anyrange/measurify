@@ -28,6 +28,11 @@ const schema = new Schema({
   image: {
     type: String,
   },
+  private: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 });
 
 module.exports = model("User", schema);

@@ -27,11 +27,7 @@ const getPlayedHistory = async (req, res) => {
       {
         $project: {
           tracksLength: {
-            $cond: {
-              if: { $isArray: "$recentlyPlayed" },
-              then: { $size: "$recentlyPlayed" },
-              else: "NA",
-            },
+            $size: "$recentlyPlayed",
           },
           recentlyPlayed: {
             $slice: ["$recentlyPlayed", page * 50, 50],
@@ -42,7 +38,7 @@ const getPlayedHistory = async (req, res) => {
 
     const user = await User.aggregate(agg);
 
-    if (user[0].tracksLength === "NA") {
+    if (!user[0].tracksLength) {
       res.status(204).json();
       return;
     }
