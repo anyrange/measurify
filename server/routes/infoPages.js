@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const fetch = require("node-fetch");
 const { ObjectId } = require("mongodb");
+const formatOverview = require("../includes/overview");
 
 const infoPages = {
   artist: async (req, res) => {
@@ -28,6 +29,10 @@ const infoPages = {
         throw new Error(json.error);
       }
 
+      // get data for graph
+      const rawPlays = await plays(_id, artistID);
+      const overview = await formatOverview(rawPlays);
+
       // response schema
       const response = {
         artist: {
@@ -37,7 +42,7 @@ const infoPages = {
           image: json.images.length ? json.images[0].url : "",
           link: json.external_urls.spotify,
         },
-        overview: await plays(_id, artistID),
+        overview,
         tracks: await history(_id, artistID),
       };
       res.status(200).json(response);
@@ -86,6 +91,9 @@ const infoPages = {
 
       const user = await User.aggregate(agg);
 
+      const rawPlays = await plays(_id, albumID);
+      const overview = await formatOverview(rawPlays);
+
       res.status(200).json({
         album: {
           name: user[0].recentlyPlayed.track.album.name,
@@ -96,7 +104,7 @@ const infoPages = {
             id: user[0].recentlyPlayed.track.artists[0].id,
           },
         },
-        overview: await plays(_id, albumID),
+        overview,
         tracks: await history(_id, albumID),
       });
     } catch (e) {
@@ -126,6 +134,10 @@ const infoPages = {
         throw new Error(json.error);
       }
 
+      // get data for graph
+      const rawPlays = await plays(_id, trackID);
+      const overview = await formatOverview(rawPlays);
+
       let response = {
         track: {
           album: {
@@ -142,7 +154,7 @@ const infoPages = {
           duration_ms: json.duration_ms,
           release: json.album.release_date,
         },
-        overview: await plays(_id, trackID),
+        overview,
       };
 
       res.status(200).json(response);
@@ -151,106 +163,6 @@ const infoPages = {
       console.log(e);
     }
   },
-};
-
-const plays = async (id, filterId) => {
-  try {
-    const agg = [
-      {
-        $match: {
-          _id: new ObjectId(id),
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          "recentlyPlayed.track.artists.id": 1,
-          "recentlyPlayed.track.album.id": 1,
-          "recentlyPlayed.track.duration_ms": 1,
-          "recentlyPlayed.track.id": 1,
-          "recentlyPlayed.played_at": 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$recentlyPlayed",
-        },
-      },
-      {
-        $match: {
-          $or: [
-            { "recentlyPlayed.track.artists.id": filterId },
-            { "recentlyPlayed.track.album.id": filterId },
-            { "recentlyPlayed.track.id": filterId },
-          ],
-        },
-      },
-      {
-        $addFields: {
-          "recentlyPlayed.played_at": {
-            $toDate: "$recentlyPlayed.played_at",
-          },
-        },
-      },
-      {
-        $project: {
-          "recentlyPlayed.track.duration_ms": 1,
-          "recentlyPlayed.played_at": {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$recentlyPlayed.played_at",
-            },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            date: "$recentlyPlayed.played_at",
-          },
-          plays: {
-            $sum: 1,
-          },
-          playtime: {
-            $sum: "$recentlyPlayed.track.duration_ms",
-          },
-        },
-      },
-      {
-        $sort: {
-          "_id.date": -1,
-        },
-      },
-    ];
-    const plays = await User.aggregate(agg);
-    if (!plays.length) return [];
-    let overview = [];
-    const firstDate = plays[plays.length - 1]._id.date;
-    const date = new Date();
-    let day = date.toISOString().split("T")[0];
-
-    while (day >= firstDate) {
-      const play = plays.find((play) => play._id.date === day);
-
-      if (play) {
-        overview.push({
-          date: play._id.date,
-          plays: play.plays,
-          duration: Math.round(play.playtime / 1000 / 60),
-        });
-      } else {
-        overview.push({ date: day, plays: 0, duration: 0 });
-      }
-
-      day = new Date(day);
-      day.setDate(day.getDate() - 1);
-      day = day.toISOString().split("T")[0];
-    }
-
-    return overview;
-  } catch (e) {
-    console.log(e);
-  }
 };
 
 const history = async (_id, filterId) => {
@@ -317,6 +229,77 @@ const history = async (_id, filterId) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+const plays = async (id, filterId) => {
+  const agg = [
+    {
+      $match: {
+        _id: new ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        "recentlyPlayed.track.id": 1,
+        "recentlyPlayed.track.artists.id": 1,
+        "recentlyPlayed.track.album.id": 1,
+        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.played_at": 1,
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed",
+      },
+    },
+    {
+      $match: {
+        $or: [
+          { "recentlyPlayed.track.artists.id": filterId },
+          { "recentlyPlayed.track.album.id": filterId },
+          { "recentlyPlayed.track.id": filterId },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        "recentlyPlayed.played_at": {
+          $toDate: "$recentlyPlayed.played_at",
+        },
+      },
+    },
+    {
+      $project: {
+        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.played_at": {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$recentlyPlayed.played_at",
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          date: "$recentlyPlayed.played_at",
+        },
+        plays: {
+          $sum: 1,
+        },
+        playtime: {
+          $sum: "$recentlyPlayed.track.duration_ms",
+        },
+      },
+    },
+    {
+      $sort: {
+        "_id.date": -1,
+      },
+    },
+  ];
+  return await User.aggregate(agg);
 };
 
 module.exports = infoPages;

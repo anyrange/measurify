@@ -1,22 +1,14 @@
 const User = require("../models/User");
 const { ObjectId } = require("mongodb");
+const formatOverview = require("../includes/overview");
 
 const getOverview = async (req, res) => {
   try {
     const _id = req.get("Authorization");
-    res.status(200).json(await plays(_id));
-  } catch (e) {
-    res.status(404).json();
-    console.log(e);
-  }
-};
-
-const plays = async (id) => {
-  try {
     const agg = [
       {
         $match: {
-          _id: new ObjectId(id),
+          _id: new ObjectId(_id),
         },
       },
       {
@@ -69,33 +61,15 @@ const plays = async (id) => {
     ];
 
     const plays = await User.aggregate(agg);
-    if (!plays.length) return [];
-    let overview = [];
-    const firstDate = plays[plays.length - 1]._id.date;
-    const date = new Date();
-    let day = date.toISOString().split("T")[0];
-
-    while (day >= firstDate) {
-      const play = plays.find((play) => play._id.date === day);
-
-      if (play) {
-        overview.push({
-          date: play._id.date,
-          plays: play.plays,
-          duration: Math.round(play.playtime / 1000 / 60),
-        });
-      } else {
-        overview.push({ date: day, plays: 0, duration: 0 });
-      }
-
-      day = new Date(day);
-      day.setDate(day.getDate() - 1);
-      day = day.toISOString().split("T")[0];
+    if (!plays.length) {
+      res.status(204).json();
+      return;
     }
-
-    return overview;
+    res.status(200).json(await formatOverview(plays));
   } catch (e) {
+    res.status(404).json();
     console.log(e);
   }
 };
+
 module.exports = getOverview;
