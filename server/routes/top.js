@@ -5,6 +5,7 @@ const { ObjectId } = require("mongodb");
 const top = async (req, res) => {
   try {
     const _id = req.get("Authorization");
+    const range = Number.parseInt(req.query.range) || 20;
     const firstDate = req.query.firstDate;
     let lastDate = req.query.lastDate;
     const document = await User.findOne(
@@ -25,10 +26,10 @@ const top = async (req, res) => {
 
     let response = {};
 
-    response.tracks = await tracks(_id, firstDate, lastDate);
-    response.albums = await albums(_id, firstDate, lastDate);
-    response.artists = await artists(_id, firstDate, lastDate);
-    response.playlists = await playlists(_id, firstDate, lastDate);
+    response.tracks = await tracks(_id, firstDate, lastDate, range);
+    response.albums = await albums(_id, firstDate, lastDate, range);
+    response.artists = await artists(_id, firstDate, lastDate, range);
+    response.playlists = await playlists(_id, firstDate, lastDate, range);
 
     const requests = response.playlists.map((playlist) => {
       return new Promise((resolve) => {
@@ -97,7 +98,7 @@ const top = async (req, res) => {
     console.log(e);
   }
 };
-const tracks = async (_id, firstDate, lastDate) => {
+const tracks = async (_id, firstDate, lastDate, range) => {
   const agg = [
     {
       $match: {
@@ -148,7 +149,7 @@ const tracks = async (_id, firstDate, lastDate) => {
       },
     },
     {
-      $limit: 20,
+      $limit: range,
     },
   ];
   const tracks = await User.aggregate(agg);
@@ -163,7 +164,7 @@ const tracks = async (_id, firstDate, lastDate) => {
   });
 };
 
-const albums = async (_id, firstDate, lastDate) => {
+const albums = async (_id, firstDate, lastDate, range) => {
   const agg = [
     {
       $match: {
@@ -214,7 +215,7 @@ const albums = async (_id, firstDate, lastDate) => {
       },
     },
     {
-      $limit: 20,
+      $limit: range,
     },
   ];
   const albums = await User.aggregate(agg);
@@ -229,7 +230,7 @@ const albums = async (_id, firstDate, lastDate) => {
   });
 };
 
-const playlists = async (_id, firstDate, lastDate) => {
+const playlists = async (_id, firstDate, lastDate, range) => {
   const agg = [
     {
       $match: {
@@ -278,7 +279,7 @@ const playlists = async (_id, firstDate, lastDate) => {
       },
     },
     {
-      $limit: 20,
+      $limit: range,
     },
   ];
   let playlists = await User.aggregate(agg);
@@ -292,7 +293,7 @@ const playlists = async (_id, firstDate, lastDate) => {
   });
 };
 
-const artists = async (_id, firstDate, lastDate) => {
+const artists = async (_id, firstDate, lastDate, range) => {
   const agg = [
     {
       $match: {
@@ -341,7 +342,7 @@ const artists = async (_id, firstDate, lastDate) => {
       },
     },
     {
-      $limit: 20,
+      $limit: range,
     },
   ];
 

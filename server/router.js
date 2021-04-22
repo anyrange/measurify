@@ -6,27 +6,40 @@ const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
 const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
-const users = require("./routes/users");
+const userNum = require("./routes/userNum");
+const user = require("./routes/user");
 const authMiddleware = require("./middlewares/authMiddleware");
 const path = require("path");
+const profile = require("./routes/profile");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
   res.status(200).sendFile(path.dirname(__filename) + "/assets/Home.html");
 });
 
+// Authorization
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
 router.get("/token", authMiddleware, auth.getAccessToken);
 
+// History
 router.get("/listening-history", authMiddleware, getPlayedHistory);
 
 router.get("/friends", authMiddleware, friends);
-router.get("/users", users);
+router.get("/users", userNum);
 
+// Profile
+router.get("/profile", authMiddleware, profile.get);
+router.post("/profile", authMiddleware, profile.post);
+
+// User profile
+router.get("/user/:id", authMiddleware, user);
+
+// Main page
 router.get("/overview", authMiddleware, getOverview);
 router.get("/top", authMiddleware, top);
 
+// infoPages
 router.get("/artist/:id", authMiddleware, infoPages.artist);
 router.get("/album/:id", authMiddleware, infoPages.album);
 router.get("/track/:id", authMiddleware, infoPages.track);

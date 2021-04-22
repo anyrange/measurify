@@ -13,7 +13,7 @@ const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
 app.listen(PORT, () => {
   console.log(`App listening on port: ${PORT}`);
 });
-
+app.use(express.json());
 let corsOptions = {};
 if (process.env.NODE_ENV == "production") {
   const whitelist = [FRONTEND_URI];

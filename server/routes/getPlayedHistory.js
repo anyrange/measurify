@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const getPlayedHistory = async (req, res) => {
   try {
     const _id = req.get("Authorization");
+    const range = Number.parseInt(req.query.range) || 50;
     const page = req.query.page - 1 || 0;
     const agg = [
       {
@@ -30,7 +31,7 @@ const getPlayedHistory = async (req, res) => {
             $size: "$recentlyPlayed",
           },
           recentlyPlayed: {
-            $slice: ["$recentlyPlayed", page * 50, 50],
+            $slice: ["$recentlyPlayed", page * range, range],
           },
         },
       },
@@ -44,7 +45,7 @@ const getPlayedHistory = async (req, res) => {
     }
 
     res.status(200).json({
-      numberOfPages: Math.ceil(user[0].tracksLength / 50),
+      numberOfPages: Math.ceil(user[0].tracksLength / range),
       history: user[0].recentlyPlayed,
     });
   } catch (e) {
