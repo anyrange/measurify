@@ -20,7 +20,6 @@
                 type="text"
                 placeholder="Search"
                 v-model="search"
-                v-on:input="performHistoryLoading"
                 class="search-field"
               />
               <div class="absolute top-0">
@@ -62,7 +61,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="item in filteredTable"
+                v-for="(item, index) in filteredTable"
                 :key="item.id"
                 class="history-tr"
               >
@@ -96,20 +95,18 @@
                   {{ item.track.album.name }}
                 </td>
                 <td class="history-td">
-                  {{ getDateFromNow(item.played_at) }}
+                  {{ dateFromNow[index] }}
                 </td>
                 <td class="history-td lg:table-cell hidden">
-                  {{ getDuration(item.track.duration_ms) }}
+                  {{ duration[index] }}
                 </td>
               </tr>
             </tbody>
           </table>
           <template v-if="loadingNextPage">
-            <h3
-              class="text-lg font-medium leading-6 text-center mb-6 skeleton w-full rounded"
-            >
+            <div class="leading-8 skeleton w-full">
               &nbsp;
-            </h3>
+            </div>
           </template>
         </div>
       </template>
@@ -128,42 +125,6 @@
     </template>
   </div>
 </template>
-
-<style lang="postcss">
-.history-td {
-  @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
-}
-.history-th {
-  @apply px-4 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
-}
-.history-tr {
-  @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
-}
-.search-field {
-  @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
-}
-.skeleton {
-  --text-opacity: 0;
-  background-image: linear-gradient(
-    100deg,
-    #191414 0%,
-    #121212 20%,
-    #181818 40%
-  );
-  background-position: 50%;
-  background-size: 200%;
-  animation: skeleton 1.25s infinite linear;
-}
-@keyframes skeleton {
-  0% {
-    background-position: 50%;
-  }
-  50%,
-  100% {
-    background-position: -100%;
-  }
-}
-</style>
 
 <script>
 //import service from "@/api/services";
@@ -186,9 +147,6 @@ export default {
     };
   },
   computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
     filteredTable() {
       return this.recentlyPlayed.filter((item) => {
         const song = item.track.name.toLowerCase();
@@ -207,27 +165,34 @@ export default {
         );
       });
     },
+    duration() {
+      return this.filteredTable.map(function(item) {
+        return format(
+          addSeconds(new Date(0), item.track.duration_ms / 1000),
+          "mm:ss"
+        );
+      });
+    },
+    dateFromNow() {
+      return this.filteredTable.map(function(item) {
+        return formatDistanceToNowStrict(Date.parse(item.played_at), {
+          addSuffix: true,
+        });
+      });
+    },
     url() {
       return `${this.$store.getters.getBackendURL}/listening-history?page=${this.page}`;
     },
+    options() {
+      return {
+        headers: { Authorization: this.$store.getters.getUser._id },
+      };
+    },
   },
   methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
-    },
-    getDuration(time) {
-      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
-    },
-    performHistoryLoading() {
-      this.getNextHistoryPage(true);
-    },
     getInitialHistory() {
       axios
-        .get(this.url, {
-          headers: {
-            Authorization: this.user._id,
-          },
-        })
+        .get(this.url, this.options)
         .then((response) => {
           this.pagesMax = response.data.numberOfPages;
           this.recentlyPlayed = response.data.history;
@@ -236,24 +201,7 @@ export default {
           this.loading = false;
         });
     },
-    getNextHistoryPage(force) {
-      // terrible crutch
-      if (force) {
-        for (this.page; this.page <= this.pagesMax; this.page++) {
-          axios
-            .get(this.url, {
-              headers: {
-                Authorization: this.user._id,
-              },
-            })
-            .then((response) => {
-              this.recentlyPlayed.push(...response.data.history);
-            })
-            .finally(() => {
-              this.loadingNextPage = false;
-            });
-        }
-      }
+    getNextHistoryPage() {
       const windowScroll = document.querySelector(".content-spotify");
       windowScroll.onscroll = () => {
         let bottomOfWindow =
@@ -261,22 +209,20 @@ export default {
           windowScroll.scrollHeight
             ? true
             : false;
-        if (bottomOfWindow) {
-          if (this.page <= this.pagesMax) {
-            this.page++;
-            this.loadingNextPage = true;
-          }
+        if (
+          bottomOfWindow &&
+          this.page <= this.pagesMax &&
+          !this.loadingNextPage
+        ) {
+          this.loadingNextPage = true;
           axios
-            .get(this.url, {
-              headers: {
-                Authorization: this.user._id,
-              },
-            })
+            .get(this.url, this.options)
             .then((response) => {
               this.recentlyPlayed.push(...response.data.history);
             })
             .finally(() => {
               this.loadingNextPage = false;
+              this.page++;
             });
         }
       };
@@ -290,3 +236,39 @@ export default {
   },
 };
 </script>
+
+<style lang="postcss">
+.history-td {
+  @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+}
+.history-th {
+  @apply px-4 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
+}
+.history-tr {
+  @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
+}
+.search-field {
+  @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
+}
+.skeleton {
+  --text-opacity: 0;
+  background-image: linear-gradient(
+    100deg,
+    #181818 0%,
+    #282828 20%,
+    #181818 40%
+  );
+  background-position: 50%;
+  background-size: 200%;
+  animation: skeleton 1.25s infinite linear;
+}
+@keyframes skeleton {
+  0% {
+    background-position: 50%;
+  }
+  50%,
+  100% {
+    background-position: -100%;
+  }
+}
+</style>
