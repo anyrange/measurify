@@ -199,6 +199,7 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          this.page++;
         });
     },
     getNextHistoryPage() {
