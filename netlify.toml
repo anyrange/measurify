@@ -2,13 +2,3 @@
   from = "/*"
   to = "/"
   status = 200
-
-[[redirects]]
-  from = "/listening-history"
-  to = "/history"
-  status = 200
-
-[[redirects]]
-  from = "https://spotiworm.netlify.app"
-  to = "https://spotiworm.ml"
-  status = 200
