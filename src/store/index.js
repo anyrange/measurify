@@ -3,7 +3,7 @@ import createPersistedState from "vuex-persistedstate";
 
 export default createStore({
   state: {
-    user: {},
+    user: null,
     backendurl: process.env.VUE_APP_SERVER_URI,
   },
   mutations: {
