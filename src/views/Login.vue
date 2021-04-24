@@ -86,7 +86,7 @@ export default {
           response.data.access_token = access_token;
           response.data._id = this.$route.query.id;
           this.$store.commit("mutateUser", response.data);
-          this.$router.push({ name: "overview" });
+          this.$router.push({ name: "home" });
         });
     } else {
       axios

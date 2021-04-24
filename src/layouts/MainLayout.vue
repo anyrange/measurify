@@ -1,9 +1,11 @@
 <template>
   <template v-if="this.user">
-    <div class="wrapper">
-      <div class="horizontal-flex">
+    <div
+      class="flex flex-col h-screen text-sm dark:text-gray-400 text-gray-900"
+    >
+      <div class="flex-1 flex overflow-y-hidden">
         <Sidebar />
-        <div class="main">
+        <div class="dark:bg-gray-800-spotify bg-gray-100 flex-1 flex flex-col">
           <div class="top-bar flex items-center justify-end px-4">
             <User />
           </div>
@@ -14,17 +16,11 @@
       </div>
     </div>
   </template>
-  <template v-else>
-    <Login />
-  </template>
-  <UpdateNotification />
 </template>
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
 import User from "@/components/User.vue";
-import Login from "@/components/Login.vue";
-import UpdateNotification from "@/components/UpdateNotification.vue";
 import axios from "axios";
 
 export default {
@@ -32,8 +28,6 @@ export default {
   components: {
     Sidebar,
     User,
-    Login,
-    UpdateNotification,
   },
   computed: {
     user() {
@@ -42,10 +36,6 @@ export default {
   },
   created() {
     if (this.user) {
-      if (!this.user._id) {
-        this.$store.commit("mutateUser", null);
-        this.$router.push({ name: "Home" });
-      }
       axios
         .get(`${this.$store.getters.getBackendURL}/token`, {
           headers: {
@@ -58,19 +48,9 @@ export default {
           updatedUser.access_token = response.data;
           this.$store.commit("mutateUser", updatedUser);
         });
+    } else {
+      this.$router.push({ name: "login" });
     }
   },
 };
 </script>
-
-<style lang="postcss">
-.wrapper {
-  @apply flex flex-col h-screen text-sm dark:text-gray-400 text-gray-900;
-}
-.horizontal-flex {
-  @apply flex-1 flex overflow-y-hidden;
-}
-.main {
-  @apply dark:bg-gray-800-spotify bg-gray-100 flex-1 flex flex-col;
-}
-</style>

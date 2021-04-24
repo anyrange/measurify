@@ -4,23 +4,16 @@ import createPersistedState from "vuex-persistedstate";
 export default createStore({
   state: {
     user: {},
-    playlists: null,
     backendurl: process.env.VUE_APP_SERVER_URI,
   },
   mutations: {
     mutateUser(state, payload) {
       state.user = payload;
     },
-    mutatePlaylists(state, payload) {
-      state.playlists = payload;
-    },
   },
   getters: {
     getUser(state) {
       return state.user;
-    },
-    getPlaylists(state) {
-      return state.playlists;
     },
     getBackendURL(state) {
       return state.backendurl;

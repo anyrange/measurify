@@ -1,30 +1,30 @@
 import { createRouter, createWebHistory } from "vue-router";
+import Login from "@/views/Login.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import About from "@/views/About.vue";
 import Profile from "@/views/Profile.vue";
 import Overview from "@/views/Overview.vue";
-import Playlists from "@/views/Playlists.vue";
 import History from "@/views/History.vue";
 import Track from "@/views/Track.vue";
 
 const routes = [
   {
     path: "/",
-    redirect: { name: "overview" },
+    name: "login",
+    component: Login,
+  },
+  {
     name: "home",
     component: MainLayout,
+    path: "/dashboard",
+    redirect: { name: "overview" },
     children: [
       {
-        path: "/",
+        path: "/overview",
         name: "overview",
         component: Overview,
-      },
-      {
-        path: "/playlists",
-        name: "playlists",
-        component: Playlists,
         meta: {
-          title: "My Playlists",
+          title: "Overview",
         },
       },
       {
@@ -73,11 +73,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = `${to.meta.title} - Spotiworm`;
-  } else {
-    document.title = "Spotiworm";
-  }
+  document.title = to.meta.title ? `${to.meta.title} - Spotiworm` : "Spotiworm";
   next();
 });
 
