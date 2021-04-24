@@ -1,16 +1,12 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
-const getDefaultState = () => {
-  return {
+export default createStore({
+  state: {
     user: {},
     playlists: null,
     backendurl: process.env.VUE_APP_SERVER_URI,
-  };
-};
-
-export default createStore({
-  state: getDefaultState(),
+  },
   mutations: {
     mutateUser(state, payload) {
       state.user = payload;

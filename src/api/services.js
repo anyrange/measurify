@@ -6,9 +6,9 @@ const ENV_URI = store.getters.getBackendURL;
 const url = ENV_URI || "http://localhost:8888/";
 
 export default {
-  getListeningHistory(id) {
+  getListeningHistory(id, page) {
     return axios
-      .get(url + "/listening-history", {
+      .get(`${url}/listening-history?page=${page}`, {
         headers: {
           Authorization: id,
         },

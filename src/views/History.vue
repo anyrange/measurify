@@ -61,7 +61,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="(item, index) in filteredTable"
+                v-for="item in filteredTable"
                 :key="item.id"
                 class="history-tr"
               >
@@ -78,9 +78,6 @@
                   >
                     {{ item.track.name }}
                   </router-link>
-                  <!-- <router-link :to="'/track/' + item.track.id">{{
-                    item.track.name
-                  }}</router-link> -->
                 </td>
                 <td class="history-td sm:table-cell hidden">
                   {{
@@ -95,10 +92,10 @@
                   {{ item.track.album.name }}
                 </td>
                 <td class="history-td">
-                  {{ dateFromNow[index] }}
+                  {{ getDateFromNow(item.played_at) }}
                 </td>
                 <td class="history-td lg:table-cell hidden">
-                  {{ duration[index] }}
+                  {{ getDuration(item.track.duration_ms) }}
                 </td>
               </tr>
             </tbody>
@@ -127,9 +124,8 @@
 </template>
 
 <script>
-//import service from "@/api/services";
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
-import axios from "axios";
+import api from "@/api/services";
 
 export default {
   data() {
@@ -165,37 +161,23 @@ export default {
         );
       });
     },
-    duration() {
-      return this.filteredTable.map(function(item) {
-        return format(
-          addSeconds(new Date(0), item.track.duration_ms / 1000),
-          "mm:ss"
-        );
-      });
-    },
-    dateFromNow() {
-      return this.filteredTable.map(function(item) {
-        return formatDistanceToNowStrict(Date.parse(item.played_at), {
-          addSuffix: true,
-        });
-      });
-    },
-    url() {
-      return `${this.$store.getters.getBackendURL}/listening-history?page=${this.page}`;
-    },
-    options() {
-      return {
-        headers: { Authorization: this.$store.getters.getUser._id },
-      };
-    },
   },
   methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), {
+        addSuffix: true,
+      });
+    },
+    getDuration(time) {
+      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
+    },
     getInitialHistory() {
-      axios
-        .get(this.url, this.options)
+      api
+        .getListeningHistory(this.$store.getters.getUser._id, this.page)
         .then((response) => {
-          this.pagesMax = response.data.numberOfPages;
-          this.recentlyPlayed = response.data.history;
+          this.pagesMax = response.numberOfPages;
+          this.recentlyPlayed = response.history;
+          console.log(this.recentlyPlayed);
         })
         .finally(() => {
           this.loading = false;
@@ -216,10 +198,10 @@ export default {
           !this.loadingNextPage
         ) {
           this.loadingNextPage = true;
-          axios
-            .get(this.url, this.options)
+          api
+            .getListeningHistory(this.$store.getters.getUser._id, this.page)
             .then((response) => {
-              this.recentlyPlayed.push(...response.data.history);
+              this.recentlyPlayed.push(...response.history);
             })
             .finally(() => {
               this.loadingNextPage = false;
@@ -238,16 +220,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
-.history-td {
-  @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
-}
-.history-th {
-  @apply px-4 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
-}
-.history-tr {
-  @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
-}
+<style lang="postcss" scoped>
 .search-field {
   @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
 }
