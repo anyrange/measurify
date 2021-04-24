@@ -74,7 +74,8 @@ export default {
     },
   },
   created() {
-    if (this.user._id) {
+    this.$store.commit("mutateUser", null);
+    if (this.user) {
       this.$router.push({ name: "home" });
     }
     if (this.$route.query.access_token) {
