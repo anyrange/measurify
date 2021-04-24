@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const userNum = async (req, res) => {
+const users = async (req, res) => {
   try {
     const usersQuantity = await User.estimatedDocumentCount();
     res.status(200).json({ usersQuantity });
@@ -8,4 +8,4 @@ const userNum = async (req, res) => {
     console.log(e);
   }
 };
-module.exports = userNum;
+module.exports = users;

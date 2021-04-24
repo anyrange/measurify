@@ -1,22 +1,25 @@
 const express = require("express");
 const router = express.Router();
+const health = require("./routes/health");
 const auth = require("./routes/auth");
 const friends = require("./routes/friends");
 const getOverview = require("./routes/getOverview");
 const getPlayedHistory = require("./routes/getPlayedHistory");
 const infoPages = require("./routes/infoPages");
 const top = require("./routes/top");
-const userNum = require("./routes/userNum");
+const users = require("./routes/users");
 const user = require("./routes/user");
 const authMiddleware = require("./middlewares/authMiddleware");
 const path = require("path");
-const profile = require("./routes/profile");
+const settings = require("./routes/settings");
 require("dotenv").config();
 
 router.get("/", (req, res) => {
   res.status(200).sendFile(path.dirname(__filename) + "/assets/Home.html");
 });
+// Server state
 
+router.get("/health", health);
 // Authorization
 router.get("/login", auth.login);
 router.get("/callback", auth.callback);
@@ -26,11 +29,11 @@ router.get("/token", authMiddleware, auth.getAccessToken);
 router.get("/listening-history", authMiddleware, getPlayedHistory);
 
 router.get("/friends", authMiddleware, friends);
-router.get("/users", userNum);
+router.get("/users", users);
 
 // Profile
-router.get("/profile", authMiddleware, profile.get);
-router.post("/profile", authMiddleware, profile.post);
+router.get("/settings/privacy", authMiddleware, settings.getPrivacy);
+router.post("/settings/privacy", authMiddleware, settings.postPrivacy);
 
 // User profile
 router.get("/user/:id", authMiddleware, user);

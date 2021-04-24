@@ -1,6 +1,6 @@
 const User = require("../models/User");
-const profile = {
-  get: async (req, res) => {
+const settings = {
+  getPrivacy: async (req, res) => {
     try {
       const _id = req.get("Authorization");
       const user = await User.findOne({ _id }, { private: 1 });
@@ -10,7 +10,7 @@ const profile = {
       res.status(404).json();
     }
   },
-  post: async (req, res) => {
+  postPrivacy: async (req, res) => {
     try {
       const _id = req.get("Authorization");
       const private = req.body.private;
@@ -22,4 +22,4 @@ const profile = {
     }
   },
 };
-module.exports = profile;
+module.exports = settings;
