@@ -76,9 +76,6 @@ export default {
   created() {
     if (this.user) {
       this.$router.push({ name: "home" });
-      if (!this.user._id) {
-        this.$store.commit("mutateUser", null);
-      }
     }
     if (this.$route.query.access_token) {
       const access_token = this.$route.query.access_token;
