@@ -1,5 +1,5 @@
 <template>
-  <template v-if="this.user">
+  <template v-if="this.user._id">
     <div
       class="flex flex-col h-screen text-sm dark:text-gray-400 text-gray-900"
     >
@@ -35,7 +35,7 @@ export default {
     },
   },
   created() {
-    if (this.user) {
+    if (this.user._id) {
       axios
         .get(`${this.$store.getters.getBackendURL}/token`, {
           headers: {
