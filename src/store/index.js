@@ -1,27 +1,44 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
+import api from "@/api";
 
 export default createStore({
   state: {
     user: null,
-    backendurl: process.env.VUE_APP_SERVER_URI,
+    access_token: null,
   },
   mutations: {
-    mutateUser(state, payload) {
+    SET_USER(state, payload) {
       state.user = payload;
+    },
+    SET_ACCES_TOKEN(state, payload) {
+      state.access_token = payload;
     },
   },
   getters: {
     getUser(state) {
       return state.user;
     },
-    getBackendURL(state) {
-      return state.backendurl;
+    getUserID(state) {
+      return state.user._id;
+    },
+    getAccessToken(state) {
+      return state.access_token;
     },
   },
   actions: {
+    login: () => {
+      api.login();
+    },
     logout: ({ commit }) => {
-      commit("mutateUser", null);
+      commit("SET_USER", null);
+      commit("SET_ACCES_TOKEN", null);
+    },
+    authorise: async ({ commit }, { access_token, id }) => {
+      const response = await api.authorise(access_token);
+      response._id = id;
+      commit("SET_USER", response);
+      commit("SET_ACCES_TOKEN", access_token);
     },
   },
   plugins: [createPersistedState()],

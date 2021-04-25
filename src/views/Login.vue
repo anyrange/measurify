@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import api from "@/api";
 
 export default {
   data() {
@@ -35,38 +35,36 @@ export default {
       loading: true,
     };
   },
-  computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
-  },
   methods: {
     login() {
-      window.location.href = `${this.$store.getters.getBackendURL}/login`;
+      this.$store.dispatch("login");
     },
   },
   created() {
     if (this.$route.query.access_token) {
-      const access_token = this.$route.query.access_token;
-      axios
-        .get("https://api.spotify.com/v1/me", {
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
+      this.$store
+        .dispatch("authorise", {
+          access_token: this.$route.query.access_token,
+          id: this.$route.query.id,
         })
-        .then((response) => {
-          response.data.access_token = access_token;
-          response.data._id = this.$route.query.id;
-          this.$store.commit("mutateUser", response.data);
+        .then(() => {
           this.$router.push({ name: "home" });
+        })
+        .catch((error) => {
+          console.error(error);
         });
     } else {
-      axios
-        .get(`${this.$store.getters.getBackendURL}/users`)
+      api
+        .getUsersQuantity()
         .then((response) => {
-          this.usersQuantity = response.data.usersQuantity;
+          this.usersQuantity = response.usersQuantity;
         })
-        .finally(() => (this.loading = false));
+        .finally(() => {
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   },
 };

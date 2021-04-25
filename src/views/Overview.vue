@@ -145,11 +145,11 @@
 </template>
 
 <script>
-import axios from "axios";
 import Card from "@/components/Card";
 import Table from "@/components/Table";
 import chartOptions from "@/mixins/chartOptions";
 import * as fd from "@/utils/dates";
+import api from "@/api";
 
 export default {
   components: {
@@ -314,32 +314,20 @@ export default {
       );
     },
     fetchData() {
-      const overview = `${this.$store.getters.getBackendURL}/overview`;
-      const top = `${this.$store.getters.getBackendURL}/top`;
-
-      const fetchedData = (url) =>
-        axios.get(url, {
-          headers: {
-            Authorization: this.user._id,
-          },
-        });
-
-      const promises = [overview, top].map(fetchedData);
-
-      Promise.all(promises)
+      api
+        .getOverview()
         .then((response) => {
           this.emptyData = response[0].status === 204 ? true : false;
-
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
-
           this.pushToChart();
           this.preCalculateFilteredArrays();
-
+        })
+        .finally(() => {
           this.loading = false;
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.error(error);
         });
     },
   },

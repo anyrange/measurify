@@ -17,7 +17,7 @@
 <script>
 import Sidebar from "@/components/Sidebar.vue";
 import User from "@/components/User.vue";
-import axios from "axios";
+import api from "@/api";
 
 export default {
   name: "Layout",
@@ -25,24 +25,10 @@ export default {
     Sidebar,
     User,
   },
-  computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
-  },
   created() {
-    axios
-      .get(`${this.$store.getters.getBackendURL}/token`, {
-        headers: {
-          Authorization: this.user._id,
-        },
-      })
-      .catch((err) => console.log(err))
-      .then((response) => {
-        let updatedUser = this.user;
-        updatedUser.access_token = response.data;
-        this.$store.commit("mutateUser", updatedUser);
-      });
+    api.getToken().catch((error) => {
+      console.error(error);
+    });
   },
 };
 </script>

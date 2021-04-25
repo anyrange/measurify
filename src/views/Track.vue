@@ -87,7 +87,10 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
+
+import api from "@/api";
+
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { addSeconds, format } from "date-fns";
 import Card from "@/components/Card";
@@ -146,25 +149,21 @@ export default {
     },
   },
   created() {
-    axios
-      .get(
-        `${this.$store.getters.getBackendURL}/track/${this.$route.params.id}`,
-        {
-          headers: {
-            Authorization: this.user._id,
-          },
-        }
-      )
-      .catch((err) => console.log(err))
+    api
+      .getTrack(this.$route.params.id)
       .then((response) => {
-        console.log(response.data);
-        this.object = response.data;
-        this.totalOverview = response.data.overview.reverse();
+        this.object = response;
+        this.totalOverview = response.overview.reverse();
         this.pushToChart();
         this.preCalculateFilteredArrays();
         document.title = `${this.object.track.name} - Spotiworm`;
       })
-      .finally(() => (this.loading = false));
+      .finally(() => {
+        this.loading = false;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   },
   methods: {
     updateOverview(period) {

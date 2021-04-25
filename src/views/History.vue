@@ -125,7 +125,7 @@
 
 <script>
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
-import api from "@/api/services";
+import api from "@/api";
 
 export default {
   data() {
@@ -173,11 +173,10 @@ export default {
     },
     getInitialHistory() {
       api
-        .getListeningHistory(this.$store.getters.getUser._id, this.page)
+        .getListeningHistory(this.page)
         .then((response) => {
           this.pagesMax = response.numberOfPages;
           this.recentlyPlayed = response.history;
-          console.log(this.recentlyPlayed);
         })
         .finally(() => {
           this.loading = false;
@@ -199,7 +198,7 @@ export default {
         ) {
           this.loadingNextPage = true;
           api
-            .getListeningHistory(this.$store.getters.getUser._id, this.page)
+            .getListeningHistory(this.page)
             .then((response) => {
               this.recentlyPlayed.push(...response.history);
             })
