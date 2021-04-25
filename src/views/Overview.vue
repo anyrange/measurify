@@ -192,9 +192,6 @@ export default {
       }
       return false;
     },
-    user() {
-      return this.$store.getters.getUser;
-    },
     totalTracksPlayed() {
       return this.tracksPlayed.reduce((a, b) => a + b, 0);
     },

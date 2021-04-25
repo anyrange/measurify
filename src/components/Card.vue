@@ -6,39 +6,13 @@
         {{ value }}
       </div>
       <transition name="slide-fade">
-        <template
-          v-if="
-            (selected == 'month' || selected == 'week') &&
-              value > 0 &&
-              previousValue > 0
-          "
-        >
+        <template v-if="(value && previousValue) || previousValue">
           <div class="flex flex-col">
             <template v-if="value - previousValue > 0">
-              <p class="text-xs text-green-500 leading-tight">
-                ▲
-                {{
-                  (
-                    ((value - previousValue) / previousValue) *
-                    100
-                  ).toLocaleString("fullwide", {
-                    maximumFractionDigits: 0,
-                  })
-                }}%
-              </p>
+              <p class="text-xs text-green-500 leading-tight">▲ {{ rise }}%</p>
             </template>
             <template v-else>
-              <p class="text-xs text-red-500 leading-tight">
-                ▼
-                {{
-                  (
-                    ((value - previousValue) / previousValue) *
-                    -100
-                  ).toLocaleString("fullwide", {
-                    maximumFractionDigits: 0,
-                  })
-                }}%
-              </p>
+              <p class="text-xs text-red-500 leading-tight">▼ {{ fall }}%</p>
             </template>
             <p class="text-xs">
               {{ value - previousValue }} since last {{ selected }}
@@ -57,6 +31,24 @@ export default {
     selected: String,
     value: Number,
     previousValue: Number,
+  },
+  computed: {
+    rise() {
+      return (
+        ((this.value - this.previousValue) / this.previousValue) *
+        100
+      ).toLocaleString("fullwide", {
+        maximumFractionDigits: 0,
+      });
+    },
+    fall() {
+      return (
+        ((this.value - this.previousValue) / this.previousValue) *
+        -100
+      ).toLocaleString("fullwide", {
+        maximumFractionDigits: 0,
+      });
+    },
   },
 };
 </script>

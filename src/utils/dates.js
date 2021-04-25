@@ -11,20 +11,13 @@ function getLastDateOfCurrentWeek() {
 }
 function getFirstDayOfPreviousWeek() {
   const now = new Date();
-  return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() - now.getDay() - 6
-  );
+  return new Date(now.setDate(now.getDate() - 6));
 }
 function getLastDayOfPreviousWeek() {
   const now = new Date();
-  return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() - now.getDay()
-  );
+  return new Date(now.setDate(now.getDate() - now.getDay()));
 }
+
 function getFirstDayOfCurrentMonth() {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth());
@@ -50,11 +43,11 @@ function getLastDayOfPreviousMonth() {
 
 export const firstDayOfWeek = getFirstDayOfCurrentWeek();
 export const lastDayOfWeek = getLastDateOfCurrentWeek();
-export const firstDayOfMonth = getFirstDayOfCurrentMonth();
-export const lastDayOfMonth = getLastDayOfCurrentMonth();
-
 export const firstDayOfPreviousWeek = getFirstDayOfPreviousWeek();
 export const lastDayOfPreviousWeek = getLastDayOfPreviousWeek();
+
+export const firstDayOfMonth = getFirstDayOfCurrentMonth();
+export const lastDayOfMonth = getLastDayOfCurrentMonth();
 export const firstDayOfPreviousMonth = getFirstDayOfPreviousMonth();
 export const lastDayOfPreviousMonth = getLastDayOfPreviousMonth();
 

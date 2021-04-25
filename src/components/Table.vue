@@ -2,8 +2,11 @@
   <table class="w-full table-fixed">
     <thead>
       <tr>
-        <th class="history-th w-7/10 text-left">
-          {{ title }}
+        <th class="history-th w-1 text-left">
+          №
+        </th>
+        <th class="history-th w-5/10 text-left">
+          {{ title.slice(0, -1) }}
         </th>
         <th class="history-th w-3/10 text-right">
           Minutes Listened
@@ -13,10 +16,10 @@
     <tbody>
       <tr v-for="(item, index) in data" :key="item.id" class="history-tr">
         <td class="history-td text-left">
+          {{ index + 1 }}
+        </td>
+        <td class="history-td text-left">
           <div class="flex items-center">
-            <div class="mr-5">
-              {{ index + 1 }}
-            </div>
             <img :src="item?.image" class="table-image" />
             <div class="ml-4">
               <template v-if="this.title == 'tracks'">
