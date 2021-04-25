@@ -31,7 +31,7 @@ router.get("/listening-history", authMiddleware, getPlayedHistory);
 router.get("/friends", authMiddleware, friends);
 router.get("/users", users);
 
-// Profile
+// Settings
 router.get("/settings/privacy", authMiddleware, settings.getPrivacy);
 router.post("/settings/privacy", authMiddleware, settings.postPrivacy);
 
