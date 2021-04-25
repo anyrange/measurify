@@ -7,11 +7,22 @@ import Overview from "@/views/Overview.vue";
 import History from "@/views/History.vue";
 import Track from "@/views/Track.vue";
 
+import store from "@/store";
+
 const routes = [
   {
     path: "/",
     name: "login",
     component: Login,
+    beforeEnter(to, from, next) {
+      if (store.getters.getUser) {
+        next({
+          name: "home",
+        });
+      } else {
+        next();
+      }
+    },
   },
   {
     name: "home",
@@ -60,6 +71,15 @@ const routes = [
         },
       },
     ],
+    beforeEnter(to, from, next) {
+      if (store.getters.getUser) {
+        next();
+      } else {
+        next({
+          name: "login",
+        });
+      }
+    },
   },
   {
     path: "/:pathMatch(.*)*",

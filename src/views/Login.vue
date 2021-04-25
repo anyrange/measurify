@@ -5,7 +5,9 @@
         Spotiworm
       </h1>
       <template v-if="loading">
-        <p class="text-center users animate-pulse loading px-28 py-3"></p>
+        <p class="text-center text-lg users animate-pulse loading px-28">
+          &nbsp;
+        </p>
       </template>
       <template v-else>
         <p v-if="usersQuantity" class="text-center users">
@@ -22,6 +24,53 @@
     </div>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      usersQuantity: 0,
+      loading: true,
+    };
+  },
+  computed: {
+    user() {
+      return this.$store.getters.getUser;
+    },
+  },
+  methods: {
+    login() {
+      window.location.href = `${this.$store.getters.getBackendURL}/login`;
+    },
+  },
+  created() {
+    if (this.$route.query.access_token) {
+      const access_token = this.$route.query.access_token;
+      axios
+        .get("https://api.spotify.com/v1/me", {
+          headers: {
+            Authorization: "Bearer " + access_token,
+          },
+        })
+        .then((response) => {
+          response.data.access_token = access_token;
+          response.data._id = this.$route.query.id;
+          this.$store.commit("mutateUser", response.data);
+          this.$router.push({ name: "home" });
+        });
+    } else {
+      axios
+        .get(`${this.$store.getters.getBackendURL}/users`)
+        .then((response) => {
+          this.usersQuantity = response.data.usersQuantity;
+        })
+        .finally(() => (this.loading = false));
+    }
+  },
+};
+</script>
 
 <style lang="postcss">
 .login-landing {
@@ -52,53 +101,3 @@
   @apply py-2 px-6 mt-4 bg-green-600-spotify text-lg rounded-full hover:bg-green-700-spotify transition-colors duration-150 text-white font-semibold focus:outline-none;
 }
 </style>
-
-<script>
-import axios from "axios";
-
-export default {
-  data() {
-    return {
-      usersQuantity: 0,
-      loading: true,
-    };
-  },
-  computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
-  },
-  methods: {
-    login() {
-      window.location.href = `${this.$store.getters.getBackendURL}/login`;
-    },
-  },
-  created() {
-    if (this.user) {
-      this.$router.push({ name: "home" });
-    }
-    if (this.$route.query.access_token) {
-      const access_token = this.$route.query.access_token;
-      axios
-        .get("https://api.spotify.com/v1/me", {
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
-        })
-        .then((response) => {
-          response.data.access_token = access_token;
-          response.data._id = this.$route.query.id;
-          this.$store.commit("mutateUser", response.data);
-          this.$router.push({ name: "home" });
-        });
-    } else {
-      axios
-        .get(`${this.$store.getters.getBackendURL}/users`)
-        .then((response) => {
-          this.usersQuantity = response.data.usersQuantity;
-        })
-        .finally(() => (this.loading = false));
-    }
-  },
-};
-</script>
