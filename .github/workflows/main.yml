@@ -1,0 +1,32 @@
+# This workflow will do a install of node dependencies and run tests
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Running Units Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install
+      run: cd server && npm install
+    - name: Test
+      run: cd server && npm test
+      env:
+        SECRET_KEY: THEMOSTsecretKEYEVERWHYEVENBOTHER
