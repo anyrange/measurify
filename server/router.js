@@ -1,17 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const health = require("./routes/health");
-const auth = require("./routes/auth");
-const friends = require("./routes/friends");
-const getOverview = require("./routes/getOverview");
-const getPlayedHistory = require("./routes/getPlayedHistory");
-const infoPages = require("./routes/infoPages");
-const top = require("./routes/top");
-const users = require("./routes/users");
-const user = require("./routes/user");
-const authMiddleware = require("./middlewares/authMiddleware");
+const routes = require("./routes");
+const middlewares = require("./middlewares");
 const path = require("path");
-const settings = require("./routes/settings");
+
 require("dotenv").config();
 
 router.get("/", (req, res) => {
@@ -19,33 +11,45 @@ router.get("/", (req, res) => {
 });
 // Server state
 
-router.get("/health", health);
+router.get("/health", routes.health);
 // Authorization
-router.get("/login", auth.login);
-router.get("/callback", auth.callback);
-router.get("/token", authMiddleware, auth.getAccessToken);
+router.get("/login", routes.auth.login);
+router.get("/callback", routes.auth.callback);
+router.get("/token", middlewares.authMiddleware, routes.auth.getAccessToken);
 
 // History
-router.get("/listening-history", authMiddleware, getPlayedHistory);
+router.get(
+  "/listening-history",
+  middlewares.authMiddleware,
+  routes.getPlayedHistory
+);
 
-router.get("/friends", authMiddleware, friends);
-router.get("/users", users);
+router.get("/friends", middlewares.authMiddleware, routes.friends);
+router.get("/users", routes.users);
 
 // Settings
-router.get("/settings/privacy", authMiddleware, settings.getPrivacy);
-router.post("/settings/privacy", authMiddleware, settings.postPrivacy);
+router.get(
+  "/settings/privacy",
+  middlewares.authMiddleware,
+  routes.settings.getPrivacy
+);
+router.post(
+  "/settings/privacy",
+  middlewares.authMiddleware,
+  routes.settings.postPrivacy
+);
 
 // User profile
-router.get("/user/:id", authMiddleware, user);
+router.get("/user/:id", middlewares.authMiddleware, routes.user);
 
 // Main page
-router.get("/overview", authMiddleware, getOverview);
-router.get("/top", authMiddleware, top);
+router.get("/overview", middlewares.authMiddleware, routes.getOverview);
+router.get("/top", middlewares.authMiddleware, routes.top);
 
 // infoPages
-router.get("/artist/:id", authMiddleware, infoPages.artist);
-router.get("/album/:id", authMiddleware, infoPages.album);
-router.get("/track/:id", authMiddleware, infoPages.track);
+router.get("/artist/:id", middlewares.authMiddleware, routes.infoPages.artist);
+router.get("/album/:id", middlewares.authMiddleware, routes.infoPages.album);
+router.get("/track/:id", middlewares.authMiddleware, routes.infoPages.track);
 
 router.all("*", function(req, res) {
   res.status(404).end("Service not found");
