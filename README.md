@@ -1,8 +1,8 @@
 # spotiworm
 
 [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m787497444-7b36a8b8a8545c2335febb2b)](https://stats.uptimerobot.com/kXD0runRnw/787497444)
-![Netlify](https://img.shields.io/netlify/2b93b34b-9fc4-47e4-ab20-bca6b8d6c6dd)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/anyrange/spotiworm/Node.js%20CI?label=server)
+[![Netlify](https://img.shields.io/netlify/2b93b34b-9fc4-47e4-ab20-bca6b8d6c6dd)](https://app.netlify.com/sites/spotiworm/deploys)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/anyrange/spotiworm/Node.js%20CI?label=server)](https://github.com/anyrange/spotiworm/actions/workflows/main.yml)
 
 > Yet another app using Spotify Web API
 
