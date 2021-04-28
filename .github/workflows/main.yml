@@ -28,5 +28,3 @@ jobs:
       run: cd server && npm install
     - name: Test
       run: cd server && npm test
-      env:
-        SECRET_KEY: THEMOSTsecretKEYEVERWHYEVENBOTHER
