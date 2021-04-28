@@ -36,7 +36,6 @@ const top = async (req, res) => {
         addPlaylistInfo(playlist, resolve);
       }).then((res) => {
         if (!res) return;
-        console.log(res);
         response.playlists.push(res);
       });
     });
