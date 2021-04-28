@@ -28,11 +28,10 @@ const friends = async (req, res) => {
       }
     );
 
-    if (!followArray) {
-      return;
-    }
+    if (!followArray) throw new Error("spotify error");
     body = await followArray.json();
     if (body.error) {
+      console.log(body);
       res.status(body.error.status).json({
         message: body.error.message,
       });
@@ -41,6 +40,10 @@ const friends = async (req, res) => {
 
     users = users.filter((user, key) => body[key]);
     // check if followers and adds images to followees
+    if (!users.length) {
+      res.status(204).json();
+      return;
+    }
 
     let requests = users.map((user) => {
       return new Promise((resolve) => {

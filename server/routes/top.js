@@ -36,13 +36,8 @@ const top = async (req, res) => {
         addPlaylistInfo(playlist, resolve);
       }).then((res) => {
         if (!res) return;
-
-        response.playlists.push({
-          name: res.name,
-          id: res.id,
-          image: res.images.length ? res.images[0].url : "",
-          playtime: res.playtime,
-        });
+        console.log(res);
+        response.playlists.push(res);
       });
     });
 
@@ -364,8 +359,7 @@ const addPlaylistInfo = (playlist, cb) => {
     headers: { Authorization: "Bearer " + playlist.access_token },
   })
     .catch((err) => {
-      response.message = err.message;
-      cb();
+      cb(playlist);
     })
     .then(async (body) => {
       if (!body) return;
@@ -377,8 +371,12 @@ const addPlaylistInfo = (playlist, cb) => {
         cb();
         return;
       }
-      body.playtime = playlist.playtime;
-      cb(body);
+      cb({
+        name: body.name,
+        id: body.id,
+        image: body.images ? body.images[0].url : "",
+        playtime: playlist.playtime,
+      });
     });
 };
 

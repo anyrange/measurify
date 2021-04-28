@@ -13,8 +13,8 @@ const settings = {
   postPrivacy: async (req, res) => {
     try {
       const _id = req.get("Authorization");
-      const private = req.body.private;
-      await User.updateOne({ _id }, { private });
+      const confidential = req.body.private;
+      await User.updateOne({ _id }, { private: confidential });
       res.status(200).json("success");
     } catch (e) {
       console.log(e);
