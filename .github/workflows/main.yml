@@ -28,3 +28,6 @@ jobs:
       run: cd server && npm install
     - name: Test
       run: cd server && npm test
+      env:
+        DB_URI: ${{env.DB_URI}}
+        TEST_ID: ${{env.TEST_ID}}
