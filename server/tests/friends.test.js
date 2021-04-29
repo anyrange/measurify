@@ -11,4 +11,4 @@ test("Get friends (he has no friends ha ha)", async () => {
     .get("/friends")
     .set("Authorization", process.env.TEST_ID)
     .expect(204);
-}, 15000);
+}, 10000);
