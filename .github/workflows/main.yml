@@ -1,5 +1,7 @@
 # This workflow will do a install of node dependencies and run tests
 
+name: server-ci
+
 on:
   push:
     branches: [ main ]
