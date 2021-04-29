@@ -6,7 +6,7 @@ const refresh_recently_played = require("./includes/recently-played-parse.js");
 
 const PORT = process.env.PORT || 8888;
 app.listen(PORT, () => {
-  console.log(`App listening on port: ${PORT}`);
+  console.info(`App listening on port: ${PORT}`);
 });
 
 function startScheduledJobs() {
