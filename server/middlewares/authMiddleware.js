@@ -1,6 +1,6 @@
 const authMiddleware = (req, res, next) => {
   const _id = req.get("Authorization");
-  if (typeof _id !== "string") {
+  if (!_id) {
     res.status(401).json({ message: `Unauthorized` });
     return;
   }
