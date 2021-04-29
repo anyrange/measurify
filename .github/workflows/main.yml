@@ -1,7 +1,5 @@
 # This workflow will do a install of node dependencies and run tests
 
-name: Node.js CI
-
 on:
   push:
     branches: [ main ]
@@ -29,5 +27,5 @@ jobs:
     - name: Test
       run: cd server && npm test
       env:
-        DB_URI: ${{env.DB_URI}}
-        TEST_ID: ${{env.TEST_ID}}
+        DB_URI: ${{secrets.DB_URI}}
+        TEST_ID: ${{secrets.TEST_ID}}
