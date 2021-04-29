@@ -10,9 +10,13 @@ const friends = async (req, res) => {
     );
 
     // get user's info
-    const access_token = users.find(({ _id }) => _id == req_id)
-      .lastSpotifyToken;
-    const id = users.find(({ _id }) => _id == req_id).spotifyID;
+    const user = users.find(({ _id }) => _id == req_id);
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+    const access_token = user.lastSpotifyToken;
+    const id = user.spotifyID;
     // filter away user
     users = users.filter(({ _id }) => _id != req_id);
 
