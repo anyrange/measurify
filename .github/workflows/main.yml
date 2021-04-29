@@ -9,9 +9,9 @@ on:
 jobs:
   test:
     name: Running Units Tests
-    environment: spotify-worm-server
     runs-on: ubuntu-latest
-
+    environment: spotify-worm-server
+    
     strategy:
       matrix:
         node-version: [12.x]
@@ -28,5 +28,5 @@ jobs:
     - name: Test
       run: cd server && npm test
       env:
-        DB_URI: 'erher'
-        TEST_ID: 'erher'
+        DB_URI: ${{secrets.DB_URI}}
+        TEST_ID: ${{secrets.TEST_ID}}
