@@ -31,7 +31,6 @@ const friends = async (req, res) => {
     if (!followArray) throw new Error("spotify error");
     body = await followArray.json();
     if (body.error) {
-      console.log(body);
       res.status(body.error.status).json({
         message: body.error.message,
       });
