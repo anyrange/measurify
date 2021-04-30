@@ -10,8 +10,8 @@ function getLastDateOfCurrentWeek() {
   return now.setDate(now.getDate() - now.getDay() + 7);
 }
 function getFirstDayOfPreviousWeek() {
-  const now = new Date();
-  return new Date(now.setDate(now.getDate() - 6));
+  let now = new Date();
+  return new Date(now.setDate(now.getDate() - now.getDay() - 7));
 }
 function getLastDayOfPreviousWeek() {
   const now = new Date();
