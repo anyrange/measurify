@@ -1,5 +1,5 @@
 const app = require("./app");
-
+require("./db");
 const CronJob = require("cron").CronJob;
 const refresh_tokens = require("./includes/refresh-tokens.js");
 const refresh_recently_played = require("./includes/recently-played-parse.js");

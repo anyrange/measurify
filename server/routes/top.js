@@ -356,27 +356,22 @@ const addPlaylistInfo = (playlist, cb) => {
   fetch(`https://api.spotify.com/v1/playlists/${playlist.id}`, {
     method: "GET",
     headers: { Authorization: "Bearer " + playlist.access_token },
-  })
-    .catch((err) => {
-      cb(playlist);
-    })
-    .then(async (body) => {
-      if (!body) return;
+  }).then(async (body) => {
+    if (!body) return;
 
-      body = await body.json();
+    body = await body.json();
 
-      if (body.error) {
-        response.message = `${body.error.message} [${body.error.status}]`;
-        cb();
-        return;
-      }
-      cb({
-        name: body.name,
-        id: body.id,
-        image: body.images ? body.images[0].url : "",
-        playtime: playlist.playtime,
-      });
+    if (body.error) {
+      cb();
+      return;
+    }
+    cb({
+      name: body.name,
+      id: body.id,
+      image: body.images ? body.images[0].url : "",
+      playtime: playlist.playtime,
     });
+  });
 };
 
 module.exports = top;
