@@ -7,7 +7,3 @@ test("overview user with empty array", () => {
 test("overview user with empty data", () => {
   expect(overview()).toEqual([]);
 });
-
-test("overview user with wrong array", () => {
-  expect(overview([{ afasdfd: "feafse" }])).toEqual([]);
-});

@@ -7,9 +7,9 @@ afterAll(() => {
   mongoose.connection.close();
 });
 
-test("Get friends (he has no friends ha ha)", async () => {
+test("User without listening history", async () => {
   await request(app)
-    .get("/friends")
+    .get("/top")
     .set("Authorization", process.env.TEST_ID)
     .expect(204);
 }, 10000);
