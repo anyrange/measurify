@@ -5,6 +5,11 @@ const schema = new Schema({
     type: String,
     required: true,
   },
+  customID: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   spotifyID: {
     type: String,
     required: true,
@@ -16,6 +21,10 @@ const schema = new Schema({
   lastSpotifyToken: {
     type: String,
     required: true,
+  },
+  lastLogin: {
+    type: Date,
+    default: Date.now,
   },
   playlists: {
     type: Array,
