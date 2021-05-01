@@ -7,10 +7,17 @@ const settings = {
         { _id },
         { private: 1, customID: 1, spotifyID: 1 }
       );
-      res.status(200).json(user);
+
+      let result = {
+        spotifyID: user.spotifyID,
+        customID: user.customID,
+        private: user.private,
+      };
+
+      return res.status(200).send(result);
     } catch (e) {
       console.log(e);
-      res.status(404).json();
+      return res.status(404).send({ message: "An error occured" });
     }
   },
   set: async (req, res) => {
@@ -25,13 +32,15 @@ const settings = {
       );
 
       if (updateResult.nModified !== 1) {
-        return res.status(406).json({ message: "Нахуй пошёл" });
+        return res
+          .status(406)
+          .send({ message: "Фn error occurred while updating" });
       }
 
-      res.status(200).json({ message: "success" });
+      res.status(200).send({ message: "Successfully updated" });
     } catch (e) {
       console.log(e);
-      res.status(406).json({ message: "Нахуй пошёл" });
+      res.status(406).send({ message: "An error occured" });
     }
   },
 };
