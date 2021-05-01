@@ -6,6 +6,7 @@ import Profile from "@/views/Profile.vue";
 import Overview from "@/views/Overview.vue";
 import History from "@/views/History.vue";
 import Track from "@/views/Track.vue";
+import Account from "@/views/Account.vue";
 
 import store from "@/store";
 
@@ -55,11 +56,19 @@ const routes = [
         },
       },
       {
-        path: "/me",
+        path: "/:id",
         name: "profile",
         component: Profile,
         meta: {
-          title: "Profile",
+          title: "",
+        },
+      },
+      {
+        path: "/account",
+        name: "account",
+        component: Account,
+        meta: {
+          title: "Account",
         },
       },
       {
@@ -67,7 +76,7 @@ const routes = [
         name: "track",
         component: Track,
         meta: {
-          title: "?",
+          title: "",
         },
       },
     ],

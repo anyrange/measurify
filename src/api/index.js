@@ -43,6 +43,16 @@ export default {
     const promises = [`${url}/overview`, `${url}/top`].map(fetchedData);
     return Promise.all(promises).then((response) => response);
   },
+  getAccount() {
+    return axios
+      .get(`${url}/settings`, response_options())
+      .then((response) => response.data);
+  },
+  updateAccount(cred) {
+    return axios
+      .post(`${url}/settings`, cred, response_options())
+      .then((response) => response.data);
+  },
   getTrack(id) {
     return axios
       .get(`${url}/track/${id}`, response_options())
