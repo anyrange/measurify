@@ -4,9 +4,9 @@ const { ObjectId } = require("mongodb");
 const user = async (req, res) => {
   try {
     const _id = req.get("Authorization");
-    const userID = req.params.id;
+    const customID = req.params.id;
     const friendInDataBase = await User.findOne(
-      { spotifyID: userID },
+      { customID },
       { userName: 1, private: 1 }
     );
     if (!friendInDataBase) {
@@ -26,16 +26,19 @@ const user = async (req, res) => {
       }
     );
     const friendlist = await friendlistRaw.json();
-    const friend = friendlist.find(({ spotifyID }) => spotifyID === userID);
+
+    const friend = friendlist.find((friend) => friend.customID === customID);
+
     if (!friend) {
       res
         .status(400)
         .json({ msg: `You are not friends with ${friendInDataBase.userName}` });
       return;
     }
+
     const response = {};
     response.username = friend.userName;
-    response.url = friend.url;
+    response.avatar = friend.avatar;
 
     const requests = [
       new Promise(async (resolve) => {

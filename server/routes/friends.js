@@ -6,7 +6,7 @@ const friends = async (req, res) => {
     const req_id = req.get("Authorization");
     let users = await User.find(
       {},
-      { spotifyID: 1, lastSpotifyToken: 1, userName: 1, image: 1 }
+      { customID: 1, spotifyID: 1, lastSpotifyToken: 1, userName: 1, avatar: 1 }
     );
 
     // get user's info
@@ -33,7 +33,7 @@ const friends = async (req, res) => {
     );
 
     if (!followArray) throw new Error("spotify error");
-    body = await followArray.json();
+    const body = await followArray.json();
     if (body.error) {
       res.status(body.error.status).json({
         message: body.error.message,
@@ -42,7 +42,7 @@ const friends = async (req, res) => {
     }
 
     users = users.filter((user, key) => body[key]);
-    // check if followers and adds images to followees
+    // check if followers and adds avatars to followees
     if (!users.length) {
       res.status(204).json();
       return;
@@ -114,9 +114,9 @@ const addImage = (user, cb, id) => {
 
       let friend = {
         _id: user._id,
-        spotifyID: user.spotifyID,
+        customID: user.customID,
         userName: user.userName,
-        url: user.image,
+        avatar: user.avatar,
         friend: body[0],
       };
       cb(friend);

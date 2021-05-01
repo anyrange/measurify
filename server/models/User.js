@@ -34,7 +34,7 @@ const schema = new Schema({
     type: Array,
     default: [],
   },
-  image: {
+  avatar: {
     type: String,
   },
   private: {

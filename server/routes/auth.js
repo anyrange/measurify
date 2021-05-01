@@ -26,6 +26,7 @@ const auth = {
       const _id = req.get("Authorization");
       const response = await User.findOne({ _id }, { lastSpotifyToken: 1 });
       res.status(200).end(response.lastSpotifyToken);
+      await User.updateOne({ _id }, { lastLogin: Date.now() });
     } catch (e) {
       res.status(404).json();
       console.log(e);
@@ -59,20 +60,29 @@ const auth = {
         lastSpotifyToken: access_token,
         userName: userJSON.display_name,
         refreshToken: refresh_token,
-        image: userJSON.images.length ? userJSON.images[0].url : "",
-        __v: 2,
+        avatar: userJSON.images.length ? userJSON.images[0].url : "",
+        __v: 3,
       };
 
-      await User.updateOne(filter, upsert, {
+      const updateOperation = await User.updateOne(filter, upsert, {
         new: true,
         upsert: true,
         setDefaultsOnInsert: true,
       });
+
       // check if recentlyPlayed  is empty
       const document = await User.findOne(
         { spotifyID: userJSON.id },
-        { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
+        { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] }, spotifyID: 1 }
       );
+
+      if (updateOperation.nModified === 0) {
+        await User.updateOne(
+          { _id: document._id },
+          { customID: document.spotifyID }
+        );
+      }
+
       if (!document.recentlyPlayed || !document.recentlyPlayed.length) {
         await fetchHistory(access_token, document._id);
       }
