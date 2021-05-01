@@ -32,9 +32,9 @@
 }
 
 .h-title {
-  @apply mx-4 text-5xl font-semibold dark:text-white text-gray-900;
+  @apply text-5xl font-semibold dark:text-white text-gray-900;
 }
 
 .h-subtitle {
-  @apply mx-4 mt-4 text-lg font-semibold text-gray-500;
+  @apply text-lg font-semibold text-gray-500;
 }

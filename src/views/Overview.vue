@@ -1,152 +1,126 @@
 <template>
-  <div class="container mx-auto">
-    <h2 class="h-title">
-      Overview
-    </h2>
-    <template v-if="!emptyData">
-      <template v-if="loading">
-        <div class="mt-8">
-          <LoadingSpinner />
+  <h2 class="h-title">Overview</h2>
+  <template v-if="emptyData">
+    <EmptyMessage />
+  </template>
+  <template v-else>
+    <LoadingSpinner v-if="loading" />
+    <template v-else>
+      <div class="mt-6">
+        <ul class="tabs sm:flex">
+          <li
+            class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
+            :class="[selectedPeriod === 'alltime' ? 'is-active' : 'not-active']"
+            @click="updateOverview('alltime')"
+          >
+            All Time
+          </li>
+          <li
+            class="tab"
+            :class="[selectedPeriod === 'week' ? 'is-active' : 'not-active']"
+            @click="updateOverview('week')"
+          >
+            This Week
+          </li>
+          <li
+            class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
+            :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
+            @click="updateOverview('month')"
+          >
+            This Month
+          </li>
+        </ul>
+        <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
+          <Card
+            :title="'Tracks Played'"
+            :selected="selectedPeriod"
+            :value="totalTracksPlayed"
+            :previousValue="totalTracksPlayedPrev"
+          />
+          <Card
+            :title="'Minutes Listened'"
+            :selected="selectedPeriod"
+            :value="totalMinutesListened"
+            :previousValue="totalMinutesListenedPrev"
+          />
         </div>
-      </template>
-      <template v-else>
-        <div class="mt-8">
-          <div class="sm:mx-4 mx-4">
-            <ul class="tabs sm:flex">
-              <li
-                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-                :class="[
-                  selectedPeriod === 'alltime' ? 'is-active' : 'not-active',
-                ]"
-                @click="updateOverview('alltime')"
-              >
-                All Time
-              </li>
-              <li
-                class="tab"
-                :class="[
-                  selectedPeriod === 'week' ? 'is-active' : 'not-active',
-                ]"
-                @click="updateOverview('week')"
-              >
-                This Week
-              </li>
+        <div class="-mx-4 w-full">
+          <apexchart
+            type="area"
+            height="350"
+            :options="chartOptions"
+            :series="overviewData"
+          ></apexchart>
+        </div>
+        <h2
+          class="mt-5 mb-8 text-4xl font-semibold dark:text-gray-100 text-gray-900"
+        >
+          Top Played
+        </h2>
+        <div class="mt-6">
+          <ul class="tabs sm:flex">
+            <li
+              class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
+              :class="[selectedTop === 'artists' ? 'is-active' : 'not-active']"
+              @click="selectedTop = 'artists'"
+            >
+              Artists
+            </li>
+            <li
+              class="tab"
+              :class="[selectedTop === 'tracks' ? 'is-active' : 'not-active']"
+              @click="selectedTop = 'tracks'"
+            >
+              Tracks
+            </li>
+            <li
+              class="tab"
+              :class="[
+                selectedTop === 'albums' ? 'is-active' : 'not-active',
+                !playlistsExist
+                  ? 'sm:rounded-r-lg sm:rounded-b-none rounded-b-lg'
+                  : '',
+              ]"
+              @click="selectedTop = 'albums'"
+            >
+              Albums
+            </li>
+            <template v-if="playlistsExist">
               <li
                 class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
                 :class="[
-                  selectedPeriod === 'month' ? 'is-active' : 'not-active',
+                  selectedTop === 'playlists' ? 'is-active' : 'not-active',
                 ]"
-                @click="updateOverview('month')"
+                @click="selectedTop = 'playlists'"
               >
-                This Month
+                Playlists
               </li>
-            </ul>
-          </div>
-          <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mx-4 mb-2 mt-6">
-            <Card
-              :title="'Tracks Played'"
-              :selected="selectedPeriod"
-              :value="totalTracksPlayed"
-              :previousValue="totalTracksPlayedPrev"
-            />
-            <Card
-              :title="'Minutes Listened'"
-              :selected="selectedPeriod"
-              :value="totalMinutesListened"
-              :previousValue="totalMinutesListenedPrev"
-            />
-          </div>
-          <div class="w-full">
-            <apexchart
-              type="area"
-              height="350"
-              :options="chartOptions"
-              :series="overviewData"
-            ></apexchart>
-          </div>
-          <h2
-            class="mx-4 mt-5 mb-8 text-4xl font-semibold dark:text-gray-100 text-gray-900"
-          >
-            Top Played
-          </h2>
-          <div class="mt-6 sm:mx-4 mx-4">
-            <ul class="tabs sm:flex">
-              <li
-                class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-                :class="[
-                  selectedTop === 'artists' ? 'is-active' : 'not-active',
-                ]"
-                @click="selectedTop = 'artists'"
-              >
-                Artists
-              </li>
-              <li
-                class="tab"
-                :class="[selectedTop === 'tracks' ? 'is-active' : 'not-active']"
-                @click="selectedTop = 'tracks'"
-              >
-                Tracks
-              </li>
-              <li
-                class="tab"
-                :class="[
-                  selectedTop === 'albums' ? 'is-active' : 'not-active',
-                  !playlistsExist
-                    ? 'sm:rounded-r-lg sm:rounded-b-none rounded-b-lg'
-                    : '',
-                ]"
-                @click="selectedTop = 'albums'"
-              >
-                Albums
-              </li>
-              <template v-if="playlistsExist">
-                <li
-                  class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-                  :class="[
-                    selectedTop === 'playlists' ? 'is-active' : 'not-active',
-                  ]"
-                  @click="selectedTop = 'playlists'"
-                >
-                  Playlists
-                </li>
-              </template>
-            </ul>
-            <div class="mt-4">
-              <div v-if="selectedTop === 'artists'">
-                <Table :title="selectedTop" :data="totalTop.artists" />
-              </div>
-              <div v-if="selectedTop === 'tracks'">
-                <Table :title="selectedTop" :data="totalTop.tracks" />
-              </div>
-              <div v-if="selectedTop === 'albums'">
-                <Table :title="selectedTop" :data="totalTop.albums" />
-              </div>
-              <div v-if="selectedTop === 'playlists'">
-                <Table :title="selectedTop" :data="totalTop.playlists" />
-              </div>
+            </template>
+          </ul>
+          <div class="mt-4">
+            <div v-if="selectedTop === 'artists'">
+              <Table :title="selectedTop" :data="totalTop.artists" />
+            </div>
+            <div v-if="selectedTop === 'tracks'">
+              <Table :title="selectedTop" :data="totalTop.tracks" />
+            </div>
+            <div v-if="selectedTop === 'albums'">
+              <Table :title="selectedTop" :data="totalTop.albums" />
+            </div>
+            <div v-if="selectedTop === 'playlists'">
+              <Table :title="selectedTop" :data="totalTop.playlists" />
             </div>
           </div>
         </div>
-      </template>
-    </template>
-    <template v-else>
-      <div class="flex h-80 justify-center items-center">
-        <div class="text-center">
-          <h3 class="mx-4 mt-4 text-2xl font-semibold text-gray-200">
-            No listening data
-          </h3>
-          <h3 class="mx-4 mt-1 text-base font-semibold text-gray-500">
-            Start listening to music on Spotify and come back later!
-          </h3>
-        </div>
       </div>
     </template>
-  </div>
+  </template>
 </template>
 
 <script>
 import Card from "@/components/Card";
 import Table from "@/components/Table";
+import EmptyMessage from "@/components/EmptyMessage";
 import chartOptions from "@/mixins/chartOptions";
 import * as fd from "@/utils/dates";
 import api from "@/api";
@@ -155,6 +129,7 @@ export default {
   components: {
     Card,
     Table,
+    EmptyMessage,
   },
 
   mixins: [chartOptions],

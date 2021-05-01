@@ -1,33 +1,29 @@
 <template>
-  <div class="container mx-auto">
-    <h2 class="h-title">
-      Playlists
-    </h2>
-
-    <div class="mt-10">
-      <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        <div
-          v-for="playlist in playlists"
-          :key="playlist.id"
-          class="box-border h-84 w-64 p-5"
+  <h2 class="h-title">Playlists</h2>
+  <div class="mt-10">
+    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div
+        v-for="playlist in playlists"
+        :key="playlist.id"
+        class="box-border h-84 w-64 p-5"
+      >
+        <img
+          :src="playlist.images[0]?.url"
+          class="border border-gray-800 shadow-sm object-cover h-48 w-48 rounded-lg"
+        />
+        <h1
+          class="mt-2 text-base text-gray-300 overflow-ellipsis overflow-hidden whitespace-nowrap"
         >
-          <img
-            :src="playlist.images[0]?.url"
-            class="border border-gray-800 shadow-sm object-cover h-48 w-48 rounded-lg"
-          />
-          <h1
-            class="mt-2 text-base text-gray-300 overflow-ellipsis overflow-hidden whitespace-nowrap"
-          >
-            {{ playlist.name }}
-          </h1>
-          <h1 class="text-sm text-gray-400">
-            Total tracks: {{ playlist.tracks.total }}
-          </h1>
-        </div>
+          {{ playlist.name }}
+        </h1>
+        <h1 class="text-sm text-gray-400">
+          Total tracks: {{ playlist.tracks.total }}
+        </h1>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 export default {

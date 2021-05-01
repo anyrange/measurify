@@ -7,7 +7,9 @@
           <User />
         </div>
         <div class="content-spotify overflow-y-auto">
-          <router-view />
+          <div class="container mx-auto">
+            <router-view />
+          </div>
         </div>
       </div>
     </div>

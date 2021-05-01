@@ -1,89 +1,81 @@
 <template>
-  <div class="container mx-auto">
-    <template v-if="loading">
-      <div class="mt-8">
-        <LoadingSpinner />
-      </div>
-    </template>
-    <template v-else>
-      <div class="mt-4">
-        <div class="md:flex items-center">
-          <kinesis-container>
-            <kinesis-element :strength="10" type="depth">
-              <img
-                :src="object.track.image"
-                class="w-56 h-56 mr-6 object-cover"
-              />
-            </kinesis-element>
-          </kinesis-container>
-          <div class="flex flex-col space-y-2 text-gray-500-spotify">
-            <span class="text-5xl font-semibold mt-2 md:mt-0">
-              {{ object.track.name }}
-            </span>
-            <span class="text-lg"
-              >By <a class="text-white">{{ object.track.artist.name }}</a>
-            </span>
-            <span class="text-lg"
-              >From <a class="text-white">{{ object.track.album.name }}</a>
-            </span>
-            <span class="text-lg"
-              >{{ object.track.release }} -
-              {{ trackDuration }}
-            </span>
-          </div>
-        </div>
-        <div class="mt-6">
-          <ul class="tabs sm:flex">
-            <li
-              class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-              :class="[
-                selectedPeriod === 'alltime' ? 'is-active' : 'not-active',
-              ]"
-              @click="updateOverview('alltime')"
-            >
-              All Time
-            </li>
-            <li
-              class="tab"
-              :class="[selectedPeriod === 'week' ? 'is-active' : 'not-active']"
-              @click="updateOverview('week')"
-            >
-              This Week
-            </li>
-            <li
-              class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-              :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
-              @click="updateOverview('month')"
-            >
-              This Month
-            </li>
-          </ul>
-        </div>
-        <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
-          <Card
-            :title="'Times Played'"
-            :selected="selectedPeriod"
-            :value="totalTracksPlayed"
-            :previousValue="totalTracksPlayedPrev"
-          />
-          <Card
-            :title="'Minutes Listened'"
-            :selected="selectedPeriod"
-            :value="totalMinutesListened"
-            :previousValue="totalMinutesListenedPrev"
-          />
-        </div>
-        <div class="-mx-4 w-full">
-          <apexchart
-            type="area"
-            height="350"
-            :options="chartOptions"
-            :series="overviewData"
-          ></apexchart>
+  <LoadingSpinner v-if="loading" />
+  <template v-else>
+    <div class="mt-4">
+      <div class="md:flex items-center">
+        <kinesis-container>
+          <kinesis-element :strength="10" type="depth">
+            <img
+              :src="object.track.image"
+              class="w-56 h-56 mr-6 object-cover"
+            />
+          </kinesis-element>
+        </kinesis-container>
+        <div class="flex flex-col space-y-2 text-gray-500-spotify">
+          <span class="text-5xl font-semibold mt-2 md:mt-0">
+            {{ object.track.name }}
+          </span>
+          <span class="text-lg"
+            >By <a class="text-white">{{ object.track.artist.name }}</a>
+          </span>
+          <span class="text-lg"
+            >From <a class="text-white">{{ object.track.album.name }}</a>
+          </span>
+          <span class="text-lg"
+            >{{ object.track.release }} -
+            {{ trackDuration }}
+          </span>
         </div>
       </div>
-    </template>
-  </div>
+      <div class="mt-6">
+        <ul class="tabs sm:flex">
+          <li
+            class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
+            :class="[selectedPeriod === 'alltime' ? 'is-active' : 'not-active']"
+            @click="updateOverview('alltime')"
+          >
+            All Time
+          </li>
+          <li
+            class="tab"
+            :class="[selectedPeriod === 'week' ? 'is-active' : 'not-active']"
+            @click="updateOverview('week')"
+          >
+            This Week
+          </li>
+          <li
+            class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
+            :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
+            @click="updateOverview('month')"
+          >
+            This Month
+          </li>
+        </ul>
+      </div>
+      <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
+        <Card
+          :title="'Times Played'"
+          :selected="selectedPeriod"
+          :value="totalTracksPlayed"
+          :previousValue="totalTracksPlayedPrev"
+        />
+        <Card
+          :title="'Minutes Listened'"
+          :selected="selectedPeriod"
+          :value="totalMinutesListened"
+          :previousValue="totalMinutesListenedPrev"
+        />
+      </div>
+      <div class="-mx-4 w-full">
+        <apexchart
+          type="area"
+          height="350"
+          :options="chartOptions"
+          :series="overviewData"
+        ></apexchart>
+      </div>
+    </div>
+  </template>
 </template>
 
 <script>
