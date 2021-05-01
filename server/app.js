@@ -1,28 +1,24 @@
 const express = require("express");
 const router = require("./router");
 const cors = require("cors");
-
 const app = express();
+
 app.use(express.json());
 
-let corsOptions = {};
-if (process.env.NODE_ENV == "production") {
-  const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
-  const whitelist = [FRONTEND_URI];
-  corsOptions = {
-    origin: function(origin, callback) {
-      if (!origin) return callback(null, true);
-      if (whitelist.indexOf(origin) === -1) {
-        const message =
-          "The CORS policy for this origin doesnt allow access from the particular origin. Origin:" +
-          origin;
-        return callback(message, false);
-      }
-      return callback(null, true);
-    },
-  };
-}
-app.use(cors(corsOptions));
+const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
+const URI = new URL(FRONTEND_URI);
+const WHITE_LIST = [FRONTEND_URI, `${URI.protocol}//master--${URI.host}`];
+
+app.use(
+  cors({
+    origin: WHITE_LIST,
+    credentials: true,
+  })
+);
+
+process.on("unhandledRejection", (error) => {
+  console.log("Error:", error.message);
+});
 
 app.use(router);
 module.exports = app;

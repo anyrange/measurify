@@ -42,50 +42,46 @@ const top = async (req, res) => {
 
     response.playlists = [];
     Promise.all(requests).then(async () => {
-      try {
-        response.playlists.sort(function(a, b) {
-          if (a.playtime < b.playtime) {
-            return 1;
-          }
-          if (a.playtime > b.playtime) {
-            return -1;
-          }
-          return 0;
-        });
-        const body = await fetch(
-          `https://api.spotify.com/v1/artists?ids=${response.artists
-            .map((artist) => artist.id)
-            .join()}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: "Bearer " + response.artists[0].access_token,
-            },
-          }
-        );
-
-        const bodyJSON = await body.json();
-        if (bodyJSON.error) {
-          response.artists.forEach((artist) => {
-            delete artist.access_token;
-            artist.image = "";
-          });
-          res.status(200).json(response);
-          throw new Error(JSON.stringify(bodyJSON.error));
+      response.playlists.sort(function(a, b) {
+        if (a.playtime < b.playtime) {
+          return 1;
         }
-        response.artists.forEach((artist, index) => {
+        if (a.playtime > b.playtime) {
+          return -1;
+        }
+        return 0;
+      });
+      const body = await fetch(
+        `https://api.spotify.com/v1/artists?ids=${response.artists
+          .map((artist) => artist.id)
+          .join()}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + response.artists[0].access_token,
+          },
+        }
+      );
+
+      const bodyJSON = await body.json();
+      if (bodyJSON.error) {
+        response.artists.forEach((artist) => {
           delete artist.access_token;
-          if (
-            bodyJSON.artists[index].images.length &&
-            bodyJSON.artists[index].images[2]
-          ) {
-            artist.image = bodyJSON.artists[index].images[2].url;
-          }
+          artist.image = "";
         });
         res.status(200).json(response);
-      } catch (e) {
-        console.log(e);
+        throw new Error(bodyJSON.error);
       }
+      response.artists.forEach((artist, index) => {
+        delete artist.access_token;
+        if (
+          bodyJSON.artists[index].images.length &&
+          bodyJSON.artists[index].images[2]
+        ) {
+          artist.image = bodyJSON.artists[index].images[2].url;
+        }
+      });
+      res.status(200).json(response);
     });
   } catch (e) {
     res.status(404).json();
