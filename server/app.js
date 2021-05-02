@@ -17,7 +17,7 @@ app.use(
 );
 
 process.on("unhandledRejection", (error) => {
-  console.log("Error:", error.message);
+  console.log(error);
 });
 
 app.use(router);

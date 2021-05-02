@@ -290,35 +290,27 @@ const artists = async (_id, firstDate, lastDate, range) => {
       $project: {
         _id: 0,
         "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.track.artists.name": 1,
-        "recentlyPlayed.track.artists.id": 1,
-        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.artists.name": 1,
+        "recentlyPlayed.artists.id": 1,
+        "recentlyPlayed.duration_ms": 1,
         lastSpotifyToken: 1,
       },
     },
     {
       $unwind: {
         path: "$recentlyPlayed",
-        includeArrayIndex: "arrayIndex",
       },
     },
-    {
-      $match: {
-        "recentlyPlayed.played_at": {
-          $gte: firstDate || "1488-12-22",
-          $lte: lastDate || "5427-12-22",
-        },
-      },
-    },
+
     {
       $group: {
         _id: {
-          id: { $arrayElemAt: ["$recentlyPlayed.track.artists.id", 0] },
-          name: { $arrayElemAt: ["$recentlyPlayed.track.artists.name", 0] },
+          id: { $arrayElemAt: ["$recentlyPlayed.artists.id", 0] },
+          name: { $arrayElemAt: ["$recentlyPlayed.artists.name", 0] },
           access_token: "$lastSpotifyToken",
         },
         playtime: {
-          $sum: "$recentlyPlayed.track.duration_ms",
+          $sum: "$recentlyPlayed.duration_ms",
         },
       },
     },
@@ -333,7 +325,6 @@ const artists = async (_id, firstDate, lastDate, range) => {
   ];
 
   const artists = await User.aggregate(agg);
-
   return artists.map((track) => {
     return {
       id: track._id.id,

@@ -139,7 +139,7 @@ function refresh_recently_played() {
       duration_ms: track.duration_ms,
       popularity: track.popularity,
       url: track.external_urls.spotify,
-      played_at: new Date(item.played_at),
+      played_at: item.played_at,
       image:
         track.album.images && track.album.images.length
           ? track.album.images[2].url
