@@ -27,15 +27,11 @@ function refresh_recently_played() {
           cb();
           return;
         }
-        body.items.forEach((item) => {
-          delete item.track.available_markets;
-          delete item.track.album.available_markets;
-        });
 
         if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
           const query = { spotifyID: user.spotifyID };
           const update = {
-            recentlyPlayed: body.items,
+            recentlyPlayed: body.items.map((item) => formatTrack(item)),
           };
           await User.updateOne(query, update);
           cb();
@@ -48,7 +44,7 @@ function refresh_recently_played() {
             Date.parse(body.items[i].played_at) &&
           i < body.items.length
         ) {
-          newSongs.push(body.items[i]);
+          newSongs.push(formatTrack(body.items[i]));
           i++;
         }
 
@@ -119,22 +115,28 @@ function refresh_recently_played() {
         })}]`
       );
     });
-
-    // ## CHAIN EXECUTION (1 TASK->2 TASK->3 TASK->4 TASK)
-    // let requests = users.reduce((promiseChain, user) => {
-    //   return promiseChain.then(
-    //     () =>
-    //       new Promise((resolve) => {
-    //         parseRecentlyPlayed(user, resolve);
-    //       })
-    //   );
-    // }, Promise.resolve());
-
-    // requests.then(() => {
-    //   console.log(`All ${users.length} histories updated`);
-    //   process.exit();
-    // });
   });
+  function formatTrack(item) {
+    const track = item.track;
+    const album = { id: track.album.id, name: track.album.name };
+    let context = null;
+    if (item.context && item.context.type === "playlist") {
+      context = item.context.uri.split(":")[2];
+    }
+    const artists = track.artists.map(({ id, name }) => {
+      return { id, name };
+    });
+    return {
+      id: track.id,
+      name: track.name,
+      duration_ms: track.duration_ms,
+      popularity: track.popularity,
+      played_at: new Date(item.played_at),
+      album,
+      context,
+      artists,
+    };
+  }
 }
 
 module.exports = refresh_recently_played;

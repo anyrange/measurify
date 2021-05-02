@@ -44,10 +44,7 @@ function refresh_tokens() {
           lastSpotifyToken: body.access_token,
         };
 
-        await User.findOneAndUpdate(filter, update, {
-          new: true,
-          upsert: true,
-        });
+        await User.updateOne(filter, update);
         cb();
       });
   }
