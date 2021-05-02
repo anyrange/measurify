@@ -105,7 +105,11 @@ export default {
         this.account_copy.customID != this.account.customID ||
         this.account_copy.private != this.account.private
       ) {
-        return false;
+        if (this.account.customID.length > 0) {
+          return false;
+        } else {
+          return true;
+        }
       } else {
         return true;
       }
@@ -170,7 +174,7 @@ export default {
   @apply text-gray-300 text-lg font-normal;
 }
 .item-input {
-  @apply mt-2 p-2 border rounded border-gray-600-spotify bg-gray-700-spotify disabled:opacity-40 text-gray-400 focus:outline-none;
+  @apply mt-2 p-2 border rounded border-gray-600-spotify bg-gray-700-spotify  focus:ring-1 focus:ring-gray-600 disabled:opacity-40 text-gray-400 focus:outline-none;
 }
 .item-select {
   @apply mt-2;
