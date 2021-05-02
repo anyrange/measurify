@@ -75,12 +75,12 @@ const infoPages = {
         {
           $project: {
             _id: 0,
-            "recentlyPlayed.track.artists.id": 1,
-            "recentlyPlayed.track.album.name": 1,
-            "recentlyPlayed.track.album.images.url": 1,
-            "recentlyPlayed.track.album.external_urls.spotify": 1,
-            "recentlyPlayed.track.album.id": 1,
-            "recentlyPlayed.track.artists.name": 1,
+            "recentlyPlayed.artists.id": 1,
+            "recentlyPlayed.album.name": 1,
+            "recentlyPlayed.album.images.url": 1,
+            "recentlyPlayed.album.external_urls.spotify": 1,
+            "recentlyPlayed.album.id": 1,
+            "recentlyPlayed.artists.name": 1,
             "recentlyPlayed.played_at": 1,
           },
         },
@@ -196,11 +196,11 @@ const history = async (_id, filterId) => {
         $project: {
           _id: 0,
           "recentlyPlayed.played_at": 1,
-          "recentlyPlayed.track.artists.id": 1,
-          "recentlyPlayed.track.album.id": 1,
-          "recentlyPlayed.track.duration_ms": 1,
-          "recentlyPlayed.track.id": 1,
-          "recentlyPlayed.track.name": 1,
+          "recentlyPlayed.artists.id": 1,
+          "recentlyPlayed.album.id": 1,
+          "recentlyPlayed.duration_ms": 1,
+          "recentlyPlayed.id": 1,
+          "recentlyPlayed.name": 1,
         },
       },
       {
@@ -212,19 +212,19 @@ const history = async (_id, filterId) => {
       {
         $match: {
           $or: [
-            { "recentlyPlayed.track.artists.id": filterId },
-            { "recentlyPlayed.track.album.id": filterId },
+            { "recentlyPlayed.artists.id": filterId },
+            { "recentlyPlayed.album.id": filterId },
           ],
         },
       },
       {
         $group: {
           _id: {
-            id: "$recentlyPlayed.track.id",
-            name: "$recentlyPlayed.track.name",
+            id: "$recentlyPlayed.id",
+            name: "$recentlyPlayed.name",
           },
           playtime: {
-            $sum: "$recentlyPlayed.track.duration_ms",
+            $sum: "$recentlyPlayed.duration_ms",
           },
         },
       },
@@ -261,10 +261,10 @@ const plays = async (id, filterId) => {
       {
         $project: {
           _id: 0,
-          "recentlyPlayed.track.id": 1,
-          "recentlyPlayed.track.artists.id": 1,
-          "recentlyPlayed.track.album.id": 1,
-          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.id": 1,
+          "recentlyPlayed.artists.id": 1,
+          "recentlyPlayed.album.id": 1,
+          "recentlyPlayed.duration_ms": 1,
           "recentlyPlayed.played_at": 1,
         },
       },
@@ -276,9 +276,9 @@ const plays = async (id, filterId) => {
       {
         $match: {
           $or: [
-            { "recentlyPlayed.track.artists.id": filterId },
-            { "recentlyPlayed.track.album.id": filterId },
-            { "recentlyPlayed.track.id": filterId },
+            { "recentlyPlayed.artists.id": filterId },
+            { "recentlyPlayed.album.id": filterId },
+            { "recentlyPlayed.id": filterId },
           ],
         },
       },
@@ -291,7 +291,7 @@ const plays = async (id, filterId) => {
       },
       {
         $project: {
-          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.duration_ms": 1,
           "recentlyPlayed.played_at": {
             $dateToString: {
               format: "%Y-%m-%d",
@@ -309,7 +309,7 @@ const plays = async (id, filterId) => {
             $sum: 1,
           },
           playtime: {
-            $sum: "$recentlyPlayed.track.duration_ms",
+            $sum: "$recentlyPlayed.duration_ms",
           },
         },
       },

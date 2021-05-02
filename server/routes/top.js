@@ -99,10 +99,10 @@ const tracks = async (_id, firstDate, lastDate, range) => {
       $project: {
         _id: 0,
         "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.track.album.images.url": 1,
-        "recentlyPlayed.track.duration_ms": 1,
-        "recentlyPlayed.track.id": 1,
-        "recentlyPlayed.track.name": 1,
+        "recentlyPlayed.image": 1,
+        "recentlyPlayed.duration_ms": 1,
+        "recentlyPlayed.id": 1,
+        "recentlyPlayed.name": 1,
       },
     },
     {
@@ -122,14 +122,12 @@ const tracks = async (_id, firstDate, lastDate, range) => {
     {
       $group: {
         _id: {
-          id: "$recentlyPlayed.track.id",
-          name: "$recentlyPlayed.track.name",
-          image: {
-            $arrayElemAt: ["$recentlyPlayed.track.album.images.url", 0],
-          },
+          id: "$recentlyPlayed.id",
+          name: "$recentlyPlayed.name",
+          image: "$recentlyPlayed.image",
         },
         playtime: {
-          $sum: "$recentlyPlayed.track.duration_ms",
+          $sum: "$recentlyPlayed.duration_ms",
         },
       },
     },
@@ -165,10 +163,10 @@ const albums = async (_id, firstDate, lastDate, range) => {
       $project: {
         _id: 0,
         "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.track.album.id": 1,
-        "recentlyPlayed.track.album.name": 1,
-        "recentlyPlayed.track.album.images.url": 1,
-        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.album.id": 1,
+        "recentlyPlayed.album.name": 1,
+        "recentlyPlayed.image": 1,
+        "recentlyPlayed.duration_ms": 1,
       },
     },
     {
@@ -188,14 +186,12 @@ const albums = async (_id, firstDate, lastDate, range) => {
     {
       $group: {
         _id: {
-          id: "$recentlyPlayed.track.album.id",
-          name: "$recentlyPlayed.track.album.name",
-          image: {
-            $arrayElemAt: ["$recentlyPlayed.track.album.images.url", 0],
-          },
+          id: "$recentlyPlayed.album.id",
+          name: "$recentlyPlayed.album.name",
+          image: "$recentlyPlayed.image",
         },
         playtime: {
-          $sum: "$recentlyPlayed.track.duration_ms",
+          $sum: "$recentlyPlayed.duration_ms",
         },
       },
     },

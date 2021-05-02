@@ -31,7 +31,7 @@ function startScheduledJobs() {
   job1.start();
   job2.start();
 }
-
+refresh_recently_played();
 if (process.env.NODE_ENV == "production") {
   refresh_tokens();
   refresh_recently_played();

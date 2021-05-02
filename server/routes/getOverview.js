@@ -14,7 +14,7 @@ const getOverview = async (req, res) => {
       {
         $project: {
           "recentlyPlayed.played_at": 1,
-          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.duration_ms": 1,
         },
       },
       {
@@ -31,7 +31,7 @@ const getOverview = async (req, res) => {
       },
       {
         $project: {
-          "recentlyPlayed.track.duration_ms": 1,
+          "recentlyPlayed.duration_ms": 1,
           "recentlyPlayed.played_at": {
             $dateToString: {
               format: "%Y-%m-%d",
@@ -49,7 +49,7 @@ const getOverview = async (req, res) => {
             $sum: 1,
           },
           playtime: {
-            $sum: "$recentlyPlayed.track.duration_ms",
+            $sum: "$recentlyPlayed.duration_ms",
           },
         },
       },
