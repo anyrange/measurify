@@ -88,10 +88,12 @@ export default {
 
       account: {
         private: true,
-        private_copy: true,
         customID: "",
-        customID_copy: "",
         spotifyID: "",
+      },
+      account_copy: {
+        private: true,
+        customID: "",
       },
     };
   },
@@ -101,8 +103,8 @@ export default {
     },
     isDisabledSubmitButton() {
       if (
-        this.account.customID_copy != this.account.customID ||
-        this.account.private_copy != this.account.private
+        this.account_copy.customID != this.account.customID ||
+        this.account_copy.private != this.account.private
       ) {
         return false;
       } else {
@@ -113,13 +115,12 @@ export default {
   methods: {
     updateSettings() {
       this.loadingButton = true;
-      let cred = Object.assign({}, this.account);
-      delete cred.spotifyID;
       api
-        .updateAccount(cred)
+        .updateAccount(this.account)
         .then((response) => {
           alert(response.message);
-          this.fetchSettings();
+          this.account_copy.private = this.account.private;
+          this.account_copy.customID = this.account.customID;
         })
         .finally(() => {
           this.loadingButton = false;
@@ -134,17 +135,19 @@ export default {
         .then((response) => {
           this.account = {
             private: response.private,
-            private_copy: response.private,
             spotifyID: response.spotifyID,
             customID: response.customID,
-            customID_copy: response.customID,
+          };
+          this.account_copy = {
+            private: response.private,
+            customID: response.customID,
           };
         })
         .finally(() => {
           this.loading = false;
         })
         .catch((error) => {
-          console.error(error);
+          alert(error.response.data.message);
         });
     },
   },
