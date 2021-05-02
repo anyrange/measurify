@@ -63,17 +63,17 @@
                   :to="{
                     name: 'track',
                     params: {
-                      id: item.track.id,
-                      title: item.track.name,
+                      id: item.id,
+                      title: item.name,
                     },
                   }"
                 >
-                  {{ item.track.name }}
+                  {{ item.name }}
                 </router-link>
               </td>
               <td class="history-td sm:table-cell hidden">
                 {{
-                  item.track.artists
+                  item.artists
                     .map(({ name }) => {
                       return name;
                     })
@@ -81,13 +81,13 @@
                 }}
               </td>
               <td class="history-td md:table-cell hidden">
-                {{ item.track.album.name }}
+                {{ item.album.name }}
               </td>
               <td class="history-td">
                 {{ getDateFromNow(item.played_at) }}
               </td>
               <td class="history-td lg:table-cell hidden">
-                {{ getDuration(item.track.duration_ms) }}
+                {{ getDuration(item.duration_ms) }}
               </td>
             </tr>
           </tbody>
@@ -129,9 +129,9 @@ export default {
   computed: {
     filteredTable() {
       return this.recentlyPlayed.filter((item) => {
-        const song = item.track.name.toLowerCase();
-        const album = item.track.album.name.toLowerCase();
-        const artists = item.track.artists
+        const song = item.name.toLowerCase();
+        const album = item.album.name.toLowerCase();
+        const artists = item.artists
           .map(({ name }) => {
             return name;
           })
