@@ -36,7 +36,7 @@ export default {
   getListeningHistory(page) {
     return axios
       .get(`${url}/listening-history?page=${page}`, response_options())
-      .then((response) => response.data);
+      .then((response) => response);
   },
   getOverview() {
     const fetchedData = (promise) => axios.get(promise, response_options());
