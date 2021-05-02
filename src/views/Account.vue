@@ -1,8 +1,18 @@
 <template>
   <h2 class="h-title mb-6">Account</h2>
-  <div class="w-2/4 px-4 pb-4 rounded-lg border border-gray-700-spotify">
+  <div
+    class="2xl:w-2/6 xl:w-1/2 lg:w-2/3 w-full px-4 pb-4 rounded-lg border border-gray-700-spotify"
+  >
     <div class="field">
-      <img class="w-14 h-14 mr-3 rounded-full" :src="user.images[0].url" />
+      <template v-if="user.images[0]?.url">
+        <img
+          :src="user.images[0]?.url"
+          class="object-cover w-14 h-14 mr-3 rounded-full"
+        />
+      </template>
+      <template v-else>
+        <user-icon class="w-14 h-14 mr-3" />
+      </template>
       <div class="flex flex-col">
         <p class=" text-lg font-semibold text-gray-300">
           {{ user.display_name }}
@@ -41,23 +51,11 @@
           Profile type
         </label>
         <div class="item-select">
-          <select
-            class="border bg-gray-700-spotify border-gray-600-spotify rounded text-gray-400 h-10 pl-1 pr-10 focus:outline-none"
-            :class="{ 'animate-pulse loading': loading }"
-            v-model="account.private"
-          >
-            <option
-              v-for="(option, index) in options"
-              :key="index"
-              :value="option.value"
-            >
-              {{ option.name }}
-            </option>
-          </select>
+          <privacy-select v-model:privacy="account.private" />
         </div>
       </div>
     </div>
-    <div class="field">
+    <div class="field justify-end">
       <button
         id="button"
         type="button"
@@ -74,17 +72,18 @@
 
 <script>
 import api from "@/api";
+import PrivacySelect from "@/components/PrivacySelect";
+import UserIcon from "@/components/icons/UserIcon";
 
 export default {
+  components: {
+    PrivacySelect,
+    UserIcon,
+  },
   data() {
     return {
       loading: true,
       loadingButton: false,
-
-      options: [
-        { name: "Private", value: true },
-        { name: "Public", value: false },
-      ],
 
       account: {
         private: true,
@@ -113,6 +112,9 @@ export default {
     },
   },
   methods: {
+    add(o) {
+      console.log(o);
+    },
     updateSettings() {
       this.loadingButton = true;
       api

@@ -8,9 +8,9 @@
       class="px-1 py-1 relative inline-block text-left rounded-full bg-gray-900-spotify transition ease-in-out duration-75"
     >
       <div class="flex items-center">
-        <template v-if="this.user.images[0]?.url">
+        <template v-if="user.images[0]?.url">
           <img
-            :src="this.user.images[0]?.url"
+            :src="user.images[0]?.url"
             class="object-cover w-6 h-6 rounded-full"
           />
         </template>
@@ -22,7 +22,7 @@
           </svg>
         </template>
         <a href="#" class="ml-2 dark:text-white text-gray-500">
-          {{ this.user.display_name }}</a
+          {{ user.display_name }}</a
         >
         <div class="ml-4 focus:outline-none">
           <svg

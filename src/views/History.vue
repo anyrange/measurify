@@ -1,10 +1,10 @@
 <template>
   <h2 class="h-title">Listening History</h2>
   <template v-if="emptyData">
-    <EmptyMessage />
+    <empty-message />
   </template>
   <template v-else>
-    <LoadingSpinner v-if="loading" />
+    <loading-spinner v-if="loading" />
     <template v-else>
       <h3 class="h-subtitle mt-4">
         Click the song's title, artist, or album name to get more info
@@ -159,8 +159,11 @@ export default {
       api
         .getListeningHistory(this.page)
         .then((response) => {
-          this.pagesMax = response.numberOfPages;
-          this.recentlyPlayed = response.history;
+          if (response.status === 204) {
+            return (this.emptyData = true);
+          }
+          this.pagesMax = response.data.numberOfPages;
+          this.recentlyPlayed = response.data.history;
         })
         .finally(() => {
           this.loading = false;
@@ -184,7 +187,7 @@ export default {
           api
             .getListeningHistory(this.page)
             .then((response) => {
-              this.recentlyPlayed.push(...response.history);
+              this.recentlyPlayed.push(...response.data.history);
             })
             .finally(() => {
               this.loadingNextPage = false;

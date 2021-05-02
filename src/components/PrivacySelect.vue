@@ -1,8 +1,8 @@
 <template>
-  <div @blur="open = false">
+  <div @blur="opened = false">
     <button
       class="w-28 border bg-gray-700-spotify border-gray-600-spotify  text-gray-400 focus:outline-none py-2 px-4 rounded inline-flex items-center"
-      @click="open = !open"
+      @click="opened = !opened"
     >
       <span class="mr-1"> {{ selected }}</span>
       <svg
@@ -17,26 +17,28 @@
     </button>
     <ul
       class="w-28 absolute text-gray-700 pt-1 flex flex-col"
-      :class="{ hidden: !open }"
+      :class="{ hidden: !opened }"
     >
       <li
         v-for="(option, index) of options"
         :key="index"
+        :value="privacy"
         @click="
-          selected = option;
-          open = false;
+          selected = option.name;
+          opened = false;
+          updatePrivacy(option);
         "
       >
         <a
           class="w-full bg-gray-700-spotify text-gray-500 hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
           :class="{
-            hidden: !open,
+            hidden: !opened,
             'rounded-b': index == options.length - 1,
             'rounded-t': index == 0,
           }"
           href="#"
         >
-          {{ option }}
+          {{ option.name }}
         </a>
       </li>
     </ul>
@@ -48,22 +50,28 @@ export default {
   props: {
     options: {
       type: Array,
-      required: true,
+      required: false,
+      default: () => [
+        { name: "Private", value: true },
+        { name: "Public", value: false },
+      ],
     },
-    default: {
-      type: String,
+    privacy: {
+      type: Boolean,
       required: true,
+      default: false,
     },
   },
   data() {
     return {
-      selected: this.default
-        ? this.default
-        : this.options.length > 0
-        ? this.options[0]
-        : null,
-      open: false,
+      opened: false,
+      selected: this.privacy ? "Public" : "Private",
     };
+  },
+  methods: {
+    updatePrivacy(option) {
+      this.$emit("update:privacy", option.value);
+    },
   },
 };
 </script>

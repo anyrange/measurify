@@ -1,10 +1,10 @@
 <template>
   <h2 class="h-title">Overview</h2>
   <template v-if="emptyData">
-    <EmptyMessage />
+    <empty-message />
   </template>
   <template v-else>
-    <LoadingSpinner v-if="loading" />
+    <loading-spinner v-if="loading" />
     <template v-else>
       <div class="mt-6">
         <ul class="tabs sm:flex">
@@ -289,7 +289,9 @@ export default {
       api
         .getOverview()
         .then((response) => {
-          this.emptyData = response[0].status === 204 ? true : false;
+          if (response[0].status === 204) {
+            return (this.emptyData = true);
+          }
           this.totalOverview = response[0].data.reverse();
           this.totalTop = response[1].data;
           this.pushToChart();
