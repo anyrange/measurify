@@ -26,10 +26,7 @@ const schema = new Schema({
     type: Date,
     default: Date.now,
   },
-  playlists: {
-    type: Array,
-    default: [],
-  },
+  listeningHistory: { type: Array },
   recentlyPlayed: {
     type: Array,
     default: [],
