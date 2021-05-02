@@ -270,7 +270,7 @@ const playlists = async (_id, firstDate, lastDate, range) => {
 
   return playlists.map((track) => {
     return {
-      id: track._id.id.split(":")[2],
+      id: track._id.id,
       access_token: track._id.access_token,
       playtime: Math.round(track.playtime / 1000 / 60),
     };
