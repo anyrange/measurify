@@ -227,16 +227,14 @@ const playlists = async (_id, firstDate, lastDate, range) => {
       $project: {
         _id: 0,
         "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.context.type": 1,
-        "recentlyPlayed.context.uri": 1,
-        "recentlyPlayed.track.duration_ms": 1,
+        "recentlyPlayed.context": 1,
+        "recentlyPlayed.duration_ms": 1,
         lastSpotifyToken: 1,
       },
     },
     {
       $unwind: {
         path: "$recentlyPlayed",
-        includeArrayIndex: "arrayIndex",
       },
     },
     {
@@ -245,17 +243,17 @@ const playlists = async (_id, firstDate, lastDate, range) => {
           $gte: firstDate || "1488-12-22",
           $lte: lastDate || "5427-12-22",
         },
-        "recentlyPlayed.context.type": "playlist",
+        "recentlyPlayed.context": { $ne: null },
       },
     },
     {
       $group: {
         _id: {
-          id: "$recentlyPlayed.context.uri",
+          id: "$recentlyPlayed.context.id",
           access_token: "$lastSpotifyToken",
         },
         playtime: {
-          $sum: "$recentlyPlayed.track.duration_ms",
+          $sum: "$recentlyPlayed.duration_ms",
         },
       },
     },
@@ -301,7 +299,14 @@ const artists = async (_id, firstDate, lastDate, range) => {
         path: "$recentlyPlayed",
       },
     },
-
+    {
+      $match: {
+        "recentlyPlayed.played_at": {
+          $gte: firstDate || "1488-12-22",
+          $lte: lastDate || "5427-12-22",
+        },
+      },
+    },
     {
       $group: {
         _id: {
