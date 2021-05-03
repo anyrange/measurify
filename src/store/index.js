@@ -9,6 +9,7 @@ export default createStore({
     user: null,
     id: null,
     access_token: null,
+    notifications: [],
   },
   mutations: {
     SET_USER(state, payload) {
@@ -19,6 +20,13 @@ export default createStore({
     },
     SET_ACCES_TOKEN(state, payload) {
       state.access_token = payload;
+    },
+    ADD_NOTIFICATION(state, payload) {
+      state.notifications.push(payload);
+    },
+    REMOVE_NOTIFICATION(state, payload) {
+      const index = state.notifications.indexOf(payload);
+      state.notifications.splice(index, 1);
     },
   },
   getters: {
@@ -31,6 +39,9 @@ export default createStore({
     getAccessToken(state) {
       return state.access_token;
     },
+    getNotifications(state) {
+      return state.notifications;
+    },
   },
   actions: {
     login: () => {
@@ -39,10 +50,6 @@ export default createStore({
     logout: () => {
       window.localStorage.clear();
       window.sessionStorage.clear();
-      // let script = document.createElement("script");
-      // script.src = "https://www.spotify.com/logout/";
-      // script.type = "text/javascript";
-      // document.getElementById("app").appendChild(script);
       location.reload();
     },
     authorise: async ({ commit }, { access_token, id }) => {
@@ -50,6 +57,17 @@ export default createStore({
       commit("SET_ID", id);
       commit("SET_USER", response);
       commit("SET_ACCES_TOKEN", access_token);
+    },
+    addNotification: ({ commit, dispatch }, { notification }) => {
+      commit("ADD_NOTIFICATION", notification);
+      if (notification.progress && notification.delay > 0) {
+        setTimeout(() => {
+          dispatch("removeNotification", notification);
+        }, notification.delay);
+      }
+    },
+    removeNotification: ({ commit }, { notification }) => {
+      commit("REMOVE_NOTIFICATION", notification);
     },
   },
   plugins: [

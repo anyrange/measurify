@@ -1,14 +1,17 @@
 <template>
   <router-view />
-  <UpdateNotification />
+  <update-notification />
+  <notifications />
 </template>
 
 <script>
 import UpdateNotification from "@/components/UpdateNotification.vue";
+import Notifications from "@/components/Notifications.vue";
 
 export default {
   components: {
     UpdateNotification,
+    Notifications,
   },
 };
 </script>
