@@ -25,7 +25,8 @@ try {
   );
 
   router.get("/friends", middlewares.authMiddleware, routes.friends);
-  router.get("/users", routes.users);
+  router.get("/users", routes.users.number);
+  router.get("/users/top", middlewares.authMiddleware, routes.users.top);
 
   // Settings
   router.get("/settings", middlewares.authMiddleware, routes.settings.get);
