@@ -101,12 +101,17 @@ export default {
       return this.$store.getters.getUser;
     },
     isDisabledSubmitButton() {
-      if (
-        this.account_copy.customID != this.account.customID ||
-        this.account_copy.private != this.account.private
-      ) {
-        if (this.account.customID.length > 0) {
-          return false;
+      const regexExp = /^[a-z0-9_-]{3,16}$/;
+      if (this.account.customID.length > 0) {
+        if (this.account.customID.match(regexExp)) {
+          if (
+            this.account_copy.customID != this.account.customID ||
+            this.account_copy.private != this.account.private
+          ) {
+            return false;
+          } else {
+            return true;
+          }
         } else {
           return true;
         }
@@ -116,15 +121,15 @@ export default {
     },
   },
   methods: {
-    add(o) {
-      console.log(o);
-    },
     updateSettings() {
       this.loadingButton = true;
       api
         .updateAccount(this.account)
         .then((response) => {
-          alert(response.message);
+          this.$notify.show({
+            type: "success",
+            message: response.message,
+          });
           this.account_copy.private = this.account.private;
           this.account_copy.customID = this.account.customID;
         })
@@ -132,7 +137,10 @@ export default {
           this.loadingButton = false;
         })
         .catch((error) => {
-          alert(error.response.data.message);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     },
     fetchSettings() {
@@ -153,7 +161,10 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          alert(error.response.data.message);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     },
   },
