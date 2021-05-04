@@ -8,6 +8,8 @@ module.exports = {
         "meetup-purple": "#1F24CC",
         "gray-750": "#3f495a",
         "gray-850": "#222733",
+        "green-300-spotify": "#21f04c",
+        "green-400-spotify": "#09ad4b",
         "green-600-spotify": "#1db954",
         "green-700-spotify": "#1b8b42",
         "gray-1000-spotify": "#080707",
