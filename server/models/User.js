@@ -26,6 +26,10 @@ const schema = new Schema({
     type: Date,
     default: Date.now,
   },
+  registrationDate: {
+    type: Date,
+    default: Date.now,
+  },
   recentlyPlayed: {
     type: Array,
     default: [],
