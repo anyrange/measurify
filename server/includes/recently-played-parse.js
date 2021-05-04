@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 const User = require("../models/User");
+const formatTrack = require("./formatTrack");
 require("dotenv").config();
 
 function refresh_recently_played() {
@@ -40,9 +41,9 @@ function refresh_recently_played() {
         let i = 0;
         let newSongs = [];
         while (
+          i < body.items.length &&
           Date.parse(user.recentlyPlayed[0].played_at) <
-            Date.parse(body.items[i].played_at) &&
-          i < body.items.length
+            Date.parse(body.items[i].played_at)
         ) {
           newSongs.push(formatTrack(body.items[i]));
           i++;
@@ -116,39 +117,6 @@ function refresh_recently_played() {
       );
     });
   });
-  function formatTrack(item) {
-    const track = item.track;
-    const album = {
-      id: track.album.id,
-      name: track.album.name,
-      url: track.album.external_urls.spotify,
-    };
-    let context = null;
-    if (item.context && item.context.type === "playlist") {
-      context = {
-        id: item.context.uri.split(":")[2],
-        url: item.context.external_urls.spotify,
-      };
-    }
-    const artists = track.artists.map(({ id, name, external_urls }) => {
-      return { id, name, url: external_urls.spotify };
-    });
-    return {
-      id: track.id,
-      name: track.name,
-      duration_ms: track.duration_ms,
-      popularity: track.popularity,
-      url: track.external_urls.spotify,
-      played_at: item.played_at,
-      image:
-        track.album.images && track.album.images.length
-          ? track.album.images[2].url
-          : "",
-      album,
-      context,
-      artists,
-    };
-  }
 }
 
 module.exports = refresh_recently_played;

@@ -2,6 +2,7 @@ const querystring = require("querystring");
 const { URLSearchParams } = require("url");
 const fetch = require("node-fetch");
 const User = require("../models/User");
+const formatTrack = require("../includes/formatTrack");
 
 const redirect_uri =
   process.env.REDIRECT_URI || "http://localhost:8888/callback";
@@ -138,14 +139,10 @@ const fetchHistory = async (access_token, _id) => {
   if (historyJSON.error || !historyJSON.items.length) {
     return;
   }
-  historyJSON.items.forEach((item) => {
-    delete item.track.available_markets;
-    delete item.track.album.available_markets;
-  });
 
   const query = { _id };
   const update = {
-    recentlyPlayed: historyJSON.items,
+    recentlyPlayed: historyJSON.items.map((item) => formatTrack(item)),
   };
 
   await User.updateOne(query, update);
