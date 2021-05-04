@@ -28,6 +28,9 @@ export default createStore({
       const index = state.notifications.indexOf(payload);
       state.notifications.splice(index, 1);
     },
+    RESET_NOTIFICATIONS(state) {
+      state.notifications = [];
+    },
   },
   getters: {
     getUser(state) {
@@ -68,6 +71,9 @@ export default createStore({
     },
     removeNotification: ({ commit }, { notification }) => {
       commit("REMOVE_NOTIFICATION", notification);
+    },
+    resetNotifications: ({ commit }) => {
+      commit("RESET_NOTIFICATIONS");
     },
   },
   plugins: [
