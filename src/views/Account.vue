@@ -1,7 +1,7 @@
 <template>
   <h2 class="h-title mb-6">Account</h2>
   <div
-    class="2xl:w-2/6 xl:w-1/2 lg:w-2/3 w-full px-4 pb-4 rounded-lg border border-gray-700-spotify"
+    class="2xl:w-2/6 xl:w-1/2 w-full px-4 pb-4 rounded-lg border border-gray-700-spotify"
   >
     <div class="field">
       <template v-if="user.images[0]?.url">
@@ -73,7 +73,7 @@
 <script>
 import api from "@/api";
 import PrivacySelect from "@/components/PrivacySelect";
-import UserIcon from "@/components/icons/UserIcon";
+import { UserIcon } from "@/components/icons";
 
 export default {
   components: {
