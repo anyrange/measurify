@@ -7,7 +7,7 @@
           <user />
         </div>
         <div class="content-spotify overflow-y-auto">
-          <div class="container mx-auto">
+          <div class="container mx-auto md:mb-0 mb-12">
             <router-view />
           </div>
         </div>
@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar.vue";
-import User from "@/components/User.vue";
+import Sidebar from "@/components/Sidebar";
+import User from "@/components/User";
 import api from "@/api";
 
 export default {

@@ -104,8 +104,8 @@
 
 <script>
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
-import api from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
+import api from "@/api";
 
 export default {
   components: {
@@ -168,6 +168,12 @@ export default {
         .finally(() => {
           this.loading = false;
           this.page++;
+        })
+        .catch((error) => {
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     },
     getNextHistoryPage() {
@@ -192,6 +198,12 @@ export default {
             .finally(() => {
               this.loadingNextPage = false;
               this.page++;
+            })
+            .catch((error) => {
+              this.$notify.show({
+                type: "danger",
+                message: error.response.data.message,
+              });
             });
         }
       };

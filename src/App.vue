@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import UpdateNotification from "@/components/UpdateNotification.vue";
-import Notifications from "@/components/Notifications.vue";
+import Notifications from "@/components/Notifications";
+import UpdateNotification from "@/components/UpdateNotification";
 
 export default {
   components: {

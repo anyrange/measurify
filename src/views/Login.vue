@@ -51,7 +51,10 @@ export default {
           this.$router.push({ name: "home" });
         })
         .catch((error) => {
-          console.error(error);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     } else {
       api
@@ -63,7 +66,10 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          console.error(error);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     }
   },

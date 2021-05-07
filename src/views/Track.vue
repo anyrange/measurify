@@ -1,5 +1,5 @@
 <template>
-  <LoadingSpinner v-if="loading" />
+  <loading-spinner v-if="loading" />
   <template v-else>
     <div class="mt-4">
       <div class="md:flex items-center">
@@ -79,11 +79,7 @@
 </template>
 
 <script>
-// import axios from "axios";
-
 import api from "@/api";
-
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { addSeconds, format } from "date-fns";
 import Card from "@/components/Card";
 import * as fd from "@/utils/dates";
@@ -91,7 +87,6 @@ import chartOptions from "@/mixins/chartOptions";
 
 export default {
   components: {
-    LoadingSpinner,
     Card,
   },
   mixins: [chartOptions],
@@ -154,7 +149,10 @@ export default {
         this.loading = false;
       })
       .catch((error) => {
-        console.error(error);
+        this.$notify.show({
+          type: "danger",
+          message: error.response.data.message,
+        });
       });
   },
   methods: {

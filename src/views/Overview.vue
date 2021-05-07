@@ -118,11 +118,11 @@
 </template>
 
 <script>
-import Card from "@/components/Card";
-import Table from "@/components/Table";
-import EmptyMessage from "@/components/EmptyMessage";
-import chartOptions from "@/mixins/chartOptions";
 import * as fd from "@/utils/dates";
+import chartOptions from "@/mixins/chartOptions";
+import EmptyMessage from "@/components/EmptyMessage";
+import Table from "@/components/Table";
+import Card from "@/components/Card";
 import api from "@/api";
 
 export default {
@@ -301,7 +301,10 @@ export default {
           this.loading = false;
         })
         .catch((error) => {
-          console.error(error);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.message,
+          });
         });
     },
   },

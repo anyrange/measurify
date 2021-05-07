@@ -59,6 +59,14 @@
               Account
             </router-link>
           </div>
+          <div class="py-1" role="none" @click="hover = false">
+            <router-link
+              class="userbar-link outline-none"
+              :to="{ name: 'about' }"
+            >
+              About
+            </router-link>
+          </div>
           <div class="py-1" role="none">
             <a @click="logout()" class="userbar-link" role="menuitem"
               >Sign out</a
@@ -71,6 +79,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   data() {
     return {
@@ -78,15 +88,14 @@ export default {
     };
   },
   computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
+    ...mapGetters({
+      user: "getUser",
+    }),
   },
   methods: {
-    logout() {
-      this.$store.dispatch("logout");
-      this.$router.push("/");
-    },
+    ...mapActions({
+      logout: "logout",
+    }),
   },
 };
 </script>
