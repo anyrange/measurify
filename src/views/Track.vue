@@ -84,6 +84,7 @@ import { addSeconds, format } from "date-fns";
 import Card from "@/components/Card";
 import * as fd from "@/utils/dates";
 import chartOptions from "@/mixins/chartOptions";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -113,9 +114,9 @@ export default {
     };
   },
   computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
+    ...mapGetters({
+      user: "getUser",
+    }),
     trackDuration() {
       return format(
         addSeconds(new Date(0), this.object.track.duration_ms / 1000),

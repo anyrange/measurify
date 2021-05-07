@@ -7,6 +7,7 @@ import Overview from "@/views/Overview.vue";
 import History from "@/views/History.vue";
 import Track from "@/views/Track.vue";
 import Account from "@/views/Account.vue";
+import TopListeners from "@/views/TopListeners.vue";
 
 import store from "@/store";
 
@@ -61,6 +62,14 @@ const routes = [
         component: Profile,
         meta: {
           title: "",
+        },
+      },
+      {
+        path: "/top-listeners",
+        name: "top-listeners",
+        component: TopListeners,
+        meta: {
+          title: "Listeners Top",
         },
       },
       {

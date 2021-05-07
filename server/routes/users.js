@@ -16,6 +16,7 @@ const users = {
           $project: {
             userName: 1,
             _id: 0,
+            avatar: 1,
             customID: 1,
             listened: {
               $cond: {
@@ -31,15 +32,22 @@ const users = {
           },
         },
         {
+          $match: {
+            listened: {
+              $gt: 0,
+            },
+          },
+        },
+        {
           $sort: {
             listened: -1,
           },
         },
       ];
       const top = await User.aggregate(agg);
-      res.status(200).json(top);
+      res.status(200).send(top);
     } catch (e) {
-      res.status(404).json({ message: "Something went wrong!" });
+      res.status(404).send({ message: "Something went wrong!" });
       console.log(e);
     }
   },

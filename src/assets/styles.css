@@ -20,6 +20,9 @@
 .history-tr {
   @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
 }
+.table-image {
+  @apply object-cover w-9 h-9 rounded-full;
+}
 
 .sidebar-spotify::-webkit-scrollbar,
 .content-spotify::-webkit-scrollbar {

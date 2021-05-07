@@ -33,6 +33,11 @@ export default {
   getUsersQuantity() {
     return axios.get(`${url}/users`).then((response) => response.data);
   },
+  getListenersTop() {
+    return axios
+      .get(`${url}/users/top`, response_options())
+      .then((response) => response.data);
+  },
   getListeningHistory(page) {
     return axios
       .get(`${url}/listening-history?page=${page}`, response_options())
@@ -51,6 +56,11 @@ export default {
   updateAccount(cred) {
     return axios
       .post(`${url}/settings`, cred, response_options())
+      .then((response) => response.data);
+  },
+  getProfile(id) {
+    return axios
+      .get(`${url}/user/${id}`, response_options())
       .then((response) => response.data);
   },
   getTrack(id) {

@@ -315,9 +315,6 @@ export default {
 </script>
 
 <style>
-.table-image {
-  @apply object-cover w-9 h-9 rounded-full;
-}
 .tab {
   @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200 transition ease-in-out duration-75;
 }

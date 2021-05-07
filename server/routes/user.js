@@ -10,11 +10,11 @@ const user = async (req, res) => {
       { userName: 1, private: 1 }
     );
     if (!friendInDataBase) {
-      res.status(400).json({ msg: "User not found" });
+      res.status(400).json({ message: "User not found" });
       return;
     }
     if (friendInDataBase.private) {
-      res.status(400).json({ msg: "Private profile" });
+      res.status(400).json({ message: "Private profile" });
       return;
     }
     const friendlistRaw = await fetch(
@@ -32,7 +32,9 @@ const user = async (req, res) => {
     if (!friend) {
       res
         .status(400)
-        .json({ msg: `You are not friends with ${friendInDataBase.userName}` });
+        .json({
+          message: `You are not friends with ${friendInDataBase.userName}`,
+        });
       return;
     }
 

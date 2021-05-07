@@ -21,6 +21,7 @@ module.exports = {
         "gray-500-spotify": "#ABABAB",
         "gray-450-spotify": "#535353",
         "gray-400-spotify": "#bfbfbf",
+        "black-100-spotify": "#414141",
       },
       spacing: {
         "14": "3.5rem",
