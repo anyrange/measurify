@@ -17,7 +17,7 @@ const settings = {
       return res.status(200).send(result);
     } catch (e) {
       console.log(e);
-      return res.status(404).send({ message: "An error occured" });
+      return res.status(404).send({ message: "Something went wrong!" });
     }
   },
   set: async (req, res) => {
@@ -34,7 +34,7 @@ const settings = {
       if (updateResult.nModified !== 1) {
         return res
           .status(406)
-          .send({ message: "Фn error occurred while updating" });
+          .send({ message: "An error occurred while updating" });
       }
 
       res.status(200).send({ message: "Successfully updated" });

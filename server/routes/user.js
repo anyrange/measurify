@@ -121,16 +121,16 @@ const user = async (req, res) => {
           res.status(200).json(response);
         } catch (e) {
           console.log(e);
-          res.status(404).json();
+          res.status(404).json({ message: "Something went wrong!" });
         }
       })
       .catch((e) => {
         console.log(e);
-        res.status(404).json();
+        res.status(404).json({ message: "Something went wrong!" });
       });
   } catch (e) {
     console.log(e);
-    res.status(404).json();
+    res.status(404).json({ message: "Something went wrong!" });
   }
 };
 module.exports = user;

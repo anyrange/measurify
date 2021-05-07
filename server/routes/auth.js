@@ -29,7 +29,7 @@ const auth = {
       res.status(200).end(response.lastSpotifyToken);
       await User.updateOne({ _id }, { lastLogin: Date.now() });
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(e);
     }
   },
@@ -90,7 +90,7 @@ const auth = {
 
       res.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(e);
     }
   },

@@ -53,7 +53,7 @@ const infoPages = {
       };
       res.status(200).json(response);
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(JSON.stringify(e));
     }
   },
@@ -121,7 +121,7 @@ const infoPages = {
         tracks: await history(_id, albumID),
       });
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(e);
     }
   },
@@ -178,7 +178,7 @@ const infoPages = {
 
       res.status(200).json(response);
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(JSON.stringify(e));
     }
   },

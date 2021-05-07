@@ -49,7 +49,7 @@ const getPlayedHistory = async (req, res) => {
       history: user[0].recentlyPlayed,
     });
   } catch (e) {
-    res.status(404).json();
+    res.status(404).json({ message: "Something went wrong!" });
     console.log(e);
   }
 };

@@ -84,7 +84,7 @@ const top = async (req, res) => {
       res.status(200).json(response);
     });
   } catch (e) {
-    res.status(404).json();
+    res.status(404).json({ message: "Something went wrong!" });
     console.log(e);
   }
 };

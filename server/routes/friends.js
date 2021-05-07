@@ -68,7 +68,7 @@ const friends = async (req, res) => {
       res.status(200).json(users);
     });
   } catch (e) {
-    res.status(404).json();
+    res.status(404).json({ message: "Something went wrong!" });
     console.log(e);
   }
 };

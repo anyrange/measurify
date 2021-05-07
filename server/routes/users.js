@@ -39,7 +39,7 @@ const users = {
       const top = await User.aggregate(agg);
       res.status(200).json(top);
     } catch (e) {
-      res.status(404).json();
+      res.status(404).json({ message: "Something went wrong!" });
       console.log(e);
     }
   },
