@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-0 left-0 p-4 z-40 overflow-x-hidden">
+  <div class="absolute bottom-12 md:bottom-0 left-0 p-4 z-40 overflow-x-hidden">
     <transition-group
       enter-to-class="opacity-100 scale-100"
       enter-active-class="transition ease-out duration-200 transform opacity-0 scale-75"
@@ -31,7 +31,9 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(["removeNotification"]),
+    ...mapActions({
+      removeNotification: "removeNotification",
+    }),
   },
 };
 </script>
