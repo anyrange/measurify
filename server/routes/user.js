@@ -7,7 +7,7 @@ const user = async (req, res) => {
     const customID = req.params.id;
     const userInDataBase = await User.findOne(
       { customID },
-      { userName: 1, private: 1, avatar: 1 }
+      { userName: 1, private: 1, avatar: 1, lastLogin: 1 }
     );
     if (!userInDataBase) {
       res.status(400).json({ message: "User not found" });
@@ -21,6 +21,7 @@ const user = async (req, res) => {
     const response = {};
     response.username = userInDataBase.userName;
     response.avatar = userInDataBase.avatar;
+    response.lastLogin = userInDataBase.lastLogin;
 
     const requests = [
       new Promise(async (resolve) => {
