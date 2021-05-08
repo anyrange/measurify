@@ -18,6 +18,7 @@ const users = {
             _id: 0,
             avatar: 1,
             customID: 1,
+            private: 1,
             listened: {
               $cond: {
                 if: {

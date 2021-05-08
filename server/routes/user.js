@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const { ObjectId } = require("mongodb");
 const user = async (req, res) => {
   try {
+    const _id = req.get("Authorization");
     const customID = req.params.id;
     const userInDataBase = await User.findOne(
       { customID },
@@ -12,7 +13,7 @@ const user = async (req, res) => {
       res.status(400).json({ message: "User not found" });
       return;
     }
-    if (userInDataBase.private) {
+    if (userInDataBase.private && _id != userInDataBase._id) {
       res.status(400).json({ message: "Private profile" });
       return;
     }
