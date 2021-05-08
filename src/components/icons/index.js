@@ -3,6 +3,7 @@ import ListeningHistoryIcon from "./ListeningHistoryIcon";
 import UserIcon from "./UserIcon";
 import ListenersTopIcon from "./ListenersTopIcon";
 import TimeIcon from "./TimeIcon";
+import Lock from "./Lock";
 
 export {
   DashboardIcon,
@@ -10,4 +11,5 @@ export {
   UserIcon,
   ListenersTopIcon,
   TimeIcon,
+  Lock,
 };

@@ -6,8 +6,8 @@
         <div class="top-bar flex items-center justify-end px-4">
           <user />
         </div>
-        <div class="content-spotify overflow-y-auto">
-          <div class="container mx-auto md:mb-0 mb-12">
+        <div class="content-spotify overflow-y-auto md:mb-0 mb-12">
+          <div class="container mx-auto">
             <router-view />
           </div>
         </div>

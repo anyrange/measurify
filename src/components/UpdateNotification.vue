@@ -7,7 +7,7 @@
   >
     <div class="static" v-if="updateExists">
       <div
-        class="sm:h-auto h-20 justify-center absolute bottom-0 right-0 w-full px-3 py-3 shadow-2xl flex flex-col items-center border-t
+        class="sm:h-auto h-20 justify-center absolute md:bottom-0 bottom-12 right-0 w-full px-3 py-3 shadow-2xl flex flex-col items-center border-t
         sm:w-auto sm:m-4 sm:rounded-lg sm:flex-row sm:border bg-gray-700-spotify border-gray-600-spotify text-white"
       >
         <div class="hidden sm:block">

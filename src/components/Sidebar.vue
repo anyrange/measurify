@@ -31,7 +31,7 @@
         </h3>
         <li>
           <router-link class="sidebar-link" :to="{ name: 'top-listeners' }">
-            <span class="sidebar-label">Top Listenets</span>
+            <span class="sidebar-label">Top Listeners</span>
           </router-link>
         </li>
         <!--

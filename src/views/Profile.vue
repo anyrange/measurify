@@ -46,7 +46,6 @@ export default {
       .getProfile(this.$route.params.id)
       .then((response) => {
         this.profile = response;
-        console.log(response);
         document.title = `${this.profile.username} - Spotiworm`;
       })
       .finally(() => {

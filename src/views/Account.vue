@@ -11,7 +11,7 @@
         />
       </template>
       <template v-else>
-        <user-icon class="w-14 h-14 mr-3" />
+        <user-icon class="text-white w-14 h-14 mr-3" />
       </template>
       <div class="flex flex-col">
         <p class=" text-lg font-semibold text-gray-300">
