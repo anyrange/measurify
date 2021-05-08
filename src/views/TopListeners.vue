@@ -12,7 +12,7 @@
               {{ index + 1 }}
             </div>
             <div
-              class="flex justify-between w-11/12 items-center py-2 px-2 bg-gray-900-spotify rounded-full"
+              class="flex justify-between w-11/12 items-center md:p-2 p-1 bg-gray-900-spotify rounded-full"
             >
               <div class="flex items-center">
                 <img

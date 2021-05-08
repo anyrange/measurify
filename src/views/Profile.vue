@@ -5,23 +5,23 @@
       <div class="">
         <img
           :src="profile?.avatar"
-          class="rounded-full object-cover w-20 h-20 shadow-sm"
+          class="rounded-full object-cover md:w-20 md:h-20 h-16 w-16 shadow-sm"
         />
       </div>
       <div class="ml-4">
-        <h2 class="h-title">
+        <h2 class="text-4xl font-semibold dark:text-white text-gray-900">
           {{ profile.username }}
         </h2>
       </div>
     </div>
-    <div class="flex flex-row mt-6">
+    <div class="flex md:flex-row flex-col mt-6">
       <div class="badge">
         <div class="badge-title">Plays</div>
         <div class="badge-text">
           {{ profile.overview.plays }}
         </div>
       </div>
-      <div class="ml-5 badge">
+      <div class="md:ml-5 mt-5 md:mt-0 badge">
         <div class="badge-title">Playtime</div>
         <div class="badge-text">
           {{ profile.overview.playtime }}
