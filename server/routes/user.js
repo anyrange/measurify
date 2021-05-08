@@ -9,11 +9,11 @@ const user = async (req, res) => {
       { userName: 1, private: 1, avatar: 1 }
     );
     if (!userInDataBase) {
-      res.status(400).json({ msg: "User not found" });
+      res.status(400).json({ message: "User not found" });
       return;
     }
     if (userInDataBase.private) {
-      res.status(400).json({ msg: "Private profile" });
+      res.status(400).json({ message: "Private profile" });
       return;
     }
 
