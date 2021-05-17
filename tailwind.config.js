@@ -10,6 +10,7 @@ module.exports = {
         "gray-850": "#222733",
         "green-300-spotify": "#21f04c",
         "green-400-spotify": "#09ad4b",
+        "green-500-spotify": "#1ed760",
         "green-600-spotify": "#1db954",
         "green-700-spotify": "#1b8b42",
         "gray-1000-spotify": "#080707",

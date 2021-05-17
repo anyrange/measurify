@@ -2,6 +2,7 @@
 
 #app {
   font-family: "Inter", sans-serif;
+
   @apply dark:bg-gray-800-spotify no-tap-highlight;
 }
 
@@ -14,12 +15,15 @@
 .history-td {
   @apply px-4 py-2 border-b border-gray-300 dark:border-gray-700-spotify text-sm leading-5 text-gray-800 dark:text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
 }
+
 .history-th {
   @apply px-4 py-3 border-b dark:border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
 }
+
 .history-tr {
   @apply dark:hover:bg-gray-700-spotify hover:bg-gray-200;
 }
+
 .table-image {
   @apply object-cover w-9 h-9 rounded-full;
 }
@@ -40,4 +44,17 @@
 
 .h-subtitle {
   @apply text-lg font-semibold text-gray-500;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
+}
+
+.slide-fade-leave-active {
+  transition: all 0.15s cubic-bezier(1, 0.4, 0.6, 0);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-20px);
 }

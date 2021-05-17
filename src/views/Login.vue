@@ -19,7 +19,7 @@
         Track your listening history and get stats
       </h1>
       <button @click="login" class="login-button">
-        Sign in with Spotify
+        Log in with Spotify
       </button>
     </div>
   </div>
@@ -27,6 +27,7 @@
 
 <script>
 import api from "@/api";
+import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -36,27 +37,11 @@ export default {
     };
   },
   methods: {
-    login() {
-      this.$store.dispatch("login");
-    },
-  },
-  created() {
-    if (this.$route.query.access_token) {
-      this.$store
-        .dispatch("authorise", {
-          access_token: this.$route.query.access_token,
-          id: this.$route.query.id,
-        })
-        .then(() => {
-          this.$router.push({ name: "home" });
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
-        });
-    } else {
+    ...mapActions({
+      login: "login",
+      authorise: "authorise",
+    }),
+    fetchUsers() {
       api
         .getUsersQuantity()
         .then((response) => {
@@ -69,6 +54,25 @@ export default {
           this.$notify.show({
             type: "danger",
             message: error.response.data.message,
+          });
+        });
+    },
+  },
+  created() {
+    this.fetchUsers();
+    if (this.$route.query.access_token) {
+      this.authorise({
+        access_token: this.$route.query.access_token,
+        id: this.$route.query.id,
+      })
+        .then(() => {
+          this.$router.push({ name: "home" });
+        })
+        .catch((error) => {
+          console.error(error.response.data.error.message);
+          this.$notify.show({
+            type: "danger",
+            message: error.response.data.error.message,
           });
         });
     }
@@ -102,6 +106,6 @@ export default {
   @apply text-2xl mb-2 mt-2 text-gray-300;
 }
 .login-button {
-  @apply py-2 px-6 mt-4 bg-green-600-spotify text-lg rounded-full hover:bg-green-700-spotify transition-colors duration-150 text-white font-semibold focus:outline-none;
+  @apply py-2 px-6 mt-4 bg-green-600-spotify text-lg rounded-full hover:bg-green-500-spotify transition-colors duration-150 text-white font-semibold focus:outline-none;
 }
 </style>

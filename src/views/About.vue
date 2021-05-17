@@ -7,7 +7,7 @@
   <p class="mt-4 text-lg font-normal text-gray-400">
     We did what we liked the most in other services working with spotify api.<br />
     Inspired by
-    <a href="http://waveous.com" class="text-white hover:underline">Waveous</a>,
+    <a href="https://waveous.com/" class="text-white hover:underline">Waveous</a>,
     <a href="https://spotiboi.ru/" class="text-white hover:underline"
       >SpotiBoi</a
     >
@@ -17,7 +17,7 @@
     >
   </p>
   <a
-    href="https://github.com/anyrange/spotify-worm"
+    href="https://github.com/anyrange/spotify-worm/"
     class="inline-flex items-center justify-center mt-4 px-2 py-1 space-x-2 bg-gray-600-spotify rounded-md shadow hover:bg-opacity-70 duration-100"
   >
     <span class="w-4 h-4 text-gray-500">

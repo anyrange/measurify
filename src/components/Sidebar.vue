@@ -1,41 +1,43 @@
 <template>
-  <div v-if="!desktopSidebar" class="mobile-sidebar">
-    <router-link :to="{ name: 'overview' }" class="mobile-link">
-      <dashboard-icon />
-    </router-link>
-    <router-link :to="{ name: 'listening-history' }" class="mobile-link">
-      <listening-history-icon />
-    </router-link>
-    <router-link :to="{ name: 'top-listeners' }" class="mobile-link">
-      <listeners-top-icon />
-    </router-link>
-  </div>
+  <template v-if="!desktopSidebar">
+    <div class="sidebar-mobile">
+      <router-link :to="{ name: 'overview' }" class="link">
+        <dashboard-icon />
+      </router-link>
+      <router-link :to="{ name: 'listening-history' }" class="link">
+        <listening-history-icon />
+      </router-link>
+      <router-link :to="{ name: 'top-listeners' }" class="link">
+        <listeners-top-icon />
+      </router-link>
+    </div>
+  </template>
   <transition name="slide-fade">
-    <div v-if="desktopSidebar" class="sidebar">
-      <ul class="py-6">
-        <h3 class="sidebar-title-uppercase">
+    <template v-if="desktopSidebar">
+      <ul class="sidebar">
+        <h3 class="title-uppercase">
           Statistics
         </h3>
         <li>
-          <router-link class="sidebar-link" :to="{ name: 'overview' }">
-            <span class="sidebar-label">Overview</span>
+          <router-link :to="{ name: 'overview' }">
+            <span>Overview</span>
           </router-link>
         </li>
         <li>
-          <router-link class="sidebar-link" :to="{ name: 'listening-history' }">
-            <span class="sidebar-label">Listening History</span>
+          <router-link :to="{ name: 'listening-history' }">
+            <span>Listening History</span>
           </router-link>
         </li>
-        <h3 class="pt-6 sidebar-title-uppercase">
+        <h3 class="title-uppercase">
           Community
         </h3>
         <li>
-          <router-link class="sidebar-link" :to="{ name: 'top-listeners' }">
-            <span class="sidebar-label">Top Listeners</span>
+          <router-link :to="{ name: 'top-listeners' }">
+            <span>Top Listeners</span>
           </router-link>
         </li>
         <!--
-          <h3 class="pt-6 sidebar-title-uppercase">
+        <h3 class="title-uppercase">
           Light theme
         </h3>
         <li>
@@ -47,12 +49,12 @@
                 type="checkbox"
                 id="theme-toggleSidebar"
                 v-model="nightMode"
-                v-bind:class="{ 'bg-gray-100': nightMode }"
+                :class="{ 'bg-gray-100': nightMode }"
                 class="toggleSidebar-checkbox absolute block w-4 h-4 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
               />
               <label
                 for="theme-toggleSidebar"
-                v-bind:class="{ 'bg-gray-300': nightMode }"
+                :class="{ 'bg-gray-300': nightMode }"
                 class="toggleSidebar-label block overflow-hidden h-4 rounded-full bg-gray-600 cursor-pointer"
               ></label>
             </div>
@@ -60,7 +62,7 @@
         </li>
         -->
       </ul>
-    </div>
+    </template>
   </transition>
 </template>
 
@@ -117,39 +119,33 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .sidebar {
-  @apply flex flex-row absolute md:relative h-screen w-48 min-w-max z-30 font-semibold bg-gray-200 dark:bg-gray-900-spotify;
+  @apply flex flex-col absolute md:relative z-40 h-screen w-48 min-w-max font-semibold dark:bg-gray-900-spotify bg-gray-200;
 }
-.mobile-sidebar {
-  @apply fixed flex z-40 bg-gray-800-spotify border-gray-600-spotify border-t w-full h-12 bottom-0 md:hidden;
+.sidebar-mobile {
+  @apply flex flex-row fixed md:hidden h-12 w-full bottom-0 border-t dark:bg-gray-800-spotify dark:border-gray-600-spotify;
 }
-.mobile-link {
+.sidebar-mobile .link {
   @apply flex flex-col flex-grow items-center justify-center overflow-hidden whitespace-nowrap text-sm transition-colors duration-100 ease-in-out text-gray-400 hover:bg-gray-700-spotify;
 }
-.mobile-link.router-link-exact-active {
+.sidebar-mobile .link.router-link-exact-active {
   @apply text-green-600-spotify;
 }
-.sidebar-title-uppercase {
-  @apply px-6 uppercase tracking-widest text-gray-500 font-normal text-xs;
+
+.sidebar .title-uppercase {
+  @apply px-6 pt-6 uppercase tracking-widest text-gray-500 font-normal text-xs;
 }
-.sidebar-label {
-  @apply ml-2 group-hover:text-green-600-spotify;
+.sidebar li {
+  @apply flex items-center ml-6 mt-4 group;
 }
-.sidebar-link {
-  @apply flex items-center mx-4 mt-4 group;
+.sidebar span {
+  @apply hover:opacity-90;
 }
-.sidebar-link.router-link-exact-active {
+.router-link-exact-active {
   @apply text-green-600-spotify;
 }
-.slide-fade-enter-active {
-  transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
-}
-.slide-fade-leave-active {
-  transition: all 0.15s cubic-bezier(1, 0.4, 0.6, 0);
-}
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(-20px);
+.green-border {
+  box-shadow: 4px 0px 0 #1db954 inset;
 }
 </style>

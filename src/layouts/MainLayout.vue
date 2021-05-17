@@ -2,10 +2,8 @@
   <div class="flex flex-col h-screen text-sm dark:text-gray-400 text-gray-900">
     <div class="flex-1 flex overflow-y-hidden">
       <sidebar />
-      <div class="dark:bg-gray-800-spotify bg-gray-100 flex-1 flex flex-col">
-        <div class="top-bar flex items-center justify-end px-4">
-          <user />
-        </div>
+      <div class="flex-1 flex flex-col dark:bg-gray-800-spotify bg-gray-100">
+        <navbar />
         <div class="content-spotify overflow-y-auto md:mb-0 mb-12">
           <div class="container mx-auto">
             <router-view />
@@ -18,18 +16,21 @@
 
 <script>
 import Sidebar from "@/components/Sidebar";
-import User from "@/components/User";
+import Navbar from "@/components/Navbar";
 import api from "@/api";
 
 export default {
   name: "Layout",
   components: {
     Sidebar,
-    User,
+    Navbar,
   },
   created() {
     api.getToken().catch((error) => {
-      console.error(error);
+      this.$notify.show({
+        type: "danger",
+        message: error.response.data.message,
+      });
     });
   },
 };

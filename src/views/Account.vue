@@ -36,7 +36,7 @@
     <div class="field">
       <div class="field-item">
         <label class="field-label" for="username">
-          Spotiworm ID
+          Profile URL
         </label>
         <input
           class="item-input"
@@ -74,6 +74,7 @@
 import api from "@/api";
 import PrivacySelect from "@/components/PrivacySelect";
 import { UserIcon } from "@/components/icons";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -97,9 +98,9 @@ export default {
     };
   },
   computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
+    ...mapGetters({
+      user: "getUser",
+    }),
     isDisabledSubmitButton() {
       const regexExp = /^[a-z0-9_-]{3,16}$/;
       if (this.account.customID.length > 0) {
