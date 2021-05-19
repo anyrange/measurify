@@ -1,7 +1,8 @@
 import User from "../models/User.js";
 import fetch from "node-fetch";
 import { URLSearchParams } from "url";
-import "dotenv/config.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 function refresh_tokens() {
   const start = new Date();

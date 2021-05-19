@@ -1,7 +1,8 @@
 import fetch from "node-fetch";
 import User from "../models/User.js";
 import formatTrack from "./format-track.js";
-import "dotenv/config.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 function refresh_recently_played() {
   const start = new Date();
