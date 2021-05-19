@@ -2,7 +2,8 @@ import fastify from "fastify";
 import autoLoad from "fastify-autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import "dotenv/config.js";
+import dotenv from "dotenv";
+dotenv.config();
 import addSchemas from "./schema/index.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,7 +11,9 @@ const __dirname = dirname(__filename);
 const app = fastify();
 
 const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
+
 const URI = new URL(FRONTEND_URI);
+
 const WHITE_LIST = [FRONTEND_URI, `${URI.protocol}//master--${URI.host}`];
 
 app.register(import("fastify-cors"), {
