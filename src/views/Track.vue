@@ -151,7 +151,7 @@ export default {
         this.totalOverview = response.overview.reverse();
         this.pushToChart();
         this.preCalculateFilteredArrays();
-        document.title = `${this.object.name} - Spotiworm`;
+        document.title = `${this.object.track.name} - Spotiworm`;
       })
       .finally(() => {
         this.loading = false;
