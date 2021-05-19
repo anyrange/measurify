@@ -10,7 +10,7 @@
       </div>
       <div class="ml-4">
         <h2 class="text-4xl font-semibold dark:text-white text-gray-900">
-          {{ profile.username }}
+          {{ profile.userName }}
         </h2>
       </div>
     </div>
@@ -46,7 +46,7 @@ export default {
       .getProfile(this.$route.params.id)
       .then((response) => {
         this.profile = response;
-        document.title = `${this.profile.username} - Spotiworm`;
+        document.title = `${this.profile.userName} - Spotiworm`;
       })
       .finally(() => {
         this.loading = false;
