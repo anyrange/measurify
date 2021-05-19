@@ -42,7 +42,7 @@ export default async function(fastify) {
           return reply.code(404).send({ message: "User not found" });
 
         if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-          return reply.status(204).json({});
+          return reply.code(204).send({});
 
         if (lastDate) {
           lastDate = new Date(lastDate);

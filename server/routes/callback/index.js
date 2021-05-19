@@ -60,6 +60,7 @@ export default async function(fastify) {
       };
 
       const document = await User.findOneAndUpdate(filter, upsert, {
+        new: true,
         upsert: true,
         setDefaultsOnInsert: true,
         projection,
