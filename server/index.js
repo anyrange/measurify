@@ -6,7 +6,7 @@ import refresh_recently_played from "./includes/recently-played-parse.js";
 
 const PORT = process.env.PORT || 8888;
 
-app.listen(PORT, (err, address) => {
+app.listen(PORT, "0.0.0.0", (err, address) => {
   if (err) return console.log(err);
   console.info(`App listening on: ${address}`);
 });
