@@ -1,12 +1,14 @@
-const app = require("./app");
-require("./db");
-const CronJob = require("cron").CronJob;
-const refresh_tokens = require("./includes/refresh-tokens.js");
-const refresh_recently_played = require("./includes/recently-played-parse.js");
+import app from "./app.js";
+import "./db.js";
+import { CronJob } from "cron";
+import refresh_tokens from "./includes/refresh-tokens.js";
+import refresh_recently_played from "./includes/recently-played-parse.js";
 
 const PORT = process.env.PORT || 8888;
-app.listen(PORT, () => {
-  console.info(`App listening on port: ${PORT}`);
+
+app.listen(PORT, (err, address) => {
+  if (err) return console.log(err);
+  console.info(`App listening on: ${address}`);
 });
 
 function startScheduledJobs() {

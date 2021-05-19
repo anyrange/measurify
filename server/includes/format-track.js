@@ -1,5 +1,9 @@
 function formatTrack(item) {
+  if (!item) return;
+
   const track = item.track;
+
+  if (!item.track) return;
   const album = {
     id: track.album.id,
     name: track.album.name,
@@ -31,4 +35,4 @@ function formatTrack(item) {
     artists,
   };
 }
-module.exports = formatTrack;
+export default formatTrack;

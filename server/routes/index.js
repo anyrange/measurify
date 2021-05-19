@@ -1,23 +1,22 @@
-const health = require("./health");
-const auth = require("./auth");
-const friends = require("./friends");
-const getOverview = require("./getOverview");
-const getPlayedHistory = require("./getPlayedHistory");
-const infoPages = require("./infoPages");
-const top = require("./top");
-const users = require("./users");
-const user = require("./user");
-const settings = require("./settings");
+/**
+ * @param {import('fastify').FastifyInstance} fastify
+ * @param {*} opts
+ */
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 
-module.exports = {
-  health,
-  auth,
-  friends,
-  getOverview,
-  getPlayedHistory,
-  infoPages,
-  top,
-  users,
-  user,
-  settings,
-};
+const __filename = fileURLToPath(import.meta.url);
+
+export default async function(fastify) {
+  fastify.get("/", (request, reply) => {
+    const html = fs.readFileSync(
+      join(dirname(__filename), "../assets/index.html")
+    );
+
+    reply
+      .code(200)
+      .type("text/html")
+      .send(html);
+  });
+}

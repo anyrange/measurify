@@ -16,13 +16,20 @@
             {{ object.track.name }}
           </span>
           <span class="text-lg"
-            >By <a class="text-white">{{ object.track.artist.name }}</a>
+            >By
+            <a class="text-white">{{
+              object.track.artists
+                .map(({ name }) => {
+                  return name;
+                })
+                .join(", ")
+            }}</a>
           </span>
           <span class="text-lg"
             >From <a class="text-white">{{ object.track.album.name }}</a>
           </span>
           <span class="text-lg"
-            >{{ object.track.release }} -
+            >{{ object.track.release_date }} -
             {{ trackDuration }}
           </span>
         </div>
@@ -144,7 +151,7 @@ export default {
         this.totalOverview = response.overview.reverse();
         this.pushToChart();
         this.preCalculateFilteredArrays();
-        document.title = `${this.object.track.name} - Spotiworm`;
+        document.title = `${this.object.name} - Spotiworm`;
       })
       .finally(() => {
         this.loading = false;

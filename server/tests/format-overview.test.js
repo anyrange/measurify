@@ -1,4 +1,4 @@
-const overview = require("../includes/overview");
+import overview from "../includes/format-overview.js";
 
 test("overview user with empty array", () => {
   expect(overview([])).toEqual([]);

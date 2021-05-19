@@ -1,25 +1,37 @@
-const User = require("../models/User");
-const { ObjectId } = require("mongodb");
-const formatOverview = require("../includes/overview");
+import mongodb from "mongodb";
+const { ObjectId } = mongodb;
+import User from "../models/User.js";
 
-const getOverview = async (req, res) => {
+export default async function(id, filterId) {
   try {
-    const _id = req.get("Authorization");
     const agg = [
       {
         $match: {
-          _id: new ObjectId(_id),
+          _id: new ObjectId(id),
         },
       },
       {
         $project: {
-          "recentlyPlayed.played_at": 1,
+          _id: 0,
+          "recentlyPlayed.id": 1,
+          "recentlyPlayed.artists.id": 1,
+          "recentlyPlayed.album.id": 1,
           "recentlyPlayed.duration_ms": 1,
+          "recentlyPlayed.played_at": 1,
         },
       },
       {
         $unwind: {
           path: "$recentlyPlayed",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "recentlyPlayed.artists.id": filterId },
+            { "recentlyPlayed.album.id": filterId },
+            { "recentlyPlayed.id": filterId },
+          ],
         },
       },
       {
@@ -59,17 +71,8 @@ const getOverview = async (req, res) => {
         },
       },
     ];
-
-    const plays = await User.aggregate(agg);
-    if (!plays.length) {
-      res.status(204).json();
-      return;
-    }
-    res.status(200).json(await formatOverview(plays));
+    return await User.aggregate(agg);
   } catch (e) {
-    res.status(404).json({ message: "Something went wrong!" });
-    console.log(e);
+    console.log(JSON.stringify(e));
   }
-};
-
-module.exports = getOverview;
+}

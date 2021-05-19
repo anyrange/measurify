@@ -30,4 +30,5 @@ const formatOverview = (plays) => {
     return [];
   }
 };
-module.exports = formatOverview;
+
+export default formatOverview;

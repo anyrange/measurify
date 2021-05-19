@@ -10,8 +10,8 @@
         </p>
       </template>
       <template v-else>
-        <p v-if="usersQuantity" class="text-center users">
-          <span class="font-semibold">{{ usersQuantity }}</span>
+        <p v-if="quantity" class="text-center users">
+          <span class="font-semibold">{{ quantity }}</span>
           people already joined
         </p>
       </template>
@@ -32,7 +32,7 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
-      usersQuantity: 0,
+      quantity: 0,
       loading: true,
     };
   },
@@ -45,7 +45,7 @@ export default {
       api
         .getUsersQuantity()
         .then((response) => {
-          this.usersQuantity = response.usersQuantity;
+          this.quantity = response.quantity;
         })
         .finally(() => {
           this.loading = false;

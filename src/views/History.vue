@@ -162,7 +162,7 @@ export default {
           if (response.status === 204) {
             return (this.emptyData = true);
           }
-          this.pagesMax = response.data.numberOfPages;
+          this.pagesMax = response.data.pages;
           this.recentlyPlayed = response.data.history;
         })
         .finally(() => {

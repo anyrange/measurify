@@ -1,7 +1,7 @@
-const User = require("../models/User.js");
-const fetch = require("node-fetch");
-const { URLSearchParams } = require("url");
-require("dotenv").config();
+import User from "../models/User.js";
+import fetch from "node-fetch";
+import { URLSearchParams } from "url";
+import "dotenv/config.js";
 
 function refresh_tokens() {
   const start = new Date();
@@ -75,4 +75,4 @@ function refresh_tokens() {
   });
 }
 
-module.exports = refresh_tokens;
+export default refresh_tokens;

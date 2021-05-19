@@ -1,7 +1,7 @@
-const fetch = require("node-fetch");
-const User = require("../models/User");
-const formatTrack = require("./formatTrack");
-require("dotenv").config();
+import fetch from "node-fetch";
+import User from "../models/User.js";
+import formatTrack from "./format-track.js";
+import "dotenv/config.js";
 
 function refresh_recently_played() {
   const start = new Date();
@@ -119,4 +119,4 @@ function refresh_recently_played() {
   });
 }
 
-module.exports = refresh_recently_played;
+export default refresh_recently_played;

@@ -1,93 +1,129 @@
-const User = require("../models/User");
-const fetch = require("node-fetch");
-const { ObjectId } = require("mongodb");
+/**
+ * @param {import('fastify').FastifyInstance} fastify
+ */
 
-const top = async (req, res) => {
-  try {
-    const _id = req.get("Authorization");
-    const range = Number.parseInt(req.query.range) || 20;
-    const firstDate = req.query.firstDate;
-    let lastDate = req.query.lastDate;
-    const document = await User.findOne(
-      { _id },
-      { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
-    );
+import User from "../../models/User.js";
+import mongodb from "mongodb";
+const { ObjectId } = mongodb;
+import fetch from "node-fetch";
 
-    if (!document.recentlyPlayed || !document.recentlyPlayed.length) {
-      res.status(204).json();
-      return;
-    }
+export default async function(fastify) {
+  const auth = fastify.getSchema("auth");
+  const top = fastify.getSchema("top");
 
-    if (lastDate) {
-      lastDate = new Date(lastDate);
-      lastDate.setDate(lastDate.getDate() + 1);
-      lastDate = lastDate.toISOString().split("T")[0];
-    }
+  fastify.get(
+    "/",
+    {
+      schema: {
+        headers: auth,
+        response: { 200: top },
+      },
+      attachValidation: true,
+    },
+    async function(req, reply) {
+      try {
+        if (req.validationError)
+          return reply.code(401).send({ message: "Unauthorized" });
 
-    let response = {};
+        const _id = req.headers.authorization;
 
-    response.tracks = await tracks(_id, firstDate, lastDate, range);
-    response.albums = await albums(_id, firstDate, lastDate, range);
-    response.artists = await artists(_id, firstDate, lastDate, range);
-    response.playlists = await playlists(_id, firstDate, lastDate, range);
+        const range = Number.parseInt(req.query.range) || 20;
 
-    const requests = response.playlists.map((playlist) => {
-      return new Promise((resolve) => {
-        addPlaylistInfo(playlist, resolve);
-      }).then((res) => {
-        if (!res) return;
-        response.playlists.push(res);
-      });
-    });
+        const firstDate = req.query.firstDate;
 
-    response.playlists = [];
-    Promise.all(requests).then(async () => {
-      response.playlists.sort(function(a, b) {
-        if (a.playtime < b.playtime) {
-          return 1;
+        let lastDate = req.query.lastDate;
+
+        const document = await User.findOne(
+          { _id },
+          { recentlyPlayed: { $slice: ["$recentlyPlayed", 1] } }
+        );
+
+        if (!document)
+          return reply.code(404).send({ message: "User not found" });
+
+        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
+          return reply.status(204).json({});
+
+        if (lastDate) {
+          lastDate = new Date(lastDate);
+          lastDate.setDate(lastDate.getDate() + 1);
+          lastDate = lastDate.toISOString().split("T")[0];
         }
-        if (a.playtime > b.playtime) {
-          return -1;
-        }
-        return 0;
-      });
-      const body = await fetch(
-        `https://api.spotify.com/v1/artists?ids=${response.artists
-          .map((artist) => artist.id)
-          .join()}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + response.artists[0].access_token,
-          },
-        }
-      );
 
-      const bodyJSON = await body.json();
-      if (bodyJSON.error) {
-        response.artists.forEach((artist) => {
-          delete artist.access_token;
-          artist.image = "";
+        let response = {};
+
+        const info = await Promise.all([
+          tracks(_id, firstDate, lastDate, range),
+          albums(_id, firstDate, lastDate, range),
+          artists(_id, firstDate, lastDate, range),
+          playlists(_id, firstDate, lastDate, range),
+        ]);
+
+        response.tracks = info[0];
+        response.albums = info[1];
+        response.artists = info[2];
+        response.playlists = info[3];
+
+        const requests = response.playlists.map((playlist) => {
+          return new Promise((resolve) => {
+            addPlaylistInfo(playlist, resolve);
+          }).then((res) => {
+            if (!res) return;
+            response.playlists.push(res);
+          });
         });
-        res.status(200).json(response);
-        throw new Error(bodyJSON.error);
+
+        response.playlists = [];
+
+        await Promise.all(requests);
+
+        response.playlists.sort(function(a, b) {
+          if (a.playtime < b.playtime) {
+            return 1;
+          }
+          if (a.playtime > b.playtime) {
+            return -1;
+          }
+          return 0;
+        });
+
+        const body = await fetch(
+          `https://api.spotify.com/v1/artists?ids=${response.artists
+            .map((artist) => artist.id)
+            .join()}`,
+          {
+            headers: {
+              Authorization: "Bearer " + response.artists[0].access_token,
+            },
+          }
+        )
+          .then((res) => res.json())
+          .catch((err) => {
+            throw err;
+          });
+
+        if (body.error)
+          return reply.code(body.error.status || 500).send({
+            message: body.error.message,
+          });
+
+        response.artists.forEach((artist, index) => {
+          delete artist.access_token;
+          artist.image =
+            body.artists[index].images.length && body.artists[index].images[2]
+              ? body.artists[index].images[2].url
+              : "";
+        });
+
+        reply.code(200).send(response);
+      } catch (e) {
+        reply.code(500).send({ message: "Something went wrong!" });
+        console.log(e);
       }
-      response.artists.forEach((artist, index) => {
-        delete artist.access_token;
-        if (
-          bodyJSON.artists[index].images.length &&
-          bodyJSON.artists[index].images[2]
-        ) {
-          artist.image = bodyJSON.artists[index].images[2].url;
-        }
-      });
-      res.status(200).json(response);
-    });
-  } catch (e) {
-    res.status(404).json({ message: "Something went wrong!" });
-    console.log(e);
-  }
-};
+    }
+  );
+}
+
 const tracks = async (_id, firstDate, lastDate, range) => {
   const agg = [
     {
@@ -344,22 +380,19 @@ const addPlaylistInfo = (playlist, cb) => {
   fetch(`https://api.spotify.com/v1/playlists/${playlist.id}`, {
     method: "GET",
     headers: { Authorization: "Bearer " + playlist.access_token },
-  }).then(async (body) => {
-    if (!body) return;
+  })
+    .then((res) => res.json())
+    .then((body) => {
+      if (body.error) return cb();
 
-    body = await body.json();
-
-    if (body.error) {
+      cb({
+        name: body.name,
+        id: body.id,
+        image: body.images ? body.images[0].url : "",
+        playtime: playlist.playtime,
+      });
+    })
+    .catch(() => {
       cb();
-      return;
-    }
-    cb({
-      name: body.name,
-      id: body.id,
-      image: body.images ? body.images[0].url : "",
-      playtime: playlist.playtime,
     });
-  });
 };
-
-module.exports = top;
