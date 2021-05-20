@@ -11,8 +11,8 @@
 ### Setup environemnt
 
 ```bash
-$ git clone https://github.com/anyrange/spotify-worm.git
-$ cd spotify-worm
+$ git clone https://github.com/anyrange/spotiworm.git
+$ cd spotiworm
 $ npm install
 $ npm run dev
 ```
@@ -32,8 +32,7 @@ Build command: npm run build
 Publish directory: dist/
 ```
 
-`Heroku` will run properly automatically,
-but don't forget to configure config vars
+`Heroku` will run properly automatically
 
 ## License
 
