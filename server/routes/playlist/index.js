@@ -12,27 +12,54 @@ export default async function(fastify) {
   const auth = fastify.getSchema("auth");
   const overview = fastify.getSchema("overview");
   const tracks = fastify.getSchema("tracks");
+
   const responseSchema = {
     200: {
       type: "object",
-      required: ["artist", "overview", "tracks"],
+      required: ["playlist", "overview", "tracks"],
       properties: {
-        artist: {
+        playlist: {
           type: "object",
-          required: ["followers", "genres", "name", "image", "link"],
+          required: [
+            "name",
+            "image",
+            "collaborative",
+            "link",
+            "followers",
+            "owner",
+            "public",
+            "tracks",
+          ],
           properties: {
+            name: {
+              type: "string",
+            },
+            image: {
+              type: "string",
+            },
+            collaborative: {
+              type: "boolean",
+            },
             followers: {
               type: "number",
             },
-            genres: {
-              type: "array",
-              items: {
-                type: "string",
+            link: {
+              type: "string",
+            },
+            public: {
+              type: "boolean",
+            },
+            tracks: {
+              type: "number",
+            },
+            owner: {
+              type: "object",
+              required: ["name", "id"],
+              properties: {
+                name: { type: "string" },
+                id: { type: "string" },
               },
             },
-            name: { type: "string" },
-            image: { type: "string" },
-            link: { type: "string" },
           },
         },
         overview,
@@ -73,18 +100,18 @@ export default async function(fastify) {
           req.validationError &&
           req.validationError.validationContext === "params"
         )
-          return reply.code(404).send({ message: "Invalid artist" });
+          return reply.code(404).send({ message: "Invalid playlist" });
 
         const _id = req.headers.authorization;
 
-        const artistID = req.params.id;
+        const playlistID = req.params.id;
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user) return reply.code(404).send("User not found");
 
-        const artist = await fetch(
-          `https://api.spotify.com/v1/artists/${artistID}`,
+        const playlist = await fetch(
+          `https://api.spotify.com/v1/playlists/${playlistID}?fields=collaborative, external_urls, followers(total),images,name,owner(display_name,id),public,tracks(total)`,
           {
             headers: {
               Authorization: "Bearer " + user.lastSpotifyToken,
@@ -96,26 +123,26 @@ export default async function(fastify) {
             throw err;
           });
 
-        if (artist.error)
-          return reply.code(artist.error.status || 500).send({
-            message: artist.error.message,
+        if (playlist.error)
+          return reply.code(playlist.error.status || 500).send({
+            message: playlist.error.message,
           });
 
-        // get data for graph
-
         const [overviewRaw, tracks] = await Promise.all([
-          plays(_id, artistID),
-          history(_id, artistID),
+          plays(_id, playlistID),
+          history(_id, playlistID),
         ]);
 
-        // response schema
         const response = {
-          artist: {
-            followers: artist.followers.total,
-            genres: artist.genres,
-            name: artist.name,
-            image: artist.images.length ? artist.images[0].url : "",
-            link: artist.external_urls.spotify,
+          playlist: {
+            name: playlist.name,
+            image: playlist.images.length ? playlist.images[0].url : "",
+            collaborative: playlist.collaborative,
+            link: playlist.external_urls.spotify,
+            followers: playlist.followers.total,
+            owner: { name: playlist.owner.display_name, id: playlist.owner.id },
+            public: playlist.public,
+            tracks: playlist.tracks.total,
           },
           overview: formatOverview(overviewRaw),
           tracks,

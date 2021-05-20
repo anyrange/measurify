@@ -20,6 +20,7 @@ export default async function(_id, filterId) {
           $or: [
             { "recentlyPlayed.artists.id": filterId },
             { "recentlyPlayed.album.id": filterId },
+            { "recentlyPlayed.context.id": filterId },
           ],
         },
       },

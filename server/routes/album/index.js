@@ -134,7 +134,7 @@ export default async function(fastify) {
             message: album.error.message,
           });
 
-        const info = await Promise.all([
+        const [overviewRaw, tracks] = await Promise.all([
           plays(_id, albumID),
           history(_id, albumID),
         ]);
@@ -152,8 +152,8 @@ export default async function(fastify) {
               return { name, id };
             }),
           },
-          overview: formatOverview(info[0]),
-          tracks: info[1],
+          overview: formatOverview(overviewRaw),
+          tracks,
         };
 
         reply.code(200).send(response);
