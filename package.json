@@ -8,7 +8,8 @@
     "serve": "vue-cli-service serve --port 3000",
     "server": "nodemon index.js --prefix server",
     "dev": "concurrently \"npm run serve\" \"npm run server\"",
-    "dist": "concurrently \"npm run build && serve -l 3000 -s dist\" \"npm run server\""
+    "dist": "npm run build && serve -l 3000 -s dist",
+    "prod": "yarn build --mode justhost"
   },
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.2",
@@ -41,8 +42,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
     "nodemon": "^2.0.7",
-    "vue-cli-plugin-tailwind": "~2.0.6",
-    "vue-windicss-preprocess": "^2.2.0"
+    "vue-cli-plugin-tailwind": "~2.0.6"
   },
   "eslintConfig": {
     "root": true,
@@ -58,7 +58,9 @@
     },
     "rules": {}
   },
-  "eslintIgnore": ["**/*.test.js"],
+  "eslintIgnore": [
+    "**/*.test.js"
+  ],
   "browserslist": [
     "> 1%",
     "last 2 versions",
