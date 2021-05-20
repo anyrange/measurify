@@ -5,7 +5,7 @@ module.exports = {
       short_name: "Spotiworm",
       display: "standalone",
       themeColor: "#0b0b0b",
-      msTileColor: "#0b0b0b",
+      msTileColor: "#00a300",
     },
     icons: [
       {
