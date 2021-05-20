@@ -4,10 +4,9 @@ module.exports = {
       name: "Spotiworm",
       short_name: "Spotiworm",
       display: "standalone",
-      theme_color: "#000000",
+      themeColor: "#0b0b0b",
+      msTileColor: "#0b0b0b",
     },
-    themeColor: "#414141",
-    msTileColor: "#414141",
     icons: [
       {
         src: "./img/icons/android-chrome-192x192.png",
