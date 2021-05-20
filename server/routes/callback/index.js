@@ -107,7 +107,6 @@ export default async function(fastify) {
 }
 
 const fetchTokens = async (code, query_uri) => {
-  console.log();
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);
@@ -128,7 +127,6 @@ const fetchTokens = async (code, query_uri) => {
   })
     .then((res) => res.json())
     .catch((err) => {
-      console.log(err);
       throw err;
     });
 };
