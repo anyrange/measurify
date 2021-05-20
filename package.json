@@ -1,6 +1,6 @@
 {
-  "name": "spotify-worm",
-  "version": "0.8.0",
+  "name": "spotiworm",
+  "version": "0.0.1",
   "scripts": {
     "heroku-postbuild": "echo Skip builds on Heroku",
     "lint": "vue-cli-service lint",
