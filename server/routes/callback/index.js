@@ -32,10 +32,7 @@ export default async function(fastify) {
           return reply.code(404).send({ message: "Invalid uri" });
 
         const code = request.query.code || null;
-        const query_uri =
-          request.query.sw_redirect ||
-          process.env.FRONTEND_URI ||
-          "http://localhost:3000";
+        const query_uri = request.query.sw_redirect;
 
         //get tokens
         const tokens = await fetchTokens(code, query_uri);
