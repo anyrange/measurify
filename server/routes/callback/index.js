@@ -11,77 +11,99 @@ const redirect_uri =
   process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
 export default async function(fastify) {
-  fastify.get("/", async (request, reply) => {
-    try {
-      const code = request.query.code || null;
-      const query_uri = request.query.sw_redirect || process.env.FRONTEND_URI || "http://localhost:3000";
-
-      //get tokens
-      const tokens = await fetchTokens(code, query_uri);
-
-      if (tokens.error) {
-        return reply.code(500).send({
-          message: tokens.error,
-        });
-      }
-
-      const access_token = tokens.access_token;
-      const refresh_token = tokens.refresh_token;
-
-      //get user info
-      const user = await fetch(`https://api.spotify.com/v1/me`, {
-        headers: {
-          Authorization: "Bearer " + access_token,
+  fastify.get(
+    "/",
+    {
+      schema: {
+        querystring: {
+          type: "object",
+          required: ["sw_redirect", "code"],
+          properties: {
+            sw_redirect: { type: "string" },
+            code: { type: "string" },
+          },
         },
-      })
-        .then((res) => res.json())
-        .catch((err) => {
-          throw err;
+      },
+      attachValidation: true,
+    },
+    async (request, reply) => {
+      try {
+        if (request.validationError)
+          return reply.code(404).send({ message: "Invalid uri" });
+
+        const code = request.query.code || null;
+        const query_uri =
+          request.query.sw_redirect ||
+          process.env.FRONTEND_URI ||
+          "http://localhost:3000";
+
+        //get tokens
+        const tokens = await fetchTokens(code, query_uri);
+
+        if (tokens.error) {
+          return reply.code(500).send({
+            message: tokens.error,
+          });
+        }
+
+        const access_token = tokens.access_token;
+        const refresh_token = tokens.refresh_token;
+
+        //get user info
+        const user = await fetch(`https://api.spotify.com/v1/me`, {
+          headers: {
+            Authorization: "Bearer " + access_token,
+          },
+        })
+          .then((res) => res.json())
+          .catch((err) => {
+            throw err;
+          });
+
+        if (user.error)
+          return reply.code(tokens.error.status || 500).send({
+            message: tokens.error.message,
+          });
+
+        console.log(user.display_name + " logined");
+
+        const filter = { spotifyID: user.id };
+        const upsert = {
+          lastSpotifyToken: access_token,
+          userName: user.display_name,
+          refreshToken: refresh_token,
+          avatar: user.images.length ? user.images[0].url : "",
+          __v: 3,
+        };
+        const projection = {
+          recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
+          spotifyID: 1,
+          customID: 1,
+        };
+
+        const document = await User.findOneAndUpdate(filter, upsert, {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
+          projection,
         });
 
-      if (user.error)
-        return reply.code(tokens.error.status || 500).send({
-          message: tokens.error.message,
-        });
+        // check if recentlyPlayed  is empty
+        if (!document.customID)
+          await User.updateOne(filter, { customID: user.id });
 
-      console.log(user.display_name + " logined");
+        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
+          await fetchHistory(access_token, document._id);
 
-      const filter = { spotifyID: user.id };
-      const upsert = {
-        lastSpotifyToken: access_token,
-        userName: user.display_name,
-        refreshToken: refresh_token,
-        avatar: user.images.length ? user.images[0].url : "",
-        __v: 3,
-      };
-      const projection = {
-        recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
-        spotifyID: 1,
-        customID: 1,
-      };
-
-      const document = await User.findOneAndUpdate(filter, upsert, {
-        new: true,
-        upsert: true,
-        setDefaultsOnInsert: true,
-        projection,
-      });
-
-      // check if recentlyPlayed  is empty
-      if (!document.customID)
-        await User.updateOne(filter, { customID: user.id });
-
-      if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-        await fetchHistory(access_token, document._id);
-
-      reply.redirect(
-        `${query_uri}?access_token=${access_token}&id=${document._id}`
-      );
-    } catch (e) {
-      reply.code(500).send({ message: "Something went wrong!" });
-      console.log(e);
+        reply.redirect(
+          `${query_uri}?access_token=${access_token}&id=${document._id}`
+        );
+      } catch (e) {
+        reply.code(500).send({ message: "Something went wrong!" });
+        console.log(e);
+      }
     }
-  });
+  );
 }
 
 const fetchTokens = async (code, query_uri) => {
