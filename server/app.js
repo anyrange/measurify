@@ -11,10 +11,10 @@ const __dirname = dirname(__filename);
 
 const app = fastify();
 
-const NETLIFY_URI = process.env.FRONTEND_URI || "http://localhost:3000";
+const FRONTEND_URI = process.env.FRONTEND_URI || "http://localhost:3000";
 const NEW_FRONTEND_URI = process.env.NEW_FRONTEND_URI;
 
-const WHITE_LIST = [NETLIFY_URI, NEW_FRONTEND_URI];
+const WHITE_LIST = [FRONTEND_URI, NEW_FRONTEND_URI];
 
 app.register(import("fastify-cors"), {
   origin: WHITE_LIST,

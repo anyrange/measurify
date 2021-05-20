@@ -1,8 +1,15 @@
 import axios from "axios";
 import store from "@/store";
 
-const url = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
-const api = axios.create({ baseURL: url });
+const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
+// const FRONT_URI = window.location.href;
+
+const getURI = () => {
+  console.log(window.location.href);
+  return window.location.href;
+};
+
+const api = axios.create({ baseURL: SERVER_URI });
 
 const response_options = () => {
   const _id = store.getters.getUserID;
@@ -15,7 +22,7 @@ const response_options = () => {
 
 export default {
   login() {
-    window.location.href = `${url}/login`;
+    window.location.href = `${SERVER_URI}/login?sw_redirect=${getURI()}`;
   },
   authorise(access_token) {
     return axios

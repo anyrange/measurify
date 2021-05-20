@@ -7,7 +7,6 @@ import formatTrack from "../../includes/format-track.js";
 import User from "../../models/User.js";
 import fetch from "node-fetch";
 
-const uri = process.env.FRONTEND_URI || "http://localhost:3000";
 const redirect_uri =
   process.env.REDIRECT_URI || "http://localhost:8888/callback";
 
@@ -15,14 +14,16 @@ export default async function(fastify) {
   fastify.get("/", async (request, reply) => {
     try {
       const code = request.query.code || null;
+      const query_uri = request.query.sw_redirect || process.env.FRONTEND_URI || "http://localhost:3000";
 
       //get tokens
-      const tokens = await fetchTokens(code);
+      const tokens = await fetchTokens(code, query_uri);
 
-      if (tokens.error)
-        return reply.code(tokens.error.status || 500).send({
-          message: tokens.error.message,
+      if (tokens.error) {
+        return reply.code(500).send({
+          message: tokens.error,
         });
+      }
 
       const access_token = tokens.access_token;
       const refresh_token = tokens.refresh_token;
@@ -73,7 +74,9 @@ export default async function(fastify) {
       if (!document.recentlyPlayed || !document.recentlyPlayed.length)
         await fetchHistory(access_token, document._id);
 
-      reply.redirect(`${uri}?access_token=${access_token}&id=${document._id}`);
+      reply.redirect(
+        `${query_uri}?access_token=${access_token}&id=${document._id}`
+      );
     } catch (e) {
       reply.code(500).send({ message: "Something went wrong!" });
       console.log(e);
@@ -81,10 +84,11 @@ export default async function(fastify) {
   });
 }
 
-const fetchTokens = async (code) => {
+const fetchTokens = async (code, query_uri) => {
+  console.log();
   const params = new URLSearchParams();
   params.append("code", code);
-  params.append("redirect_uri", redirect_uri);
+  params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);
   params.append("grant_type", "authorization_code");
 
   return await fetch(`https://accounts.spotify.com/api/token`, {
@@ -102,6 +106,7 @@ const fetchTokens = async (code) => {
   })
     .then((res) => res.json())
     .catch((err) => {
+      console.log(err);
       throw err;
     });
 };
