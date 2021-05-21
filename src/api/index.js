@@ -66,7 +66,7 @@ export default {
   },
   getProfile(id) {
     return api
-      .get(`/user/${id}`, response_options())
+      .get(`/users/${id}`, response_options())
       .then((response) => response.data);
   },
   getTrack(id) {

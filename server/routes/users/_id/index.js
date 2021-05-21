@@ -2,7 +2,7 @@
  * @param {import('fastify').FastifyInstance} fastify
  */
 
-import User from "../../models/User.js";
+import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
@@ -52,7 +52,7 @@ export default async function(fastify) {
   };
 
   fastify.get(
-    "/:id",
+    "/",
     {
       schema: {
         headers: auth,
@@ -85,18 +85,18 @@ export default async function(fastify) {
 
         const _id = req.headers.authorization;
 
-        const requestor = await User.findOne({ _id }, { _id: 1 });
-
-        if (!requestor) return reply.code(401).send("Unauthorized");
-
         const customID = req.params.id;
 
-        const user = await User.findOne(
-          { customID },
-          { userName: 1, private: 1, avatar: 1, lastLogin: 1 }
+        const users = await User.find(
+          { $or: [{ customID }, { _id }] },
+          { userName: 1, private: 1, avatar: 1, lastLogin: 1, customID: 1 }
         );
+        if (!users.find((user) => user._id == _id))
+          return reply.code(401).send({ message: "Unauthorized" });
 
-        if (!user) return reply.code(404).send("User not found");
+        const user = users.find((user) => user.customID == customID);
+
+        if (!user) return reply.code(404).send({ message: "User not found" });
 
         if (user.private && _id != user._id)
           return reply.code(403).send({ message: "Private profile" });

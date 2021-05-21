@@ -114,7 +114,7 @@ export default async function(fastify) {
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-        if (!user) return reply.code(404).send("User not found");
+        if (!user) return reply.code(404).send({ message: "User not found" });
 
         const album = await fetch(
           `https://api.spotify.com/v1/albums/${albumID}`,

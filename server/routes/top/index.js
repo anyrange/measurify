@@ -377,17 +377,19 @@ const artists = async (_id, firstDate, lastDate, range) => {
 };
 
 const addPlaylistInfo = (playlist, cb) => {
-  fetch(`https://api.spotify.com/v1/playlists/${playlist.id}`, {
-    method: "GET",
-    headers: { Authorization: "Bearer " + playlist.access_token },
-  })
+  fetch(
+    `https://api.spotify.com/v1/playlists/${playlist.id}?fields=images,name`,
+    {
+      headers: { Authorization: "Bearer " + playlist.access_token },
+    }
+  )
     .then((res) => res.json())
     .then((body) => {
       if (body.error) return cb();
 
       cb({
         name: body.name,
-        id: body.id,
+        id: playlist.id,
         image: body.images ? body.images[0].url : "",
         playtime: playlist.playtime,
       });

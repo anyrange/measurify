@@ -24,6 +24,7 @@ addSchemas(app);
 
 app.register(autoLoad, {
   dir: join(__dirname, "routes"),
+  routeParams: true,
 });
 
 app.all("/*", (request, reply) => {
