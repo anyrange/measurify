@@ -5,6 +5,7 @@
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import mongodb from "mongodb";
+
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
@@ -22,6 +23,7 @@ export default async function(fastify) {
         "overview",
         "history",
         "top",
+        "genres",
       ],
       properties: {
         userName: {
@@ -47,6 +49,12 @@ export default async function(fastify) {
         },
         history,
         top,
+        genres: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
       },
     },
   };
@@ -89,7 +97,14 @@ export default async function(fastify) {
 
         const users = await User.find(
           { $or: [{ customID }, { _id }] },
-          { userName: 1, private: 1, avatar: 1, lastLogin: 1, customID: 1 }
+          {
+            userName: 1,
+            private: 1,
+            avatar: 1,
+            lastLogin: 1,
+            customID: 1,
+            lastSpotifyToken: 1,
+          }
         );
         if (!users.find((user) => user._id == _id))
           return reply.code(401).send({ message: "Unauthorized" });
@@ -100,12 +115,6 @@ export default async function(fastify) {
 
         if (user.private && _id != user._id)
           return reply.code(403).send({ message: "Private profile" });
-
-        const response = {
-          userName: user.userName,
-          avatar: user.avatar,
-          lastLogin: user.lastLogin,
-        };
 
         const agg = [
           {
@@ -142,11 +151,7 @@ export default async function(fastify) {
             headers: {
               Authorization: user._id,
             },
-          })
-            .then((res) => res.json())
-            .then((body) => {
-              response.top = body;
-            }),
+          }).then((res) => res.json()),
           fetch(
             req.protocol +
               "://" +
@@ -157,20 +162,26 @@ export default async function(fastify) {
                 Authorization: user._id,
               },
             }
-          )
-            .then((res) => res.json())
-            .then((body) => {
-              response.history = body;
-            }),
+          ).then((res) => res.json()),
           User.aggregate(agg).then((body) => {
-            response.overview = {
+            return {
               plays: body[0].plays,
               playtime: Math.round(body[0].playtime / 1000 / 60),
             };
           }),
+          genresTop(user.lastSpotifyToken),
         ];
 
-        await Promise.all(requests);
+        const [top, history, overview, genres] = await Promise.all(requests);
+
+        const response = Object.assign(
+          {
+            userName: user.userName,
+            avatar: user.avatar,
+            lastLogin: user.lastLogin,
+          },
+          { top, history, overview, genres }
+        );
 
         reply.code(200).send(response);
       } catch (e) {
@@ -180,3 +191,42 @@ export default async function(fastify) {
     }
   );
 }
+
+const genresTop = async (lastSpotifyToken) => {
+  const { artists } = await fetch(
+    "https://api.spotify.com/v1/me/following?type=artist&limit=50",
+    {
+      headers: {
+        Authorization: "Bearer " + lastSpotifyToken,
+      },
+    }
+  )
+    .then((res) => res.json())
+    .catch((e) => {
+      throw e;
+    });
+  if (!artists.items.length) return [];
+  const genres = artists.items
+    .map(({ genres }) => {
+      return genres;
+    })
+    .flat(1);
+
+  let res = genres.reduce((data, curr) => {
+    data[curr] = data[curr] ? ++data[curr] : 1;
+    return data;
+  }, {});
+
+  const genresTop = [];
+
+  Object.entries(res).forEach(([val, numTimes]) => {
+    genresTop.push({ genre: val, times: numTimes });
+  });
+
+  return genresTop
+    .sort(function(a, b) {
+      return b.times - a.times;
+    })
+    .map(({ genre }) => genre)
+    .slice(0, 10);
+};
