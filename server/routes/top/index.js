@@ -16,22 +16,46 @@ export default async function(fastify) {
     {
       schema: {
         headers: auth,
+        querystring: {
+          type: "object",
+          properties: {
+            range: {
+              type: "number",
+              minimum: 1,
+              maximum: 50,
+            },
+            firstDate: {
+              type: "string",
+              pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            },
+            lastDate: {
+              type: "string",
+              pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            },
+          },
+        },
         response: { 200: top },
       },
       attachValidation: true,
     },
     async function(req, reply) {
       try {
-        if (req.validationError)
-          return reply.code(401).send({ message: "Unauthorized" });
+        if (req.validationError) {
+          const errorSource = req.validationError.validationContext;
+
+          errorSource === "headers" &&
+            reply.code(401).send({ message: "Unauthorized" });
+
+          errorSource === "querystring" &&
+            reply.code(417).send({ message: "Invalid parameters" });
+
+          return;
+        }
 
         const _id = req.headers.authorization;
-
-        const range = Number.parseInt(req.query.range) || 20;
-
-        const firstDate = req.query.firstDate;
-
-        let lastDate = req.query.lastDate;
+        const range = req.query.range || 20;
+        const firstDate = req.query.firstDate || "0000-00-00";
+        let lastDate = req.query.lastDate || "9999-12-30";
 
         const document = await User.findOne(
           { _id },
@@ -49,22 +73,25 @@ export default async function(fastify) {
           lastDate.setDate(lastDate.getDate() + 1);
           lastDate = lastDate.toISOString().split("T")[0];
         }
+        if (new Date(firstDate) > new Date())
+          return reply.code(417).send({ message: "Invalid parameters" });
 
         let response = {};
 
+        const options = { _id, firstDate, lastDate, range };
         const info = await Promise.all([
-          tracks(_id, firstDate, lastDate, range),
-          albums(_id, firstDate, lastDate, range),
-          artists(_id, firstDate, lastDate, range),
-          playlists(_id, firstDate, lastDate, range),
+          tracks(options),
+          albums(options),
+          artists(options),
+          playlists(options),
         ]);
 
         response.tracks = info[0];
         response.albums = info[1];
         response.artists = info[2];
-        response.playlists = info[3];
+        response.playlists = [];
 
-        const requests = response.playlists.map((playlist) => {
+        const requests = info[3].map((playlist) => {
           return new Promise((resolve) => {
             addPlaylistInfo(playlist, resolve);
           }).then((res) => {
@@ -72,8 +99,6 @@ export default async function(fastify) {
             response.playlists.push(res);
           });
         });
-
-        response.playlists = [];
 
         await Promise.all(requests);
 
@@ -124,7 +149,7 @@ export default async function(fastify) {
   );
 }
 
-const tracks = async (_id, firstDate, lastDate, range) => {
+const tracks = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
     {
       $match: {
@@ -150,8 +175,8 @@ const tracks = async (_id, firstDate, lastDate, range) => {
     {
       $match: {
         "recentlyPlayed.played_at": {
-          $gte: firstDate || "1488-12-22",
-          $lte: lastDate || "5427-12-22",
+          $gte: firstDate,
+          $lte: lastDate,
         },
       },
     },
@@ -188,7 +213,7 @@ const tracks = async (_id, firstDate, lastDate, range) => {
   });
 };
 
-const albums = async (_id, firstDate, lastDate, range) => {
+const albums = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
     {
       $match: {
@@ -214,8 +239,8 @@ const albums = async (_id, firstDate, lastDate, range) => {
     {
       $match: {
         "recentlyPlayed.played_at": {
-          $gte: firstDate || "1488-12-22",
-          $lte: lastDate || "5427-12-22",
+          $gte: firstDate,
+          $lte: lastDate,
         },
       },
     },
@@ -252,7 +277,7 @@ const albums = async (_id, firstDate, lastDate, range) => {
   });
 };
 
-const playlists = async (_id, firstDate, lastDate, range) => {
+const playlists = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
     {
       $match: {
@@ -276,8 +301,8 @@ const playlists = async (_id, firstDate, lastDate, range) => {
     {
       $match: {
         "recentlyPlayed.played_at": {
-          $gte: firstDate || "1488-12-22",
-          $lte: lastDate || "5427-12-22",
+          $gte: firstDate,
+          $lte: lastDate,
         },
         "recentlyPlayed.context": { $ne: null },
       },
@@ -313,7 +338,7 @@ const playlists = async (_id, firstDate, lastDate, range) => {
   });
 };
 
-const artists = async (_id, firstDate, lastDate, range) => {
+const artists = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
     {
       $match: {
@@ -338,8 +363,8 @@ const artists = async (_id, firstDate, lastDate, range) => {
     {
       $match: {
         "recentlyPlayed.played_at": {
-          $gte: firstDate || "1488-12-22",
-          $lte: lastDate || "5427-12-22",
+          $gte: firstDate,
+          $lte: lastDate,
         },
       },
     },
