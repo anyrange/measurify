@@ -33,5 +33,8 @@ export default {
       });
     });
   },
+  beforeMount() {
+    this.$notify.reset();
+  },
 };
 </script>
