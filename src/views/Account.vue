@@ -51,7 +51,17 @@
           Profile type
         </label>
         <div class="item-select">
-          <privacy-select v-model:privacy="account.private" />
+          <div
+            v-if="loading"
+            class="relative w-28 pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-default focus:outline-none focus:ring-1 focus:ring-gray-600 sm:text-sm; animate-pulse loading"
+          >
+            &nbsp;
+          </div>
+          <custom-select
+            v-else
+            v-model="account.private"
+            :options="privacy_options"
+          />
         </div>
       </div>
     </div>
@@ -72,13 +82,13 @@
 
 <script>
 import api from "@/api";
-import PrivacySelect from "@/components/PrivacySelect";
+import CustomSelect from "@/components/CustomSelect";
 import { UserIcon } from "@/components/icons";
 import { mapGetters } from "vuex";
 
 export default {
   components: {
-    PrivacySelect,
+    CustomSelect,
     UserIcon,
   },
   data() {
@@ -86,13 +96,23 @@ export default {
       loading: true,
       loadingButton: false,
 
+      privacy_options: [
+        {
+          label: "Private",
+          value: true,
+        },
+        {
+          label: "Public",
+          value: false,
+        },
+      ],
       account: {
-        private: true,
+        private: null,
         customID: "",
         spotifyID: "",
       },
       account_copy: {
-        private: true,
+        private: null,
         customID: "",
       },
     };
@@ -102,23 +122,20 @@ export default {
       user: "getUser",
     }),
     isDisabledSubmitButton() {
-      const regexExp = /^[a-z0-9_-]{3,16}$/;
-      if (this.account.customID.length > 0) {
-        if (this.account.customID.match(regexExp)) {
-          if (
-            this.account_copy.customID != this.account.customID ||
-            this.account_copy.private != this.account.private
-          ) {
-            return false;
-          } else {
-            return true;
-          }
-        } else {
-          return true;
-        }
-      } else {
+      const blacklist = this.$router.options.routes[1].children
+        .map((item) => item.name)
+        .join("|");
+
+      const regex = new RegExp(`^(?!.*(?:${blacklist}))[a-z0-9_-]{3,16}$`);
+
+      if (!this.account.customID.match(regex)) return true;
+      if (
+        this.account_copy.customID == this.account.customID &&
+        this.account_copy.private == this.account.private
+      )
         return true;
-      }
+
+      return false;
     },
   },
   methods: {
