@@ -12,6 +12,19 @@ export default async function(fastify) {
   const history = fastify.getSchema("listening-history");
   const schema = {
     headers: auth,
+    querystring: {
+      type: "object",
+      properties: {
+        page: {
+          type: "number",
+          minimum: 1,
+        },
+        range: {
+          type: "number",
+          minimum: 1,
+        },
+      },
+    },
     response: {
       200: history,
     },
@@ -25,12 +38,21 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        if (req.validationError)
-          return reply.code(401).send({ message: "Unauthorized" });
+        if (req.validationError) {
+          const errorSource = req.validationError.validationContext;
+
+          errorSource === "headers" &&
+            reply.code(401).send({ message: "Unauthorized" });
+
+          errorSource === "querystring" &&
+            reply.code(417).send({ message: "Invalid parameters" });
+
+          return;
+        }
 
         const _id = req.headers.authorization;
 
-        const range = Number.parseInt(req.query.range) || 50;
+        const range = req.query.range || 50;
         const page = req.query.page - 1 || 0;
         const agg = [
           {

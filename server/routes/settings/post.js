@@ -16,7 +16,7 @@ export default async function(fastify) {
           required: ["private", "customID"],
           properties: {
             private: { type: "boolean" },
-            customID: { type: "string" },
+            customID: { type: "string", maxLength: 16, minLength: 3 },
           },
         },
         response: {
@@ -33,17 +33,17 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "headers"
-        )
-          return reply.code(401).send({ message: "Unauthorized" });
+        if (req.validationError) {
+          const errorSource = req.validationError.validationContext;
 
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "body"
-        )
-          return reply.code(400).send({ message: "Bad data" });
+          errorSource === "headers" &&
+            reply.code(401).send({ message: "Unauthorized" });
+
+          errorSource === "body" &&
+            reply.code(400).send({ message: "Bad data" });
+
+          return;
+        }
 
         const _id = req.headers.authorization;
         const confidential = req.body.private;
