@@ -16,7 +16,13 @@ export default async function(fastify) {
           required: ["private", "customID"],
           properties: {
             private: { type: "boolean" },
-            customID: { type: "string", maxLength: 16, minLength: 3 },
+            customID: {
+              type: "string",
+              maxLength: 16,
+              minLength: 3,
+              pattern:
+                "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
+            },
           },
         },
         response: {
