@@ -29,7 +29,7 @@ const routes = [
   {
     name: "home",
     component: MainLayout,
-    path: "/dashboard",
+    path: "/",
     redirect: { name: "overview" },
     children: [
       {

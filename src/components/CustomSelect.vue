@@ -1,0 +1,107 @@
+<template>
+  <div class="custom-select">
+    <button
+      @click="opened = !opened"
+      type="button"
+      class="select-button"
+      aria-haspopup="listbox"
+      aria-expanded="true"
+      aria-labelledby="listbox-label"
+    >
+      <span class="flex items-center">
+        <span class="mr-1"> {{ selected }}</span>
+      </span>
+      <span
+        class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+          class="h-5 w-5 text-gray-400"
+          fill="currentColor"
+        >
+          <path
+            d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"
+          />
+        </svg>
+      </span>
+    </button>
+    <ul
+      class="w-28 absolute text-gray-400 pt-1 flex flex-col"
+      :class="{ hidden: !opened }"
+    >
+      <li
+        v-for="(option, index) in filteredOptions"
+        :key="index"
+        :value="modelValue"
+        @click="changeOption(option)"
+      >
+        <a
+          class="w-full rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
+          href="#"
+        >
+          {{ option.label }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    modelValue: {
+      required: true,
+    },
+    options: {
+      type: Array,
+      required: true,
+    },
+  },
+  emits: ["update:modelValue"],
+  data() {
+    return {
+      opened: false,
+      selected: "",
+    };
+  },
+  computed: {
+    filteredOptions() {
+      return this.options.filter((option) => option.value != this.modelValue);
+    },
+  },
+  methods: {
+    changeOption(option) {
+      this.opened = false;
+      this.selected = option.label;
+      this.$emit("update:modelValue", option.value);
+    },
+    getFilteredArray() {
+      return this.options.filter((option) => option.value != this.modelValue);
+    },
+  },
+  mounted() {
+    this.options.find((option) => {
+      if (this.modelValue === option.value) {
+        this.selected = option.label;
+      }
+    });
+  },
+  created() {
+    function checkForDuplicates({ array, keyName }) {
+      return new Set(array.map((item) => item[keyName])).size !== array.length;
+    }
+    if (checkForDuplicates({ array: this.options, keyName: "value" })) {
+      console.error("Duplicate value key found in :options");
+    }
+  },
+};
+</script>
+
+<style scoped>
+.custom-select .select-button {
+  @apply relative w-28 pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-default focus:outline-none;
+}
+</style>
