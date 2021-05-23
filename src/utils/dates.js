@@ -3,19 +3,25 @@ import { totalOverview } from "./mockOverview.js";
 
 function getFirstDayOfCurrentWeek() {
   const now = new Date();
-  return now.setDate(now.getDate() - now.getDay());
+  now.setHours(0, 0, 0, 0);
+  return now.setDate(now.getDate() - ((now.getDay() ? now.getDay() : 7) - 1));
 }
 function getLastDateOfCurrentWeek() {
   const now = new Date();
-  return now.setDate(now.getDate() - now.getDay() + 7);
+  now.setHours(0, 0, 0, 0);
+  return now.setDate(now.getDate() - ((now.getDay() ? now.getDay() : 7) - 8));
 }
 function getFirstDayOfPreviousWeek() {
-  let now = new Date();
-  return new Date(now.setDate(now.getDate() - now.getDay() - 7));
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return now.setDate(
+    now.getDate() - ((now.getDay() ? now.getDay() : 7) - 1) - 7
+  );
 }
 function getLastDayOfPreviousWeek() {
   const now = new Date();
-  return new Date(now.setDate(now.getDate() - now.getDay()));
+  now.setHours(0, 0, 0, 0);
+  return now.setDate(now.getDate() - (now.getDay() ? now.getDay() : 7) + 1);
 }
 
 function getFirstDayOfCurrentMonth() {
