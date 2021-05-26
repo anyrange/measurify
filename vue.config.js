@@ -1,12 +1,13 @@
 module.exports = {
   pwa: {
+    name: "Spotiworm",
+    themeColor: "#0b0b0b",
+    msTileColor: "#00a300",
+    appleMobileWebAppCapable: "yes",
+    appleMobileWebAppStatusBarStyle: "#00a300",
     manifestOptions: {
-      name: "Spotiworm",
-      short_name: "Spotiworm",
-      display: "standalone",
       background_color: "#0b0b0b",
-      themeColor: "#0b0b0b",
-      msTileColor: "#00a300",
+      display: "standalone",
     },
     icons: [
       {
