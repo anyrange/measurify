@@ -100,6 +100,7 @@ export default async function(fastify) {
         reply.setCookie("token", token, {
           httpOnly: true,
           secure: true,
+          sameSite: "none",
           path: "/",
         });
 
