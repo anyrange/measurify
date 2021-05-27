@@ -110,10 +110,8 @@ export default async function(fastify) {
 
         const plays = await User.aggregate(agg);
 
-        if (!plays.length) {
-          reply.code(204).send({});
-          return;
-        }
+        if (!plays.length)
+          return reply.code(200).send({ status: 204, overview: [] });
 
         reply
           .code(200)

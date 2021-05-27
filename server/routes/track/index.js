@@ -13,7 +13,7 @@ export default async function(fastify) {
   const responseSchema = {
     200: {
       type: "object",
-      required: ["track", "overview", "status"],
+      required: ["overview", "status"],
       properties: {
         track: {
           type: "object",
@@ -140,7 +140,8 @@ export default async function(fastify) {
 
         const playsRaw = await plays(_id, trackID);
 
-        if (!playsRaw.length) return reply.code(204).send({});
+        if (!playsRaw.length)
+          return reply.code(200).send({ status: 204, overview: [] });
 
         const response = {
           track: {

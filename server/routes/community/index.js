@@ -156,7 +156,10 @@ export default async function(fastify) {
 
         const friends = users.filter((user, key) => friendList[key]);
 
-        if (!friends.length) return reply.code(204).send({});
+        if (!friends.length)
+          return reply
+            .code(200)
+            .send({ status: 204, friends: [], activity: [] });
 
         const trackActivity = await getTrackActivity(friends, page, range);
 

@@ -74,7 +74,10 @@ export default async function(fastify) {
             .send({ message: "User not found", status: 404 });
 
         if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-          return reply.code(204).send({});
+          return reply.code(200).send({
+            status: 204,
+            top: { tracks: [], albums: [], artists: [], playlists: [] },
+          });
 
         if (lastDate) {
           lastDate = new Date(lastDate);
