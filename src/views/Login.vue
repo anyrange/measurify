@@ -69,7 +69,6 @@ export default {
           this.$router.push({ name: "home" });
         })
         .catch((error) => {
-          console.error(error.response.data.error.message);
           this.$notify.show({
             type: "danger",
             message: error.response.data.error.message,

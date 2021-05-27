@@ -17,7 +17,9 @@
         <p class=" text-lg font-semibold text-gray-300">
           {{ user.display_name }}
         </p>
-        <p class="text-lg text-gray-400">{{ user.email }}</p>
+        <p class="text-lg text-gray-400">
+          {{ user.email }}
+        </p>
       </div>
     </div>
     <div class="field">

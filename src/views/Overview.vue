@@ -162,7 +162,7 @@ export default {
 
   computed: {
     playlistsExist() {
-      if (this.totalTop.playlists.length) {
+      if (this.totalTop.playlists?.length) {
         return true;
       }
       return false;
@@ -289,16 +289,24 @@ export default {
       api
         .getOverview()
         .then((response) => {
-          if (response[0].status === 204) {
+          if (response.status === 204) {
             return (this.emptyData = true);
           }
-          this.totalOverview = response[0].data.reverse();
-          this.totalTop = response[1].data;
+          this.totalOverview = response.reverse();
           this.pushToChart();
           this.preCalculateFilteredArrays();
-        })
-        .finally(() => {
-          this.loading = false;
+          api
+            .getTop()
+            .then((response) => {
+              this.totalTop = response;
+              this.loading = false;
+            })
+            .catch((error) => {
+              this.$notify.show({
+                type: "danger",
+                message: error.response.data.message,
+              });
+            });
         })
         .catch((error) => {
           this.$notify.show({
@@ -314,7 +322,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="postcss">
 .tab {
   @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200 transition ease-in-out duration-75;
 }

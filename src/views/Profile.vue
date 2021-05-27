@@ -45,26 +45,22 @@ export default {
     api
       .getProfile(this.$route.params.id)
       .then((response) => {
+        this.loading = false;
         this.profile = response;
         document.title = `${this.profile.userName} - Spotiworm`;
       })
-      .finally(() => {
-        this.loading = false;
-      })
       .catch((error) => {
+        this.$router.push({ name: "home" });
         this.$notify.show({
           type: "danger",
           message: error.response.data.message,
-        });
-        this.$router.push({
-          name: "home",
         });
       });
   },
 };
 </script>
 
-<style scoped>
+<style lang="postcss" scoped>
 .badge {
   @apply bg-gray-700-spotify w-52 p-2 rounded-full flex items-center flex-row justify-between;
 }

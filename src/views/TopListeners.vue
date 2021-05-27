@@ -1,7 +1,7 @@
 <template>
   <h2 class="h-title">Top Listeners</h2>
   <h3 class="h-subtitle mt-4">
-    This rating is based on the number of listened to tracks
+    This rating is based on the number of listened tracks
   </h3>
   <loading-spinner v-if="loading" />
   <template v-else>
@@ -88,8 +88,6 @@ export default {
         .getListenersTop()
         .then((response) => {
           this.leaderboard = response;
-        })
-        .finally(() => {
           this.loading = false;
         })
         .catch((error) => {

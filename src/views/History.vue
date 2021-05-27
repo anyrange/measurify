@@ -162,8 +162,8 @@ export default {
           if (response.status === 204) {
             return (this.emptyData = true);
           }
-          this.pagesMax = response.data.pages;
-          this.recentlyPlayed = response.data.history;
+          this.pagesMax = response.pages;
+          this.recentlyPlayed = response.history;
         })
         .finally(() => {
           this.loading = false;
@@ -193,7 +193,7 @@ export default {
           api
             .getListeningHistory(this.page)
             .then((response) => {
-              this.recentlyPlayed.push(...response.data.history);
+              this.recentlyPlayed.push(...response.history);
             })
             .finally(() => {
               this.loadingNextPage = false;
