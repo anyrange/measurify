@@ -14,14 +14,23 @@ export default async function(fastify) {
       schema: {
         response: {
           200: {
-            type: "array",
-            items: {
-              type: "object",
-              required: ["date", "duration", "plays"],
-              properties: {
-                date: { type: "string" },
-                duration: { type: "number" },
-                plays: { type: "number" },
+            type: "object",
+            required: ["overview", "status"],
+            properties: {
+              status: {
+                type: "number",
+              },
+              overview: {
+                type: "array",
+                items: {
+                  type: "object",
+                  required: ["date", "duration", "plays"],
+                  properties: {
+                    date: { type: "string" },
+                    duration: { type: "number" },
+                    plays: { type: "number" },
+                  },
+                },
               },
             },
           },
@@ -32,13 +41,17 @@ export default async function(fastify) {
     async (req, reply) => {
       try {
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
 
         const user = await User.findOne({ _id }, { _id: 1 });
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const agg = [
           {
@@ -102,9 +115,11 @@ export default async function(fastify) {
           return;
         }
 
-        reply.code(200).send(await formatOverview(plays));
+        reply
+          .code(200)
+          .send({ overview: await formatOverview(plays), status: 200 });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

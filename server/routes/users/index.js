@@ -11,8 +11,12 @@ export default async function(fastify) {
         response: {
           200: {
             type: "object",
+            required: ["quantity", "status"],
             properties: {
               quantity: {
+                type: "number",
+              },
+              status: {
                 type: "number",
               },
             },
@@ -23,9 +27,9 @@ export default async function(fastify) {
     async function(request, reply) {
       try {
         const quantity = await User.estimatedDocumentCount();
-        reply.code(200).send({ quantity });
+        reply.code(200).send({ quantity, status: 200 });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

@@ -37,7 +37,7 @@ app.register(autoLoad, {
 });
 
 app.all("/*", (request, reply) => {
-  reply.code(404).send({ message: "Service not found" });
+  reply.code(400).send({ message: "Service not found" });
 });
 
 process.on("unhandledRejection", (error) => {

@@ -32,7 +32,7 @@ export default async function(fastify) {
     async (request, reply) => {
       try {
         if (request.validationError)
-          return reply.code(404).send({ message: "Invalid uri" });
+          return reply.code(404).send({ message: "Invalid uri", status: 404 });
 
         const code = request.query.code || null;
         const query_uri = request.query.sw_redirect;
@@ -43,6 +43,7 @@ export default async function(fastify) {
         if (tokens.error) {
           return reply.code(500).send({
             message: tokens.error,
+            status: 500,
           });
         }
 
@@ -63,6 +64,7 @@ export default async function(fastify) {
         if (user.error)
           return reply.code(tokens.error.status || 500).send({
             message: tokens.error.message,
+            status: token.error.status || 500,
           });
 
         console.log(user.display_name + " logined");
@@ -106,7 +108,7 @@ export default async function(fastify) {
 
         reply.redirect(`${query_uri}?access_token=${access_token}`);
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

@@ -28,7 +28,11 @@ export default async function(fastify) {
         response: {
           200: {
             type: "object",
+            required: ["status", "friends", "activity"],
             properties: {
+              status: {
+                type: "number",
+              },
               friends: {
                 type: "array",
                 items: {
@@ -92,10 +96,13 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         if (req.validationError)
-          return reply.code(417).send({ message: "Invalid parameters" });
+          return reply
+            .code(406)
+            .send({ message: "Invalid parameters", status: 406 });
 
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
         const range = req.query.range || 10;
@@ -116,7 +123,10 @@ export default async function(fastify) {
         // get user's info
         const user = users.find((user) => user._id == _id);
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const access_token = user.lastSpotifyToken;
 
@@ -141,6 +151,7 @@ export default async function(fastify) {
         if (friendList.error)
           return reply.code(friendList.error.status || 500).send({
             message: friendList.error.message,
+            status: friendList.error.status || 500,
           });
 
         const friends = users.filter((user, key) => friendList[key]);
@@ -181,9 +192,9 @@ export default async function(fastify) {
             : 0
         );
 
-        reply.code(200).send({ friends, activity });
+        reply.code(200).send({ friends, activity, status: 200 });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

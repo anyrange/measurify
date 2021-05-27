@@ -15,7 +15,7 @@ export default async function(fastify) {
   const responseSchema = {
     200: {
       type: "object",
-      required: ["playlist", "overview", "tracks"],
+      required: ["playlist", "overview", "tracks", "status"],
       properties: {
         playlist: {
           type: "object",
@@ -63,6 +63,9 @@ export default async function(fastify) {
         },
         overview,
         tracks,
+        status: {
+          type: "number",
+        },
       },
     },
   };
@@ -89,10 +92,13 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         if (req.validationError)
-          return reply.code(404).send({ message: "Invalid playlist" });
+          return reply
+            .code(404)
+            .send({ message: "Invalid playlist", status: 404 });
 
         const _id = await fastify.auth(token);
 
@@ -100,7 +106,10 @@ export default async function(fastify) {
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const playlist = await fetch(
           `https://api.spotify.com/v1/playlists/${playlistID}?fields=collaborative, external_urls, followers(total),images,name,owner(display_name,id),public,tracks(total)`,
@@ -118,6 +127,7 @@ export default async function(fastify) {
         if (playlist.error)
           return reply.code(playlist.error.status || 500).send({
             message: playlist.error.message,
+            status: playlist.error.status || 500,
           });
 
         const [overviewRaw, tracks] = await Promise.all([
@@ -138,11 +148,12 @@ export default async function(fastify) {
           },
           overview: formatOverview(overviewRaw),
           tracks,
+          status: 200,
         };
 
         reply.code(200).send(response);
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

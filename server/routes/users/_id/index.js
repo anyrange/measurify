@@ -1,7 +1,3 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import mongodb from "mongodb";
@@ -10,6 +6,7 @@ const { ObjectId } = mongodb;
 
 export default async function(fastify) {
   const top = fastify.getSchema("top");
+  const history = fastify.getSchema("listening-history");
 
   const responseSchema = {
     200: {
@@ -22,6 +19,7 @@ export default async function(fastify) {
         "history",
         "top",
         "genres",
+        "status",
       ],
       properties: {
         userName: {
@@ -33,35 +31,7 @@ export default async function(fastify) {
         lastlogin: {
           type: "string",
         },
-        history: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-              name: { type: "string" },
-              duration_ms: { type: "string" },
-              played_at: { type: "string" },
-              album: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                },
-              },
-              artists: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    name: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
+        history,
         overview: {
           type: "object",
           required: ["plays", "playtime"],
@@ -80,6 +50,9 @@ export default async function(fastify) {
           items: {
             type: "string",
           },
+        },
+        status: {
+          type: "number",
         },
       },
     },
@@ -105,10 +78,11 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         if (req.validationError)
-          return reply.code(404).send({ message: "Invalid user" });
+          return reply.code(404).send({ message: "Invalid user", status: 404 });
 
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
 
@@ -127,14 +101,19 @@ export default async function(fastify) {
         );
 
         if (!users.find((user) => user._id == _id))
-          return reply.code(401).send({ message: "Unauthorized" });
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const user = users.find((user) => user.customID == customID);
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         if (user.private && _id != user._id)
-          return reply.code(403).send({ message: "Private profile" });
+          return reply
+            .code(403)
+            .send({ message: "Private profile", status: 403 });
 
         const agg = [
           {
@@ -180,18 +159,20 @@ export default async function(fastify) {
 
         const [top, history, overview, genres] = await Promise.all(requests);
 
-        const response = Object.assign(
-          {
-            userName: user.userName,
-            avatar: user.avatar,
-            lastLogin: user.lastLogin,
-          },
-          { top, history: history[0].recentlyPlayed, overview, genres }
-        );
+        const response = {
+          userName: user.userName,
+          avatar: user.avatar,
+          lastLogin: user.lastLogin,
+          top,
+          history: history[0].recentlyPlayed,
+          overview,
+          genres,
+          status: 200,
+        };
 
         reply.code(200).send(response);
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

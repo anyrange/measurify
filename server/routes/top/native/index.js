@@ -5,7 +5,7 @@ export default async function(fastify) {
   const response = {
     200: {
       type: "object",
-      required: ["tracks", "artists"],
+      required: ["tracks", "artists", "status"],
       properties: {
         tracks: {
           type: "array",
@@ -67,6 +67,9 @@ export default async function(fastify) {
             },
           },
         },
+        status: {
+          type: "number",
+        },
       },
     },
   };
@@ -95,24 +98,32 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         if (req.validationError)
-          return reply.code(417).send({ message: "Invalid parameters" });
+          return reply
+            .code(406)
+            .send({ message: "Invalid parameters", status: 406 });
 
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
         const range = req.query.range || 20;
         const period = req.query.period || "long_term";
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const options = { token: user.lastSpotifyToken, range, period };
         const info = await Promise.all([tracks(options), artists(options)]);
 
-        reply.code(200).send({ tracks: info[0], artists: info[1] });
+        reply
+          .code(200)
+          .send({ tracks: info[0], artists: info[1], status: 200 });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

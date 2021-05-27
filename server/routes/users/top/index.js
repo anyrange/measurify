@@ -10,24 +10,33 @@ export default async function(fastify) {
       schema: {
         response: {
           200: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                userName: {
-                  type: "string",
-                },
-                private: {
-                  type: "boolean",
-                },
-                avatar: {
-                  type: "string",
-                },
-                customID: {
-                  type: "string",
-                },
-                listened: {
-                  type: "number",
+            type: "object",
+            required: ["status", "top"],
+            properties: {
+              status: {
+                type: "number",
+              },
+              top: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    userName: {
+                      type: "string",
+                    },
+                    private: {
+                      type: "boolean",
+                    },
+                    avatar: {
+                      type: "string",
+                    },
+                    customID: {
+                      type: "string",
+                    },
+                    listened: {
+                      type: "number",
+                    },
+                  },
                 },
               },
             },
@@ -39,13 +48,17 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
 
         const user = await User.findOne({ _id }, { _id: 1 });
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const agg = [
           {
@@ -84,9 +97,9 @@ export default async function(fastify) {
 
         const top = await User.aggregate(agg);
 
-        reply.code(200).send(top);
+        reply.code(200).send({ top, status: 200 });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

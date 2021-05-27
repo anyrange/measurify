@@ -1,7 +1,3 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- * @param {*} opts
- */
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";

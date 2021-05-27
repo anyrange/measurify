@@ -20,7 +20,19 @@ export default async function(fastify) {
       },
     },
     response: {
-      200: history,
+      200: {
+        type: "object",
+        required: ["pages", "history", "status"],
+        properties: {
+          status: {
+            type: "number",
+          },
+          pages: {
+            type: "number",
+          },
+          history,
+        },
+      },
     },
   };
 
@@ -33,10 +45,13 @@ export default async function(fastify) {
     async (req, reply) => {
       try {
         if (req.validationError)
-          return reply.code(417).send({ message: "Invalid parameters" });
+          return reply
+            .code(406)
+            .send({ message: "Invalid parameters", status: 406 });
 
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
         const range = req.query.range || 50;
@@ -45,16 +60,19 @@ export default async function(fastify) {
         const user = await fastify.parseHistory(_id, range, page);
 
         if (!user[0])
-          return reply.code(404).send({ message: "User not found" });
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         if (!user[0].tracksLength) return reply.code(204).send({});
 
         reply.code(200).send({
           pages: Math.ceil(user[0].tracksLength / range),
           history: user[0].recentlyPlayed,
+          status: 200,
         });
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }

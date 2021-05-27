@@ -23,7 +23,9 @@ export default async function(fastify) {
     },
     (request, reply) => {
       if (request.validationError)
-        return reply.code(404).send({ message: "Invalid redirect uri" });
+        return reply
+          .code(404)
+          .send({ message: "Invalid redirect uri", status: 404 });
 
       const query_uri = request.query.sw_redirect;
 

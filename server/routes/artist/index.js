@@ -14,7 +14,7 @@ export default async function(fastify) {
   const responseSchema = {
     200: {
       type: "object",
-      required: ["artist", "overview", "tracks"],
+      required: ["artist", "overview", "tracks", "status"],
       properties: {
         artist: {
           type: "object",
@@ -36,6 +36,9 @@ export default async function(fastify) {
         },
         overview,
         tracks,
+        status: {
+          type: "number",
+        },
       },
     },
   };
@@ -62,17 +65,23 @@ export default async function(fastify) {
     async function(req, reply) {
       try {
         if (req.validationError)
-          return reply.code(404).send({ message: "Invalid artist" });
+          return reply
+            .code(404)
+            .send({ message: "Invalid artist", status: 404 });
 
         const token = req.cookies.token;
-        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+        if (!token)
+          return reply.code(401).send({ message: "Unauthorized", status: 401 });
 
         const _id = await fastify.auth(token);
         const artistID = req.params.id;
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-        if (!user) return reply.code(404).send({ message: "User not found" });
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
 
         const artist = await fetch(
           `https://api.spotify.com/v1/artists/${artistID}`,
@@ -90,6 +99,7 @@ export default async function(fastify) {
         if (artist.error)
           return reply.code(artist.error.status || 500).send({
             message: artist.error.message,
+            status: artist.error.status || 500,
           });
 
         // get data for graph
@@ -110,11 +120,12 @@ export default async function(fastify) {
           },
           overview: formatOverview(overviewRaw),
           tracks,
+          status: 200,
         };
 
         reply.code(200).send(response);
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!" });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }
