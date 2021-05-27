@@ -41,7 +41,7 @@ app.all("/*", (request, reply) => {
 });
 
 process.on("unhandledRejection", (error) => {
-  console.log(error);
+  console.log("Unhandled - " + error);
 });
 
 export default app;
