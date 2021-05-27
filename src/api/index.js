@@ -3,21 +3,12 @@ import store from "@/store";
 
 const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
 
-const api = axios.create({ baseURL: SERVER_URI });
-
-const response_options = () => {
-  return {
-    withCredentials: true,
-  };
-};
-
-const uri = () => {
-  return window.location.href;
-};
+const api = axios.create({ baseURL: SERVER_URI, withCredentials: true });
+api.interceptors.response.use((response) => response.data);
 
 export default {
   login() {
-    window.location.href = `${SERVER_URI}/login?sw_redirect=${uri()}`;
+    window.location.href = `${SERVER_URI}/login?sw_redirect=${window.location.href}`;
   },
   authorise(access_token) {
     return axios
@@ -29,46 +20,35 @@ export default {
       .then((response) => response.data);
   },
   getToken() {
-    return api.get("/token", response_options()).then((response) => {
-      store.commit("SET_ACCES_TOKEN", response.data);
+    return api.get("/token").then((data) => {
+      store.commit("SET_ACCES_TOKEN", data);
     });
   },
   getUsersQuantity() {
-    return api.get("/users").then((response) => response.data);
+    return api.get("/users");
   },
   getListenersTop() {
-    return api
-      .get("/users/top", response_options())
-      .then((response) => response.data);
+    return api.get("/users/top");
   },
   getListeningHistory(page) {
-    return api
-      .get(`/listening-history?page=${page}`, response_options())
-      .then((response) => response);
+    return api.get(`/listening-history?page=${page}`);
   },
   getOverview() {
-    const fetchedData = (promise) => api.get(promise, response_options());
-    const promises = ["/overview", "/top"].map(fetchedData);
-    return Promise.all(promises).then((response) => response);
+    return api.get("/overview");
+  },
+  getTop() {
+    return api.get("/top");
   },
   getAccount() {
-    return api
-      .get("/settings", response_options())
-      .then((response) => response.data);
+    return api.get("/settings");
   },
-  updateAccount(cred) {
-    return api
-      .post("/settings", cred, response_options())
-      .then((response) => response.data);
+  updateAccount(settings) {
+    return api.post("/settings", settings);
   },
   getProfile(id) {
-    return api
-      .get(`/users/${id}`, response_options())
-      .then((response) => response.data);
+    return api.get(`/users/${id}`);
   },
   getTrack(id) {
-    return api
-      .get(`/track/${id}`, response_options())
-      .then((response) => response.data);
+    return api.get(`/track/${id}`);
   },
 };

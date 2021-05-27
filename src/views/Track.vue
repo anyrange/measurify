@@ -15,22 +15,26 @@
           <span class="text-5xl font-semibold mt-2 md:mt-0">
             {{ object.track.name }}
           </span>
-          <span class="text-lg"
-            >By
-            <a class="text-white">{{
-              object.track.artists
-                .map(({ name }) => {
-                  return name;
-                })
-                .join(", ")
-            }}</a>
+          <span class="text-lg">
+            By
+            <a class="text-white">
+              {{
+                object.track.artists
+                  .map(({ name }) => {
+                    return name;
+                  })
+                  .join(", ")
+              }}
+            </a>
           </span>
-          <span class="text-lg"
-            >From <a class="text-white">{{ object.track.album.name }}</a>
+          <span class="text-lg">
+            From
+            <a class="text-white">
+              {{ object.track.album.name }}
+            </a>
           </span>
-          <span class="text-lg"
-            >{{ object.track.release_date }} -
-            {{ trackDuration }}
+          <span class="text-lg">
+            {{ object.track.release_date }} - {{ trackDuration }}
           </span>
         </div>
       </div>
@@ -79,7 +83,7 @@
           height="350"
           :options="chartOptions"
           :series="overviewData"
-        ></apexchart>
+        />
       </div>
     </div>
   </template>
@@ -147,16 +151,15 @@ export default {
     api
       .getTrack(this.$route.params.id)
       .then((response) => {
+        this.loading = false;
         this.object = response;
         this.totalOverview = response.overview.reverse();
         this.pushToChart();
         this.preCalculateFilteredArrays();
         document.title = `${this.object.track.name} - Spotiworm`;
       })
-      .finally(() => {
-        this.loading = false;
-      })
       .catch((error) => {
+        this.$router.push({ name: "home" });
         this.$notify.show({
           type: "danger",
           message: error.response.data.message,
