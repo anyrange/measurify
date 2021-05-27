@@ -60,6 +60,7 @@ export default {
   },
   created() {
     this.fetchUsers();
+    this.$router.push({ name: "login" });
     if (this.$route.query.access_token) {
       this.authorise({
         access_token: this.$route.query.access_token,

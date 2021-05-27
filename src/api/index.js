@@ -21,7 +21,7 @@ export default {
   },
   getToken() {
     return api.get("/token").then((data) => {
-      store.commit("SET_ACCES_TOKEN", data);
+      store.commit("SET_ACCES_TOKEN", data.token);
     });
   },
   getUsersQuantity() {
