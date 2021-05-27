@@ -87,7 +87,7 @@ export default {
       api
         .getListenersTop()
         .then((response) => {
-          this.leaderboard = response;
+          this.leaderboard = response.top;
           this.loading = false;
         })
         .catch((error) => {

@@ -292,13 +292,13 @@ export default {
           if (response.status === 204) {
             return (this.emptyData = true);
           }
-          this.totalOverview = response.reverse();
+          this.totalOverview = response.overview.reverse();
           this.pushToChart();
           this.preCalculateFilteredArrays();
           api
             .getTop()
             .then((response) => {
-              this.totalTop = response;
+              this.totalTop = response.top;
               this.loading = false;
             })
             .catch((error) => {
