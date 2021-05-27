@@ -5,12 +5,10 @@
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
   fastify.post(
     "/",
     {
       schema: {
-        headers: auth,
         body: {
           type: "object",
           required: ["private", "customID"],
@@ -39,19 +37,13 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        if (req.validationError) {
-          const errorSource = req.validationError.validationContext;
+        if (req.validationError)
+          return reply.code(400).send({ message: "Bad data" });
 
-          errorSource === "headers" &&
-            reply.code(401).send({ message: "Unauthorized" });
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
 
-          errorSource === "body" &&
-            reply.code(400).send({ message: "Bad data" });
-
-          return;
-        }
-
-        const _id = req.headers.authorization;
+        const _id = await fastify.auth(token);
         const confidential = req.body.private;
         const customID = req.body.customID;
 

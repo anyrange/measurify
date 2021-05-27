@@ -1,10 +1,12 @@
 import fp from "fastify-plugin";
+import jwt from "jsonwebtoken";
+
+const secret = process.env.SECRET_JWT;
 
 const plugin = fp(async function plugin(fastify) {
-  fastify.decorate("auth", (_id) => {
-    if (!_id) return { message: `Unauthorized`, code: 401 };
-    if (_id.length !== 24) return { message: `Invalid`, code: 400 };
-    return { code: 200 };
+  fastify.decorate("auth", async (token) => {
+    const decoded = await jwt.verify(token, secret);
+    return decoded._id;
   });
 });
 

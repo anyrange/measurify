@@ -18,7 +18,16 @@ app.register(import("fastify-cors"), {
   credentials: true,
 });
 
-// app.register(import("./plugins/auth.js"));
+const secret = process.env.SECRET_COOKIE;
+
+app.register(import("fastify-cookie"), {
+  secret,
+  parseOptions: {},
+});
+
+app.register(autoLoad, {
+  dir: join(__dirname, "plugins"),
+});
 
 addSchemas(app);
 

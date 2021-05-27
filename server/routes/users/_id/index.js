@@ -9,9 +9,7 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
   const top = fastify.getSchema("top");
-  const history = fastify.getSchema("listening-history");
 
   const responseSchema = {
     200: {
@@ -35,6 +33,35 @@ export default async function(fastify) {
         lastlogin: {
           type: "string",
         },
+        history: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string" },
+              name: { type: "string" },
+              duration_ms: { type: "string" },
+              played_at: { type: "string" },
+              album: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                  name: { type: "string" },
+                },
+              },
+              artists: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    name: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
         overview: {
           type: "object",
           required: ["plays", "playtime"],
@@ -47,7 +74,6 @@ export default async function(fastify) {
             },
           },
         },
-        history,
         top,
         genres: {
           type: "array",
@@ -63,7 +89,6 @@ export default async function(fastify) {
     "/",
     {
       schema: {
-        headers: auth,
         params: {
           type: "object",
           required: ["id"],
@@ -79,19 +104,13 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "headers"
-        )
-          return reply.code(401).send({ message: "Unauthorized" });
-
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "params"
-        )
+        if (req.validationError)
           return reply.code(404).send({ message: "Invalid user" });
 
-        const _id = req.headers.authorization;
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
+
+        const _id = await fastify.auth(token);
 
         const customID = req.params.id;
 
@@ -106,6 +125,7 @@ export default async function(fastify) {
             lastSpotifyToken: 1,
           }
         );
+
         if (!users.find((user) => user._id == _id))
           return reply.code(401).send({ message: "Unauthorized" });
 
@@ -147,22 +167,8 @@ export default async function(fastify) {
         ];
 
         const requests = [
-          fetch(req.protocol + "://" + req.headers.host + "/top?range=5", {
-            headers: {
-              Authorization: user._id,
-            },
-          }).then((res) => res.json()),
-          fetch(
-            req.protocol +
-              "://" +
-              req.headers.host +
-              "/listening-history?range=20",
-            {
-              headers: {
-                Authorization: user._id,
-              },
-            }
-          ).then((res) => res.json()),
+          fastify.parseTop(_id, user.lastSpotifyToken, 5),
+          fastify.parseHistory(_id, 20),
           User.aggregate(agg).then((body) => {
             return {
               plays: body[0].plays,
@@ -180,7 +186,7 @@ export default async function(fastify) {
             avatar: user.avatar,
             lastLogin: user.lastLogin,
           },
-          { top, history, overview, genres }
+          { top, history: history[0].recentlyPlayed, overview, genres }
         );
 
         reply.code(200).send(response);

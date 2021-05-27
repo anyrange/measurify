@@ -6,6 +6,9 @@
 import formatTrack from "../../includes/format-track.js";
 import User from "../../models/User.js";
 import fetch from "node-fetch";
+import jwt from "jsonwebtoken";
+
+const secret = process.env.SECRET_JWT;
 
 const redirect_uri =
   process.env.REDIRECT_URI || "http://localhost:8888/callback";
@@ -92,9 +95,15 @@ export default async function(fastify) {
         if (!document.recentlyPlayed || !document.recentlyPlayed.length)
           await fetchHistory(access_token, document._id);
 
-        reply.redirect(
-          `${query_uri}?access_token=${access_token}&id=${document._id}`
-        );
+        const token = jwt.sign({ _id: document._id }, secret);
+
+        reply.setCookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          path: "/",
+        });
+
+        reply.redirect(`${query_uri}?access_token=${access_token}`);
       } catch (e) {
         reply.code(500).send({ message: "Something went wrong!" });
         console.log(e);

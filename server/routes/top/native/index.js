@@ -2,8 +2,6 @@ import fetch from "node-fetch";
 import User from "../../../models/User.js";
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
-
   const response = {
     200: {
       type: "object",
@@ -77,7 +75,6 @@ export default async function(fastify) {
     "/",
     {
       schema: {
-        headers: auth,
         querystring: {
           type: "object",
           properties: {
@@ -97,19 +94,13 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (req.validationError) {
-          const errorSource = req.validationError.validationContext;
+        if (req.validationError)
+          return reply.code(417).send({ message: "Invalid parameters" });
 
-          errorSource === "headers" &&
-            reply.code(401).send({ message: "Unauthorized" });
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
 
-          errorSource === "querystring" &&
-            reply.code(417).send({ message: "Invalid parameters" });
-
-          return;
-        }
-
-        const _id = req.headers.authorization;
+        const _id = await fastify.auth(token);
         const range = req.query.range || 20;
         const period = req.query.period || "long_term";
 

@@ -6,11 +6,8 @@ const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
 const api = axios.create({ baseURL: SERVER_URI });
 
 const response_options = () => {
-  const _id = store.getters.getUserID;
   return {
-    headers: {
-      Authorization: _id,
-    },
+    withCredentials: true,
   };
 };
 

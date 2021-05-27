@@ -5,12 +5,10 @@
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
   fastify.get(
     "/",
     {
       schema: {
-        headers: auth,
         response: {
           200: {
             type: "object",
@@ -27,10 +25,10 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        if (req.validationError)
-          return reply.code(401).send({ message: "Unauthorized" });
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
 
-        const _id = req.headers.authorization;
+        const _id = await fastify.auth(token);
 
         const user = await User.findOne(
           { _id },

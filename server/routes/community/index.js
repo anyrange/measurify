@@ -8,13 +8,10 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
-
   fastify.get(
     "/",
     {
       schema: {
-        headers: auth,
         querystring: {
           type: "object",
           properties: {
@@ -94,19 +91,13 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (req.validationError) {
-          const errorSource = req.validationError.validationContext;
+        if (req.validationError)
+          return reply.code(417).send({ message: "Invalid parameters" });
 
-          errorSource === "headers" &&
-            reply.code(401).send({ message: "Unauthorized" });
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
 
-          errorSource === "querystring" &&
-            reply.code(417).send({ message: "Invalid parameters" });
-
-          return;
-        }
-
-        const _id = req.headers.authorization;
+        const _id = await fastify.auth(token);
         const range = req.query.range || 10;
         const page = req.query.page || 1;
 
@@ -267,16 +258,19 @@ const getTrackActivity = async (friends, page, range) => {
 };
 
 const getLiked = async ({ friend, firstDate, lastDate }) => {
-  let pack = await getPack(friend.lastSpotifyToken);
-  if (!pack.items.length) return [];
+  let likedTracks = await getLikedTracks(friend.lastSpotifyToken);
+  if (!likedTracks.items.length) return [];
   const liked = [];
-  while (pack.items.length) {
-    const likedTrack = pack.items.shift();
+  while (likedTracks.items.length) {
+    const likedTrack = likedTracks.items.shift();
 
     if (likedTrack.added_at < lastDate) break;
 
-    if (!pack.items.length)
-      pack = await getPack(friend.lastSpotifyToken, pack.next);
+    if (!likedTracks.items.length)
+      likedTracks = await getLikedTracks(
+        friend.lastSpotifyToken,
+        likedTracks.next
+      );
 
     if (likedTrack.added_at > firstDate) continue;
 
@@ -299,7 +293,7 @@ const getLiked = async ({ friend, firstDate, lastDate }) => {
   return liked;
 };
 
-const getPack = async (
+const getLikedTracks = async (
   token,
   url = "https://api.spotify.com/v1/me/tracks?limit=10"
 ) => {

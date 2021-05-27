@@ -9,7 +9,6 @@ import history from "../../includes/listening-history.js";
 import plays from "../../includes/played-overview.js";
 
 export default async function(fastify) {
-  const auth = fastify.getSchema("auth");
   const overview = fastify.getSchema("overview");
   const tracks = fastify.getSchema("tracks");
 
@@ -72,7 +71,6 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
-        headers: auth,
         params: {
           type: "object",
           required: ["id"],
@@ -90,19 +88,13 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "headers"
-        )
-          return reply.code(401).send({ message: "Unauthorized" });
+        const token = req.cookies.token;
+        if (!token) return reply.code(401).send({ message: "Unauthorized" });
 
-        if (
-          req.validationError &&
-          req.validationError.validationContext === "params"
-        )
+        if (req.validationError)
           return reply.code(404).send({ message: "Invalid playlist" });
 
-        const _id = req.headers.authorization;
+        const _id = await fastify.auth(token);
 
         const playlistID = req.params.id;
 
