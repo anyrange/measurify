@@ -65,7 +65,7 @@ export default async function(fastify) {
             .send({ message: "User not found", status: 404 });
 
         if (!user[0].tracksLength)
-          return reply.code(200).send({ status: 204, history: [], pages: [] });
+          return reply.code(200).send({ pages: 0, history: [], status: 204 });
 
         reply.code(200).send({
           pages: Math.ceil(user[0].tracksLength / range),
