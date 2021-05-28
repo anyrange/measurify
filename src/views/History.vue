@@ -1,10 +1,10 @@
 <template>
   <h2 class="h-title">Listening History</h2>
-  <template v-if="emptyData">
-    <empty-message />
-  </template>
+  <loading-spinner v-if="loading" />
   <template v-else>
-    <loading-spinner v-if="loading" />
+    <template v-if="emptyData">
+      <empty-message />
+    </template>
     <template v-else>
       <h3 class="h-subtitle mt-4">
         Click the song's title, artist, or album name to get more info
@@ -105,7 +105,7 @@
 <script>
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
 import EmptyMessage from "@/components/EmptyMessage";
-import api from "@/api";
+import { getListeningHistory } from "@/api";
 
 export default {
   components: {
@@ -156,25 +156,15 @@ export default {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
     getInitialHistory() {
-      api
-        .getListeningHistory(this.page)
+      getListeningHistory(this.page)
         .then((response) => {
-          if (response.status === 204) {
-            return (this.emptyData = true);
-          }
+          if (response.status === 204) return (this.emptyData = true);
           this.pagesMax = response.pages;
           this.recentlyPlayed = response.history;
-        })
-        .finally(() => {
-          this.loading = false;
           this.page++;
+          this.getNextHistoryPage();
         })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
-        });
+        .finally(() => (this.loading = false));
     },
     getNextHistoryPage() {
       const windowScroll = document.querySelector(".content-spotify");
@@ -190,20 +180,13 @@ export default {
           !this.loadingNextPage
         ) {
           this.loadingNextPage = true;
-          api
-            .getListeningHistory(this.page)
+          getListeningHistory(this.page)
             .then((response) => {
               this.recentlyPlayed.push(...response.history);
             })
             .finally(() => {
               this.loadingNextPage = false;
               this.page++;
-            })
-            .catch((error) => {
-              this.$notify.show({
-                type: "danger",
-                message: error.response.data.message,
-              });
             });
         }
       };
@@ -212,15 +195,12 @@ export default {
   created() {
     this.getInitialHistory();
   },
-  mounted() {
-    this.getNextHistoryPage();
-  },
 };
 </script>
 
 <style lang="postcss" scoped>
 .search-field {
-  @apply dark:bg-gray-700-spotify bg-gray-200 text-gray-400 dark:text-gray-300 dark:placeholder-gray-400 placeholder-gray-500 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
+  @apply bg-gray-700-spotify text-gray-300 placeholder-gray-400 rounded-md sm:px-32 sm:pl-8 pl-8 py-2 outline-none;
 }
 .skeleton {
   --text-opacity: 0;
