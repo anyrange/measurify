@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="mt-6">
-        <ul class="tabs sm:flex">
+        <ul class="sm:flex">
           <li
             class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
             :class="[selectedPeriod === 'alltime' ? 'is-active' : 'not-active']"
@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import api from "@/api";
+import { getTrack } from "@/api";
 import { addSeconds, format } from "date-fns";
 import Card from "@/components/Card";
 import * as fd from "@/utils/dates";
@@ -148,8 +148,7 @@ export default {
     },
   },
   created() {
-    api
-      .getTrack(this.$route.params.id)
+    getTrack(this.$route.params.id)
       .then((response) => {
         this.loading = false;
         this.object = response;
@@ -158,12 +157,8 @@ export default {
         this.preCalculateFilteredArrays();
         document.title = `${this.object.track.name} - Spotiworm`;
       })
-      .catch((error) => {
+      .catch(() => {
         this.$router.push({ name: "home" });
-        this.$notify.show({
-          type: "danger",
-          message: error.response.data.message,
-        });
       });
   },
   methods: {

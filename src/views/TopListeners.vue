@@ -22,12 +22,11 @@
               <div class="flex flex-col">
                 <div class="relative">
                   <img
-                    v-if="item.avatar"
-                    class="object-cover w-11 h-11 rounded-full"
-                    :src="item?.avatar"
+                    class="text-white object-cover w-11 h-11 rounded-full"
+                    :src="item?.avatar || 'noavatar.svg'"
                     :alt="item.userName"
+                    @error="item.avatar = 'noavatar.svg'"
                   />
-                  <user-icon v-else class="text-white w-11 h-11" />
                   <lock
                     v-if="item.private & (item.userName != user.display_name)"
                     class="cursor-not-allowed inset-center"
@@ -65,12 +64,12 @@
 </template>
 
 <script>
-import api from "@/api";
-import { Lock, UserIcon } from "@/components/icons";
+import { getListenersTop } from "@/api";
+import { Lock } from "@/components/icons";
 import { mapGetters } from "vuex";
 
 export default {
-  components: { Lock, UserIcon },
+  components: { Lock },
   data() {
     return {
       loading: true,
@@ -82,24 +81,11 @@ export default {
       user: "getUser",
     }),
   },
-  methods: {
-    fetchSettings() {
-      api
-        .getListenersTop()
-        .then((response) => {
-          this.leaderboard = response.top;
-          this.loading = false;
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
-        });
-    },
-  },
   created() {
-    this.fetchSettings();
+    getListenersTop().then((response) => {
+      this.leaderboard = response.top;
+      this.loading = false;
+    });
   },
 };
 </script>

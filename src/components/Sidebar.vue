@@ -36,31 +36,6 @@
             <span>Top Listeners</span>
           </router-link>
         </li>
-        <!--
-        <h3 class="title-uppercase">
-          Light theme
-        </h3>
-        <li>
-          <div class="flex items-center mx-6 mt-4 group">
-            <div
-              class="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in outline-none"
-            >
-              <input
-                type="checkbox"
-                id="theme-toggleSidebar"
-                v-model="nightMode"
-                :class="{ 'bg-gray-100': nightMode }"
-                class="toggleSidebar-checkbox absolute block w-4 h-4 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
-              />
-              <label
-                for="theme-toggleSidebar"
-                :class="{ 'bg-gray-300': nightMode }"
-                class="toggleSidebar-label block overflow-hidden h-4 rounded-full bg-gray-600 cursor-pointer"
-              ></label>
-            </div>
-          </div>
-        </li>
-        -->
       </ul>
     </template>
   </transition>
@@ -83,7 +58,6 @@ export default {
   data() {
     return {
       desktopSidebar: true,
-      nightMode: localStorage.getItem("nightMode") || false,
     };
   },
   computed: {
@@ -97,34 +71,22 @@ export default {
         this.desktopSidebar = window.innerWidth >= 768 ? true : false;
       });
     },
-    checkDarkTheme() {
-      localStorage.nightMode === "false" || !("nightMode" in localStorage)
-        ? document.documentElement.classList.add("dark")
-        : document.documentElement.classList.remove("dark");
-    },
   },
   created() {
     this.desktopSidebar = window.innerWidth <= 768 ? false : true;
   },
   mounted() {
     this.checkMobile();
-    this.checkDarkTheme();
-  },
-  watch: {
-    nightMode() {
-      localStorage.setItem("nightMode", JSON.stringify(this.nightMode));
-      this.checkDarkTheme();
-    },
   },
 };
 </script>
 
 <style lang="postcss" scoped>
 .sidebar {
-  @apply flex flex-col absolute md:relative z-40 h-screen w-48 min-w-max font-semibold dark:bg-gray-900-spotify bg-gray-200;
+  @apply flex flex-col absolute md:relative z-40 h-screen w-48 min-w-max font-semibold bg-gray-900-spotify;
 }
 .sidebar-mobile {
-  @apply flex flex-row fixed md:hidden h-12 w-full bottom-0 border-t dark:bg-gray-800-spotify dark:border-gray-600-spotify;
+  @apply flex flex-row fixed md:hidden h-12 w-full bottom-0 border-t bg-gray-800-spotify border-gray-600-spotify;
 }
 .sidebar-mobile .link {
   @apply flex flex-col flex-grow items-center justify-center overflow-hidden whitespace-nowrap text-sm transition-colors duration-100 ease-in-out text-gray-400 hover:bg-gray-700-spotify;

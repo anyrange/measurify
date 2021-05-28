@@ -52,13 +52,11 @@
             :series="overviewData"
           ></apexchart>
         </div>
-        <h2
-          class="mt-5 mb-8 text-4xl font-semibold dark:text-gray-100 text-gray-900"
-        >
+        <h2 class="mt-5 mb-8 text-4xl font-semibold text-gray-100">
           Top Played
         </h2>
         <div class="mt-6">
-          <ul class="tabs sm:flex">
+          <ul class="sm:flex">
             <li
               class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
               :class="[selectedTop === 'artists' ? 'is-active' : 'not-active']"
@@ -123,7 +121,7 @@ import chartOptions from "@/mixins/chartOptions";
 import EmptyMessage from "@/components/EmptyMessage";
 import Table from "@/components/Table";
 import Card from "@/components/Card";
-import api from "@/api";
+import { getOverview, getTop } from "@/api";
 
 export default {
   components: {
@@ -286,34 +284,16 @@ export default {
       );
     },
     fetchData() {
-      api
-        .getOverview()
-        .then((response) => {
-          if (response.status === 204) {
-            return (this.emptyData = true);
-          }
-          this.totalOverview = response.overview.reverse();
-          this.pushToChart();
-          this.preCalculateFilteredArrays();
-          api
-            .getTop()
-            .then((response) => {
-              this.totalTop = response.top;
-              this.loading = false;
-            })
-            .catch((error) => {
-              this.$notify.show({
-                type: "danger",
-                message: error.response.data.message,
-              });
-            });
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
+      getOverview().then((response) => {
+        if (response.status === 204) return (this.emptyData = true);
+        this.totalOverview = response.overview.reverse();
+        this.pushToChart();
+        this.preCalculateFilteredArrays();
+        getTop().then((response) => {
+          this.totalTop = response.top;
+          this.loading = false;
         });
+      });
     },
   },
   created() {
@@ -323,20 +303,11 @@ export default {
 </script>
 
 <style lang="postcss">
-.tab {
-  @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-white dark:hover:bg-gray-700-spotify dark:hover:text-gray-200 transition ease-in-out duration-75;
-}
-.is-active {
-  @apply bg-white dark:bg-gray-600-spotify dark:text-gray-200;
-}
-.not-active {
-  @apply dark:bg-gray-900-spotify bg-gray-200;
-}
 .total-played-listened {
-  @apply block text-2xl text-gray-600 dark:text-gray-100 font-light tracking-wide mb-2;
+  @apply block text-2xl text-gray-100 font-light tracking-wide mb-2;
 }
 .total-played-listened-number {
-  @apply block text-4xl text-gray-600 dark:text-gray-100 font-bold tracking-wide mb-2;
+  @apply block text-4xl text-gray-100 font-bold tracking-wide mb-2;
 }
 </style>
 

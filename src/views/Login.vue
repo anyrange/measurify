@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import api from "@/api";
+import { getUsersQuantity } from "@/api";
 import { mapActions } from "vuex";
 
 export default {
@@ -37,30 +37,14 @@ export default {
     };
   },
   methods: {
-    ...mapActions({
-      login: "login",
-      authorise: "authorise",
-    }),
-    fetchUsers() {
-      api
-        .getUsersQuantity()
-        .then((response) => {
-          this.quantity = response.quantity;
-        })
-        .finally(() => {
-          this.loading = false;
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
-        });
-    },
+    ...mapActions(["login", "authorise"]),
   },
   created() {
-    this.fetchUsers();
-    this.$router.push({ name: "login" });
+    getUsersQuantity()
+      .then((response) => {
+        this.quantity = response.quantity;
+      })
+      .finally(() => (this.loading = false));
     if (this.$route.query.access_token) {
       this.authorise({
         access_token: this.$route.query.access_token,

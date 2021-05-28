@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import api from "@/api";
+import { redirect, authorise } from "@/api";
 import SecureLS from "secure-ls";
 const ls = new SecureLS({ isCompression: false });
 
@@ -48,7 +48,7 @@ export default createStore({
   },
   actions: {
     login: () => {
-      api.login();
+      redirect();
     },
     logout: () => {
       window.localStorage.clear();
@@ -56,7 +56,7 @@ export default createStore({
       location.reload();
     },
     authorise: async ({ commit }, { access_token, id }) => {
-      const response = await api.authorise(access_token);
+      const response = await authorise(access_token);
       commit("SET_ID", id);
       commit("SET_USER", response);
       commit("SET_ACCES_TOKEN", access_token);

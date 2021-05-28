@@ -4,7 +4,7 @@ import store from "@/store/";
  * @param {('success'|'warning'|'danger')} type
  */
 
-function install(app) {
+export function notify(app) {
   const notify = {
     show: ({ message, type, delay = 3000, progress = true }) => {
       store.dispatch("addNotification", {
@@ -23,4 +23,15 @@ function install(app) {
   app.config.globalProperties.$notify = notify;
 }
 
-export default install;
+export const notifyAPI = {
+  show: ({ message, type, delay = 3000, progress = true }) => {
+    store.dispatch("addNotification", {
+      notification: {
+        message: message,
+        type: type,
+        delay: delay,
+        progress: progress,
+      },
+    });
+  },
+};
