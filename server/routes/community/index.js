@@ -63,7 +63,6 @@ export default async function(fastify) {
                     userName: { type: "string" },
                     avatar: { type: "string" },
                     customID: { type: "string" },
-                    type: { type: "string" },
                     track: {
                       type: "object",
                       required: ["id", "name", "played_at", "artists"],
@@ -84,6 +83,7 @@ export default async function(fastify) {
                         },
                       },
                     },
+                    type: { type: "string" },
                   },
                 },
               },

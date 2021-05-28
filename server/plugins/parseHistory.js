@@ -28,7 +28,11 @@ const plugin = fp(async function plugin(fastify) {
       {
         $project: {
           tracksLength: {
-            $size: "$recentlyPlayed",
+            $cond: {
+              if: { $isArray: "$recentlyPlayed" },
+              then: { $size: "$recentlyPlayed" },
+              else: 0,
+            },
           },
           recentlyPlayed: {
             $slice: ["$recentlyPlayed", page * range, range],

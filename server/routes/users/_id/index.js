@@ -146,9 +146,10 @@ export default async function(fastify) {
         ];
 
         const requests = [
-          fastify.parseTop(_id, user.lastSpotifyToken, 5),
-          fastify.parseHistory(_id, 20),
+          fastify.parseTop(user._id, user.lastSpotifyToken, 5),
+          fastify.parseHistory(user._id, 20),
           User.aggregate(agg).then((body) => {
+            if (!body[0]) return { plays: 0, playtime: 0 };
             return {
               plays: body[0].plays,
               playtime: Math.round(body[0].playtime / 1000 / 60),
@@ -164,7 +165,7 @@ export default async function(fastify) {
           avatar: user.avatar,
           lastLogin: user.lastLogin,
           top,
-          history: history[0].recentlyPlayed,
+          history: history[0].recentlyPlayed || [],
           overview,
           genres,
           status: 200,
