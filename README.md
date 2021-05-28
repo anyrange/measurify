@@ -12,8 +12,8 @@
 
 ```bash
 $ git clone https://github.com/anyrange/spotiworm.git
-$ cd spotiworm
-$ npm install
+$ cd spotiworm && npm install
+$ cd server && npm install && cd ..
 $ npm run dev
 ```
 
@@ -21,19 +21,6 @@ $ npm run dev
 
 Rename [.env.example](/.env.example) to `.env` and don't forget to set your variables
 
-### Deployment
-
-You can use heroku + netlify setup
-
-`Netlify` configuration
-
-```
-Build command: npm run build
-Publish directory: dist/
-```
-
-`Heroku` will run properly automatically
-
 ## License
 
-MIT
+[MIT](/LICENSE)
