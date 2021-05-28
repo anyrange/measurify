@@ -4,15 +4,10 @@
     class="2xl:w-2/6 xl:w-1/2 w-full px-4 pb-4 rounded-lg border border-gray-700-spotify"
   >
     <div class="field">
-      <template v-if="user.images[0]?.url">
-        <img
-          :src="user.images[0]?.url"
-          class="object-cover w-14 h-14 mr-3 rounded-full"
-        />
-      </template>
-      <template v-else>
-        <user-icon class="text-white w-14 h-14 mr-3" />
-      </template>
+      <img
+        :src="user.images[0]?.url || 'noavatar.svg'"
+        class="object-cover w-14 h-14 mr-3 rounded-full"
+      />
       <div class="flex flex-col">
         <p class=" text-lg font-semibold text-gray-300">
           {{ user.display_name }}
@@ -83,15 +78,13 @@
 </template>
 
 <script>
-import api from "@/api";
 import CustomSelect from "@/components/CustomSelect";
-import { UserIcon } from "@/components/icons";
+import { updateAccount, getAccount } from "@/api";
 import { mapGetters } from "vuex";
 
 export default {
   components: {
     CustomSelect,
-    UserIcon,
   },
   data() {
     return {
@@ -143,29 +136,18 @@ export default {
   methods: {
     updateSettings() {
       this.loadingButton = true;
-      api
-        .updateAccount(this.account)
-        .then((response) => {
-          this.$notify.show({
-            type: "success",
-            message: response.message,
-          });
-          this.account_copy.private = this.account.private;
-          this.account_copy.customID = this.account.customID;
-        })
-        .finally(() => {
-          this.loadingButton = false;
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
+      updateAccount(this.account).then((response) => {
+        this.loadingButton = false;
+        this.$notify.show({
+          type: "success",
+          message: response.message,
         });
+        this.account_copy.private = this.account.private;
+        this.account_copy.customID = this.account.customID;
+      });
     },
     fetchSettings() {
-      api
-        .getAccount()
+      getAccount()
         .then((response) => {
           this.account = {
             private: response.private,
@@ -179,12 +161,6 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.message,
-          });
         });
     },
   },

@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import api from "@/api";
+import { getProfile } from "@/api";
 
 export default {
   data() {
@@ -42,19 +42,14 @@ export default {
     };
   },
   created() {
-    api
-      .getProfile(this.$route.params.id)
+    getProfile(this.$route.params.id)
       .then((response) => {
-        this.loading = false;
         this.profile = response;
+        this.loading = false;
         document.title = `${this.profile.userName} - Spotiworm`;
       })
-      .catch((error) => {
+      .catch(() => {
         this.$router.push({ name: "home" });
-        this.$notify.show({
-          type: "danger",
-          message: error.response.data.message,
-        });
       });
   },
 };

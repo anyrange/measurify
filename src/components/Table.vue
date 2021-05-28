@@ -20,7 +20,7 @@
         </td>
         <td class="history-td text-left">
           <div class="flex items-center">
-            <img :src="item?.image" class="table-image" />
+            <img :src="item?.image || 'noimage.svg'" class="table-image" />
             <div class="ml-4">
               <template v-if="this.title == 'tracks'">
                 <router-link
