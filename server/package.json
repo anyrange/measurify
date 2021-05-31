@@ -4,12 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "start": "nodemon index.js"
   },
   "license": "MIT",
   "dependencies": {
-    "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "fastify": "^3.15.1",
     "fastify-autoload": "^3.7.1",
@@ -18,13 +16,12 @@
     "fastify-plugin": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.7",
+    "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "querystring": "^0.2.1",
     "systeminformation": "^5.7.4"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "jest": "^26.6.3",
     "nodemon": "^2.0.7"
   }
 }

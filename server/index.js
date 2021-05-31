@@ -1,6 +1,6 @@
 import app from "./app.js";
 import "./db.js";
-import { CronJob } from "cron";
+import cron from "node-cron";
 import refresh_tokens from "./includes/refresh-tokens.js";
 import refresh_recently_played from "./includes/recently-played-parse.js";
 
@@ -11,31 +11,17 @@ app.listen(PORT, "0.0.0.0", (err, address) => {
   console.info(`App listening on: ${address}`);
 });
 
-function startScheduledJobs() {
-  const job1 = new CronJob(
-    "0 */30 * * * *",
-    () => {
-      refresh_tokens();
-    },
-    null,
-    true,
-    "Asia/Almaty"
-  );
-  const job2 = new CronJob(
-    "0 */10 * * * *",
-    () => {
-      refresh_recently_played();
-    },
-    null,
-    true,
-    "Asia/Almaty"
-  );
-  job1.start();
-  job2.start();
+if (process.env.NODE_ENV == "production") {
+  startScheduledJobs();
 }
 
-// if (process.env.NODE_ENV == "production") {
-refresh_tokens();
-refresh_recently_played();
-startScheduledJobs();
-// }
+function startScheduledJobs() {
+  refresh_tokens();
+  refresh_recently_played();
+  cron.schedule("*/30 * * * *", () => {
+    refresh_tokens();
+  });
+  cron.schedule("*/10 * * * *", () => {
+    refresh_recently_played();
+  });
+}
