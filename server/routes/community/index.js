@@ -8,10 +8,13 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
+  const headers = fastify.getSchema("cookie");
+
   fastify.get(
     "/",
     {
       schema: {
+        headers,
         querystring: {
           type: "object",
           properties: {
@@ -95,16 +98,12 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (req.validationError)
-          return reply
-            .code(406)
-            .send({ message: "Invalid parameters", status: 406 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
-
-        const _id = await fastify.auth(token);
+        const _id = await fastify.auth(req.cookies.token);
         const range = req.query.range || 10;
         const page = req.query.page || 1;
 

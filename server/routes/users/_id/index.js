@@ -7,6 +7,7 @@ const { ObjectId } = mongodb;
 export default async function(fastify) {
   const top = fastify.getSchema("top");
   const history = fastify.getSchema("listening-history");
+  const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
     200: {
@@ -62,6 +63,7 @@ export default async function(fastify) {
     "/",
     {
       schema: {
+        headers,
         params: {
           type: "object",
           required: ["id"],
@@ -77,17 +79,15 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (req.validationError)
-          return reply.code(404).send({ message: "Invalid user", status: 404 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
-
-        const _id = await fastify.auth(token);
-
+        const _id = await fastify.auth(req.cookies.token);
         const customID = req.params.id;
 
+        // find both the requesting and the searched user
         const users = await User.find(
           { $or: [{ customID }, { _id }] },
           {

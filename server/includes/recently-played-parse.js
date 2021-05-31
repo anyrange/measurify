@@ -14,21 +14,16 @@ function refresh_recently_played() {
       },
     })
       .catch((err) => {
-        reject(user.userName, err.message);
+        reject({ user: user.userName, message: err.message });
       })
       .then(async (body) => {
-        if (!body) {
-          return;
-        }
+        if (!body) return;
+
         body = await body.json();
-        if (body.error) {
-          reject(user.userName, body.error.message);
-          return;
-        }
-        if (!body.items.length) {
-          cb();
-          return;
-        }
+
+        if (body.error)
+          return reject({ user: user.userName, message: body.error.message });
+        if (!body.items.length) return cb();
 
         if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
           const query = { spotifyID: user.spotifyID };
@@ -90,19 +85,14 @@ function refresh_recently_played() {
   ];
 
   User.aggregate(agg, (err, users) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-
-    // ## PARALLEL EXECUTION (TASKS MAY BE EXECUTED IN RANDOM ORDER)
+    if (err) return console.log(err);
 
     let requests = users.map((user) => {
       return new Promise((resolve, reject) => {
         parseRecentlyPlayed(user, resolve, reject);
-      }).catch((user, error) => {
+      }).catch(({ user, message }) => {
         console.log(user + " died");
-        console.log("message: " + error);
+        console.log("message: " + message);
       });
     });
 

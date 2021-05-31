@@ -9,6 +9,7 @@ import plays from "../../includes/played-overview.js";
 
 export default async function(fastify) {
   const overview = fastify.getSchema("overview");
+  const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
     200: {
@@ -83,6 +84,7 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
+        headers,
         params: {
           type: "object",
           required: ["id"],
@@ -100,16 +102,12 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        if (req.validationError)
-          return reply
-            .code(404)
-            .send({ message: "Invalid track", status: 404 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
-
-        const _id = await fastify.auth(token);
+        const _id = await fastify.auth(req.cookies.token);
         const trackID = req.params.id;
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
@@ -126,11 +124,7 @@ export default async function(fastify) {
               Authorization: "Bearer " + user.lastSpotifyToken,
             },
           }
-        )
-          .then((res) => res.json())
-          .catch((err) => {
-            throw err;
-          });
+        ).then((res) => res.json());
 
         if (track.error)
           return reply.code(track.error.status || 500).send({

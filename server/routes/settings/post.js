@@ -1,14 +1,13 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
 
 export default async function(fastify) {
+  const headers = fastify.getSchema("cookie");
+
   fastify.post(
     "/",
     {
       schema: {
+        headers,
         body: {
           type: "object",
           required: ["private", "customID"],
@@ -40,14 +39,12 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        if (req.validationError)
-          return reply.code(400).send({ message: "Bad data", status: 400 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
-
-        const _id = await fastify.auth(token);
+        const _id = await fastify.auth(req.cookies.token);
         const confidential = req.body.private;
         const customID = req.body.customID;
 

@@ -1,14 +1,13 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
 
 export default async function(fastify) {
+  const headers = fastify.getSchema("cookie");
+
   fastify.get(
     "/",
     {
       schema: {
+        headers,
         response: {
           200: {
             type: "object",
@@ -28,15 +27,15 @@ export default async function(fastify) {
     },
     async (req, reply) => {
       try {
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        const _id = await fastify.auth(token);
-
+        const _id = await fastify.auth(req.cookies.token);
         const user = await User.findOne(
           { _id },
-          { private: 1, customID: 1, spotifyID: 1, _id: 0 }
+          { private: 1, customID: 1, spotifyID: 1 }
         );
 
         if (!user)

@@ -11,6 +11,7 @@ import plays from "../../includes/played-overview.js";
 export default async function(fastify) {
   const overview = fastify.getSchema("overview");
   const tracks = fastify.getSchema("tracks");
+  const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
     200: {
@@ -74,6 +75,7 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
+        headers,
         params: {
           type: "object",
           required: ["id"],
@@ -91,17 +93,12 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       try {
-        const token = req.cookies.token;
-        if (!token)
-          return reply.code(401).send({ message: "Unauthorized", status: 401 });
+        if (req.validationError) {
+          const { status, message } = fastify.validate(req.validationError);
+          return reply.code(status).send({ message, status });
+        }
 
-        if (req.validationError)
-          return reply
-            .code(404)
-            .send({ message: "Invalid playlist", status: 404 });
-
-        const _id = await fastify.auth(token);
-
+        const _id = await fastify.auth(req.cookies.token);
         const playlistID = req.params.id;
 
         const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
