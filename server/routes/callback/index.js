@@ -1,8 +1,3 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- * @param {*} opts
- */
-
 import formatTrack from "../../includes/format-track.js";
 import User from "../../models/User.js";
 import fetch from "node-fetch";

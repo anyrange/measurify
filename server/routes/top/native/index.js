@@ -137,11 +137,7 @@ const tracks = async ({ token, period, range }) => {
         Authorization: "Bearer " + token,
       },
     }
-  )
-    .then((res) => res.json())
-    .catch((e) => {
-      throw e;
-    });
+  ).then((res) => res.json());
 
   return tracks.items.map((track) => formatTrack(track));
 };
@@ -154,11 +150,7 @@ const artists = async ({ token, period, range }) => {
         Authorization: "Bearer " + token,
       },
     }
-  )
-    .then((res) => res.json())
-    .catch((e) => {
-      throw e;
-    });
+  ).then((res) => res.json());
 
   return artists.items.map((artist) => {
     return {

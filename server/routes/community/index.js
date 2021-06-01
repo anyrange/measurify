@@ -132,20 +132,16 @@ export default async function(fastify) {
         // filter away user
         users = users.filter((user) => user._id != _id);
 
-        const url =
-          "https://api.spotify.com/v1/me/following/contains?type=user&ids=" +
+        const route =
+          "me/following/contains?type=user&ids=" +
           users.map((user) => user.spotifyID).join();
 
+        const spotifyAPI = fastify.spotifyAPI;
         // check if users are followed
-        const friendList = await fetch(url, {
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
-        })
-          .then((res) => res.json())
-          .catch((err) => {
-            throw err;
-          });
+        const friendList = await spotifyAPI({
+          route,
+          token: access_token,
+        });
 
         if (friendList.error)
           return reply.code(friendList.error.status || 500).send({

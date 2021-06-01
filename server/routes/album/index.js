@@ -1,9 +1,4 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
-import fetch from "node-fetch";
 import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";
 import plays from "../../includes/played-overview.js";
@@ -113,14 +108,10 @@ export default async function(fastify) {
             .code(404)
             .send({ message: "User not found", status: 404 });
 
-        const album = await fetch(
-          `https://api.spotify.com/v1/albums/${albumID}`,
-          {
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-            },
-          }
-        ).then((res) => res.json());
+        const album = await fastify.spotifyAPI({
+          route: `albums/${albumID}`,
+          token: user.lastSpotifyToken,
+        });
 
         if (album.error)
           return reply.code(album.error.status || 500).send({

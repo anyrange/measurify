@@ -3,7 +3,6 @@
  */
 
 import User from "../../models/User.js";
-import fetch from "node-fetch";
 import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";
 import plays from "../../includes/played-overview.js";
@@ -108,18 +107,10 @@ export default async function(fastify) {
             .code(404)
             .send({ message: "User not found", status: 404 });
 
-        const playlist = await fetch(
-          `https://api.spotify.com/v1/playlists/${playlistID}?fields=collaborative, external_urls, followers(total),images,name,owner(display_name,id),public,tracks(total)`,
-          {
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .catch((err) => {
-            throw err;
-          });
+        const playlist = await fastify.spotifyAPI({
+          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total)`,
+          token: user.lastSpotifyToken,
+        });
 
         if (playlist.error)
           return reply.code(playlist.error.status || 500).send({

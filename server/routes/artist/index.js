@@ -3,7 +3,6 @@
  */
 
 import User from "../../models/User.js";
-import fetch from "node-fetch";
 import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";
 import plays from "../../includes/played-overview.js";
@@ -82,18 +81,10 @@ export default async function(fastify) {
             .code(404)
             .send({ message: "User not found", status: 404 });
 
-        const artist = await fetch(
-          `https://api.spotify.com/v1/artists/${artistID}`,
-          {
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-            },
-          }
-        )
-          .then((res) => res.json())
-          .catch((err) => {
-            throw err;
-          });
+        const artist = await fastify.spotifyAPI({
+          route: `artists/${artistID}`,
+          token: user.lastSpotifyToken,
+        });
 
         if (artist.error)
           return reply.code(artist.error.status || 500).send({

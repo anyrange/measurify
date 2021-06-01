@@ -3,7 +3,6 @@
  */
 
 import User from "../../models/User.js";
-import fetch from "node-fetch";
 import formatOverview from "../../includes/format-overview.js";
 import plays from "../../includes/played-overview.js";
 
@@ -117,14 +116,10 @@ export default async function(fastify) {
             .code(404)
             .send({ message: "User not found", status: 404 });
 
-        const track = await fetch(
-          `https://api.spotify.com/v1/tracks/${trackID}`,
-          {
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-            },
-          }
-        ).then((res) => res.json());
+        const track = await fastify.spotifyAPI({
+          route: `tracks/${trackID}`,
+          token: user.lastSpotifyToken,
+        });
 
         if (track.error)
           return reply.code(track.error.status || 500).send({
@@ -160,7 +155,7 @@ export default async function(fastify) {
 
         reply.code(200).send(response);
       } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 200 });
+        reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);
       }
     }
