@@ -28,8 +28,5 @@ export default {
   created() {
     getToken();
   },
-  beforeMount() {
-    this.$notify.reset();
-  },
 };
 </script>

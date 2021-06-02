@@ -31,9 +31,10 @@ export default {
     }),
   },
   methods: {
-    ...mapActions({
-      removeNotification: "removeNotification",
-    }),
+    ...mapActions(["resetNotifications", "removeNotification"]),
+  },
+  created() {
+    this.resetNotifications();
   },
 };
 </script>
