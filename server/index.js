@@ -11,12 +11,7 @@ app.listen(PORT, "0.0.0.0", (err, address) => {
   console.info(`App listening on: ${address}`);
 });
 
-// if (process.env.NODE_ENV == "production")
-startScheduledJobs();
-
-// import magickStick from "./includes/magick-stick.js";
-
-// magickStick();
+if (process.env.NODE_ENV == "production") startScheduledJobs();
 
 function startScheduledJobs() {
   refresh_tokens();
