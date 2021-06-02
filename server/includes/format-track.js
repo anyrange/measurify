@@ -27,15 +27,13 @@ function formatTrack(item) {
     id: track.id,
     name: track.name,
     duration_ms: track.duration_ms,
-    popularity: track.popularity,
     url: track.external_urls.spotify,
-    played_at: item.played_at,
     image:
       track.album.images && track.album.images.length
         ? track.album.images[2].url
         : "",
     album,
-    context,
+    plays: [{ played_at: item.played_at, context }],
     artists,
   };
 }

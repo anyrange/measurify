@@ -65,7 +65,7 @@ export default async function(fastify) {
           },
           {
             $project: {
-              "recentlyPlayed.played_at": 1,
+              "recentlyPlayed.plays.played_at": 1,
               "recentlyPlayed.duration_ms": 1,
             },
           },
@@ -75,9 +75,14 @@ export default async function(fastify) {
             },
           },
           {
+            $unwind: {
+              path: "$recentlyPlayed.plays",
+            },
+          },
+          {
             $addFields: {
               "recentlyPlayed.played_at": {
-                $toDate: "$recentlyPlayed.played_at",
+                $toDate: "$recentlyPlayed.plays.played_at",
               },
             },
           },

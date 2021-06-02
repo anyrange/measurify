@@ -4,7 +4,7 @@
 
 import User from "../../models/User.js";
 import formatOverview from "../../includes/format-overview.js";
-import plays from "../../includes/played-overview.js";
+import playedOverview from "../../includes/played-overview.js";
 
 export default async function(fastify) {
   const overview = fastify.getSchema("overview");
@@ -127,7 +127,7 @@ export default async function(fastify) {
             status: track.error.status || 500,
           });
 
-        const playsRaw = await plays(_id, trackID);
+        const playsRaw = await playedOverview(_id, trackID);
 
         if (!playsRaw.length)
           return reply.code(200).send({ status: 204, overview: [] });

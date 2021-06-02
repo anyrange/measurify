@@ -14,7 +14,6 @@ const plugin = fp(async function plugin(fastify) {
       },
       {
         $project: {
-          _id: 0,
           "recentlyPlayed.album.id": 1,
           "recentlyPlayed.album.name": 1,
           "recentlyPlayed.artists.id": 1,
@@ -22,25 +21,52 @@ const plugin = fp(async function plugin(fastify) {
           "recentlyPlayed.duration_ms": 1,
           "recentlyPlayed.id": 1,
           "recentlyPlayed.name": 1,
-          "recentlyPlayed.played_at": 1,
+          "recentlyPlayed.plays.played_at": 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed.plays",
         },
       },
       {
         $project: {
-          tracksLength: {
-            $cond: {
-              if: { $isArray: "$recentlyPlayed" },
-              then: { $size: "$recentlyPlayed" },
-              else: 0,
-            },
-          },
+          "recentlyPlayed.album.id": 1,
+          "recentlyPlayed.album.name": 1,
+          "recentlyPlayed.artists.id": 1,
+          "recentlyPlayed.artists.name": 1,
+          "recentlyPlayed.duration_ms": 1,
+          "recentlyPlayed.id": 1,
+          "recentlyPlayed.name": 1,
+          "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
+        },
+      },
+      {
+        $sort: {
+          "recentlyPlayed.played_at": -1,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          tracksQuantity: { $sum: 1 },
+          recentlyPlayed: { $push: "$recentlyPlayed" },
+        },
+      },
+      {
+        $project: {
+          tracksQuantity: 1,
           recentlyPlayed: {
             $slice: ["$recentlyPlayed", page * range, range],
           },
         },
       },
     ];
-
     return await User.aggregate(agg);
   });
 });

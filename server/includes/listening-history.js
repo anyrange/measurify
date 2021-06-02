@@ -11,51 +11,45 @@ export default async function(_id, filterId) {
         },
       },
       {
+        $project: {
+          recentlyPlayed: 1,
+        },
+      },
+      {
         $unwind: {
           path: "$recentlyPlayed",
         },
       },
+
       {
         $match: {
           $or: [
             { "recentlyPlayed.artists.id": filterId },
             { "recentlyPlayed.album.id": filterId },
-            { "recentlyPlayed.context.id": filterId },
+            { "recentlyPlayed.plays.context.id": filterId },
           ],
         },
       },
       {
         $project: {
-          "recentlyPlayed.duration_ms": {
-            $divide: ["$recentlyPlayed.duration_ms", 60000],
-          },
-          "recentlyPlayed.artists.id": 1,
-          "recentlyPlayed.album.id": 1,
-          "recentlyPlayed.album.name": 1,
-          "recentlyPlayed.artists.name": 1,
-          "recentlyPlayed.played_at": 1,
-          "recentlyPlayed.id": 1,
-          "recentlyPlayed.name": 1,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            id: "$recentlyPlayed.id",
-            name: "$recentlyPlayed.name",
-            album: "$recentlyPlayed.album",
-            artists: "$recentlyPlayed.artists",
-          },
           playtime: {
-            $sum: "$recentlyPlayed.duration_ms",
+            $round: {
+              $divide: [
+                {
+                  $multiply: [
+                    "$recentlyPlayed.duration_ms",
+                    { $size: "$recentlyPlayed.plays" },
+                  ],
+                },
+                60000,
+              ],
+            },
           },
-        },
-      },
-      {
-        $project: {
-          playtime: {
-            $round: "$playtime",
-          },
+          artists: "$recentlyPlayed.artists",
+          album: "$recentlyPlayed.album",
+          lastPlayedAt: { $first: "$recentlyPlayed.plays.played_at" },
+          id: "$recentlyPlayed.id",
+          name: "$recentlyPlayed.name",
         },
       },
       {

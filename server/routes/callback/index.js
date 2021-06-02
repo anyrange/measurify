@@ -128,11 +128,7 @@ const fetchTokens = async (code, query_uri) => {
             process.env.SPOTIFY_CLIENT_SECRET
         ).toString("base64"),
     },
-  })
-    .then((res) => res.json())
-    .catch((err) => {
-      throw err;
-    });
+  }).then((res) => res.json());
 };
 
 const fetchHistory = async (access_token, _id) => {
@@ -153,10 +149,39 @@ const fetchHistory = async (access_token, _id) => {
 
   if (!history.items.length) return;
 
-  const query = { _id };
-  const update = {
-    recentlyPlayed: history.items.map((item) => formatTrack(item)),
-  };
-
-  await User.updateOne(query, update);
+  for (let i = 0; i < history.length; i++) {
+    const track = formatTrack(history[i]);
+    await addTrack(_id, track);
+  }
 };
+
+async function addTrack(_id, track) {
+  const existingTrack = await User.findOne(
+    {
+      _id,
+      "recentlyPlayed.id": track.id,
+    },
+    { "recentlyPlayed.$": 1 }
+  );
+
+  if (!existingTrack) {
+    const update = {
+      $push: {
+        recentlyPlayed: { $each: [track], $position: 0 },
+      },
+    };
+
+    await User.updateOne({ _id }, update);
+    return;
+  }
+
+  await User.updateOne(
+    {
+      _id,
+      "recentlyPlayed.id": track.id,
+    },
+    {
+      $push: { "recentlyPlayed.$.plays": { $each: track.plays, $position: 0 } },
+    }
+  );
+}

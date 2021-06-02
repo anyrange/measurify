@@ -124,6 +124,7 @@ export default async function(fastify) {
           {
             $project: {
               "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.plays.played_at": 1,
               _id: 0,
             },
           },
@@ -133,13 +134,24 @@ export default async function(fastify) {
             },
           },
           {
+            $project: {
+              "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.plays": {
+                $size: "$recentlyPlayed.plays",
+              },
+            },
+          },
+          {
             $group: {
               _id: {},
-              plays: {
-                $sum: 1,
-              },
+              plays: { $sum: "$recentlyPlayed.plays" },
               playtime: {
-                $sum: "$recentlyPlayed.duration_ms",
+                $sum: {
+                  $multiply: [
+                    "$recentlyPlayed.duration_ms",
+                    "$recentlyPlayed.plays",
+                  ],
+                },
               },
             },
           },
@@ -188,11 +200,8 @@ const genresTop = async (lastSpotifyToken) => {
         Authorization: "Bearer " + lastSpotifyToken,
       },
     }
-  )
-    .then((res) => res.json())
-    .catch((e) => {
-      throw e;
-    });
+  ).then((res) => res.json());
+
   if (!artists.items.length) return [];
   const genres = artists.items
     .map(({ genres }) => {

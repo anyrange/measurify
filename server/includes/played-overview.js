@@ -11,8 +11,23 @@ export default async function(id, filterId) {
         },
       },
       {
+        $project: {
+          "recentlyPlayed.plays.played_at": 1,
+          "recentlyPlayed.duration_ms": 1,
+          "recentlyPlayed.album.id": 1,
+          "recentlyPlayed.artists.id": 1,
+          "recentlyPlayed.id": 1,
+          "recentlyPlayed.plays.context.id": 1,
+        },
+      },
+      {
         $unwind: {
           path: "$recentlyPlayed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed.plays",
         },
       },
       {
@@ -20,7 +35,7 @@ export default async function(id, filterId) {
           $or: [
             { "recentlyPlayed.artists.id": filterId },
             { "recentlyPlayed.album.id": filterId },
-            { "recentlyPlayed.context.id": filterId },
+            { "recentlyPlayed.plays.context.id": filterId },
             { "recentlyPlayed.id": filterId },
           ],
         },
@@ -28,7 +43,7 @@ export default async function(id, filterId) {
       {
         $addFields: {
           "recentlyPlayed.played_at": {
-            $toDate: "$recentlyPlayed.played_at",
+            $toDate: "$recentlyPlayed.plays.played_at",
           },
         },
       },

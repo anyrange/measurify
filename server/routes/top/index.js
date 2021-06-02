@@ -55,8 +55,8 @@ export default async function(fastify) {
 
         const _id = await fastify.auth(req.cookies.token);
         const range = req.query.range || 20;
-        const firstDate = req.query.firstDate || "0000-00-00";
-        let lastDate = req.query.lastDate || "9999-12-30";
+        const firstDate = req.query.firstDate;
+        let lastDate = req.query.lastDate;
 
         const document = await User.findOne(
           { _id },
@@ -82,6 +82,7 @@ export default async function(fastify) {
           lastDate.setDate(lastDate.getDate() + 1);
           lastDate = lastDate.toISOString().split("T")[0];
         }
+
         if (new Date(firstDate) > new Date())
           return reply
             .code(406)
@@ -94,6 +95,7 @@ export default async function(fastify) {
           firstDate,
           lastDate
         );
+
         reply.code(200).send({ top: response, status: 200 });
       } catch (e) {
         reply.code(500).send({ message: "Something went wrong!", status: 500 });

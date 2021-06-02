@@ -2,112 +2,152 @@ import fetch from "node-fetch";
 import User from "../models/User.js";
 import formatTrack from "./format-track.js";
 import dotenv from "dotenv";
+import mongodb from "mongodb";
+const { ObjectId } = mongodb;
 dotenv.config();
 
 function refresh_recently_played() {
   const start = new Date();
-  function parseRecentlyPlayed(user, cb, reject) {
-    fetch("https://api.spotify.com/v1/me/player/recently-played?limit=15", {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + user.lastSpotifyToken,
+
+  User.find(
+    {},
+    {
+      spotifyID: 1,
+      lastSpotifyToken: 1,
+      recentlyPlayed: {
+        $slice: ["$recentlyPlayed", 1],
       },
-    })
-      .catch((err) => {
-        reject({ user: user.userName, message: err.message });
-      })
-      .then(async (body) => {
-        if (!body) return;
+      userName: 1,
+    },
+    (err, users) => {
+      if (err) return console.log(err);
 
-        body = await body.json();
-
-        if (body.error)
-          return reject({ user: user.userName, message: body.error.message });
-        if (!body.items.length) return cb();
-
-        if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length) {
-          const query = { spotifyID: user.spotifyID };
-          const update = {
-            recentlyPlayed: body.items.map((item) => formatTrack(item)),
-          };
-          await User.updateOne(query, update);
-          cb();
-          return;
-        }
-        let i = 0;
-        let newSongs = [];
-        while (
-          i < body.items.length &&
-          Date.parse(user.recentlyPlayed[0].played_at) <
-            Date.parse(body.items[i].played_at)
-        ) {
-          newSongs.push(formatTrack(body.items[i]));
-          i++;
-        }
-
-        const query = { spotifyID: user.spotifyID };
-        const update = {
-          $push: {
-            recentlyPlayed: {
-              $each: newSongs,
-              $position: 0,
-            },
-          },
-        };
-        await User.updateOne(query, update);
-        cb();
+      let requests = users.map((user) => {
+        return new Promise((resolve, reject) => {
+          parseNewTracks(user, resolve, reject);
+        })
+          .then(async (newTracks) => {
+            for (let i = 0; i < newTracks.length; i++) {
+              await addTrack(user, newTracks[i]);
+            }
+          })
+          .catch(({ user, message }) => {
+            console.log(user + " died");
+            console.log("message: " + message);
+          });
       });
+
+      Promise.all(requests).then(() => {
+        const end = new Date();
+        console.log(
+          `All ${requests.length} histories updated in ${(
+            (end.getTime() - start.getTime()) /
+            1000
+          ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Almaty",
+          })}]`
+        );
+      });
+    }
+  );
+}
+
+async function parseNewTracks(user, cb, reject) {
+  try {
+    const listenedTracks = await fetch(
+      "https://api.spotify.com/v1/me/player/recently-played?limit=15",
+      {
+        headers: {
+          Authorization: "Bearer " + user.lastSpotifyToken,
+        },
+      }
+    ).then((res) => res.json());
+
+    if (listenedTracks.error) throw new Error(listenedTracks.error.message);
+    if (!listenedTracks.items.length) return cb([]);
+
+    if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length)
+      cb(listenedTracks.items.map((item) => formatTrack(item)).reverse());
+
+    let i = 0;
+    let newSongs = [];
+
+    const lastListenedTrack = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(user._id),
+        },
+      },
+      {
+        $project: {
+          recentlyPlayed: 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$recentlyPlayed.plays",
+        },
+      },
+      {
+        $sort: {
+          "recentlyPlayed.plays.played_at": -1,
+        },
+      },
+      {
+        $limit: 1,
+      },
+    ]);
+
+    while (
+      i < listenedTracks.items.length &&
+      Date.parse(lastListenedTrack[0].recentlyPlayed.plays.played_at) <
+        Date.parse(listenedTracks.items[i].played_at)
+    ) {
+      newSongs.push(formatTrack(listenedTracks.items[i]));
+      i++;
+    }
+    cb(newSongs.reverse());
+  } catch (err) {
+    reject({ user: user.userName, message: err.message });
+  }
+}
+
+async function addTrack(user, track) {
+  const existingTrack = await User.findOne(
+    {
+      _id: user._id,
+      "recentlyPlayed.id": track.id,
+    },
+    { "recentlyPlayed.$": 1 }
+  );
+
+  const query = { spotifyID: user.spotifyID };
+
+  if (!existingTrack) {
+    const update = {
+      $push: {
+        recentlyPlayed: { $each: [track], $position: 0 },
+      },
+    };
+
+    await User.updateOne(query, update);
+    return;
   }
 
-  const agg = [
+  await User.updateOne(
     {
-      $match: {},
+      _id: user._id,
+      "recentlyPlayed.id": track.id,
     },
     {
-      $project: {
-        _id: 0,
-        spotifyID: 1,
-        lastSpotifyToken: 1,
-        recentlyPlayed: {
-          $slice: ["$recentlyPlayed", 1],
-        },
-        userName: 1,
-      },
-    },
-    {
-      $project: {
-        spotifyID: 1,
-        lastSpotifyToken: 1,
-        userName: 1,
-        "recentlyPlayed.played_at": 1,
-      },
-    },
-  ];
-
-  User.aggregate(agg, (err, users) => {
-    if (err) return console.log(err);
-
-    let requests = users.map((user) => {
-      return new Promise((resolve, reject) => {
-        parseRecentlyPlayed(user, resolve, reject);
-      }).catch(({ user, message }) => {
-        console.log(user + " died");
-        console.log("message: " + message);
-      });
-    });
-
-    Promise.all(requests).then(() => {
-      const end = new Date();
-      console.log(
-        `All ${requests.length} histories updated in ${(
-          (end.getTime() - start.getTime()) /
-          1000
-        ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-          timeZone: "Asia/Almaty",
-        })}]`
-      );
-    });
-  });
+      $push: { "recentlyPlayed.$.plays": { $each: track.plays, $position: 0 } },
+    }
+  );
 }
 
 export default refresh_recently_played;

@@ -9,7 +9,7 @@ import plays from "../../includes/played-overview.js";
 
 export default async function(fastify) {
   const overview = fastify.getSchema("overview");
-  const tracks = fastify.getSchema("tracks");
+  const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
 
   const responseSchema = {

@@ -67,21 +67,38 @@ export default async function(fastify) {
           {
             $project: {
               userName: 1,
-              _id: 0,
               avatar: 1,
               customID: 1,
               private: 1,
-              listened: {
-                $cond: {
-                  if: {
-                    $isArray: "$recentlyPlayed",
-                  },
-                  then: {
-                    $size: "$recentlyPlayed",
-                  },
-                  else: 0,
-                },
+              "recentlyPlayed.plays.played_at": 1,
+            },
+          },
+          {
+            $unwind: {
+              path: "$recentlyPlayed",
+            },
+          },
+          {
+            $project: {
+              userName: 1,
+              avatar: 1,
+              customID: 1,
+              private: 1,
+              "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.plays": {
+                $size: "$recentlyPlayed.plays",
               },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                userName: "$userName",
+                avatar: "$avatar",
+                customID: "$customID",
+                private: "$private",
+              },
+              listened: { $sum: "$recentlyPlayed.plays" },
             },
           },
           {
@@ -100,7 +117,18 @@ export default async function(fastify) {
 
         const top = await User.aggregate(agg);
 
-        reply.code(200).send({ top, status: 200 });
+        reply.code(200).send({
+          top: top.map((user) => {
+            return {
+              avatar: user._id.avatar,
+              customID: user._id.customID,
+              private: user._id.private,
+              userName: user._id.userName,
+              listened: user.listened,
+            };
+          }),
+          status: 200,
+        });
       } catch (e) {
         reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);

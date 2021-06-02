@@ -85,8 +85,7 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
     },
     {
       $project: {
-        _id: 0,
-        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.image": 1,
         "recentlyPlayed.duration_ms": 1,
         "recentlyPlayed.id": 1,
@@ -96,7 +95,20 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
     {
       $unwind: {
         path: "$recentlyPlayed",
-        includeArrayIndex: "arrayIndex",
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed.plays",
+      },
+    },
+    {
+      $project: {
+        "recentlyPlayed.duration_ms": 1,
+        "recentlyPlayed.id": 1,
+        "recentlyPlayed.name": 1,
+        "recentlyPlayed.image": 1,
+        "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
       },
     },
     {
@@ -128,6 +140,7 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
       $limit: range,
     },
   ];
+
   const tracks = await User.aggregate(agg);
 
   return tracks.map((track) => {
@@ -150,7 +163,7 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
     {
       $project: {
         _id: 0,
-        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.album.id": 1,
         "recentlyPlayed.album.name": 1,
         "recentlyPlayed.image": 1,
@@ -160,7 +173,20 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
     {
       $unwind: {
         path: "$recentlyPlayed",
-        includeArrayIndex: "arrayIndex",
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed.plays",
+      },
+    },
+    {
+      $project: {
+        "recentlyPlayed.duration_ms": 1,
+        "recentlyPlayed.album.id": 1,
+        "recentlyPlayed.album.name": 1,
+        "recentlyPlayed.image": 1,
+        "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
       },
     },
     {
@@ -214,8 +240,8 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
     {
       $project: {
         _id: 0,
-        "recentlyPlayed.played_at": 1,
-        "recentlyPlayed.context": 1,
+        "recentlyPlayed.plays.played_at": 1,
+        "recentlyPlayed.plays.context": 1,
         "recentlyPlayed.duration_ms": 1,
         lastSpotifyToken: 1,
       },
@@ -223,6 +249,19 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
     {
       $unwind: {
         path: "$recentlyPlayed",
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed.plays",
+      },
+    },
+    {
+      $project: {
+        "recentlyPlayed.duration_ms": 1,
+        "recentlyPlayed.context": "$recentlyPlayed.plays.context",
+        lastSpotifyToken: 1,
+        "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
       },
     },
     {
@@ -275,7 +314,7 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
     {
       $project: {
         _id: 0,
-        "recentlyPlayed.played_at": 1,
+        "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.artists.name": 1,
         "recentlyPlayed.artists.id": 1,
         "recentlyPlayed.duration_ms": 1,
@@ -284,6 +323,19 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
     {
       $unwind: {
         path: "$recentlyPlayed",
+      },
+    },
+    {
+      $unwind: {
+        path: "$recentlyPlayed.plays",
+      },
+    },
+    {
+      $project: {
+        "recentlyPlayed.duration_ms": 1,
+        "recentlyPlayed.artists.name": 1,
+        "recentlyPlayed.artists.id": 1,
+        "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
       },
     },
     {

@@ -57,16 +57,11 @@ export default async function(fastify) {
 
         const user = await fastify.parseHistory(_id, range, page);
 
-        if (!user[0])
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
-
-        if (!user[0].tracksLength)
+        if (!user[0] || !user[0].tracksQuantity)
           return reply.code(200).send({ pages: 0, history: [], status: 204 });
 
         reply.code(200).send({
-          pages: Math.ceil(user[0].tracksLength / range),
+          pages: Math.ceil(user[0].tracksQuantity / range),
           history: user[0].recentlyPlayed,
           status: 200,
         });
