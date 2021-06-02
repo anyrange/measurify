@@ -61,7 +61,6 @@ export default async function(_id, filterId) {
         $limit: 20,
       },
     ];
-
     return await User.aggregate(agg);
   } catch (e) {
     console.log(JSON.stringify(e));
