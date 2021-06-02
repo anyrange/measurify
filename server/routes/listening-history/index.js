@@ -18,6 +18,9 @@ export default async function(fastify) {
           type: "number",
           minimum: 1,
         },
+        search: {
+          type: "string",
+        },
       },
     },
     headers,
@@ -54,8 +57,9 @@ export default async function(fastify) {
         const _id = await fastify.auth(req.cookies.token);
         const range = req.query.range || 50;
         const page = req.query.page - 1 || 0;
+        const search = req.query.search || "";
 
-        const user = await fastify.parseHistory(_id, range, page);
+        const user = await fastify.parseHistory(_id, range, page, search);
 
         if (!user[0] || !user[0].tracksQuantity)
           return reply.code(200).send({ pages: 0, history: [], status: 204 });
