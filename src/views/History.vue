@@ -142,9 +142,14 @@ export default {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
     async performSearch() {
-      const response = await searchInHistory(this.searchQuery, this.searchPage);
-      this.searchValues = response.history;
-      this.searchPagesMax = response.pages;
+      if (this.searchQuery) {
+        const response = await searchInHistory(
+          this.searchQuery,
+          this.searchPage
+        );
+        this.searchValues = response.history;
+        this.searchPagesMax = response.pages;
+      }
     },
     getNextHistoryPage() {
       const windowScroll = document.querySelector(".content-spotify");
