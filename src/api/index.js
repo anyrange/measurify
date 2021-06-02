@@ -42,6 +42,9 @@ export function getListenersTop() {
 export function getListeningHistory(page) {
   return api.get(`/listening-history?page=${page}`);
 }
+export function searchInHistory(query, page) {
+  return api.get(`/listening-history?search=${query}&page=${page}`);
+}
 export function getOverview() {
   return api.get("/overview");
 }
