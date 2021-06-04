@@ -70,7 +70,7 @@ export default async function(fastify) {
           userName: user.display_name,
           refreshToken: refresh_token,
           avatar: user.images.length ? user.images[0].url : "",
-          __v: 3,
+          __v: 4,
         };
         const projection = {
           recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },

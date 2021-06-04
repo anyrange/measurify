@@ -43,6 +43,10 @@ const schema = new Schema({
     default: false,
     required: true,
   },
+  subscriptions: {
+    type: Object,
+    default: {},
+  },
 });
 
 export default model("User", schema);
