@@ -10,7 +10,7 @@ function refresh_recently_played() {
   const start = new Date();
 
   User.find(
-    {},
+    { refreshToken: { $ne: "" } },
     {
       spotifyID: 1,
       lastSpotifyToken: 1,

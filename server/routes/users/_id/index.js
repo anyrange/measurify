@@ -19,6 +19,7 @@ export default async function(fastify) {
         "overview",
         "history",
         "top",
+        "leaved",
         "genres",
         "status",
       ],
@@ -52,6 +53,7 @@ export default async function(fastify) {
             type: "string",
           },
         },
+        leaved: { type: "boolean" },
         status: {
           type: "number",
         },
@@ -97,6 +99,7 @@ export default async function(fastify) {
             lastLogin: 1,
             customID: 1,
             lastSpotifyToken: 1,
+            refreshToken: 1,
           }
         );
 
@@ -177,9 +180,10 @@ export default async function(fastify) {
           avatar: user.avatar,
           lastLogin: user.lastLogin,
           top,
-          history: history[0].recentlyPlayed || [],
+          history: history.length ? history[0].recentlyPlayed : [],
           overview,
           genres,
+          leaved: user.refreshToken === "",
           status: 200,
         };
 
