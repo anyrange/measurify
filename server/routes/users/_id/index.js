@@ -206,6 +206,7 @@ const genresTop = async (lastSpotifyToken) => {
     }
   ).then((res) => res.json());
 
+  if (artists.error) return [];
   if (!artists.items.length) return [];
   const genres = artists.items
     .map(({ genres }) => {
