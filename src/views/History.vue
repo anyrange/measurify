@@ -16,7 +16,6 @@
               type="text"
               placeholder="Search"
               v-model="searchQuery"
-              @input="performSearch()"
               class="search-field"
             />
             <div class="absolute top-0">
@@ -58,9 +57,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(item, index) in searchQuery
-                ? searchValues
-                : recentlyPlayed"
+              v-for="(item, index) in recentlyPlayed"
               :key="index"
               class="history-tr"
             >
@@ -111,8 +108,8 @@
 
 <script>
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
+import { getListeningHistory } from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
-import { getListeningHistory, searchInHistory } from "@/api";
 
 export default {
   components: {
@@ -124,12 +121,10 @@ export default {
       pagesMax: 1,
       page: 1,
       searchQuery: "",
-      searchValues: [],
-      searchPage: 1,
-      searchPagesMax: 1,
       loading: true,
       loadingNextPage: false,
       emptyData: false,
+      contentWindow: null,
     };
   },
   methods: {
@@ -141,63 +136,60 @@ export default {
     getDuration(time) {
       return format(addSeconds(new Date(0), time / 1000), "mm:ss");
     },
-    async performSearch() {
-      if (this.searchQuery) {
-        const response = await searchInHistory(
-          this.searchQuery,
-          this.searchPage
-        );
-        this.searchValues = response.history;
-        this.searchPagesMax = response.pages;
+    async handleScroll() {
+      let bottomOfWindow =
+        this.contentWindow.offsetHeight + this.contentWindow.scrollTop >=
+        this.contentWindow.scrollHeight
+          ? true
+          : false;
+      if (
+        bottomOfWindow &&
+        !this.loadingNextPage &&
+        this.page < this.pagesMax
+      ) {
+        this.page++;
+        this.loadingNextPage = true;
+        const response = await getListeningHistory({
+          page: this.page,
+          query: this.searchQuery,
+        });
+        this.recentlyPlayed.push(...response.history);
+        this.loadingNextPage = false;
       }
     },
-    getNextHistoryPage() {
-      const windowScroll = document.querySelector(".content-spotify");
-      windowScroll.onscroll = () => {
-        let bottomOfWindow =
-          windowScroll.offsetHeight + windowScroll.scrollTop >=
-          windowScroll.scrollHeight
-            ? true
-            : false;
-        if (
-          bottomOfWindow &&
-          this.page <= this.pagesMax &&
-          this.searchPage <= this.searchPagesMax &&
-          !this.loadingNextPage
-        ) {
-          this.loadingNextPage = true;
-
-          if (this.searchQuery) {
-            searchInHistory(this.searchQuery, this.searchPage)
-              .then((response) => {
-                this.searchValues.push(...response.history);
-              })
-              .finally(() => {
-                this.loadingNextPage = false;
-                this.searchPage++;
-              });
-          } else {
-            getListeningHistory(this.page)
-              .then((response) => {
-                this.recentlyPlayed.push(...response.history);
-              })
-              .finally(() => {
-                this.loadingNextPage = false;
-                this.page++;
-              });
-          }
-        }
-      };
+  },
+  watch: {
+    searchQuery: {
+      handler: async function() {
+        this.page = 1;
+        const response = await getListeningHistory({
+          page: this.page,
+          query: this.searchQuery,
+        });
+        this.recentlyPlayed = response.history;
+        this.pagesMax = response.pages;
+      },
+      immediate: false,
     },
   },
   async created() {
-    const response = await getListeningHistory(this.page);
-    if (response.status === 204) return (this.emptyData = true);
+    const response = await getListeningHistory({
+      page: this.page,
+      query: this.searchQuery,
+    });
+    if (response.status === 204) {
+      return (this.emptyData = true);
+    }
     this.pagesMax = response.pages;
     this.recentlyPlayed = response.history;
-    this.page++;
-    this.getNextHistoryPage();
     this.loading = false;
+  },
+  mounted() {
+    this.contentWindow = document.querySelector(".content-spotify");
+    this.contentWindow.addEventListener("scroll", this.handleScroll);
+  },
+  unmounted() {
+    this.contentWindow.removeEventListener("scroll", this.handleScroll);
   },
 };
 </script>
