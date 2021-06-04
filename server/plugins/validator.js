@@ -11,7 +11,7 @@ const plugin = fp(async function plugin(fastify) {
       case "querystring": {
         const error = validationError.validation[0];
         return {
-          status: 406,
+          status: 400,
           message: `Invalid query parameters: ${error.dataPath.substring(1)} ${
             error.message
           }`,
@@ -19,11 +19,11 @@ const plugin = fp(async function plugin(fastify) {
       }
 
       case "params":
-        return { status: 406, message: "Invalid id" };
+        return { status: 400, message: "Invalid id" };
 
       case "body":
         return {
-          status: 406,
+          status: 400,
           message: `Invalid body: ${validationError.validation[0].message}`,
         };
 

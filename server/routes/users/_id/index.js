@@ -193,8 +193,8 @@ export default async function(fastify) {
 }
 
 const genresTop = async (lastSpotifyToken) => {
-  const { artists } = await fetch(
-    "https://api.spotify.com/v1/me/following?type=artist&limit=50",
+  const artists = await fetch(
+    "https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=50",
     {
       headers: {
         Authorization: "Bearer " + lastSpotifyToken,
