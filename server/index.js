@@ -3,6 +3,7 @@ import "./db.js";
 import cron from "node-cron";
 import refresh_tokens from "./includes/refresh-tokens.js";
 import refresh_recently_played from "./includes/recently-played-parse.js";
+import * as smartPlaylist from "./includes/smart-playlist.js";
 
 const PORT = process.env.PORT || 8888;
 
@@ -15,11 +16,15 @@ if (process.env.NODE_ENV == "production") startScheduledJobs();
 
 function startScheduledJobs() {
   refresh_tokens();
-  refresh_recently_played();
+  // refresh_recently_played();
   cron.schedule("*/30 * * * *", () => {
     refresh_tokens();
   });
   cron.schedule("*/10 * * * *", () => {
     refresh_recently_played();
+  });
+
+  cron.schedule("0 0 * * *", () => {
+    smartPlaylist.update();
   });
 }

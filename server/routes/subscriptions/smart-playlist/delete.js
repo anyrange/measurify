@@ -51,7 +51,9 @@ export default async function(fastify) {
         const opResult = await User.updateOne(
           { _id },
           {
-            $pull: { "subscriptions.smartPlaylist": { $in: req.body.items } },
+            $pull: {
+              "subscriptions.smartPlaylist.playlists": { $in: req.body.items },
+            },
           }
         );
 

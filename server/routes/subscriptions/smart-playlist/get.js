@@ -39,15 +39,15 @@ export default async function(fastify) {
 
         const { subscriptions } = await User.findOne(
           { _id },
-          { "subscriptions.smartPlaylist": 1 }
+          { "subscriptions.smartPlaylist.playlists": 1 }
         );
 
-        if (!subscriptions?.smartPlaylist)
+        if (!subscriptions?.smartPlaylist?.playlists.length)
           return reply.code(200).send({ items: [], status: 204 });
 
         reply
           .code(200)
-          .send({ items: subscriptions.smartPlaylist, status: 200 });
+          .send({ items: subscriptions.smartPlaylist.playlists, status: 200 });
       } catch (e) {
         reply.code(500).send({ message: "Something went wrong!", status: 500 });
         console.log(e);

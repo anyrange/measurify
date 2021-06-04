@@ -1,4 +1,5 @@
 import User from "../../../models/User.js";
+import fetch from "node-fetch";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
@@ -48,9 +49,40 @@ export default async function(fastify) {
 
         const _id = await fastify.auth(req.cookies.token);
 
+        const user = await User.findOne(
+          { _id },
+          { spotifyID: 1, lastSpotifyToken: 1 }
+        );
+
+        if (!user)
+          return reply
+            .code(404)
+            .send({ message: "User not found", status: 404 });
+
+        const createdPlaylist = await fetch(
+          `https://api.spotify.com/v1/users/${user.spotifyID}/playlists`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + user.lastSpotifyToken,
+            },
+            body: JSON.stringify({
+              name: "Smart as fuck boiiii",
+              description: "Created by spotiworm",
+              public: false,
+            }),
+          }
+        ).then((res) => res.json());
+
+        if (createdPlaylist.error)
+          return reply.code(400).send({ message: "Error", status: 400 });
+
         const opResult = await User.updateOne(
           { _id },
-          { "subscriptions.smartPlaylist": req.body.items }
+          {
+            "subscriptions.smartPlaylist.playlists": req.body.items,
+            "subscriptions.smartPlaylist.id": createdPlaylist.id,
+          }
         );
 
         if (opResult.nModified === 0)

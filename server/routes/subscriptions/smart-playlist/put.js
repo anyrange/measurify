@@ -52,7 +52,9 @@ export default async function(fastify) {
           { _id },
           {
             $addToSet: {
-              "subscriptions.smartPlaylist": { $each: req.body.items },
+              "subscriptions.smartPlaylist.playlists": {
+                $each: req.body.items,
+              },
             },
           }
         );
