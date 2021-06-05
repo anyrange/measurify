@@ -1,6 +1,8 @@
 <template>
   <div class="card">
-    <div class="text-2xl text-gray-400-spotify">{{ title }}</div>
+    <div class="text-2xl text-gray-400-spotify">
+      <slot />
+    </div>
     <div class="flex items-center pt-1">
       <div class="text-4xl font-semibold text-gray-100 leading-tight mr-2">
         {{ value }}
@@ -26,8 +28,8 @@
 
 <script>
 export default {
+  name: "Card",
   props: {
-    title: String,
     selected: String,
     value: Number,
     previousValue: Number,

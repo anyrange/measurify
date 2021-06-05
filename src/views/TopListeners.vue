@@ -69,6 +69,7 @@ import { Lock } from "@/components/icons";
 import { mapGetters } from "vuex";
 
 export default {
+  name: "TopListeners",
   components: { Lock },
   data() {
     return {

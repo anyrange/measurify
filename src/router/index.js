@@ -1,41 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Login from "@/views/Login.vue";
-import MainLayout from "@/layouts/MainLayout.vue";
-import About from "@/views/About.vue";
-import Profile from "@/views/Profile.vue";
-import Overview from "@/views/Overview.vue";
-import History from "@/views/History.vue";
-import Track from "@/views/Track.vue";
-import Account from "@/views/Account.vue";
-import TopListeners from "@/views/TopListeners.vue";
-
 import store from "@/store";
 
 const routes = [
   {
     path: "/",
     name: "login",
-    component: Login,
+    component: () => import("@/views/Login.vue"),
     beforeEnter(to, from, next) {
-      if (store.getters.getUser) {
-        next({
-          name: "home",
-        });
-      } else {
-        next();
-      }
+      store.getters.getUser ? next({ name: "home" }) : next();
     },
   },
   {
-    name: "home",
-    component: MainLayout,
     path: "/",
+    name: "home",
+    component: () => import("@/layouts/MainLayout.vue"),
     redirect: { name: "overview" },
     children: [
       {
         path: "/overview",
         name: "overview",
-        component: Overview,
+        component: () => import("@/views/Overview.vue"),
         meta: {
           title: "Overview",
         },
@@ -43,7 +27,7 @@ const routes = [
       {
         path: "/history",
         name: "listening-history",
-        component: History,
+        component: () => import("@/views/History.vue"),
         meta: {
           title: "Listening History",
         },
@@ -51,7 +35,7 @@ const routes = [
       {
         path: "/about",
         name: "about",
-        component: About,
+        component: () => import("@/views/About.vue"),
         meta: {
           title: "About",
         },
@@ -59,7 +43,7 @@ const routes = [
       {
         path: "/:id",
         name: "profile",
-        component: Profile,
+        component: () => import("@/views/Profile.vue"),
         meta: {
           title: "",
         },
@@ -67,7 +51,7 @@ const routes = [
       {
         path: "/top-listeners",
         name: "top-listeners",
-        component: TopListeners,
+        component: () => import("@/views/TopListeners.vue"),
         meta: {
           title: "Listeners Top",
         },
@@ -75,7 +59,7 @@ const routes = [
       {
         path: "/account",
         name: "account",
-        component: Account,
+        component: () => import("@/views/Account.vue"),
         meta: {
           title: "Account",
         },
@@ -83,20 +67,22 @@ const routes = [
       {
         path: "/track/:id",
         name: "track",
-        component: Track,
+        component: () => import("@/views/Track.vue"),
+        meta: {
+          title: "",
+        },
+      },
+      {
+        path: "/artist/:id",
+        name: "artist",
+        component: () => import("@/views/Artist.vue"),
         meta: {
           title: "",
         },
       },
     ],
     beforeEnter(to, from, next) {
-      if (store.getters.getUser) {
-        next();
-      } else {
-        next({
-          name: "login",
-        });
-      }
+      store.getters.getUser ? next() : next({ name: "login" });
     },
   },
   {

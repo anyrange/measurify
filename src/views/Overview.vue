@@ -1,116 +1,54 @@
 <template>
   <h2 class="h-title">Overview</h2>
-  <template v-if="emptyData">
-    <empty-message />
-  </template>
+  <loading-spinner v-if="loading" />
   <template v-else>
-    <loading-spinner v-if="loading" />
+    <empty-message v-if="emptyData" />
     <template v-else>
-      <div class="mt-6">
-        <ul class="tabs sm:flex">
-          <li
-            class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-            :class="[selectedPeriod === 'alltime' ? 'is-active' : 'not-active']"
-            @click="updateOverview('alltime')"
-          >
-            All Time
-          </li>
-          <li
-            class="tab"
-            :class="[selectedPeriod === 'week' ? 'is-active' : 'not-active']"
-            @click="updateOverview('week')"
-          >
-            This Week
-          </li>
-          <li
-            class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-            :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
-            @click="updateOverview('month')"
-          >
-            This Month
-          </li>
-        </ul>
-        <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
-          <Card
-            :title="'Tracks Played'"
-            :selected="selectedPeriod"
-            :value="totalTracksPlayed"
-            :previousValue="totalTracksPlayedPrev"
-          />
-          <Card
-            :title="'Minutes Listened'"
-            :selected="selectedPeriod"
-            :value="totalMinutesListened"
-            :previousValue="totalMinutesListenedPrev"
-          />
-        </div>
-        <div class="-mx-4 w-full">
-          <apexchart
-            type="area"
-            height="350"
-            :options="chartOptions"
-            :series="overviewData"
-          ></apexchart>
-        </div>
-        <h2 class="mt-5 mb-8 text-4xl font-semibold text-gray-100">
-          Top Played
-        </h2>
-        <div class="mt-6">
-          <ul class="sm:flex">
-            <li
-              class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-              :class="[selectedTop === 'artists' ? 'is-active' : 'not-active']"
-              @click="selectedTop = 'artists'"
-            >
-              Artists
-            </li>
-            <li
-              class="tab"
-              :class="[selectedTop === 'tracks' ? 'is-active' : 'not-active']"
-              @click="selectedTop = 'tracks'"
-            >
-              Tracks
-            </li>
-            <li
-              class="tab"
-              :class="[
-                selectedTop === 'albums' ? 'is-active' : 'not-active',
-                !playlistsExist
-                  ? 'sm:rounded-r-lg sm:rounded-b-none rounded-b-lg'
-                  : '',
-              ]"
-              @click="selectedTop = 'albums'"
-            >
-              Albums
-            </li>
-            <template v-if="playlistsExist">
-              <li
-                class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-                :class="[
-                  selectedTop === 'playlists' ? 'is-active' : 'not-active',
-                ]"
-                @click="selectedTop = 'playlists'"
-              >
-                Playlists
-              </li>
-            </template>
-          </ul>
-          <div class="mt-4">
-            <div v-if="selectedTop === 'artists'">
-              <Table :title="selectedTop" :data="totalTop.artists" />
-            </div>
-            <div v-if="selectedTop === 'tracks'">
-              <Table :title="selectedTop" :data="totalTop.tracks" />
-            </div>
-            <div v-if="selectedTop === 'albums'">
-              <Table :title="selectedTop" :data="totalTop.albums" />
-            </div>
-            <div v-if="selectedTop === 'playlists'">
-              <Table :title="selectedTop" :data="totalTop.playlists" />
-            </div>
-          </div>
-        </div>
+      <tabs class="mt-6" v-model="selectedPeriod">
+        <tab name="alltime" @click="updateOverview('alltime')">All Time</tab>
+        <tab name="week" @click="updateOverview('week')">This Week</tab>
+        <tab name="month" @click="updateOverview('month')">This Month</tab>
+      </tabs>
+      <div class="mt-6 grid gap-7 xl:grid-cols-4 lg:grid-cols-2">
+        <card
+          :selected="selectedPeriod"
+          :value="totalTracksPlayed"
+          :previousValue="totalTracksPlayedPrev"
+        >
+          Tracks Played
+        </card>
+        <card
+          :selected="selectedPeriod"
+          :value="totalMinutesListened"
+          :previousValue="totalMinutesListenedPrev"
+        >
+          Minutes Listened
+        </card>
       </div>
+      <div class="-mx-4 w-full">
+        <apexchart
+          type="area"
+          height="350"
+          :options="chartOptions"
+          :series="overviewData"
+        ></apexchart>
+      </div>
+      <h2 class="mt-6 mb-8 text-4xl font-semibold text-gray-100">
+        Top Played
+      </h2>
+      <tabs class="mt-6" v-model="selectedTop">
+        <tab name="artists">Artists</tab>
+        <tab name="tracks">Track</tab>
+        <tab name="albums">Albums</tab>
+        <tab name="playlists" :disabled="!this.totalTop.playlists?.length">
+          Playlists
+        </tab>
+      </tabs>
+      <rating-table
+        class="mt-3"
+        :title="selectedTop"
+        :data="totalTop[selectedTop]"
+      />
     </template>
   </template>
 </template>
@@ -119,19 +57,16 @@
 import * as fd from "@/utils/dates";
 import chartOptions from "@/mixins/chartOptions";
 import EmptyMessage from "@/components/EmptyMessage";
-import Table from "@/components/Table";
+import RatingTable from "@/components/RatingTable";
 import Card from "@/components/Card";
+import Tabs from "@/components/Tabs";
+import Tab from "@/components/Tab";
 import { getOverview, getTop } from "@/api";
 
 export default {
-  components: {
-    Card,
-    Table,
-    EmptyMessage,
-  },
-
+  name: "Overview",
+  components: { Card, RatingTable, EmptyMessage, Tabs, Tab },
   mixins: [chartOptions],
-
   data() {
     return {
       loading: true,
@@ -157,14 +92,7 @@ export default {
       prevMonth: [],
     };
   },
-
   computed: {
-    playlistsExist() {
-      if (this.totalTop.playlists?.length) {
-        return true;
-      }
-      return false;
-    },
     totalTracksPlayed() {
       return this.tracksPlayed.reduce((a, b) => a + b, 0);
     },
@@ -178,19 +106,10 @@ export default {
       return this.prevMinutesListened.reduce((a, b) => a + b, 0);
     },
   },
-
   methods: {
     updateOverview(period) {
       this.selectedPeriod = period;
-      if (period == "alltime") {
-        this.updateChart(period);
-      }
-      if (period == "week") {
-        this.updateChart(period);
-      }
-      if (period == "month") {
-        this.updateChart(period);
-      }
+      this.updateChart(period);
     },
     updateChart(period) {
       this.newDates = [];
@@ -201,19 +120,12 @@ export default {
       this.prevTracksPlayed = [];
       this.prevMinutesListened = [];
 
-      if (period === "alltime") {
-        this.updateTotals(this.totalOverview);
-      }
-      if (period === "week") {
-        this.updateTotals(this.week, this.prevWeek);
-      }
-      if (period === "month") {
-        this.updateTotals(this.month, this.prevMonth);
-      }
+      if (period === "alltime") this.updateTotals(this.totalOverview);
+      if (period === "week") this.updateTotals(this.week, this.prevWeek);
+      if (period === "month") this.updateTotals(this.month, this.prevMonth);
 
       this.updateChartValues();
     },
-    // updateTop(period) {},
     updateTotals(arr, prev) {
       for (const item of arr) {
         this.newDates.push(item.date);
@@ -229,29 +141,8 @@ export default {
       }
     },
     updateChartValues() {
-      this.chartOptions = {
-        xaxis: {
-          categories: this.newDates,
-          labels: {
-            formatter: function(value) {
-              if (typeof value === "undefined") {
-                return value;
-              }
-              const options = {
-                month: "short",
-                day: "numeric",
-              };
-              const date = new Date(value);
-              return new Intl.DateTimeFormat("en-US", options).format(date);
-            },
-          },
-        },
-      };
-      this.overviewData = [
-        {
-          data: this.newValues,
-        },
-      ];
+      this.chartOptions = { xaxis: { categories: this.newDates } };
+      this.overviewData = [{ data: this.newValues }];
     },
     pushToChart() {
       for (const item of this.totalOverview) {
@@ -283,32 +174,19 @@ export default {
         fd.lastDayOfPreviousMonth
       );
     },
-    fetchData() {
-      getOverview().then((response) => {
-        if (response.status === 204) return (this.emptyData = true);
-        this.totalOverview = response.overview.reverse();
-        this.pushToChart();
-        this.preCalculateFilteredArrays();
-        getTop().then((response) => {
-          this.totalTop = response.top;
-          this.loading = false;
-        });
-      });
-    },
   },
-  created() {
-    this.fetchData();
+  async created() {
+    const response = await Promise.all([getOverview(), getTop()]);
+
+    this.totalOverview = response[0].overview.reverse();
+    this.totalTop = response[1].top;
+    this.emptyData = response[0].status === 204 ? true : false;
+    this.loading = false;
+
+    this.pushToChart();
+    this.preCalculateFilteredArrays();
   },
 };
 </script>
-
-<style lang="postcss">
-.total-played-listened {
-  @apply block text-2xl text-gray-100 font-light tracking-wide mb-2;
-}
-.total-played-listened-number {
-  @apply block text-4xl text-gray-100 font-bold tracking-wide mb-2;
-}
-</style>
 
 <style src="@/assets/chart.css"></style>

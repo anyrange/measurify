@@ -146,26 +146,19 @@ export default {
         this.account_copy.customID = this.account.customID;
       });
     },
-    fetchSettings() {
-      getAccount()
-        .then((response) => {
-          this.account = {
-            private: response.private,
-            spotifyID: response.spotifyID,
-            customID: response.customID,
-          };
-          this.account_copy = {
-            private: response.private,
-            customID: response.customID,
-          };
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
   },
-  created() {
-    this.fetchSettings();
+  async created() {
+    const response = await getAccount();
+    this.account = {
+      private: response.private,
+      spotifyID: response.spotifyID,
+      customID: response.customID,
+    };
+    this.account_copy = {
+      private: response.private,
+      customID: response.customID,
+    };
+    this.loading = false;
   },
 };
 </script>

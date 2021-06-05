@@ -38,51 +38,16 @@
           </span>
         </div>
       </div>
-      <div class="mt-6">
-        <ul class="sm:flex">
-          <li
-            class="tab sm:rounded-l-lg sm:rounded-t-none rounded-t-lg"
-            :class="[selectedPeriod === 'alltime' ? 'is-active' : 'not-active']"
-            @click="updateOverview('alltime')"
-          >
-            All Time
-          </li>
-          <li
-            class="tab"
-            :class="[selectedPeriod === 'week' ? 'is-active' : 'not-active']"
-            @click="updateOverview('week')"
-          >
-            This Week
-          </li>
-          <li
-            class="tab sm:rounded-r-lg sm:rounded-b-none rounded-b-lg"
-            :class="[selectedPeriod === 'month' ? 'is-active' : 'not-active']"
-            @click="updateOverview('month')"
-          >
-            This Month
-          </li>
-        </ul>
-      </div>
       <div class="grid gap-7 xl:grid-cols-4 lg:grid-cols-2 mb-2 mt-6">
         <Card
           :title="'Times Played'"
-          :selected="selectedPeriod"
           :value="totalTracksPlayed"
           :previousValue="totalTracksPlayedPrev"
         />
         <Card
           :title="'Minutes Listened'"
-          :selected="selectedPeriod"
           :value="totalMinutesListened"
           :previousValue="totalMinutesListenedPrev"
-        />
-      </div>
-      <div class="-mx-4 w-full">
-        <apexchart
-          type="area"
-          height="350"
-          :options="chartOptions"
-          :series="overviewData"
         />
       </div>
     </div>
