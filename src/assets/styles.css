@@ -42,18 +42,6 @@
   @apply text-5xl font-semibold text-white;
 }
 
-.tab {
-  @apply py-2 px-6 cursor-pointer text-gray-500 hover:bg-gray-700-spotify hover:text-gray-200 transition ease-in-out duration-75;
-}
-
-.is-active {
-  @apply bg-gray-600-spotify text-gray-200;
-}
-
-.not-active {
-  @apply bg-gray-900-spotify;
-}
-
 .h-subtitle {
   @apply text-lg font-semibold text-gray-500;
 }

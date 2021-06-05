@@ -52,6 +52,7 @@
 
 <script>
 export default {
+  name: "RatingTable",
   props: {
     title: String,
     data: Object,

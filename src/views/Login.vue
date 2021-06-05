@@ -4,17 +4,10 @@
       <h1 class="app-title">
         Spotiworm
       </h1>
-      <template v-if="loading">
-        <p class="text-center text-lg users animate-pulse loading px-28">
-          &nbsp;
-        </p>
-      </template>
-      <template v-else>
-        <p v-if="quantity" class="text-center users">
-          <span class="font-semibold">{{ quantity }}</span>
-          people already joined
-        </p>
-      </template>
+      <p class="text-center users">
+        <span class="font-semibold">{{ quantity }}</span>
+        people already joined
+      </p>
       <h1 class="app-description">
         Track your listening history and get stats
       </h1>
@@ -32,33 +25,29 @@ import { mapActions } from "vuex";
 export default {
   data() {
     return {
-      quantity: 0,
-      loading: true,
+      quantity: "?",
     };
   },
   methods: {
     ...mapActions(["login", "authorise"]),
   },
-  created() {
-    getUsersQuantity()
-      .then((response) => {
-        this.quantity = response.quantity;
-      })
-      .finally(() => (this.loading = false));
+  async created() {
+    const response = await getUsersQuantity();
+    this.quantity = response.quantity;
+
     if (this.$route.query.access_token) {
-      this.authorise({
-        access_token: this.$route.query.access_token,
-        id: this.$route.query.id,
-      })
-        .then(() => {
-          this.$router.push({ name: "home" });
-        })
-        .catch((error) => {
-          this.$notify.show({
-            type: "danger",
-            message: error.response.data.error.message,
-          });
+      try {
+        await this.authorise({
+          access_token: this.$route.query.access_token,
+          id: this.$route.query.id,
         });
+        this.$router.push({ name: "home" });
+      } catch (error) {
+        this.$notify.show({
+          type: "danger",
+          message: error.response.data.error.message,
+        });
+      }
     }
   },
 };

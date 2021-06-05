@@ -2,27 +2,28 @@
   <loading-spinner v-if="loading" />
   <template v-else>
     <div class="flex items-center">
-      <div class="">
-        <img
-          :src="profile?.avatar"
-          class="rounded-full object-cover md:w-20 md:h-20 h-16 w-16 shadow-sm"
-        />
-      </div>
-      <div class="ml-4">
-        <h2 class="text-4xl font-semibold dark:text-white text-gray-900">
-          {{ profile.userName }}
-        </h2>
-      </div>
+      <img
+        :src="profile?.avatar"
+        @error="profile.avatar = 'noavatar.svg'"
+        class="rounded-full object-cover md:w-20 md:h-20 h-16 w-16 shadow-sm"
+      />
+      <h2 class="ml-4 text-4xl font-semibold text-white">
+        {{ profile.userName }}
+      </h2>
     </div>
     <div class="flex md:flex-row flex-col mt-6">
       <div class="badge">
-        <div class="badge-title">Plays</div>
+        <div class="badge-title">
+          Plays
+        </div>
         <div class="badge-text">
           {{ profile.overview.plays }}
         </div>
       </div>
       <div class="md:ml-5 mt-5 md:mt-0 badge">
-        <div class="badge-title">Playtime</div>
+        <div class="badge-title">
+          Playtime
+        </div>
         <div class="badge-text">
           {{ profile.overview.playtime }}
         </div>
@@ -41,16 +42,14 @@ export default {
       profile: {},
     };
   },
-  created() {
-    getProfile(this.$route.params.id)
-      .then((response) => {
-        this.profile = response;
-        this.loading = false;
-        document.title = `${this.profile.userName} - Spotiworm`;
-      })
-      .catch(() => {
-        this.$router.push({ name: "home" });
-      });
+  async created() {
+    try {
+      this.profile = await getProfile(this.$route.params.id);
+      document.title = `${this.profile.userName} - Spotiworm`;
+      this.loading = false;
+    } catch (error) {
+      this.$router.push({ name: "home" });
+    }
   },
 };
 </script>

@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import { totalOverview } from "./mockOverview.js";
-
 function getFirstDayOfCurrentWeek() {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
