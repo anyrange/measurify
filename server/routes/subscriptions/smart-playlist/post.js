@@ -68,7 +68,7 @@ export default async function(fastify) {
             },
             body: JSON.stringify({
               name: "Smart as fuck boiiii",
-              description: "Created by spotiworm",
+              description: "Created by Spotiworm",
               public: false,
             }),
           }
