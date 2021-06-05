@@ -25,14 +25,15 @@
           Minutes Listened
         </card>
       </div>
-      <apexchart
-        class="-mx-4 w-full"
-        height="350"
-        type="area"
-        :options="chartOptions"
-        :series="overviewData"
-      />
-      <h2 class="mt-6 text-4xl font-semibold text-gray-100">
+      <div class="-mx-4 w-full">
+        <apexchart
+          type="area"
+          height="350"
+          :options="chartOptions"
+          :series="overviewData"
+        ></apexchart>
+      </div>
+      <h2 class="mt-6 mb-8 text-4xl font-semibold text-gray-100">
         Top Played
       </h2>
       <tabs class="mt-6" v-model="selectedTop">
