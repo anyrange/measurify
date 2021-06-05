@@ -45,8 +45,18 @@ function refresh_tokens() {
         cb();
       })
       .catch((err) => {
-        console.log("user " + userName + " havent got his token");
-        console.log(err.message);
+        console.log(
+          "[" +
+            JSON.stringify({
+              type: "error",
+              body: {
+                user: userName,
+                message: err.message,
+                source: "Smart-Playlist Clean",
+              },
+            }) +
+            "]"
+        );
         cb();
       });
   }
@@ -65,13 +75,23 @@ function refresh_tokens() {
 
       Promise.all(requests).then(() => {
         const end = new Date();
+        const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
+        const date = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Almaty",
+        });
+
         console.log(
-          `--All ${requests.length} tokens refreshed in ${(
-            (end.getTime() - start.getTime()) /
-            1000
-          ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Almaty",
-          })}]--`
+          "[" +
+            JSON.stringify({
+              type: "info",
+              body: {
+                users: requests.length,
+                time,
+                date,
+                source: "Tokens Refresh",
+              },
+            }) +
+            "]"
         );
       });
     }

@@ -13,6 +13,7 @@ app.listen(PORT, "0.0.0.0", (err, address) => {
 });
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
+smartPlaylist.update();
 
 function startScheduledJobs() {
   refresh_tokens();

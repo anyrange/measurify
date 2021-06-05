@@ -27,19 +27,40 @@ export async function update() {
           playlists: smartPlaylist.playlists,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(`${userName} got an error: ${err.message}`)
+          console.log(
+            "[" +
+              JSON.stringify({
+                type: "error",
+                body: {
+                  user: userName,
+                  message: err.message,
+                  source: "Smart-Playlist Update",
+                },
+              }) +
+              "]"
+          )
         )
     )
   );
 
   const end = new Date();
+  const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
+  const date = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Almaty",
+  });
+
   console.log(
-    `${subscribers.length} smart-playlist updated in ${(
-      (end.getTime() - start.getTime()) /
-      1000
-    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Almaty",
-    })}]`
+    "[" +
+      JSON.stringify({
+        type: "info",
+        body: {
+          users: subscribers.length,
+          time,
+          date,
+          source: "Smart-Playlist Update",
+        },
+      }) +
+      "]"
   );
 }
 
@@ -107,19 +128,40 @@ export async function clean() {
           lastSpotifyToken: lastSpotifyToken,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(`${userName} got an error: ${err.message}`)
+          console.log(
+            "[" +
+              JSON.stringify({
+                type: "error",
+                body: {
+                  user: userName,
+                  message: err.message,
+                  source: "Smart-Playlist Clean",
+                },
+              }) +
+              "]"
+          )
         )
     )
   );
 
   const end = new Date();
+  const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
+  const date = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Almaty",
+  });
+
   console.log(
-    `${subscribers.length} smart-playlist cleaned in ${(
-      (end.getTime() - start.getTime()) /
-      1000
-    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Almaty",
-    })}]`
+    "[" +
+      JSON.stringify({
+        type: "info",
+        body: {
+          users: subscribers.length,
+          time,
+          date,
+          source: "Smart-Playlist Clean",
+        },
+      }) +
+      "]"
   );
 }
 

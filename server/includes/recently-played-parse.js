@@ -32,20 +32,40 @@ function refresh_recently_played() {
             }
           })
           .catch(({ user, message }) => {
-            console.log(user + " died");
-            console.log("message: " + message);
+            console.log(
+              "[" +
+                JSON.stringify({
+                  type: "error",
+                  body: {
+                    user,
+                    message,
+                    source: "Smart-Playlist Clean",
+                  },
+                }) +
+                "]"
+            );
           });
       });
 
       Promise.all(requests).then(() => {
         const end = new Date();
+        const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
+        const date = new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Almaty",
+        });
+
         console.log(
-          `All ${requests.length} histories updated in ${(
-            (end.getTime() - start.getTime()) /
-            1000
-          ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Almaty",
-          })}]`
+          "[" +
+            JSON.stringify({
+              type: "info",
+              body: {
+                users: requests.length,
+                time,
+                date,
+                source: "Recently-Played Update",
+              },
+            }) +
+            "]"
         );
       });
     }
