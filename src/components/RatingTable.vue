@@ -1,48 +1,42 @@
 <template>
   <table class="w-full table-fixed">
     <thead>
-      <tr>
-        <th class="history-th w-1 text-left">
-          №
+      <tr class="border-b border-gray-700-spotify">
+        <th class="w-10 row-head text-left">
+          #
         </th>
-        <th class="history-th w-5/10 text-left">
-          {{ title.slice(0, -1) }}
+        <th class="w-auto row-head text-left">
+          {{ name }}
         </th>
-        <th class="history-th w-3/10 text-right">
+        <th class="w-2/10 row-head text-right">
           Minutes Listened
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in data" :key="item.id" class="history-tr">
-        <td class="history-td text-left">
+      <tr
+        v-for="(item, index) in data"
+        :key="item.id"
+        class="hover:bg-gray-700-spotify border-b border-gray-700-spotify"
+      >
+        <td class="row text-left">
           {{ index + 1 }}
         </td>
-        <td class="history-td text-left">
+        <td class="row">
           <div class="flex items-center">
-            <img :src="item?.image || 'noimage.svg'" class="table-image" />
-            <div class="ml-4">
-              <template v-if="this.title == 'tracks'">
-                <router-link
-                  class="hover:underline"
-                  :to="{
-                    name: 'track',
-                    params: {
-                      id: item.id,
-                      title: item.name,
-                    },
-                  }"
-                >
-                  {{ item.name }}
-                </router-link>
-              </template>
-              <template v-else>
+            <img
+              :src="item?.image || 'noimage.svg'"
+              @error="item.image = 'noimage.svg'"
+              class="object-cover w-9 h-9 rounded-full"
+            />
+            <div class="ml-4 hover:underline">
+              <router-link :to="{ name: name, params: { id: item.id } }">
                 {{ item.name }}
-              </template>
+              </router-link>
             </div>
           </div>
         </td>
-        <td class="history-td text-right">
+        <td class="row text-right">
           {{ item.playtime }}
         </td>
       </tr>
@@ -54,8 +48,28 @@
 export default {
   name: "RatingTable",
   props: {
-    title: String,
-    data: Object,
+    title: {
+      type: String,
+      required: true,
+    },
+    data: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    name() {
+      return this.title.slice(0, -1);
+    },
   },
 };
 </script>
+
+<style lang="postcss" scoped>
+.row-head {
+  @apply pb-3 px-3 font-normal text-sm capitalize leading-4;
+}
+.row {
+  @apply py-2 px-3 text-sm leading-5 text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+}
+</style>

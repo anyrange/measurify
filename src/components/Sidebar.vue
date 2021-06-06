@@ -12,7 +12,7 @@
       </router-link>
     </div>
   </template>
-  <transition name="slide-fade">
+  <transition name="sidebar-sldie">
     <template v-if="desktopSidebar">
       <ul class="sidebar">
         <h3 class="title-uppercase">
@@ -109,5 +109,16 @@ export default {
 }
 .green-border {
   box-shadow: 4px 0px 0 #1db954 inset;
+}
+
+.sidebar-slide-enter-active {
+  transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
+}
+.sidebar-slide-leave-active {
+  transition: all 0.15s cubic-bezier(1, 0.4, 0.6, 0);
+}
+.sidebar-slide-enter-from,
+.sidebar-slide-leave-to {
+  transform: translateX(-20px);
 }
 </style>

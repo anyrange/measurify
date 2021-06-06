@@ -5,7 +5,7 @@
       <div class="flex-1 flex flex-col bg-gray-800-spotify">
         <navbar />
         <div class="content-spotify overflow-y-auto md:mb-0 mb-12">
-          <div class="container mx-auto">
+          <div class="container px-10">
             <router-view />
           </div>
         </div>
@@ -25,8 +25,8 @@ export default {
     Sidebar,
     Navbar,
   },
-  created() {
-    getToken();
+  async created() {
+    await getToken();
   },
 };
 </script>
