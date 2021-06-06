@@ -1,8 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
-
 #app {
   font-family: "Inter", sans-serif;
-
   @apply bg-gray-800-spotify no-tap-highlight;
 }
 
@@ -10,32 +7,6 @@
   .no-tap-highlight {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   }
-}
-
-.history-td {
-  @apply px-4 py-2 border-b border-gray-700-spotify text-sm leading-5 text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
-}
-
-.history-th {
-  @apply px-4 py-3 border-b border-gray-700-spotify font-normal text-sm capitalize text-left leading-4;
-}
-
-.history-tr {
-  @apply hover:bg-gray-700-spotify;
-}
-
-.table-image {
-  @apply object-cover w-9 h-9 rounded-full;
-}
-
-.sidebar-spotify::-webkit-scrollbar,
-.content-spotify::-webkit-scrollbar {
-  @apply w-2 bg-gray-900-spotify;
-}
-
-.sidebar-spotify::-webkit-scrollbar-thumb,
-.content-spotify::-webkit-scrollbar-thumb {
-  @apply rounded-lg bg-gray-450-spotify;
 }
 
 .h-title {
@@ -46,15 +17,12 @@
   @apply text-lg font-semibold text-gray-500;
 }
 
-.slide-fade-enter-active {
-  transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
+.sidebar-spotify::-webkit-scrollbar,
+.content-spotify::-webkit-scrollbar {
+  @apply w-2 bg-gray-900-spotify;
 }
 
-.slide-fade-leave-active {
-  transition: all 0.15s cubic-bezier(1, 0.4, 0.6, 0);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(-20px);
+.sidebar-spotify::-webkit-scrollbar-thumb,
+.content-spotify::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-gray-450-spotify;
 }
