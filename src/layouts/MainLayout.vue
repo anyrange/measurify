@@ -5,7 +5,7 @@
       <div class="flex-1 flex flex-col bg-gray-800-spotify">
         <navbar />
         <div class="content-spotify overflow-y-auto md:mb-0 mb-12">
-          <div class="container px-10">
+          <div class="container sm:px-10 px-2">
             <router-view />
           </div>
         </div>
