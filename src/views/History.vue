@@ -9,7 +9,7 @@
     placeholder="Search"
     type="text"
     iconLeft
-    :disabled="!searchQuery && emptyData"
+    :disabled="!searchQuery && emptyData && !loading"
   >
     <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
       <path
@@ -24,30 +24,30 @@
       <table class="mt-4 w-full table-fixed">
         <thead>
           <tr>
-            <th class="history-th md:w-3/10 w-1.5/10">
+            <th class="row-head text-left md:w-3/10 w-1.5/10">
               Title
             </th>
-            <th class="history-th w-2.5/10 sm:table-cell hidden">
+            <th class="row-head text-left w-2.5/10 sm:table-cell hidden">
               Artist
             </th>
-            <th class="history-th w-2/10 md:table-cell hidden">
+            <th class="row-head text-left w-2/10 md:table-cell hidden">
               Album
             </th>
-            <th class="history-th md:w-1.5/10 w-1/10">
+            <th class="row-head text-right md:text-left md:w-1.5/10 w-1/10">
               When
             </th>
-            <th class="history-th w-1/10 lg:table-cell hidden">
+            <th class="row-head text-right w-1/10 lg:table-cell hidden">
               Duration
             </th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(track, index) in recentlyPlayed"
+            v-for="(track, index) in recentlyPlayed || []"
             :key="index"
-            class="history-tr"
+            class="hover:bg-gray-700-spotify"
           >
-            <td class="history-td">
+            <td class="row">
               <router-link
                 class="hover:underline"
                 :to="{ name: 'track', params: { id: track.id } }"
@@ -55,7 +55,7 @@
                 {{ track.name }}
               </router-link>
             </td>
-            <td class="history-td sm:table-cell hidden">
+            <td class="row sm:table-cell hidden">
               <template v-for="(artist, index) in track.artists" :key="index">
                 <router-link
                   class="hover:underline"
@@ -66,13 +66,18 @@
                 <span v-if="index !== track.artists.length - 1">, </span>
               </template>
             </td>
-            <td class="history-td md:table-cell hidden">
-              {{ track.album.name }}
+            <td class="row md:table-cell hidden">
+              <router-link
+                class="hover:underline"
+                :to="{ name: 'album', params: { id: track.album.id } }"
+              >
+                {{ track.album.name }}
+              </router-link>
             </td>
-            <td class="history-td">
+            <td class="row text-right md:text-left">
               {{ getDateFromNow(track.played_at) }}
             </td>
-            <td class="history-td lg:table-cell hidden">
+            <td class="row lg:table-cell hidden text-right">
               {{ getDuration(track.duration_ms) }}
             </td>
           </tr>
@@ -100,6 +105,7 @@ export default {
       pagesMax: 1,
       page: 1,
       searchQuery: "",
+      lastSuccessQuery: "",
       loading: true,
       loadingNextPage: false,
       emptyData: false,
@@ -141,13 +147,24 @@ export default {
     searchQuery: {
       handler: async function() {
         this.page = 1;
-        this.emptyData = false;
+        this.loading = true;
+
+        if (
+          this.emptyData &&
+          this.lastSuccessQuery.length < this.searchQuery.length
+        ) {
+          return (this.loading = false);
+        }
         const response = await getListeningHistory({
           page: this.page,
           query: this.searchQuery,
         });
         this.loading = false;
-        this.emptyData = response.status === 204 ? true : false;
+
+        if (response.status === 204) return (this.emptyData = true);
+
+        this.emptyData = false;
+        this.lastSuccessQuery = this.searchQuery;
         this.pagesMax = response.pages;
         this.recentlyPlayed = response.history;
       },
@@ -165,6 +182,12 @@ export default {
 </script>
 
 <style lang="postcss" scoped>
+.row-head {
+  @apply px-4 py-3 border-b border-gray-700-spotify font-normal text-sm capitalize leading-4;
+}
+.row {
+  @apply px-4 py-2 border-b border-gray-700-spotify text-sm leading-5 text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+}
 .skeleton {
   --text-opacity: 0;
   background-image: linear-gradient(

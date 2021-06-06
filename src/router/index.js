@@ -80,6 +80,22 @@ const routes = [
           title: "",
         },
       },
+      {
+        path: "/album/:id",
+        name: "album",
+        component: () => import("@/views/Album.vue"),
+        meta: {
+          title: "",
+        },
+      },
+      {
+        path: "/playlist/:id",
+        name: "playlist",
+        component: () => import("@/views/Playlist.vue"),
+        meta: {
+          title: "",
+        },
+      },
     ],
     beforeEnter(to, from, next) {
       store.getters.getUser ? next() : next({ name: "login" });

@@ -1,5 +1,5 @@
 <template>
-  Artist
+  Playlist
 </template>
 
 <script>
