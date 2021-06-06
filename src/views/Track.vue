@@ -3,16 +3,16 @@
   <template v-else>
     <div class="mt-4">
       <div class="md:flex items-center">
-        <img :src="object.image" class="w-56 h-56 mr-6 object-cover" />
+        <img :src="track.image" class="w-56 h-56 mr-6 track-cover" />
         <div class="flex flex-col space-y-2 text-gray-500-spotify">
           <span class="text-5xl font-semibold mt-2 md:mt-0">
-            {{ object.name }}
+            {{ track.name }}
           </span>
           <span class="text-lg">
             By
             <a class="text-white">
               {{
-                object.artists
+                track.artists
                   .map(({ name }) => {
                     return name;
                   })
@@ -23,11 +23,11 @@
           <span class="text-lg">
             From
             <a class="text-white">
-              {{ object.album.name }}
+              {{ track.album.name }}
             </a>
           </span>
           <span class="text-lg">
-            {{ object.release_date }} - {{ trackDuration }}
+            {{ track.release_date }} - {{ trackDuration }}
           </span>
         </div>
       </div>
@@ -40,7 +40,7 @@
         </card>
       </div>
       <audio controls>
-        <source :src="object.preview_url" type="audio/mpeg" />
+        <source :src="track.preview_url" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </div>
@@ -63,12 +63,9 @@ export default {
     return {
       loading: true,
       selectedPeriod: "alltime",
-
-      object: {},
-      totalOverview: [],
-
-      tracksPlayed: [],
-      minutesListened: [],
+      track: {},
+      totalTracksPlayed: 0,
+      totalMinutesListened: 0,
     };
   },
   computed: {
@@ -77,36 +74,22 @@ export default {
     }),
     trackDuration() {
       return format(
-        addSeconds(new Date(0), this.object.duration_ms / 1000),
+        addSeconds(new Date(0), this.track.duration_ms / 1000),
         "mm:ss"
       );
-    },
-    totalTracksPlayed() {
-      return this.tracksPlayed.reduce((a, b) => a + b, 0);
-    },
-    totalMinutesListened() {
-      return this.minutesListened.reduce((a, b) => a + b, 0);
     },
   },
   async created() {
     try {
       const response = await getTrack(this.$route.params.id);
-      this.object = response.track;
-      this.totalOverview = response.overview.reverse();
+      this.track = response.track;
+      this.totalTracksPlayed = response.overview.plays;
+      this.totalMinutesListened = response.overview.playtime;
       this.loading = false;
-      this.updateTotals(this.totalOverview);
-      document.title = `${this.object.name} - Spotiworm`;
+      document.title = `${this.track.name} - Spotiworm`;
     } catch (error) {
       this.$router.push({ name: "home" });
     }
-  },
-  methods: {
-    updateTotals(arr) {
-      for (const item of arr) {
-        this.tracksPlayed.push(item.plays);
-        this.minutesListened.push(item.duration);
-      }
-    },
   },
 };
 </script>
