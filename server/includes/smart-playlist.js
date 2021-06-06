@@ -27,40 +27,19 @@ export async function update() {
           playlists: smartPlaylist.playlists,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(
-            "[" +
-              JSON.stringify({
-                type: "error",
-                body: {
-                  user: userName,
-                  message: err.message,
-                  source: "Smart-Playlist Update",
-                },
-              }) +
-              "]"
-          )
+          console.log(`${userName} got an error: ${err.message}`)
         )
     )
   );
 
   const end = new Date();
-  const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
-  const date = new Date().toLocaleString("en-US", {
-    timeZone: "Asia/Almaty",
-  });
-
   console.log(
-    "[" +
-      JSON.stringify({
-        type: "info",
-        body: {
-          users: subscribers.length,
-          time,
-          date,
-          source: "Smart-Playlist Update",
-        },
-      }) +
-      "]"
+    `${subscribers.length} smart-playlist updated in ${(
+      (end.getTime() - start.getTime()) /
+      1000
+    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Almaty",
+    })}]`
   );
 }
 
@@ -128,40 +107,19 @@ export async function clean() {
           lastSpotifyToken: lastSpotifyToken,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(
-            "[" +
-              JSON.stringify({
-                type: "error",
-                body: {
-                  user: userName,
-                  message: err.message,
-                  source: "Smart-Playlist Clean",
-                },
-              }) +
-              "]"
-          )
+          console.log(`${userName} got an error: ${err.message}`)
         )
     )
   );
 
   const end = new Date();
-  const time = ((end.getTime() - start.getTime()) / 1000).toFixed(2);
-  const date = new Date().toLocaleString("en-US", {
-    timeZone: "Asia/Almaty",
-  });
-
   console.log(
-    "[" +
-      JSON.stringify({
-        type: "info",
-        body: {
-          users: subscribers.length,
-          time,
-          date,
-          source: "Smart-Playlist Clean",
-        },
-      }) +
-      "]"
+    `${subscribers.length} smart-playlist cleaned in ${(
+      (end.getTime() - start.getTime()) /
+      1000
+    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Almaty",
+    })}]`
   );
 }
 
