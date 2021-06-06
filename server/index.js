@@ -7,9 +7,9 @@ import * as smartPlaylist from "./includes/smart-playlist.js";
 
 const PORT = process.env.PORT || 8888;
 
-app.listen(PORT, "0.0.0.0", (err, address) => {
+app.listen(PORT, "0.0.0.0", (err) => {
   if (err) return console.log(err);
-  console.info(`App listening on: ${address}`);
+  console.info(`App listening on: http://localhost:${PORT}`);
 });
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();

@@ -22,6 +22,8 @@ app.register(import("fastify-cookie"), {
   parseOptions: {},
 });
 
+app.register(import("fastify-websocket"));
+
 // plugins
 app.register(autoLoad, {
   dir: join(__dirname, "plugins"),

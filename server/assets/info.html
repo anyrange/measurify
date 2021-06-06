@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.1/dist/echarts.min.js"></script>
+    <title>Document</title>
+  </head>
+
+  <body>
+    <div id="rss" style="height: 375px;width: 800px"></div>
+    <div id="heapTotal" style="height: 375px;width: 800px"></div>
+    <div id="heapUsed" style="height: 375px;width: 800px"></div>
+    <div id="external" style="height: 375px;width: 800px"></div>
+  </body>
+
+  <script type="text/javascript">
+    const charts = { rss: {}, heapTotal: {}, heapUsed: {}, external: {} };
+    const data = [];
+
+    charts.rss = echarts.init(document.getElementById("rss"));
+    charts.heapTotal = echarts.init(document.getElementById("heapTotal"));
+    charts.heapUsed = echarts.init(document.getElementById("heapUsed"));
+    charts.external = echarts.init(document.getElementById("external"));
+
+    const names = Object.keys(charts);
+    names.forEach((name) => {
+      const option = {
+        title: {
+          text: name.toUpperCase(),
+        },
+        tooltip: {
+          trigger: "axis",
+          formatter: function(params) {
+            const data = params[0].data;
+            var date = new Date(data[0]);
+            return (
+              date.getHours() +
+              ":" +
+              date.getMinutes() +
+              ":" +
+              date.getSeconds() +
+              " - " +
+              data[1]
+            );
+          },
+          axisPointer: {
+            animation: false,
+          },
+        },
+        xAxis: {
+          type: "time",
+          splitLine: {
+            show: false,
+          },
+        },
+        yAxis: {
+          type: "value",
+          boundaryGap: [0, "100%"],
+          splitLine: {
+            show: false,
+          },
+        },
+        series: [
+          {
+            type: "line",
+            showSymbol: false,
+            hoverAnimation: false,
+            data: data,
+            smooth: true,
+          },
+        ],
+      };
+      charts[name].setOption(option);
+    });
+
+    const connect = () => {
+      const url = window.location.host;
+
+      const socket = new WebSocket(
+        `ws${url !== "localhost:8888" ? "s" : ""}://${url}/health/memory`
+      );
+
+      socket.onmessage = (event) => {
+        const info = JSON.parse(event.data);
+        if (data.length >= 100) data.shift();
+        data.push(info);
+
+        names.forEach((name) => {
+          charts[name].setOption({
+            yAxis: {
+              min: Math.min(...data.map((message) => message[name])),
+              max: Math.max(...data.map((message) => message[name])),
+            },
+            series: [
+              {
+                data: data.map((message) => {
+                  return [new Date(message.date), message[name]];
+                }),
+              },
+            ],
+          });
+        });
+      };
+
+      socket.onclose = function() {
+        setTimeout(connect(), 1000);
+      };
+    };
+
+    connect();
+  </script>
+
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+      box-sizing: border-box;
+    }
+    body {
+      height: 100vh;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
+</html>
