@@ -1,5 +1,8 @@
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
+import images from "../../../includes/images.js";
+
+import { parsePlaylists } from "../../../includes/smart-playlist.js";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
@@ -77,6 +80,18 @@ export default async function(fastify) {
         if (createdPlaylist.error)
           return reply.code(400).send({ message: "Error", status: 400 });
 
+        await fetch(
+          `https://api.spotify.com/v1/playlists/${createdPlaylist.id}/images`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + user.lastSpotifyToken,
+              "Content-Type": "image/jpeg",
+            },
+            body: images[0],
+          }
+        );
+
         const opResult = await User.updateOne(
           { _id },
           {
@@ -87,6 +102,13 @@ export default async function(fastify) {
 
         if (opResult.nModified === 0)
           return reply.code(400).send({ message: "Error", status: 400 });
+
+        await parsePlaylists({
+          _id,
+          lastSpotifyToken: user.lastSpotifyToken,
+          playlists: req.body.items,
+          id: createdPlaylist.id,
+        });
 
         return reply
           .code(201)
