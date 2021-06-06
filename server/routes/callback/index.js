@@ -94,11 +94,15 @@ export default async function(fastify) {
 
         const token = jwt.sign({ _id: document._id }, secret);
 
+        const expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + 365);
+
         reply.setCookie("token", token, {
           httpOnly: true,
           secure: true,
           sameSite: "none",
           path: "/",
+          expires: expireDate,
         });
 
         reply.redirect(`${query_uri}?access_token=${access_token}`);
