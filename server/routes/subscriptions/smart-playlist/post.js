@@ -67,9 +67,9 @@ export default async function(fastify) {
               Authorization: "Bearer " + user.lastSpotifyToken,
             },
             body: JSON.stringify({
-              name: "Smart as fuck boiiii",
+              name: "Smart Playlist",
               description: "Created by Spotiworm",
-              public: false,
+              public: true,
             }),
           }
         ).then((res) => res.json());

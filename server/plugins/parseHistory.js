@@ -39,7 +39,10 @@ const plugin = fp(async function plugin(fastify) {
       ];
 
       if (search) {
-        const query = new RegExp(`.*${search}.*`, "i");
+        const query = new RegExp(
+          `.*${search.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")}.*`,
+          "i"
+        );
         agg.push({
           $match: {
             $or: [
