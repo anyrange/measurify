@@ -33,22 +33,16 @@
           :series="overviewData"
         ></apexchart>
       </div>
-      <h2 class="mt-6 mb-8 text-4xl font-semibold text-gray-100">
+      <h2 class="mt-6 text-4xl font-semibold text-gray-100">
         Top Played
       </h2>
-      <tabs class="mt-6" v-model="selectedTop">
+      <tabs class="my-6" v-model="selectedTop">
         <tab name="artists">Artists</tab>
         <tab name="tracks">Track</tab>
         <tab name="albums">Albums</tab>
-        <tab name="playlists" :disabled="!this.totalTop.playlists?.length">
-          Playlists
-        </tab>
+        <tab name="playlists" :visible="totalTopExists">Playlists</tab>
       </tabs>
-      <rating-table
-        class="mt-3"
-        :title="selectedTop"
-        :data="totalTop[selectedTop]"
-      />
+      <rating-table :title="selectedTop" :data="totalTop[selectedTop]" />
     </template>
   </template>
 </template>
@@ -93,6 +87,10 @@ export default {
     };
   },
   computed: {
+    totalTopExists() {
+      if (this.totalTop.playlists?.length) return true;
+      return false;
+    },
     totalTracksPlayed() {
       return this.tracksPlayed.reduce((a, b) => a + b, 0);
     },
