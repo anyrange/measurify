@@ -1,51 +1,56 @@
 <template>
-  <div class="custom-select">
-    <button
-      @click="opened = !opened"
-      type="button"
-      class="select-button"
-      aria-haspopup="listbox"
-      aria-expanded="true"
-      aria-labelledby="listbox-label"
-    >
-      <span class="flex items-center">
-        <span class="mr-1"> {{ selected }}</span>
-      </span>
-      <span
-        class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+  <div class="flex flex-col">
+    <label v-if="label" class="text-gray-300 text-base font-normal mb-2">
+      {{ label }}
+    </label>
+    <div>
+      <button
+        @click="opened = !opened"
+        type="button"
+        class="relative w-28 pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-default focus:outline-none"
+        aria-haspopup="listbox"
+        aria-expanded="true"
+        aria-labelledby="listbox-label"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="24px"
-          viewBox="0 0 24 24"
-          width="24px"
-          class="h-5 w-5 text-gray-400"
-          fill="currentColor"
+        <span class="flex items-center">
+          <span class="mr-1"> {{ selected }}</span>
+        </span>
+        <span
+          class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
         >
-          <path
-            d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"
-          />
-        </svg>
-      </span>
-    </button>
-    <ul
-      class="w-28 absolute text-gray-400 pt-1 flex flex-col"
-      :class="{ hidden: !opened }"
-    >
-      <li
-        v-for="(option, index) in filteredOptions"
-        :key="index"
-        :value="modelValue"
-        @click="changeOption(option)"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            width="24px"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="h-5 w-5 text-gray-400"
+          >
+            <path
+              d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"
+            />
+          </svg>
+        </span>
+      </button>
+      <ul
+        class="w-28 absolute text-gray-400 pt-1 flex flex-col"
+        :class="{ hidden: !opened }"
       >
-        <a
-          class="w-full rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
-          href="#"
+        <li
+          v-for="(option, index) in filteredOptions"
+          :key="index"
+          :value="modelValue"
+          @click="changeOption(option)"
         >
-          {{ option.label }}
-        </a>
-      </li>
-    </ul>
+          <a
+            class="w-full rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
+            href="#"
+          >
+            {{ option.label }}
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -54,6 +59,10 @@ export default {
   props: {
     modelValue: {
       required: true,
+    },
+    label: {
+      type: String,
+      required: false,
     },
     options: {
       type: Array,
@@ -94,14 +103,8 @@ export default {
       return new Set(array.map((item) => item[keyName])).size !== array.length;
     }
     if (checkForDuplicates({ array: this.options, keyName: "value" })) {
-      console.error("Duplicate value key found in :options");
+      console.error("Duplicate 'value' key found in :options");
     }
   },
 };
 </script>
-
-<style scoped>
-.custom-select .select-button {
-  @apply relative w-28 pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-default focus:outline-none;
-}
-</style>
