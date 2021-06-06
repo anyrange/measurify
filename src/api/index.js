@@ -8,6 +8,7 @@ const api = axios.create({ baseURL: SERVER_URI, withCredentials: true });
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    if (error?.response?.data?.status === 401) return store.dispatch("logout");
     notifyAPI.show({
       type: "danger",
       message: error?.response?.data?.message || "Something went wrong!",
