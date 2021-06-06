@@ -1,13 +1,6 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
-import formatOverview from "../../includes/format-overview.js";
-import playedOverview from "../../includes/played-overview.js";
 
 export default async function(fastify) {
-  const overview = fastify.getSchema("overview");
   const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
@@ -71,7 +64,14 @@ export default async function(fastify) {
             },
           },
         },
-        overview,
+        overview: {
+          type: "object",
+          required: ["plays", "playtime"],
+          properties: {
+            plays: { type: "number" },
+            playtime: { type: "number" },
+          },
+        },
         status: {
           type: "number",
         },
@@ -109,12 +109,15 @@ export default async function(fastify) {
         const _id = await fastify.auth(req.cookies.token);
         const trackID = req.params.id;
 
-        const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-
+        const user = await User.findOne(
+          { _id, "recentlyPlayed.id": trackID },
+          {
+            lastSpotifyToken: 1,
+            "recentlyPlayed.$": 1,
+          }
+        );
         if (!user)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+          return reply.code(404).send({ message: "Not found", status: 404 });
 
         const track = await fastify.spotifyAPI({
           route: `tracks/${trackID}`,
@@ -127,11 +130,14 @@ export default async function(fastify) {
             status: track.error.status || 500,
           });
 
-        const playsRaw = await playedOverview(_id, trackID);
-
-        if (!playsRaw.length)
-          return reply.code(200).send({ status: 204, overview: [] });
-
+        const overview = {
+          plays: user.recentlyPlayed[0].plays.length,
+          playtime: Math.round(
+            (user.recentlyPlayed[0].plays.length *
+              user.recentlyPlayed[0].duration_ms) /
+              60000
+          ),
+        };
         const response = {
           track: {
             album: {
@@ -149,7 +155,7 @@ export default async function(fastify) {
             duration_ms: track.duration_ms,
             release_date: track.album.release_date,
           },
-          overview: formatOverview(playsRaw),
+          overview,
           status: 200,
         };
 
