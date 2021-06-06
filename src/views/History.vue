@@ -1,9 +1,22 @@
 <template>
   <h2 class="h-title">Listening History</h2>
-  <h3 class="h-subtitle mt-4">
+  <h3 class="h-subtitle mt-4 mb-4">
     Click the song's title, artist, or album name to get more info
   </h3>
-  <search :disabled="!searchQuery && emptyData" v-model="searchQuery" />
+  <custom-input
+    v-model="searchQuery"
+    class="sm:w-full md:w-2/3 lg:w-1/2"
+    placeholder="Search"
+    type="text"
+    iconLeft
+    :disabled="!searchQuery && emptyData"
+  >
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+      <path
+        d="M16.32 14.9l5.39 5.4a1 1 0 01-1.42 1.4l-5.38-5.38a8 8 0 111.41-1.41zM10 16a6 6 0 100-12 6 6 0 000 12z"
+      />
+    </svg>
+  </custom-input>
   <loading-spinner v-if="loading" />
   <template v-else>
     <empty-message v-if="emptyData" />
@@ -76,11 +89,11 @@
 import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
 import { getListeningHistory } from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
-import Search from "@/components/Search";
+import CustomInput from "@/components/CustomInput";
 
 export default {
   name: "History",
-  components: { EmptyMessage, Search },
+  components: { EmptyMessage, CustomInput },
   data() {
     return {
       recentlyPlayed: [],
@@ -128,6 +141,7 @@ export default {
     searchQuery: {
       handler: async function() {
         this.page = 1;
+        this.emptyData = false;
         const response = await getListeningHistory({
           page: this.page,
           query: this.searchQuery,
