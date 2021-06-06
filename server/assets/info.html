@@ -3,20 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css"
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.1/dist/echarts.min.js"></script>
     <title>Document</title>
+    <style>
+      * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+      }
+      body {
+        height: 100vh;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .graph {
+        height: 50%;
+        width: 50%;
+      }
+    </style>
   </head>
 
   <body>
-    <div id="rss" style="height: 375px;width: 800px"></div>
-    <div id="heapTotal" style="height: 375px;width: 800px"></div>
-    <div id="heapUsed" style="height: 375px;width: 800px"></div>
-    <div id="external" style="height: 375px;width: 800px"></div>
+    <div id="rss" class="graph"></div>
+    <div id="heapTotal" class="graph"></div>
+    <div id="heapUsed" class="graph"></div>
+    <div id="external" class="graph"></div>
   </body>
 
   <script type="text/javascript">
@@ -115,17 +127,4 @@
 
     connect();
   </script>
-
-  <style>
-    * {
-      margin: 0px;
-      padding: 0px;
-      box-sizing: border-box;
-    }
-    body {
-      height: 100vh;
-      display: flex;
-      flex-wrap: wrap;
-    }
-  </style>
 </html>
