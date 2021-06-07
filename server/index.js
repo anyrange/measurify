@@ -14,6 +14,11 @@ app.listen(PORT, "0.0.0.0", (err) => {
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
 
+if (process.env.NODE_ENV != "production")
+  app.ready(() => {
+    console.log(app.printRoutes({ commonPrefix: false }));
+  });
+
 function startScheduledJobs() {
   refresh_tokens();
   // refresh_recently_played();
