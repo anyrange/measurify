@@ -45,11 +45,16 @@ app.setErrorHandler((error, request, reply) => {
   if (error.name === "JsonWebTokenError")
     return reply.code(400).send({ message: error.message, status: 400 });
 
+  if (error.name === "MongooseError") {
+    console.log(error.message);
+    reply
+      .code(503)
+      .header("Retry-After", 3000)
+      .send({ message: "Try again later", status: 503 });
+    return;
+  }
+
   console.log(error);
-
-  if (error.name === "MongooseError")
-    return reply.code(408).send({ message: "Try again later", status: 408 });
-
   reply.status(500).send({ message: "Something went wrong!", status: 500 });
 });
 

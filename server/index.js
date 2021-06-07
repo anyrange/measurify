@@ -15,14 +15,16 @@ mongoose.connect(
     useUnifiedTopology: true,
     useCreateIndex: true,
   },
-  () => {
+  (err) => {
+    if (err) return console.log(err.message);
     console.info(`Database successfully connected`);
-    app.listen(PORT, "0.0.0.0", (err) => {
-      if (err) return console.log(err);
-      console.info(`App listening on: http://localhost:${PORT}`);
-    });
   }
 );
+
+app.listen(PORT, "0.0.0.0", (err) => {
+  if (err) return console.log(err);
+  console.info(`App listening on: http://localhost:${PORT}`);
+});
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
 
