@@ -8,6 +8,7 @@ import fs from "fs";
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 const app = fastify();
 
 const WHITE_LIST = process.env.URI_LIST.split(",");
@@ -45,6 +46,10 @@ app.setErrorHandler((error, request, reply) => {
     return reply.code(400).send({ message: error.message, status: 400 });
 
   console.log(error);
+
+  if (error.name === "MongooseError")
+    return reply.code(408).send({ message: "Try again later", status: 408 });
+
   reply.status(500).send({ message: "Something went wrong!", status: 500 });
 });
 

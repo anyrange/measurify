@@ -1,16 +1,28 @@
 import app from "./app.js";
-import "./db.js";
 import cron from "node-cron";
 import refresh_tokens from "./includes/refresh-tokens.js";
 import refresh_recently_played from "./includes/recently-played-parse.js";
 import * as smartPlaylist from "./includes/smart-playlist.js";
+import mongoose from "mongoose";
 
 const PORT = process.env.PORT || 8888;
 
-app.listen(PORT, "0.0.0.0", (err) => {
-  if (err) return console.log(err);
-  console.info(`App listening on: http://localhost:${PORT}`);
-});
+mongoose.connect(
+  process.env.DB_URI,
+  {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  },
+  () => {
+    console.info(`Database successfully connected`);
+    app.listen(PORT, "0.0.0.0", (err) => {
+      if (err) return console.log(err);
+      console.info(`App listening on: http://localhost:${PORT}`);
+    });
+  }
+);
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
 
