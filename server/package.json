@@ -19,7 +19,6 @@
     "mongoose": "^5.12.7",
     "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
-    "querystring": "^0.2.1",
     "systeminformation": "^5.7.4"
   },
   "devDependencies": {

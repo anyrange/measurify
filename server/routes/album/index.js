@@ -90,63 +90,50 @@ export default async function(fastify) {
         },
         response: responseSchema,
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
+      const albumID = req.params.id;
 
-        const _id = await fastify.auth(req.cookies.token);
-        const albumID = req.params.id;
+      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
+      if (!user)
+        return reply.code(404).send({ message: "User not found", status: 404 });
 
-        const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-        if (!user)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+      const album = await fastify.spotifyAPI({
+        route: `albums/${albumID}`,
+        token: user.lastSpotifyToken,
+      });
 
-        const album = await fastify.spotifyAPI({
-          route: `albums/${albumID}`,
-          token: user.lastSpotifyToken,
+      if (album.error)
+        return reply.code(album.error.status || 500).send({
+          message: album.error.message,
+          status: album.error.status || 500,
         });
 
-        if (album.error)
-          return reply.code(album.error.status || 500).send({
-            message: album.error.message,
-            status: album.error.status || 500,
-          });
+      const [overviewRaw, tracks] = await Promise.all([
+        plays(_id, albumID),
+        history(_id, albumID),
+      ]);
 
-        const [overviewRaw, tracks] = await Promise.all([
-          plays(_id, albumID),
-          history(_id, albumID),
-        ]);
+      const response = {
+        album: {
+          name: album.name,
+          image: album.images.length ? album.images[0].url : "",
+          popularity: album.popularity,
+          release_date: album.release_date,
+          total_tracks: album.total_tracks,
+          link: album.external_urls.spotify,
+          genres: album.genres,
+          artists: album.artists.map(({ name, id }) => {
+            return { name, id };
+          }),
+        },
+        overview: formatOverview(overviewRaw),
+        tracks,
+        status: 200,
+      };
 
-        const response = {
-          album: {
-            name: album.name,
-            image: album.images.length ? album.images[0].url : "",
-            popularity: album.popularity,
-            release_date: album.release_date,
-            total_tracks: album.total_tracks,
-            link: album.external_urls.spotify,
-            genres: album.genres,
-            artists: album.artists.map(({ name, id }) => {
-              return { name, id };
-            }),
-          },
-          overview: formatOverview(overviewRaw),
-          tracks,
-          status: 200,
-        };
-
-        reply.code(200).send(response);
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(200).send(response);
     }
   );
 }

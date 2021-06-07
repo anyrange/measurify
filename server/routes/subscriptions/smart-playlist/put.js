@@ -37,43 +37,28 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
 
-        const _id = await fastify.auth(req.cookies.token);
-
-        const opResult = await User.updateOne(
-          { _id },
-          {
-            $addToSet: {
-              "subscriptions.smartPlaylist.playlists": {
-                $each: req.body.items,
-              },
+      const opResult = await User.updateOne(
+        { _id },
+        {
+          $addToSet: {
+            "subscriptions.smartPlaylist.playlists": {
+              $each: req.body.items,
             },
-          }
-        );
+          },
+        }
+      );
 
-        if (opResult.n === 0)
-          return reply.code(400).send({ message: "Error", status: 400 });
+      if (opResult.n === 0)
+        return reply.code(400).send({ message: "Error", status: 400 });
 
-        if (opResult.nModified === 0)
-          return reply
-            .code(400)
-            .send({ message: "Already exist", status: 400 });
+      if (opResult.nModified === 0)
+        return reply.code(400).send({ message: "Already exist", status: 400 });
 
-        return reply
-          .code(200)
-          .send({ message: "Succesfully updated", status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(200).send({ message: "Succesfully updated", status: 200 });
     }
   );
 }

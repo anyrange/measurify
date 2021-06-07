@@ -3,11 +3,6 @@ import User from "../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 
-const secret = process.env.SECRET_JWT;
-
-const redirect_uri =
-  process.env.REDIRECT_URI || "http://localhost:8888/callback";
-
 export default async function(fastify) {
   fastify.get(
     "",
@@ -22,99 +17,89 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async (request, reply) => {
-      try {
-        if (request.validationError)
-          return reply.code(404).send({ message: "Invalid uri", status: 404 });
+      const code = request.query.code || null;
+      const query_uri = request.query.sw_redirect;
 
-        const code = request.query.code || null;
-        const query_uri = request.query.sw_redirect;
+      //get tokens
+      const tokens = await fetchTokens(code, query_uri);
 
-        //get tokens
-        const tokens = await fetchTokens(code, query_uri);
-
-        if (tokens.error) {
-          return reply.code(500).send({
-            message: tokens.error,
-            status: 500,
-          });
-        }
-
-        const access_token = tokens.access_token;
-        const refresh_token = tokens.refresh_token;
-
-        //get user info
-        const user = await fetch(`https://api.spotify.com/v1/me`, {
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
-        })
-          .then((res) => res.json())
-          .catch((err) => {
-            throw err;
-          });
-
-        if (user.error)
-          return reply.code(tokens.error.status || 500).send({
-            message: tokens.error.message,
-            status: token.error.status || 500,
-          });
-
-        console.log(user.display_name + " logined");
-
-        const filter = { spotifyID: user.id };
-        const upsert = {
-          lastSpotifyToken: access_token,
-          userName: user.display_name,
-          refreshToken: refresh_token,
-          avatar: user.images.length ? user.images[0].url : "",
-          __v: 4,
-        };
-        const projection = {
-          recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
-          spotifyID: 1,
-          customID: 1,
-        };
-
-        const document = await User.findOneAndUpdate(filter, upsert, {
-          new: true,
-          upsert: true,
-          setDefaultsOnInsert: true,
-          projection,
+      if (tokens.error) {
+        return reply.code(500).send({
+          message: tokens.error,
+          status: 500,
         });
-
-        // check if recentlyPlayed  is empty
-        if (!document.customID)
-          await User.updateOne(filter, { customID: user.id });
-
-        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-          await fetchHistory(access_token, document._id);
-
-        const token = jwt.sign({ _id: document._id }, secret);
-
-        const expireDate = new Date();
-        expireDate.setDate(expireDate.getDate() + 365);
-
-        reply.setCookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          path: "/",
-          expires: expireDate,
-        });
-
-        reply.redirect(`${query_uri}?access_token=${access_token}`);
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
       }
+
+      const access_token = tokens.access_token;
+      const refresh_token = tokens.refresh_token;
+
+      //get user info
+      const user = await fetch(`https://api.spotify.com/v1/me`, {
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+      }).then((res) => res.json());
+
+      if (user.error)
+        return reply.code(tokens.error.status || 500).send({
+          message: tokens.error.message,
+          status: token.error.status || 500,
+        });
+
+      console.log(user.display_name + " logined");
+
+      const filter = { spotifyID: user.id };
+      const upsert = {
+        lastSpotifyToken: access_token,
+        userName: user.display_name,
+        refreshToken: refresh_token,
+        avatar: user.images.length ? user.images[0].url : "",
+        __v: 4,
+      };
+      const projection = {
+        recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
+        spotifyID: 1,
+        customID: 1,
+      };
+
+      const document = await User.findOneAndUpdate(filter, upsert, {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+        projection,
+      });
+
+      // check if recentlyPlayed  is empty
+      if (!document.customID)
+        await User.updateOne(filter, { customID: user.id });
+
+      if (!document.recentlyPlayed || !document.recentlyPlayed.length)
+        await fetchHistory(access_token, document._id);
+
+      const secret = process.env.SECRET_JWT;
+      const token = jwt.sign({ _id: document._id }, secret);
+
+      const expireDate = new Date();
+      expireDate.setDate(expireDate.getDate() + 365);
+
+      reply.setCookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        expires: expireDate,
+      });
+
+      reply.redirect(`${query_uri}?access_token=${access_token}`);
     }
   );
 }
 
 const fetchTokens = async (code, query_uri) => {
+  const redirect_uri =
+    process.env.REDIRECT_URI || "http://localhost:8888/callback";
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);
@@ -159,7 +144,7 @@ const fetchHistory = async (access_token, _id) => {
   }
 };
 
-async function addTrack(_id, track) {
+const addTrack = async (_id, track) => {
   const existingTrack = await User.findOne(
     {
       _id,
@@ -188,4 +173,4 @@ async function addTrack(_id, track) {
       $push: { "recentlyPlayed.$.plays": { $each: track.plays, $position: 0 } },
     }
   );
-}
+};

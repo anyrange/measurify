@@ -44,63 +44,50 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
+      const _id = await fastify.auth(req.cookies.token);
+      const range = req.query.range || 20;
+      const firstDate = req.query.firstDate;
+      let lastDate = req.query.lastDate;
+
+      const document = await User.findOne(
+        { _id },
+        {
+          recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
+          lastSpotifyToken: 1,
         }
+      );
 
-        const _id = await fastify.auth(req.cookies.token);
-        const range = req.query.range || 20;
-        const firstDate = req.query.firstDate;
-        let lastDate = req.query.lastDate;
+      if (!document)
+        return reply.code(404).send({ message: "User not found", status: 404 });
 
-        const document = await User.findOne(
-          { _id },
-          {
-            recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
-            lastSpotifyToken: 1,
-          }
-        );
+      if (!document.recentlyPlayed || !document.recentlyPlayed.length)
+        return reply.code(200).send({
+          status: 204,
+          top: { tracks: [], albums: [], artists: [], playlists: [] },
+        });
 
-        if (!document)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
-
-        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-          return reply.code(200).send({
-            status: 204,
-            top: { tracks: [], albums: [], artists: [], playlists: [] },
-          });
-
-        if (lastDate) {
-          lastDate = new Date(lastDate);
-          lastDate.setDate(lastDate.getDate() + 1);
-          lastDate = lastDate.toISOString().split("T")[0];
-        }
-
-        if (new Date(firstDate) > new Date())
-          return reply
-            .code(406)
-            .send({ message: "Invalid parameters", status: 406 });
-
-        const response = await fastify.parseTop(
-          _id,
-          document.lastSpotifyToken,
-          range,
-          firstDate,
-          lastDate
-        );
-
-        reply.code(200).send({ top: response, status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
+      if (lastDate) {
+        lastDate = new Date(lastDate);
+        lastDate.setDate(lastDate.getDate() + 1);
+        lastDate = lastDate.toISOString().split("T")[0];
       }
+
+      if (new Date(firstDate) > new Date())
+        return reply
+          .code(406)
+          .send({ message: "Invalid parameters", status: 406 });
+
+      const response = await fastify.parseTop(
+        _id,
+        document.lastSpotifyToken,
+        range,
+        firstDate,
+        lastDate
+      );
+
+      reply.code(200).send({ top: response, status: 200 });
     }
   );
 }

@@ -24,29 +24,18 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
 
-        const _id = await fastify.auth(req.cookies.token);
+      const { subscriptions } = await User.findOne(
+        { _id },
+        { subscriptions: 1 }
+      );
 
-        const { subscriptions } = await User.findOne(
-          { _id },
-          { subscriptions: 1 }
-        );
-
-        reply
-          .code(200)
-          .send({ subscriptions: Object.keys(subscriptions), status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply
+        .code(200)
+        .send({ subscriptions: Object.keys(subscriptions), status: 200 });
     }
   );
 }

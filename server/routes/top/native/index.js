@@ -96,35 +96,20 @@ export default async function(fastify) {
         },
         response,
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
+      const range = req.query.range || 20;
+      const period = req.query.period || "long_term";
 
-        const _id = await fastify.auth(req.cookies.token);
-        const range = req.query.range || 20;
-        const period = req.query.period || "long_term";
+      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
+      if (!user)
+        return reply.code(404).send({ message: "User not found", status: 404 });
 
-        const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-        if (!user)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+      const options = { token: user.lastSpotifyToken, range, period };
+      const info = await Promise.all([tracks(options), artists(options)]);
 
-        const options = { token: user.lastSpotifyToken, range, period };
-        const info = await Promise.all([tracks(options), artists(options)]);
-
-        reply
-          .code(200)
-          .send({ tracks: info[0], artists: info[1], status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(200).send({ tracks: info[0], artists: info[1], status: 200 });
     }
   );
 }

@@ -37,41 +37,28 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
+      const _id = await fastify.auth(req.cookies.token);
+
+      const opResult = await User.updateOne(
+        { _id },
+        {
+          $pull: {
+            "subscriptions.smartPlaylist.playlists": { $in: req.body.items },
+          },
         }
+      );
 
-        const _id = await fastify.auth(req.cookies.token);
+      if (opResult.n === 0)
+        return reply.code(400).send({ message: "Error", status: 400 });
 
-        const opResult = await User.updateOne(
-          { _id },
-          {
-            $pull: {
-              "subscriptions.smartPlaylist.playlists": { $in: req.body.items },
-            },
-          }
-        );
-
-        if (opResult.n === 0)
-          return reply.code(400).send({ message: "Error", status: 400 });
-
-        if (opResult.nModified === 0)
-          return reply
-            .code(400)
-            .send({ message: "Nothing to delete", status: 400 });
-
+      if (opResult.nModified === 0)
         return reply
-          .code(200)
-          .send({ message: "Succesfully updated", status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+          .code(400)
+          .send({ message: "Nothing to delete", status: 400 });
+
+      reply.code(200).send({ message: "Succesfully updated", status: 200 });
     }
   );
 }

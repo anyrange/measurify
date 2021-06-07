@@ -88,62 +88,49 @@ export default async function(fastify) {
         },
         response: responseSchema,
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
+      const playlistID = req.params.id;
 
-        const _id = await fastify.auth(req.cookies.token);
-        const playlistID = req.params.id;
+      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-        const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
+      if (!user)
+        return reply.code(404).send({ message: "User not found", status: 404 });
 
-        if (!user)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+      const playlist = await fastify.spotifyAPI({
+        route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total)`,
+        token: user.lastSpotifyToken,
+      });
 
-        const playlist = await fastify.spotifyAPI({
-          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total)`,
-          token: user.lastSpotifyToken,
+      if (playlist.error)
+        return reply.code(playlist.error.status || 500).send({
+          message: playlist.error.message,
+          status: playlist.error.status || 500,
         });
 
-        if (playlist.error)
-          return reply.code(playlist.error.status || 500).send({
-            message: playlist.error.message,
-            status: playlist.error.status || 500,
-          });
+      const [overviewRaw, tracks] = await Promise.all([
+        plays(_id, playlistID),
+        history(_id, playlistID),
+      ]);
 
-        const [overviewRaw, tracks] = await Promise.all([
-          plays(_id, playlistID),
-          history(_id, playlistID),
-        ]);
+      const response = {
+        playlist: {
+          name: playlist.name,
+          image: playlist.images.length ? playlist.images[0].url : "",
+          collaborative: playlist.collaborative,
+          link: playlist.external_urls.spotify,
+          followers: playlist.followers.total,
+          owner: { name: playlist.owner.display_name, id: playlist.owner.id },
+          public: playlist.public,
+          tracks: playlist.tracks.total,
+        },
+        overview: formatOverview(overviewRaw),
+        tracks,
+        status: 200,
+      };
 
-        const response = {
-          playlist: {
-            name: playlist.name,
-            image: playlist.images.length ? playlist.images[0].url : "",
-            collaborative: playlist.collaborative,
-            link: playlist.external_urls.spotify,
-            followers: playlist.followers.total,
-            owner: { name: playlist.owner.display_name, id: playlist.owner.id },
-            public: playlist.public,
-            tracks: playlist.tracks.total,
-          },
-          overview: formatOverview(overviewRaw),
-          tracks,
-          status: 200,
-        };
-
-        reply.code(200).send(response);
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(200).send(response);
     }
   );
 }

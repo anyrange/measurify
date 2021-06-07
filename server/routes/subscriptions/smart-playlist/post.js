@@ -41,82 +41,67 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async function(req, reply) {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
+      const _id = await fastify.auth(req.cookies.token);
+
+      const user = await User.findOne(
+        { _id },
+        { spotifyID: 1, lastSpotifyToken: 1 }
+      );
+
+      if (!user)
+        return reply.code(404).send({ message: "User not found", status: 404 });
+
+      const createdPlaylist = await fetch(
+        `https://api.spotify.com/v1/users/${user.spotifyID}/playlists`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + user.lastSpotifyToken,
+          },
+          body: JSON.stringify({
+            name: "Smart Playlist",
+            description: "Created by Spotiworm",
+            public: true,
+          }),
         }
+      ).then((res) => res.json());
 
-        const _id = await fastify.auth(req.cookies.token);
+      if (createdPlaylist.error)
+        return reply.code(400).send({ message: "Error", status: 400 });
 
-        const user = await User.findOne(
-          { _id },
-          { spotifyID: 1, lastSpotifyToken: 1 }
-        );
+      await fetch(
+        `https://api.spotify.com/v1/playlists/${createdPlaylist.id}/images`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + user.lastSpotifyToken,
+            "Content-Type": "image/jpeg",
+          },
+          body: images[0],
+        }
+      );
 
-        if (!user)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+      const opResult = await User.updateOne(
+        { _id },
+        {
+          "subscriptions.smartPlaylist.playlists": req.body.items,
+          "subscriptions.smartPlaylist.id": createdPlaylist.id,
+        }
+      );
 
-        const createdPlaylist = await fetch(
-          `https://api.spotify.com/v1/users/${user.spotifyID}/playlists`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-            },
-            body: JSON.stringify({
-              name: "Smart Playlist",
-              description: "Created by Spotiworm",
-              public: true,
-            }),
-          }
-        ).then((res) => res.json());
+      if (opResult.nModified === 0)
+        return reply.code(400).send({ message: "Error", status: 400 });
 
-        if (createdPlaylist.error)
-          return reply.code(400).send({ message: "Error", status: 400 });
+      await parsePlaylists({
+        _id,
+        lastSpotifyToken: user.lastSpotifyToken,
+        playlists: req.body.items,
+        id: createdPlaylist.id,
+      });
 
-        await fetch(
-          `https://api.spotify.com/v1/playlists/${createdPlaylist.id}/images`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: "Bearer " + user.lastSpotifyToken,
-              "Content-Type": "image/jpeg",
-            },
-            body: images[0],
-          }
-        );
-
-        const opResult = await User.updateOne(
-          { _id },
-          {
-            "subscriptions.smartPlaylist.playlists": req.body.items,
-            "subscriptions.smartPlaylist.id": createdPlaylist.id,
-          }
-        );
-
-        if (opResult.nModified === 0)
-          return reply.code(400).send({ message: "Error", status: 400 });
-
-        await parsePlaylists({
-          _id,
-          lastSpotifyToken: user.lastSpotifyToken,
-          playlists: req.body.items,
-          id: createdPlaylist.id,
-        });
-
-        return reply
-          .code(201)
-          .send({ message: "Succesfully subscribed", status: 201 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(201).send({ message: "Succesfully subscribed", status: 201 });
     }
   );
 }

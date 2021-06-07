@@ -35,46 +35,33 @@ export default async function(fastify) {
           },
         },
       },
-      attachValidation: true,
     },
     async (req, reply) => {
-      try {
-        if (req.validationError) {
-          const { status, message } = fastify.validate(req.validationError);
-          return reply.code(status).send({ message, status });
-        }
+      const _id = await fastify.auth(req.cookies.token);
+      const confidential = req.body.private;
+      const customID = req.body.customID;
 
-        const _id = await fastify.auth(req.cookies.token);
-        const confidential = req.body.private;
-        const customID = req.body.customID;
+      const user = await User.findOne({ customID }, { _id: 1 });
 
-        const user = await User.findOne({ customID }, { _id: 1 });
+      if (user && user._id != _id)
+        return reply
+          .code(403)
+          .send({ message: "This id is already taken", status: 403 });
 
-        if (user && user._id != _id)
-          return reply
-            .code(403)
-            .send({ message: "This id is already taken", status: 403 });
+      const updateResult = await User.updateOne(
+        { _id },
+        { private: confidential, customID }
+      );
 
-        const updateResult = await User.updateOne(
-          { _id },
-          { private: confidential, customID }
-        );
+      if (updateResult.n === 0)
+        return reply.code(404).send({ message: "User not found", status: 404 });
 
-        if (updateResult.n === 0)
-          return reply
-            .code(404)
-            .send({ message: "User not found", status: 404 });
+      if (updateResult.nModified === 0)
+        return reply
+          .code(500)
+          .send({ message: "Nothing to update", status: 500 });
 
-        if (updateResult.nModified === 0)
-          return reply
-            .code(500)
-            .send({ message: "An error occurred while updating", status: 500 });
-
-        reply.code(200).send({ message: "Successfully updated", status: 200 });
-      } catch (e) {
-        reply.code(500).send({ message: "Something went wrong!", status: 500 });
-        console.log(e);
-      }
+      reply.code(200).send({ message: "Successfully updated", status: 200 });
     }
   );
 }
