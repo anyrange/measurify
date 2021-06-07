@@ -1,7 +1,10 @@
 function getFirstDayOfCurrentWeek() {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  return now.setDate(now.getDate() - ((now.getDay() ? now.getDay() : 7) - 1));
+  const res = now.setDate(
+    now.getDate() - ((now.getDay() ? now.getDay() : 7) - 1)
+  );
+  return new Date(res).getTime();
 }
 function getLastDateOfCurrentWeek() {
   const now = new Date();
@@ -23,7 +26,9 @@ function getLastDayOfPreviousWeek() {
 
 function getFirstDayOfCurrentMonth() {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth());
+  const res = new Date(now.getFullYear(), now.getMonth());
+  res.setHours(6, 0, 0, 0);
+  return new Date(res).getTime();
 }
 function getLastDayOfCurrentMonth() {
   const now = new Date();

@@ -9,6 +9,9 @@ export default {
       ],
       chartOptions: {
         chart: {
+          zoom: {
+            autoScaleYaxis: true,
+          },
           responsive: true,
           stacked: false,
           type: "area",
@@ -47,7 +50,8 @@ export default {
           enabled: false,
         },
         xaxis: {
-          // type: "datetime",
+          type: "datetime",
+          tickAmount: "dataPoints",
           axisBorder: {
             show: true,
             color: "#404040",
@@ -70,17 +74,7 @@ export default {
             maxHeight: 120,
             offsetX: 0,
             offsetY: 0,
-            formatter: function(value) {
-              if (typeof value === "undefined") {
-                return value;
-              }
-              const options = {
-                month: "short",
-                day: "numeric",
-              };
-              const date = new Date(value);
-              return new Intl.DateTimeFormat("en-US", options).format(date);
-            },
+            format: "dd MMM",
           },
           categories: [],
         },

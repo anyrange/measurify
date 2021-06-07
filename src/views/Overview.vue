@@ -27,6 +27,7 @@
       </div>
       <div class="-mx-4 w-full">
         <apexchart
+          ref="chart"
           type="area"
           height="350"
           :options="chartOptions"
@@ -56,10 +57,18 @@ import Card from "@/components/Card";
 import Tabs from "@/components/Tabs";
 import Tab from "@/components/Tab";
 import { getOverview, getTop } from "@/api";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
   name: "Overview",
-  components: { Card, RatingTable, EmptyMessage, Tabs, Tab },
+  components: {
+    Card,
+    RatingTable,
+    EmptyMessage,
+    Tabs,
+    Tab,
+    apexchart: VueApexCharts,
+  },
   mixins: [chartOptions],
   data() {
     return {
@@ -68,9 +77,6 @@ export default {
 
       selectedPeriod: "alltime",
       selectedTop: "artists",
-
-      newDates: [],
-      newValues: [],
 
       totalOverview: [],
       totalTop: [],
@@ -103,6 +109,15 @@ export default {
     totalMinutesListenedPrev() {
       return this.prevMinutesListened.reduce((a, b) => a + b, 0);
     },
+    currentDate() {
+      const now = new Date();
+      now.setHours(6, 0, 0, 0);
+      return new Date(now).getTime();
+    },
+    firstDayOnGraph() {
+      const res = this.chartOptions.xaxis.categories[0];
+      return new Date(res).getTime();
+    },
   },
   methods: {
     updateOverview(period) {
@@ -110,24 +125,30 @@ export default {
       this.updateChart(period);
     },
     updateChart(period) {
-      this.newDates = [];
-      this.newValues = [];
+      const chart = this.$refs.chart;
 
       this.tracksPlayed = [];
       this.minutesListened = [];
       this.prevTracksPlayed = [];
       this.prevMinutesListened = [];
 
-      if (period === "alltime") this.updateTotals(this.totalOverview);
-      if (period === "week") this.updateTotals(this.week, this.prevWeek);
-      if (period === "month") this.updateTotals(this.month, this.prevMonth);
+      if (period === "alltime") {
+        chart.zoomX(this.firstDayOnGraph, this.currentDate);
+        this.updateTotals(this.totalOverview);
+      }
 
-      this.updateChartValues();
+      if (period === "week") {
+        chart.zoomX(fd.firstDayOfWeek, this.currentDate);
+        this.updateTotals(this.week, this.prevWeek);
+      }
+
+      if (period === "month") {
+        chart.zoomX(fd.firstDayOfMonth, this.currentDate);
+        this.updateTotals(this.month, this.prevMonth);
+      }
     },
     updateTotals(arr, prev) {
       for (const item of arr) {
-        this.newDates.push(item.date);
-        this.newValues.push(item.plays);
         this.tracksPlayed.push(item.plays);
         this.minutesListened.push(item.duration);
       }
@@ -137,10 +158,6 @@ export default {
           this.prevMinutesListened.push(item.duration);
         }
       }
-    },
-    updateChartValues() {
-      this.chartOptions = { xaxis: { categories: this.newDates } };
-      this.overviewData = [{ data: this.newValues }];
     },
     pushToChart() {
       for (const item of this.totalOverview) {
