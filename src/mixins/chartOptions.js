@@ -9,6 +9,7 @@ export default {
       ],
       chartOptions: {
         chart: {
+          id: "chart",
           zoom: {
             autoScaleYaxis: true,
           },

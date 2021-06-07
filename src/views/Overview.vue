@@ -125,7 +125,8 @@ export default {
       this.updateChart(period);
     },
     updateChart(period) {
-      const chart = this.$refs.chart;
+      // console.log(this.$refs.chart);
+      // console.log(this.$apexcharts);
 
       this.tracksPlayed = [];
       this.minutesListened = [];
@@ -133,17 +134,35 @@ export default {
       this.prevMinutesListened = [];
 
       if (period === "alltime") {
-        chart.zoomX(this.firstDayOnGraph, this.currentDate);
+        this.$apexcharts.exec(
+          "chart",
+          "zoomX",
+          this.firstDayOnGraph,
+          this.currentDate
+        );
+        // this.$refs.chart.zoomX(this.firstDayOnGraph, this.currentDate);
         this.updateTotals(this.totalOverview);
       }
 
       if (period === "week") {
-        chart.zoomX(fd.firstDayOfWeek, this.currentDate);
+        this.$apexcharts.exec(
+          "chart",
+          "zoomX",
+          fd.firstDayOfWeek,
+          this.currentDate
+        );
+        // this.$refs.chart.zoomX(fd.firstDayOfWeek, this.currentDate);
         this.updateTotals(this.week, this.prevWeek);
       }
 
       if (period === "month") {
-        chart.zoomX(fd.firstDayOfMonth, this.currentDate);
+        this.$apexcharts.exec(
+          "chart",
+          "zoomX",
+          fd.firstDayOfMonth,
+          this.currentDate
+        );
+        // this.$refs.chart.zoomX(fd.firstDayOfMonth, this.currentDate);
         this.updateTotals(this.month, this.prevMonth);
       }
     },
@@ -192,8 +211,10 @@ export default {
   },
   async created() {
     const response = await Promise.all([getOverview(), getTop()]);
-
-    this.totalOverview = response[0].overview.reverse();
+    const overview = response[0].overview.reverse();
+    console.log(overview);
+    // overview.push({ date: "2021-06-08", duration: 107, plays: 27 });
+    this.totalOverview = overview;
     this.totalTop = response[1].top;
     this.emptyData = response[0].status === 204 ? true : false;
     this.loading = false;
