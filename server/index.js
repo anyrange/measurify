@@ -21,7 +21,8 @@ if (process.env.NODE_ENV != "production")
 
 function startScheduledJobs() {
   refresh_tokens();
-  // refresh_recently_played();
+  refresh_recently_played();
+
   cron.schedule("*/30 * * * *", () => {
     refresh_tokens();
   });

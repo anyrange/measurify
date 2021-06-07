@@ -32,20 +32,19 @@ function refresh_recently_played() {
             }
           })
           .catch(({ user, message }) => {
-            console.log(user + " died");
-            console.log("message: " + message);
+            console.log(
+              "listening-histories: " + user + " got an error - " + message
+            );
           });
       });
 
       Promise.all(requests).then(() => {
         const end = new Date();
         console.log(
-          `All ${requests.length} histories updated in ${(
+          `listening-histories [${requests.length}]: updated in ${(
             (end.getTime() - start.getTime()) /
             1000
-          ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Almaty",
-          })}]`
+          ).toFixed(2)} sec`
         );
       });
     }

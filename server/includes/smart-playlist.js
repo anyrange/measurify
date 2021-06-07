@@ -27,19 +27,19 @@ export async function update() {
           playlists: smartPlaylist.playlists,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(`${userName} got an error: ${err.message}`)
+          console.log(
+            `smart-playlists: ${userName} got an error - ${err.message}`
+          )
         )
     )
   );
 
   const end = new Date();
   console.log(
-    `${subscribers.length} smart-playlist updated in ${(
+    `smart-playlists [${subscribers.length}]: updated in ${(
       (end.getTime() - start.getTime()) /
       1000
-    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Almaty",
-    })}]`
+    ).toFixed(2)} sec`
   );
 }
 
@@ -107,19 +107,19 @@ export async function clean() {
           lastSpotifyToken: lastSpotifyToken,
           id: smartPlaylist.id,
         }).catch((err) =>
-          console.log(`${userName} got an error: ${err.message}`)
+          console.log(
+            `smart-playlists: ${userName} got an error - ${err.message}`
+          )
         )
     )
   );
 
   const end = new Date();
   console.log(
-    `${subscribers.length} smart-playlist cleaned in ${(
+    `smart-playlists [${subscribers.length}]: cleaned in ${(
       (end.getTime() - start.getTime()) /
       1000
-    ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Almaty",
-    })}]`
+    ).toFixed(2)} sec`
   );
 }
 

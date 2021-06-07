@@ -28,8 +28,12 @@ function refresh_tokens() {
         if (!body) return;
         body = await body.json();
         if (body.error) {
-          console.log("user " + userName + " havent got his token");
-          console.log("message: " + (body.error.message || body.error));
+          console.log(
+            "tokens: " +
+              userName +
+              " got an error - " +
+              (body.error.message || body.error)
+          );
           if (body.error === "invalid_grant") {
             await User.updateOne({ userName }, { refreshToken: "" });
           }
@@ -45,8 +49,7 @@ function refresh_tokens() {
         cb();
       })
       .catch((err) => {
-        console.log("user " + userName + " havent got his token");
-        console.log(err.message);
+        console.log("tokens: " + userName + "got an error - " + err.message);
         cb();
       });
   }
@@ -66,12 +69,10 @@ function refresh_tokens() {
       Promise.all(requests).then(() => {
         const end = new Date();
         console.log(
-          `--All ${requests.length} tokens refreshed in ${(
+          `tokens [${requests.length}]: updated in ${(
             (end.getTime() - start.getTime()) /
             1000
-          ).toFixed(2)} sec [${new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Almaty",
-          })}]--`
+          ).toFixed(2)} sec`
         );
       });
     }
