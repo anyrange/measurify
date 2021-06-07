@@ -1,7 +1,7 @@
 import User from "../../models/User.js";
 export default async function(fastify) {
   fastify.get(
-    "/",
+    "",
     {
       schema: {
         response: {

@@ -7,7 +7,7 @@ import { parsePlaylists } from "../../../includes/smart-playlist.js";
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
   fastify.post(
-    "/",
+    "",
     {
       schema: {
         headers,

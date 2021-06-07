@@ -1,5 +1,5 @@
 export default async function(fastify) {
-  fastify.get("/", { websocket: true }, (connection) => {
+  fastify.get("", { websocket: true }, (connection) => {
     const sendMessage = () => {
       const { heapUsed, rss, heapTotal, external } = process.memoryUsage();
       connection.socket.send(

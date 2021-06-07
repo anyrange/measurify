@@ -1,6 +1,6 @@
 import si from "systeminformation";
 export default async function(fastify) {
-  fastify.get("/", async () => {
+  fastify.get("", async () => {
     try {
       const [cpu, mem, os, processes, fsSize] = await Promise.all([
         si.cpu(),

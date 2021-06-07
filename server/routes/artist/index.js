@@ -1,7 +1,3 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
 import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";

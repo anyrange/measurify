@@ -10,7 +10,7 @@ const redirect_uri =
 
 export default async function(fastify) {
   fastify.get(
-    "/",
+    "",
     {
       schema: {
         querystring: {
