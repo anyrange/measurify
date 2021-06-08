@@ -34,7 +34,7 @@ export const lastDayOfPreviousWeek = getLastDayOfPreviousWeek();
 
 function getFirstDayOfCurrentMonth() {
   const now = new Date();
-  const res = new Date(now.getFullYear(), now.getMonth());
+  const res = new Date(now.getFullYear(), now.getMonth(), 2);
   const date = new Date(res).toISOString().substr(0, 10);
   return new Date(date).getTime();
 }
@@ -63,10 +63,3 @@ function getLastDayOfPreviousMonth() {
   return new Date(now);
 }
 export const lastDayOfPreviousMonth = getLastDayOfPreviousMonth();
-
-export function getFilteredArray(array, firstDate, lastDate) {
-  return array.filter((item) => {
-    let date = new Date(item.date).getTime();
-    return firstDate < date && date < lastDate;
-  });
-}
