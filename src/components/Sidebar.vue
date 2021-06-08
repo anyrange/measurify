@@ -89,7 +89,7 @@ export default {
   @apply flex flex-row fixed md:hidden h-12 w-full bottom-0 border-t bg-gray-800-spotify border-gray-600-spotify;
 }
 .sidebar-mobile .link {
-  @apply flex flex-col flex-grow items-center justify-center overflow-hidden whitespace-nowrap text-sm transition-colors duration-100 ease-in-out text-gray-400 hover:bg-gray-700-spotify;
+  @apply flex flex-col flex-grow items-center justify-center overflow-hidden whitespace-nowrap text-sm transition-colors duration-100 ease-in-out text-gray-400 hover:text-green-600-spotify;
 }
 .sidebar-mobile .link.router-link-exact-active {
   @apply text-green-600-spotify;
