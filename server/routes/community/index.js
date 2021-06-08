@@ -92,7 +92,7 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = await fastify.auth(req.cookies.token);
+      const _id = req.user_id;
       const range = req.query.range || 10;
       const page = req.query.page || 1;
 
@@ -250,7 +250,7 @@ const getLiked = async ({ friend, firstDate, lastDate }) => {
   let likedTracks = await getLikedTracks(friend.lastSpotifyToken);
   if (!likedTracks.items.length) return [];
   const liked = [];
-  while (likedTracks.items.length) {
+  while (likedTracks.items.length && likedTracks.next != null) {
     const likedTrack = likedTracks.items.shift();
 
     if (likedTrack.added_at < lastDate) break;

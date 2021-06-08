@@ -25,7 +25,7 @@ export default async function(fastify) {
       },
     },
     async (req, reply) => {
-      const _id = await fastify.auth(req.cookies.token);
+      const _id = req.user_id;
       const user = await User.findOne(
         { _id },
         { private: 1, customID: 1, spotifyID: 1 }

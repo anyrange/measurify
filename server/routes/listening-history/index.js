@@ -42,7 +42,7 @@ export default async function(fastify) {
       schema,
     },
     async (req, reply) => {
-      const _id = await fastify.auth(req.cookies.token);
+      const _id = req.user_id;
       const range = req.query.range || 50;
       const page = req.query.page - 1 || 0;
       const search = req.query.search || "";

@@ -98,7 +98,7 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = await fastify.auth(req.cookies.token);
+      const _id = req.user_id;
       const range = req.query.range || 20;
       const period = req.query.period || "long_term";
 
