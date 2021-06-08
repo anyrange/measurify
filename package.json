@@ -6,10 +6,10 @@
     "lint": "vue-cli-service lint",
     "build": "vue-cli-service build",
     "serve": "vue-cli-service serve --port 3000",
+    "serve-build": "vue-cli-service serve --port 3000 --dest dist",
     "server": "nodemon index.js --prefix server",
     "dev": "concurrently \"npm run serve\" \"npm run server\"",
-    "dist": "npm run build && serve -l 3000 -s dist",
-    "prod": "yarn build --mode justhost"
+    "dist": "npm run build & npm run serve-build"
   },
   "dependencies": {
     "@tailwindcss/postcss7-compat": "^2.0.2",
