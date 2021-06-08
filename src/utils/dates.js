@@ -4,8 +4,11 @@ function getFirstDayOfCurrentWeek() {
   let res = now.setDate(
     now.getDate() - ((now.getDay() ? now.getDay() : 7) - 1)
   );
-  const date = new Date(res).toISOString().substr(0, 10);
-  return new Date(date).getTime();
+  const date = new Date(res);
+  const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+  const aboba = new Date(date.getTime() - userTimezoneOffset);
+  const aboba2 = new Date(aboba).toISOString().substr(0, 10);
+  return new Date(aboba2).getTime();
 }
 export const firstDayOfWeek = getFirstDayOfCurrentWeek();
 

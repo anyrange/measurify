@@ -151,7 +151,7 @@ export default {
     getFilteredArray({ array = this.totalOverview, first, last }) {
       return array.filter((item) => {
         let date = new Date(item.date).getTime();
-        return first < date && date < last;
+        return first <= date && date < last;
       });
     },
     getSumOfArray(array) {
