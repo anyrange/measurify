@@ -27,31 +27,10 @@ export default async function(fastify) {
         response: {
           200: {
             type: "object",
-            required: ["status", "friends", "activity"],
+            required: ["status", "activity"],
             properties: {
               status: {
                 type: "number",
-              },
-              friends: {
-                type: "array",
-                items: {
-                  type: "object",
-                  required: ["userName", "avatar", "customID", "lastLogin"],
-                  properties: {
-                    userName: {
-                      type: "string",
-                    },
-                    avatar: {
-                      type: "string",
-                    },
-                    customID: {
-                      type: "string",
-                    },
-                    lastLogin: {
-                      type: "string",
-                    },
-                  },
-                },
               },
               activity: {
                 type: "array",
@@ -139,7 +118,7 @@ export default async function(fastify) {
       const friends = users.filter((user, key) => friendList[key]);
 
       if (!friends.length)
-        return reply.code(200).send({ status: 204, friends: [], activity: [] });
+        return reply.code(200).send({ status: 204, activity: [] });
 
       const trackActivity = await getTrackActivity(friends, page, range);
 
@@ -149,7 +128,6 @@ export default async function(fastify) {
           : trackActivity[0].track.played_at;
 
       const lastDate = trackActivity[trackActivity.length - 1].track.played_at;
-
       const requests = friends.map((friend) => {
         {
           const options = {
@@ -174,7 +152,7 @@ export default async function(fastify) {
           : 0
       );
 
-      reply.code(200).send({ friends, activity, status: 200 });
+      reply.code(200).send({ activity, status: 200 });
     }
   );
 }
@@ -207,7 +185,9 @@ const getTrackActivity = async (friends, page, range) => {
       $project: {
         track: {
           id: 1,
-          played_at: 1,
+          plays: {
+            played_at: 1,
+          },
           name: 1,
           artists: {
             id: 1,
@@ -223,6 +203,28 @@ const getTrackActivity = async (friends, page, range) => {
     {
       $unwind: {
         path: "$track",
+      },
+    },
+    {
+      $unwind: {
+        path: "$track.plays",
+      },
+    },
+    {
+      $project: {
+        track: {
+          id: 1,
+          played_at: "$track.plays.played_at",
+          name: 1,
+          artists: {
+            id: 1,
+            name: 1,
+          },
+        },
+        userName: 1,
+        customID: 1,
+        lastSpotifyToken: 1,
+        avatar: 1,
       },
     },
     {
@@ -248,7 +250,9 @@ const getTrackActivity = async (friends, page, range) => {
 
 const getLiked = async ({ friend, firstDate, lastDate }) => {
   let likedTracks = await getLikedTracks(friend.lastSpotifyToken);
+
   if (!likedTracks.items.length) return [];
+
   const liked = [];
   while (likedTracks.items.length && likedTracks.next != null) {
     const likedTrack = likedTracks.items.shift();
@@ -278,21 +282,16 @@ const getLiked = async ({ friend, firstDate, lastDate }) => {
       type: "liked",
     });
   }
-
   return liked;
 };
 
 const getLikedTracks = async (
   token,
-  url = "https://api.spotify.com/v1/me/tracks?limit=10"
+  url = "https://api.spotify.com/v1/me/tracks?limit=30"
 ) => {
   return await fetch(url, {
     headers: {
       Authorization: "Bearer " + token,
     },
-  })
-    .then((res) => res.json())
-    .catch((err) => {
-      throw err;
-    });
+  }).then((res) => res.json());
 };
