@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import User from "../../../models/User.js";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
@@ -102,11 +101,9 @@ export default async function(fastify) {
       const range = req.query.range || 20;
       const period = req.query.period || "long_term";
 
-      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      const token = await this.getToken(_id);
 
-      const options = { token: user.lastSpotifyToken, range, period };
+      const options = { token, range, period };
       const info = await Promise.all([tracks(options), artists(options)]);
 
       reply.code(200).send({ tracks: info[0], artists: info[1], status: 200 });

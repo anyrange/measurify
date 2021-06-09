@@ -109,8 +109,8 @@ export default async function(fastify) {
           "recentlyPlayed.$": 1,
         }
       );
-      if (!user)
-        return reply.code(404).send({ message: "Not found", status: 404 });
+
+      if (!user) throw new this.CustomError("Not found", 404);
 
       const track = await fastify.spotifyAPI({
         route: `tracks/${trackID}`,
@@ -118,10 +118,10 @@ export default async function(fastify) {
       });
 
       if (track.error)
-        return reply.code(track.error.status || 500).send({
-          message: track.error.message,
-          status: track.error.status || 500,
-        });
+        throw new this.CustomError(
+          track.error.message,
+          track.error.status || 500
+        );
 
       const overview = {
         plays: user.recentlyPlayed[0].plays.length,
@@ -131,6 +131,7 @@ export default async function(fastify) {
             60000
         ),
       };
+
       const response = {
         track: {
           album: {

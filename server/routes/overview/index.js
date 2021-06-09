@@ -1,7 +1,6 @@
 import User from "../../models/User.js";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
-import formatOverview from "../../includes/format-overview.js";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
@@ -36,12 +35,8 @@ export default async function(fastify) {
         },
       },
     },
-    async (req, reply) => {
+    async function(req, reply) {
       const _id = req.user_id;
-      const user = await User.findOne({ _id }, { _id: 1 });
-
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
 
       const agg = [
         {
@@ -97,18 +92,25 @@ export default async function(fastify) {
           },
         },
         {
+          $project: {
+            date: "$_id.date",
+            plays: 1,
+            duration: { $round: { $divide: ["$playtime", 60000] } },
+            _id: 0,
+          },
+        },
+        {
           $sort: {
-            "_id.date": -1,
+            date: -1,
           },
         },
       ];
-
       const plays = await User.aggregate(agg);
 
-      if (!plays.length)
+      if (!plays || !plays.length)
         return reply.code(200).send({ status: 204, overview: [] });
 
-      reply.code(200).send({ overview: formatOverview(plays), status: 200 });
+      reply.code(200).send({ overview: plays, status: 200 });
     }
   );
 }

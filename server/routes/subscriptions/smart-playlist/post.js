@@ -1,6 +1,6 @@
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
-import images from "../../../includes/images.js";
+import images from "../../../assets/images.js";
 
 import { parsePlaylists } from "../../../includes/smart-playlist.js";
 
@@ -49,8 +49,7 @@ export default async function(fastify) {
         { spotifyID: 1, lastSpotifyToken: 1 }
       );
 
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!user) throw new this.CustomError("User not found", 404);
 
       const createdPlaylist = await fetch(
         `https://api.spotify.com/v1/users/${user.spotifyID}/playlists`,
@@ -67,8 +66,7 @@ export default async function(fastify) {
         }
       ).then((res) => res.json());
 
-      if (createdPlaylist.error)
-        return reply.code(400).send({ message: "Error", status: 400 });
+      if (createdPlaylist.error) throw new this.CustomError("Error", 400);
 
       await fetch(
         `https://api.spotify.com/v1/playlists/${createdPlaylist.id}/images`,
@@ -90,8 +88,7 @@ export default async function(fastify) {
         }
       );
 
-      if (opResult.nModified === 0)
-        return reply.code(400).send({ message: "Error", status: 400 });
+      if (opResult.nModified === 0) throw new this.CustomError("Error", 400);
 
       await parsePlaylists({
         _id,

@@ -76,10 +76,10 @@ export default async function(fastify) {
       });
 
       if (friendList.error)
-        return reply.code(friendList.error.status || 500).send({
-          message: friendList.error.message,
-          status: friendList.error.status || 500,
-        });
+        throw new this.CustomError(
+          friendList.error.message,
+          friendList.error.status || 500
+        );
 
       const friends = users.filter((user, key) => friendList[key]);
 

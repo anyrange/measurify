@@ -49,13 +49,10 @@ export default async function(fastify) {
         }
       );
 
-      if (opResult.n === 0)
-        return reply.code(400).send({ message: "Error", status: 400 });
+      if (opResult.n === 0) throw new this.CustomError("Error", 400);
 
       if (opResult.nModified === 0)
-        return reply
-          .code(400)
-          .send({ message: "Nothing to delete", status: 400 });
+        throw new this.CustomError("Nothing to delete", 400);
 
       reply.code(200).send({ message: "Succesfully updated", status: 200 });
     }

@@ -97,17 +97,14 @@ export default async function(fastify) {
       );
 
       if (!users.find((user) => user._id == _id))
-        return reply.code(401).send({ message: "Unauthorized", status: 401 });
+        throw new this.CustomError("Unauthorized", 401);
 
       const user = users.find((user) => user.customID == customID);
 
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!user) throw new this.CustomError("User not found", 404);
 
       if (user.private && _id != user._id)
-        return reply
-          .code(403)
-          .send({ message: "Private profile", status: 403 });
+        throw new this.CustomError("Private profile", 403);
 
       const agg = [
         {

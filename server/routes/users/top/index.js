@@ -47,8 +47,7 @@ export default async function(fastify) {
       const _id = req.user_id;
       const user = await User.findOne({ _id }, { _id: 1 });
 
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!user) throw new this.CustomError("User not found", 404);
 
       const agg = [
         {

@@ -36,7 +36,7 @@ export default async function(fastify) {
         },
       },
     },
-    async (req, reply) => {
+    async function(req, reply) {
       const _id = req.user_id;
       const confidential = req.body.private;
       const customID = req.body.customID;
@@ -44,9 +44,7 @@ export default async function(fastify) {
       const user = await User.findOne({ customID }, { _id: 1 });
 
       if (user && user._id != _id)
-        return reply
-          .code(403)
-          .send({ message: "This id is already taken", status: 403 });
+        throw new this.CustomError("This id is already taken", 403);
 
       const updateResult = await User.updateOne(
         { _id },
@@ -54,12 +52,10 @@ export default async function(fastify) {
       );
 
       if (updateResult.n === 0)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+        throw new this.CustomError("User not found", 404);
 
       if (updateResult.nModified === 0)
-        return reply
-          .code(500)
-          .send({ message: "Nothing to update", status: 500 });
+        throw new this.CustomError("Nothing to update", 400);
 
       reply.code(200).send({ message: "Successfully updated", status: 200 });
     }

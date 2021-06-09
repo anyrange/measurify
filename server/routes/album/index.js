@@ -1,17 +1,13 @@
-import User from "../../models/User.js";
-import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";
-import plays from "../../includes/played-overview.js";
 
 export default async function(fastify) {
-  const overview = fastify.getSchema("overview");
   const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
     200: {
       type: "object",
-      required: ["album", "overview", "tracks", "status"],
+      required: ["album", "tracks", "status"],
       properties: {
         album: {
           type: "object",
@@ -63,7 +59,6 @@ export default async function(fastify) {
             },
           },
         },
-        overview,
         tracks,
         status: {
           type: "number",
@@ -95,25 +90,20 @@ export default async function(fastify) {
       const _id = req.user_id;
       const albumID = req.params.id;
 
-      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      const token = await this.getToken(_id);
 
       const album = await fastify.spotifyAPI({
         route: `albums/${albumID}`,
-        token: user.lastSpotifyToken,
+        token,
       });
 
       if (album.error)
-        return reply.code(album.error.status || 500).send({
-          message: album.error.message,
-          status: album.error.status || 500,
-        });
+        throw new this.CustomError(
+          album.error.message,
+          album.error.status || 500
+        );
 
-      const [overviewRaw, tracks] = await Promise.all([
-        plays(_id, albumID),
-        history(_id, albumID),
-      ]);
+      const tracks = await history(_id, albumID);
 
       const response = {
         album: {
@@ -128,7 +118,6 @@ export default async function(fastify) {
             return { name, id };
           }),
         },
-        overview: formatOverview(overviewRaw),
         tracks,
         status: 200,
       };

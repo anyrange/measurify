@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import User from "../models/User.js";
+import User from "../../models/User.js";
 import mongodb from "mongodb";
 
 const { ObjectId } = mongodb;

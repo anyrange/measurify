@@ -24,15 +24,11 @@ export default async function(fastify) {
         },
       },
     },
-    async (req, reply) => {
+    async function(req, reply) {
       const _id = req.user_id;
+      const token = await this.getToken(_id);
 
-      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
-
-      reply.code(200).send({ token: user.lastSpotifyToken, status: 200 });
+      reply.code(200).send({ token, status: 200 });
 
       await User.updateOne({ _id }, { lastLogin: Date.now() });
     }

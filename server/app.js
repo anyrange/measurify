@@ -51,32 +51,4 @@ process.on("unhandledRejection", (error) => {
   console.log("Unhandled - " + error);
 });
 
-app.setErrorHandler((error, request, reply) => {
-  if (error.validation) {
-    const { status, message } = app.validate(error);
-    return reply.code(status).send({ message, status });
-  }
-
-  switch (error.name) {
-    case "JsonWebTokenError":
-      reply.code(400).send({ message: error.message, status: 400 });
-      break;
-    case "FetchError":
-      console.log(`${error.name}: ${error.message}`);
-      reply.code(400).send({ message: error.message, status: 400 });
-      break;
-    case "MongooseError":
-      console.log(`${error.name}: ${error.message}`);
-      reply
-        .code(503)
-        .header("Retry-After", 3000)
-        .send({ message: "Try again later", status: 503 });
-      break;
-    default:
-      reply.status(500).send({ message: "Something went wrong!", status: 500 });
-      console.log(error);
-      break;
-  }
-});
-
 export default app;

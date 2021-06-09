@@ -1,21 +1,13 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
-import User from "../../models/User.js";
-import formatOverview from "../../includes/format-overview.js";
 import history from "../../includes/listening-history.js";
-import plays from "../../includes/played-overview.js";
 
 export default async function(fastify) {
-  const overview = fastify.getSchema("overview");
   const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
 
   const responseSchema = {
     200: {
       type: "object",
-      required: ["playlist", "overview", "tracks", "status"],
+      required: ["playlist", "tracks", "status"],
       properties: {
         playlist: {
           type: "object",
@@ -61,7 +53,6 @@ export default async function(fastify) {
             },
           },
         },
-        overview,
         tracks,
         status: {
           type: "number",
@@ -93,26 +84,20 @@ export default async function(fastify) {
       const _id = req.user_id;
       const playlistID = req.params.id;
 
-      const user = await User.findOne({ _id }, { lastSpotifyToken: 1 });
-
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      const token = await this.getToken(_id);
 
       const playlist = await fastify.spotifyAPI({
         route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total)`,
-        token: user.lastSpotifyToken,
+        token,
       });
 
       if (playlist.error)
-        return reply.code(playlist.error.status || 500).send({
-          message: playlist.error.message,
-          status: playlist.error.status || 500,
-        });
+        throw new this.CustomError(
+          playlist.error.message,
+          playlist.error.status || 500
+        );
 
-      const [overviewRaw, tracks] = await Promise.all([
-        plays(_id, playlistID),
-        history(_id, playlistID),
-      ]);
+      const tracks = await history(_id, playlistID);
 
       const response = {
         playlist: {
@@ -125,7 +110,6 @@ export default async function(fastify) {
           public: playlist.public,
           tracks: playlist.tracks.total,
         },
-        overview: formatOverview(overviewRaw),
         tracks,
         status: 200,
       };

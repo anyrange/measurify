@@ -59,8 +59,7 @@ export default async function(fastify) {
         }
       );
 
-      if (!document)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!document) throw new this.CustomError("User not found", 404);
 
       if (!document.recentlyPlayed || !document.recentlyPlayed.length)
         return reply.code(200).send({
@@ -75,9 +74,7 @@ export default async function(fastify) {
       }
 
       if (new Date(firstDate) > new Date())
-        return reply
-          .code(406)
-          .send({ message: "Invalid parameters", status: 406 });
+        throw new this.CustomError("Invalid parameters", 406);
 
       const response = await fastify.parseTop(
         _id,

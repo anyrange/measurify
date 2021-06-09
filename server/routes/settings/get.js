@@ -24,15 +24,14 @@ export default async function(fastify) {
         },
       },
     },
-    async (req, reply) => {
+    async function(req, reply) {
       const _id = req.user_id;
       const user = await User.findOne(
         { _id },
         { private: 1, customID: 1, spotifyID: 1 }
       );
 
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!user) throw new this.CustomError("User not found", 404);
 
       reply.code(200).send({
         private: user.private,

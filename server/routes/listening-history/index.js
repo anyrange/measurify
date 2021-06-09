@@ -41,20 +41,20 @@ export default async function(fastify) {
     {
       schema,
     },
-    async (req, reply) => {
+    async function(req, reply) {
       const _id = req.user_id;
       const range = req.query.range || 50;
       const page = req.query.page - 1 || 0;
       const search = req.query.search || "";
 
-      const user = await fastify.parseHistory(_id, range, page, search);
+      const [history] = await fastify.parseHistory(_id, range, page, search);
 
-      if (!user[0] || !user[0].tracksQuantity)
+      if (!history || !history.tracksQuantity)
         return reply.code(200).send({ pages: 0, history: [], status: 204 });
 
       reply.code(200).send({
-        pages: Math.ceil(user[0].tracksQuantity / range),
-        history: user[0].recentlyPlayed,
+        pages: Math.ceil(history.tracksQuantity / range),
+        history: history.recentlyPlayed,
         status: 200,
       });
     }

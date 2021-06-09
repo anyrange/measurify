@@ -90,8 +90,7 @@ export default async function(fastify) {
       // get user's info
       const user = users.find((user) => user._id == _id);
 
-      if (!user)
-        return reply.code(404).send({ message: "User not found", status: 404 });
+      if (!user) throw new this.CustonError("User not found", 404);
 
       const access_token = user.lastSpotifyToken;
 
@@ -110,10 +109,10 @@ export default async function(fastify) {
       });
 
       if (friendList.error)
-        return reply.code(friendList.error.status || 500).send({
-          message: friendList.error.message,
-          status: friendList.error.status || 500,
-        });
+        throw new this.CustonError(
+          friendList.error.message,
+          friendList.error.status || 500
+        );
 
       const friends = users.filter((user, key) => friendList[key]);
 
