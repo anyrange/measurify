@@ -1,6 +1,7 @@
 import User from "../../models/User.js";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
+import formatOverview from "../../includes/format-overview.js";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
@@ -105,12 +106,13 @@ export default async function(fastify) {
           },
         },
       ];
+
       const plays = await User.aggregate(agg);
 
       if (!plays || !plays.length)
         return reply.code(200).send({ status: 204, overview: [] });
 
-      reply.code(200).send({ overview: plays, status: 200 });
+      reply.code(200).send({ overview: formatOverview(plays), status: 200 });
     }
   );
 }
