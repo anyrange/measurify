@@ -28,7 +28,7 @@ function refresh_recently_played() {
         })
           .then(async (newTracks) => {
             for (let i = 0; i < newTracks.length; i++) {
-              await addTrack(user, newTracks[i]);
+              await addTrack(user._id, newTracks[i]);
             }
           })
           .catch(({ user, message }) => {
@@ -65,7 +65,7 @@ async function parseNewTracks(user, cb, reject) {
     if (listenedTracks.error) throw new Error(listenedTracks.error.message);
     if (!listenedTracks.items.length) return cb([]);
 
-    if (!user || !user.recentlyPlayed || !user.recentlyPlayed.length)
+    if (!user.recentlyPlayed || !user.recentlyPlayed.length)
       cb(listenedTracks.items.map((item) => formatTrack(item)).reverse());
 
     let i = 0;
@@ -116,16 +116,14 @@ async function parseNewTracks(user, cb, reject) {
   }
 }
 
-async function addTrack(user, track) {
+export async function addTrack(_id, track) {
   const existingTrack = await User.findOne(
     {
-      _id: user._id,
+      _id,
       "recentlyPlayed.id": track.id,
     },
     { "recentlyPlayed.$": 1 }
   );
-
-  const query = { spotifyID: user.spotifyID };
 
   if (!existingTrack) {
     const update = {
@@ -134,13 +132,13 @@ async function addTrack(user, track) {
       },
     };
 
-    await User.updateOne(query, update);
+    await User.updateOne({ _id }, update);
     return;
   }
 
   await User.updateOne(
     {
-      _id: user._id,
+      _id,
       "recentlyPlayed.id": track.id,
     },
     {

@@ -2,6 +2,7 @@ import formatTrack from "../../includes/format-track.js";
 import User from "../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
+import { addTrack } from "../../includes/recently-played-parse.js";
 
 export default async function(fastify) {
   fastify.get(
@@ -128,49 +129,13 @@ const fetchHistory = async (access_token, _id) => {
         Authorization: "Bearer " + access_token,
       },
     }
-  )
-    .then((res) => res.json())
-    .catch((err) => {
-      throw err;
-    });
-
+  ).then((res) => res.json());
   if (history.error) return console.log(history.error);
 
   if (!history.items.length) return;
 
-  for (let i = 0; i < history.length; i++) {
-    const track = formatTrack(history[i]);
+  for (let i = 0; i < history.items.length; i++) {
+    const track = formatTrack(history.items[i]);
     await addTrack(_id, track);
   }
-};
-
-const addTrack = async (_id, track) => {
-  const existingTrack = await User.findOne(
-    {
-      _id,
-      "recentlyPlayed.id": track.id,
-    },
-    { "recentlyPlayed.$": 1 }
-  );
-
-  if (!existingTrack) {
-    const update = {
-      $push: {
-        recentlyPlayed: { $each: [track], $position: 0 },
-      },
-    };
-
-    await User.updateOne({ _id }, update);
-    return;
-  }
-
-  await User.updateOne(
-    {
-      _id,
-      "recentlyPlayed.id": track.id,
-    },
-    {
-      $push: { "recentlyPlayed.$.plays": { $each: track.plays, $position: 0 } },
-    }
-  );
 };

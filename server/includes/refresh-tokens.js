@@ -49,7 +49,7 @@ function refresh_tokens() {
         cb();
       })
       .catch((err) => {
-        console.log("tokens: " + userName + "got an error - " + err.message);
+        console.log("tokens: " + userName + " got an error - " + err.message);
         cb();
       });
   }
