@@ -19,6 +19,12 @@ export default async function(fastify) {
               token: {
                 type: "string",
               },
+              avatar: {
+                type: "string",
+              },
+              userName: {
+                type: "string",
+              },
             },
           },
         },
@@ -28,9 +34,20 @@ export default async function(fastify) {
       const _id = req.user_id;
       const token = await this.getToken(_id);
 
-      reply.code(200).send({ token, status: 200 });
+      const user = await this.spotifyAPI({ route: "me", token });
 
-      await User.updateOne({ _id }, { lastLogin: Date.now() });
+      const userName = user.display_name;
+      const avatar = user.images.length ? user.images[0].url : "";
+      const filter = { _id };
+      const update = {
+        userName,
+        avatar,
+        lastLogin: Date.now(),
+      };
+
+      reply.code(200).send({ token, avatar, userName, status: 200 });
+
+      await User.updateOne(filter, update);
     }
   );
 }
