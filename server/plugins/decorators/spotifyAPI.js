@@ -10,10 +10,15 @@ const plugin = fp(async function plugin(fastify) {
           },
         }
       : {};
-    return await fetch(
+    const res = await fetch(
       `https://api.spotify.com/v1/${route}${query ? `?${query}` : ""}`,
       options
     ).then((res) => res.json());
+
+    if (res.error)
+      throw new fastify.CustomError(res.error.message, res.error.status || 500);
+
+    return res;
   });
 });
 

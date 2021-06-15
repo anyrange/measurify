@@ -64,12 +64,6 @@ export default async function(fastify) {
         token,
       });
 
-      if (artist.error)
-        throw new this.CustomError(
-          artist.error.message,
-          artist.error.status || 500
-        );
-
       // get data for graph
 
       const tracks = await history(_id, artistID);

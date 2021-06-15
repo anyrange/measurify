@@ -97,12 +97,6 @@ export default async function(fastify) {
         token,
       });
 
-      if (album.error)
-        throw new this.CustomError(
-          album.error.message,
-          album.error.status || 500
-        );
-
       const tracks = await history(_id, albumID);
 
       const response = {

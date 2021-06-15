@@ -91,12 +91,6 @@ export default async function(fastify) {
         token,
       });
 
-      if (playlist.error)
-        throw new this.CustomError(
-          playlist.error.message,
-          playlist.error.status || 500
-        );
-
       const tracks = await history(_id, playlistID);
 
       const response = {

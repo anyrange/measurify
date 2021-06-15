@@ -117,12 +117,6 @@ export default async function(fastify) {
         token: user.lastSpotifyToken,
       });
 
-      if (track.error)
-        throw new this.CustomError(
-          track.error.message,
-          track.error.status || 500
-        );
-
       const overview = {
         plays: user.recentlyPlayed[0].plays.length,
         playtime: Math.round(
