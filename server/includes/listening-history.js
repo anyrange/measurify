@@ -50,6 +50,7 @@ export default async function(_id, filterId) {
           lastPlayedAt: { $first: "$recentlyPlayed.plays.played_at" },
           id: "$recentlyPlayed.id",
           name: "$recentlyPlayed.name",
+          image: "$recentlyPlayed.image",
         },
       },
       {

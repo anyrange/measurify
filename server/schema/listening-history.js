@@ -6,6 +6,7 @@ export default {
     properties: {
       id: { type: "string" },
       name: { type: "string" },
+      image: { type: "string" },
       duration_ms: { type: "number" },
       playtime: { type: "number" },
       played_at: { type: "string" },
