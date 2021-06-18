@@ -20,6 +20,17 @@ export default async function(fastify) {
             "album",
             "artists",
             "preview_url",
+            "danceability",
+            "energy",
+            "key",
+            "loudness",
+            "mode",
+            "speechiness",
+            "acousticness",
+            "instrumentalness",
+            "liveness",
+            "valence",
+            "tempo",
           ],
           properties: {
             name: {
@@ -42,6 +53,39 @@ export default async function(fastify) {
             },
             link: {
               type: "string",
+            },
+            danceability: {
+              type: "number",
+            },
+            energy: {
+              type: "number",
+            },
+            key: {
+              type: "number",
+            },
+            loudness: {
+              type: "number",
+            },
+            mode: {
+              type: "number",
+            },
+            speechiness: {
+              type: "number",
+            },
+            acousticness: {
+              type: "number",
+            },
+            instrumentalness: {
+              type: "number",
+            },
+            liveness: {
+              type: "number",
+            },
+            valence: {
+              type: "number",
+            },
+            tempo: {
+              type: "number",
             },
             artists: {
               type: "array",
@@ -113,10 +157,16 @@ export default async function(fastify) {
 
       if (!user) throw new this.CustomError("Not found", 404);
 
-      const track = await fastify.spotifyAPI({
-        route: `tracks/${trackID}`,
-        token: user.lastSpotifyToken,
-      });
+      const [track, audioFeatures] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `tracks/${trackID}`,
+          token: user.lastSpotifyToken,
+        }),
+        fastify.spotifyAPI({
+          route: `audio-features/${trackID}`,
+          token: user.lastSpotifyToken,
+        }),
+      ]);
 
       const overview = {
         plays: user.recentlyPlayed[0].plays.length,
@@ -148,6 +198,17 @@ export default async function(fastify) {
           link: track.external_urls.spotify,
           duration_ms: track.duration_ms,
           release_date: track.album.release_date,
+          danceability: audioFeatures.danceability,
+          energy: audioFeatures.energy,
+          key: audioFeatures.key,
+          loudness: audioFeatures.loudness,
+          mode: audioFeatures.mode,
+          speechiness: audioFeatures.speechiness,
+          acousticness: audioFeatures.acousticness,
+          instrumentalness: audioFeatures.instrumentalness,
+          liveness: audioFeatures.liveness,
+          valence: audioFeatures.valence,
+          tempo: audioFeatures.tempo,
         },
         overview,
         status: 200,
