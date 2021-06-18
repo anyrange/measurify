@@ -2,6 +2,13 @@ module.exports = {
   purge: { content: ["./public/**/*.html", "./src/**/*.vue"] },
   darkMode: "class", // or 'media' or 'class'
   theme: {
+    screens: {
+      sm: "500px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     extend: {
       colors: {
         "meetup-blue": "#00455D",
