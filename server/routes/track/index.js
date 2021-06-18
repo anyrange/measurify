@@ -47,10 +47,11 @@ export default async function(fastify) {
               type: "array",
               items: {
                 type: "object",
-                required: ["name", "id"],
+                required: ["name", "id", "image"],
                 properties: {
                   name: { type: "string" },
                   id: { type: "string" },
+                  image: { type: "string" },
                 },
               },
             },
@@ -126,14 +127,19 @@ export default async function(fastify) {
         ),
       };
 
+      const { artists } = await fastify.spotifyAPI({
+        route: `artists?ids=${track.artists.map(({ id }) => id).join(",")}`,
+        token: user.lastSpotifyToken,
+      });
+
       const response = {
         track: {
           album: {
             name: track.album.name,
             id: track.album.id,
           },
-          artists: track.artists.map(({ name, id }) => {
-            return { name, id };
+          artists: artists.map(({ name, id, images }) => {
+            return { name, id, image: images.length ? images[0].url : "" };
           }),
           name: track.name,
           preview_url: track.preview_url,
