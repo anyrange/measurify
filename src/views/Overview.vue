@@ -5,36 +5,35 @@
     <empty-message v-if="emptyData" />
     <template v-else>
       <tabs class="mt-6" v-model="selectedPeriod">
-        <tab name="alltime" @click="updateOverview('alltime')">All Time</tab>
-        <tab name="week" @click="updateOverview('week')">This Week</tab>
-        <tab name="month" @click="updateOverview('month')">This Month</tab>
+        <tab name="alltime">All Time</tab>
+        <tab name="month">This Month</tab>
+        <tab name="week">This Week</tab>
       </tabs>
       <div class="mt-6 grid gap-7 xl:grid-cols-4 lg:grid-cols-2">
-        <card
+        <percent-card
           :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalTracksPlayed"
           :previousValue="totals[selectedPeriod].totalTracksPlayedPrev"
         >
           Tracks Played
-        </card>
-        <card
+        </percent-card>
+        <percent-card
           :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalMinutesListened"
           :previousValue="totals[selectedPeriod].totalMinutesListenedPrev"
         >
           Minutes Listened
-        </card>
+        </percent-card>
       </div>
       <div class="-mx-4 w-full">
         <apexchart
-          ref="chart"
           type="area"
           height="350"
           :options="chartOptions"
           :series="overviewData"
         ></apexchart>
       </div>
-      <h2 class="mt-6 text-4xl font-semibold text-gray-100">
+      <h2 class="mt-6 h-title">
         Top Played
       </h2>
       <tabs class="my-6" v-model="selectedTop">
@@ -53,7 +52,7 @@ import * as utd from "@/utils/dates";
 import chartOptions from "@/mixins/chartOptions";
 import EmptyMessage from "@/components/EmptyMessage";
 import RatingTable from "@/components/RatingTable";
-import Card from "@/components/Card";
+import PercentCard from "@/components/PercentCard";
 import Tabs from "@/components/Tabs";
 import Tab from "@/components/Tab";
 import { getOverview, getTop } from "@/api";
@@ -62,7 +61,7 @@ import VueApexCharts from "vue3-apexcharts";
 export default {
   name: "Overview",
   components: {
-    Card,
+    PercentCard,
     RatingTable,
     EmptyMessage,
     Tabs,
@@ -111,36 +110,22 @@ export default {
       return new Date(res).getTime();
     },
   },
-  methods: {
-    updateOverview(period) {
-      this.selectedPeriod = period;
-      this.updateChart(period);
+  watch: {
+    selectedPeriod: function() {
+      this.updateChart(this.selectedPeriod);
     },
+  },
+  methods: {
     updateChart(period) {
-      if (period === "alltime") {
-        this.$apexcharts.exec(
-          "chart",
-          "zoomX",
-          this.firstDayOnGraph,
-          this.currentDate
-        );
-      }
-      if (period === "week") {
-        this.$apexcharts.exec(
-          "chart",
-          "zoomX",
-          utd.firstDayOfWeek,
-          this.currentDate
-        );
-      }
-      if (period === "month") {
-        this.$apexcharts.exec(
-          "chart",
-          "zoomX",
-          utd.firstDayOfMonth,
-          this.currentDate
-        );
-      }
+      if (period === "alltime")
+        this.zoomChart(this.firstDayOnGraph, this.currentDate);
+      if (period === "month")
+        this.zoomChart(utd.firstDayOfMonth, this.currentDate);
+      if (period === "week")
+        this.zoomChart(utd.firstDayOfWeek, this.currentDate);
+    },
+    zoomChart(start, end) {
+      this.$apexcharts.exec("chart", "zoomX", start, end);
     },
     pushToChart() {
       for (const item of this.totalOverview) {
@@ -224,27 +209,23 @@ export default {
 </script>
 
 <style>
-.apexcharts-text {
-  font-family: "Inter", sans-serif !important;
-}
-.apexcharts-zoomin-icon,
-.apexcharts-zoomout-icon,
-.apexcharts-zoom-icon.apexcharts-selectedTop,
-.apexcharts-pan-icon,
-.apexcharts-menu-icon {
-  display: none;
-}
-.apexcharts-zoom-icon.apexcharts-selected {
-  display: none;
-}
 .apexcharts-tooltip.apexcharts-theme-light {
   background-color: #181818 !important;
   border: 1px solid #464846 !important;
   box-shadow: 0px 0px 0px 0px #fff !important;
   border-radius: 0px !important;
-  color: #1cd460;
+  color: #1cd460 !important;
   padding: 4px !important;
-  font-family: "Inter", sans-serif !important;
+}
+.apexcharts-tooltip-title {
+  border: 0 !important;
+  font-size: 16px !important;
+  color: #fff !important;
+  background-color: #181818 !important;
+  margin-bottom: 0px !important;
+}
+.apexcharts-tooltip-marker {
+  background-color: #1da14b !important;
 }
 .apexcharts-tooltip-text {
   font-size: 14px !important;
@@ -252,17 +233,7 @@ export default {
 .apexcharts-tooltip-text-value {
   font-weight: normal !important;
 }
-.apexcharts-tooltip-title {
-  border: 0 !important;
-  font-size: 16px !important;
-  color: #fff;
-  background-color: #181818 !important;
-  margin-bottom: 0px !important;
-}
 .apexcharts-tooltip-y-group {
   padding: 0 !important;
-}
-.apexcharts-tooltip-marker {
-  background-color: #1da14b !important;
 }
 </style>

@@ -3,9 +3,8 @@
     <div class="flex-1 flex overflow-y-hidden">
       <sidebar />
       <div class="flex-1 flex flex-col bg-gray-800-spotify">
-        <navbar />
-        <div class="content-spotify overflow-y-auto md:mb-0 mb-12">
-          <div class="container sm:px-10 px-4">
+        <div class="content-spotify overflow-y-auto sm:mb-0 mb-12">
+          <div class="px-4 md:px-20 pt-8">
             <router-view />
           </div>
         </div>
@@ -16,17 +15,16 @@
 
 <script>
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
-import { getToken } from "@/api";
+import { mapActions } from "vuex";
 
 export default {
   name: "Layout",
-  components: {
-    Sidebar,
-    Navbar,
+  components: { Sidebar },
+  methods: {
+    ...mapActions(["updateUser"]),
   },
   async created() {
-    await getToken();
+    await this.updateUser();
   },
 };
 </script>

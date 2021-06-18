@@ -10,11 +10,15 @@
 }
 
 .h-title {
-  @apply text-5xl font-semibold text-white;
+  @apply md:text-5xl sm:text-4xl text-3xl font-semibold text-white;
 }
 
 .h-subtitle {
-  @apply text-lg font-semibold text-gray-500;
+  @apply text-base sm:text-lg font-semibold text-gray-500;
+}
+
+.link {
+  @apply text-white hover:underline;
 }
 
 .sidebar-spotify::-webkit-scrollbar,

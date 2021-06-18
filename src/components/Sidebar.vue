@@ -1,44 +1,33 @@
 <template>
-  <template v-if="!desktopSidebar">
-    <div class="sidebar-mobile">
-      <router-link :to="{ name: 'overview' }" class="link">
-        <dashboard-icon />
-      </router-link>
-      <router-link :to="{ name: 'listening-history' }" class="link">
-        <listening-history-icon />
-      </router-link>
-      <router-link :to="{ name: 'top-listeners' }" class="link">
-        <listeners-top-icon />
-      </router-link>
-    </div>
-  </template>
-  <transition name="sidebar-sldie">
-    <template v-if="desktopSidebar">
-      <ul class="sidebar">
-        <h3 class="title-uppercase">
-          Statistics
-        </h3>
-        <li>
-          <router-link :to="{ name: 'overview' }">
-            <span>Overview</span>
-          </router-link>
-        </li>
-        <li>
-          <router-link :to="{ name: 'listening-history' }">
-            <span>Listening History</span>
-          </router-link>
-        </li>
-        <h3 class="title-uppercase">
-          Community
-        </h3>
-        <li>
-          <router-link :to="{ name: 'top-listeners' }">
-            <span>Top Listeners</span>
-          </router-link>
-        </li>
-      </ul>
-    </template>
-  </transition>
+  <div class="sidebar">
+    <router-link class="sidebar__item" :to="{ name: 'account' }">
+      <base-img
+        class="sidebar__item__avatar"
+        avatar
+        :src="user.avatar"
+        alt="profile avatar"
+      />
+      <span class="sidebar__item__title sidebar__item__username">
+        @{{ user.username }}
+      </span>
+    </router-link>
+    <router-link class="sidebar__item" :to="{ name: 'overview' }">
+      <dashboard-icon class="sidebar__item__icon" />
+      <span class="sidebar__item__title">Overview</span>
+    </router-link>
+    <router-link class="sidebar__item" :to="{ name: 'listening-history' }">
+      <listening-history-icon class="sidebar__item__icon" />
+      <span class="sidebar__item__title">Listening History</span>
+    </router-link>
+    <router-link class="sidebar__item" :to="{ name: 'top-listeners' }">
+      <listeners-top-icon class="sidebar__item__icon" />
+      <span class="sidebar__item__title">Top Listeners</span>
+    </router-link>
+    <router-link class="sidebar__item" :to="{ name: 'friends' }">
+      <friends-icon class="sidebar__item__icon" />
+      <span class="sidebar__item__title">Friends</span>
+    </router-link>
+  </div>
 </template>
 
 <script>
@@ -47,78 +36,44 @@ import {
   ListeningHistoryIcon,
   DashboardIcon,
   ListenersTopIcon,
+  FriendsIcon,
 } from "@/components/icons";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   components: {
     ListeningHistoryIcon,
     DashboardIcon,
     ListenersTopIcon,
-  },
-  data() {
-    return {
-      desktopSidebar: true,
-    };
+    FriendsIcon,
+    BaseImg,
   },
   computed: {
-    ...mapGetters({
-      user: "getUser",
-    }),
-  },
-  methods: {
-    checkMobile() {
-      window.addEventListener("resize", () => {
-        this.desktopSidebar = window.innerWidth >= 768 ? true : false;
-      });
-    },
-  },
-  created() {
-    this.desktopSidebar = window.innerWidth <= 768 ? false : true;
-  },
-  mounted() {
-    this.checkMobile();
+    ...mapGetters({ user: "getUser" }),
   },
 };
 </script>
 
-<style lang="postcss" scoped>
+<style lang="postcss">
 .sidebar {
-  @apply flex flex-col absolute md:relative z-40 h-screen w-48 min-w-max font-semibold bg-gray-900-spotify;
+  @apply flex sm:flex-col flex-row flex-none sm:h-screen sm:px-2 sm:pt-8 p-0 h-12 sm:w-20 md:w-56 w-full sm:relative fixed bottom-0 sm:inset-0 gap-2 font-semibold bg-gray-900-spotify;
 }
-.sidebar-mobile {
-  @apply flex flex-row fixed md:hidden h-12 w-full bottom-0 border-t bg-gray-800-spotify border-gray-600-spotify;
+.sidebar__item {
+  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 items-center md:justify-start sm:justify-center justify-center w-full cursor-pointer sm:rounded-md rounded-none sm:hover:bg-gray-800-spotify;
 }
-.sidebar-mobile .link {
-  @apply flex flex-col flex-grow items-center justify-center overflow-hidden whitespace-nowrap text-sm transition-colors duration-100 ease-in-out text-gray-400 hover:text-green-600-spotify;
+.sidebar__item__title {
+  @apply md:flex hidden font-medium text-sm;
 }
-.sidebar-mobile .link.router-link-exact-active {
-  @apply text-green-600-spotify;
+.sidebar__item__username {
+  @apply text-white text-base font-medium;
 }
-
-.sidebar .title-uppercase {
-  @apply px-6 pt-6 uppercase tracking-widest text-gray-500 font-normal text-xs;
+.sidebar__item__icon {
+  @apply w-8 h-8 flex fill-current;
 }
-.sidebar li {
-  @apply flex items-center ml-6 mt-4 group;
+.sidebar .router-link-exact-active {
+  @apply text-green-600-spotify sm:text-gray-400-spotify bg-gray-900-spotify sm:bg-gray-800-spotify;
 }
-.sidebar span {
-  @apply hover:opacity-90;
-}
-.router-link-exact-active {
-  @apply text-green-600-spotify;
-}
-.green-border {
-  box-shadow: 4px 0px 0 #1db954 inset;
-}
-
-.sidebar-slide-enter-active {
-  transition: all 0.25s cubic-bezier(0, 0.4, 0.6, 1);
-}
-.sidebar-slide-leave-active {
-  transition: all 0.15s cubic-bezier(1, 0.4, 0.6, 0);
-}
-.sidebar-slide-enter-from,
-.sidebar-slide-leave-to {
-  transform: translateX(-20px);
+.sidebar__item__avatar {
+  @apply w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover;
 }
 </style>

@@ -11,51 +11,54 @@
           <div
             class="flex p-2 flex-row items-center w-full bg-gray-600-spotify bg-opacity-20 rounded-lg"
             :class="{
-              'opacity-50': item.private & (item.userName != user.display_name),
-              'bg-gray-500-spotify': item.userName === user.display_name,
+              'opacity-50': item.private & (item.userName != user.username),
+              'bg-gray-500-spotify': item.userName === user.username,
             }"
           >
             <div class="mr-6 ml-2 text-lg font-extrabold text-gray-300">
               {{ index + 1 }}
             </div>
-            <div class="flex flex-row items-center">
-              <div class="flex flex-col">
-                <div class="relative">
-                  <img
-                    class="text-white object-cover w-11 h-11 rounded-full"
-                    :src="item?.avatar || 'noavatar.svg'"
-                    :alt="item.userName"
-                    @error="item.avatar = 'noavatar.svg'"
-                  />
-                  <lock
-                    v-if="item.private & (item.userName != user.display_name)"
-                    class="cursor-not-allowed inset-center"
-                  />
-                </div>
-              </div>
-              <div class="flex flex-col ml-4">
-                <div>
-                  <router-link
-                    class="text-base text-gray-100 hover:underline"
-                    v-if="!item.private || item.userName === user.display_name"
-                    :to="{
-                      name: 'profile',
-                      params: {
-                        id: item.customID,
-                      },
-                    }"
-                  >
-                    {{ item.userName }}
-                  </router-link>
-                  <div class="text-base text-gray-100 select-none" v-else>
-                    {{ item.userName }}
+            <router-link
+              class="text-base text-gray-100"
+              :class="[
+                !item.private || item.userName === user.username
+                  ? 'select-none'
+                  : 'cursor-pointer',
+              ]"
+              :to="{ name: 'profile', params: { id: item.customID } }"
+            >
+              <div class="flex flex-row items-center">
+                <div class="flex flex-col">
+                  <div class="relative">
+                    <base-img
+                      class="text-white object-cover w-11 h-11 rounded-full"
+                      avatar
+                      :src="item.avatar"
+                      :alt="item.userName"
+                    />
+                    <lock
+                      v-if="item.private & (item.userName != user.username)"
+                      class="cursor-not-allowed inset-center"
+                    />
                   </div>
                 </div>
-                <div class="text-base font-bold text-gray-500-spotify">
-                  {{ item.listened }}
+                <div class="flex flex-col ml-4">
+                  <div>
+                    <div
+                      v-if="!item.private || item.userName === user.username"
+                    >
+                      {{ item.userName }}
+                    </div>
+                    <div v-else class="text-base text-gray-100 select-none">
+                      {{ item.userName }}
+                    </div>
+                  </div>
+                  <div class="text-base font-bold text-gray-500-spotify">
+                    {{ item.listened }}
+                  </div>
                 </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
@@ -67,10 +70,11 @@
 import { getListenersTop } from "@/api";
 import { Lock } from "@/components/icons";
 import { mapGetters } from "vuex";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "TopListeners",
-  components: { Lock },
+  components: { Lock, BaseImg },
   data() {
     return {
       loading: true,
@@ -78,9 +82,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      user: "getUser",
-    }),
+    ...mapGetters({ user: "getUser" }),
   },
   created() {
     getListenersTop().then((response) => {

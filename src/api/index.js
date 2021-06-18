@@ -18,7 +18,8 @@ api.interceptors.response.use(
 );
 
 export function redirect() {
-  window.location.href = `${SERVER_URI}/login?sw_redirect=${window.location.href}`;
+  const url = location.protocol + "//" + location.host + location.pathname;
+  window.location.href = `${SERVER_URI}/login?sw_redirect=${url}`;
 }
 export function authorise(access_token) {
   return axios
@@ -30,9 +31,7 @@ export function authorise(access_token) {
     .then((response) => response.data);
 }
 export function getToken() {
-  return api.get("/token").then((data) => {
-    store.commit("SET_ACCES_TOKEN", data.token);
-  });
+  return api.get("/token");
 }
 export function getUsersQuantity() {
   return api.get("/users");
@@ -49,6 +48,9 @@ export function getOverview() {
 export function getTop() {
   return api.get("/top");
 }
+export function deauthorize() {
+  return api.get("/logout");
+}
 export function getAccount() {
   return api.get("/settings");
 }
@@ -60,4 +62,13 @@ export function getProfile(id) {
 }
 export function getTrack(id) {
   return api.get(`/track/${id}`);
+}
+export function getArtist(id) {
+  return api.get(`/artist/${id}`);
+}
+export function getAlbum(id) {
+  return api.get(`/album/${id}`);
+}
+export function getFriends() {
+  return api.get("/friends");
 }

@@ -22,19 +22,21 @@
         <td class="row text-left">
           {{ index + 1 }}
         </td>
-        <td class="row">
-          <div class="flex items-center">
-            <img
-              :src="item?.image || 'noimage.svg'"
-              @error="item.image = 'noimage.svg'"
-              class="object-cover w-9 h-9 rounded-full"
-            />
-            <div class="ml-4 hover:underline">
-              <router-link :to="{ name: name, params: { id: item.id } }">
-                {{ item.name }}
-              </router-link>
+        <td class="row cursor-pointer">
+          <router-link :to="{ name: name, params: { id: item.id } }">
+            <div class="flex items-center">
+              <base-img
+                class="object-cover w-9 h-9 rounded-full"
+                :src="item.image"
+                :alt="item.name"
+              />
+              <div class="ml-4">
+                <router-link :to="{ name: name, params: { id: item.id } }">
+                  {{ item.name }}
+                </router-link>
+              </div>
             </div>
-          </div>
+          </router-link>
         </td>
         <td class="row text-right">
           {{ item.playtime }}
@@ -45,7 +47,10 @@
 </template>
 
 <script>
+import BaseImg from "@/components/BaseImg.vue";
+
 export default {
+  components: { BaseImg },
   name: "RatingTable",
   props: {
     title: {

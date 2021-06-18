@@ -11,7 +11,7 @@
       <h1 class="app-description">
         Track your listening history and get stats
       </h1>
-      <button @click="login" class="login-button">
+      <button @click="login()" class="login-button">
         Log in with Spotify
       </button>
     </div>
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { getUsersQuantity } from "@/api";
+import { getUsersQuantity, redirect } from "@/api";
 import { mapActions } from "vuex";
 
 export default {
@@ -29,7 +29,10 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["login", "authorise"]),
+    ...mapActions(["authorise"]),
+    login() {
+      redirect();
+    },
   },
   async created() {
     const response = await getUsersQuantity();
@@ -70,7 +73,7 @@ export default {
   @apply text-7xl text-gray-100;
 }
 .users {
-  @apply text-lg text-gray-300 mb-4 font-normal border border-gray-700-spotify rounded-full px-2;
+  @apply text-lg text-gray-300 mb-4 font-normal border bg-gray-900-spotify border-gray-700-spotify rounded-full px-2;
 }
 .loading {
   @apply bg-gray-600-spotify border-gray-800-spotify;

@@ -16,4 +16,46 @@
     transform: translate(-50%, -50%);
     margin: 0 auto;
   }
+  .responsive-picture {
+    @apply relative sm:static -m-8 sm:m-0 flex md:flex-row flex-col gap-4 sm:items-center items-start duration-300;
+  }
+  .responsive-picture__image {
+    @apply rounded-b-2xl sm:rounded-full md:rounded-lg w-full h-72 sm:w-40 sm:h-40 md:w-48 md:h-48 image-shadow object-cover sm:image-shadow-none duration-300;
+  }
+  .responsive-picture__title {
+    @apply absolute sm:relative sm:inset-0 bottom-0 m-6 sm:m-0;
+  }
+  .content {
+    @apply flex flex-col gap-3 items-start;
+  }
+  .content__item {
+    @apply flex flex-col gap-2;
+  }
+  .content__item__boxes {
+    @apply flex flex-row flex-wrap gap-2 justify-center;
+  }
+  .content__item__boxes__box {
+    @apply w-20 h-20 relative;
+  }
+  .content__item__boxes__box__image {
+    @apply absolute rounded-xl inset-0 w-full h-full object-cover bg-center opacity-40;
+  }
+  .content__item__boxes__box__label {
+    @apply absolute inset-0 truncate flex text-center justify-center items-center text-white font-semibold;
+  }
+  .content__item__label {
+    @apply text-lg text-white font-medium;
+  }
+  @variants responsive {
+    .image-shadow {
+      mask-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.9) 30%
+      );
+    }
+    .image-shadow-none {
+      mask-image: none;
+    }
+  }
 }
