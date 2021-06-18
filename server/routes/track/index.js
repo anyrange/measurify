@@ -148,16 +148,15 @@ export default async function(fastify) {
       const trackID = req.params.id;
 
       const user = await User.findOne(
-        { _id, "recentlyPlayed.id": trackID },
+        { _id },
         {
           lastSpotifyToken: 1,
-          "recentlyPlayed.$": 1,
         }
       );
 
-      if (!user) throw new this.CustomError("Not found", 404);
+      if (!user) throw new this.CustomError("User not found", 404);
 
-      const [track, audioFeatures] = await Promise.all([
+      const [track, audioFeatures, listenedOne] = await Promise.all([
         fastify.spotifyAPI({
           route: `tracks/${trackID}`,
           token: user.lastSpotifyToken,
@@ -166,15 +165,22 @@ export default async function(fastify) {
           route: `audio-features/${trackID}`,
           token: user.lastSpotifyToken,
         }),
+        User.findOne(
+          { _id, "recentlyPlayed.id": trackID },
+          {
+            "recentlyPlayed.$": 1,
+          }
+        ),
       ]);
 
       const overview = {
-        plays: user.recentlyPlayed[0].plays.length,
-        playtime: Math.round(
-          (user.recentlyPlayed[0].plays.length *
-            user.recentlyPlayed[0].duration_ms) /
-            60000
-        ),
+        plays: listenedOne?.recentlyPlayed[0].plays.length || 0,
+        playtime:
+          Math.round(
+            (listenedOne?.recentlyPlayed[0].plays.length *
+              listenedOne?.recentlyPlayed[0].duration_ms) /
+              60000
+          ) || 0,
       };
 
       const { artists } = await fastify.spotifyAPI({
