@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     activateTab(name) {
-      if (!this.disabled) return this.selectTab(name);
+      if (!this.disabled && name !== this.active) return this.selectTab(name);
     },
   },
   computed: {
