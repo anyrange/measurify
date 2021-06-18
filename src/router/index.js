@@ -7,7 +7,7 @@ const routes = [
     name: "login",
     component: () => import("@/views/Login.vue"),
     beforeEnter(to, from, next) {
-      store.getters.getUser ? next({ name: "home" }) : next();
+      store.getters.isAuthenticated ? next({ name: "home" }) : next();
     },
   },
   {
@@ -41,7 +41,7 @@ const routes = [
         },
       },
       {
-        path: "/:id",
+        path: "/@:id",
         name: "profile",
         component: () => import("@/views/Profile.vue"),
         meta: {
@@ -62,6 +62,14 @@ const routes = [
         component: () => import("@/views/Account.vue"),
         meta: {
           title: "Account",
+        },
+      },
+      {
+        path: "/friends",
+        name: "friends",
+        component: () => import("@/views/Friends.vue"),
+        meta: {
+          title: "Friends",
         },
       },
       {
@@ -98,7 +106,7 @@ const routes = [
       },
     ],
     beforeEnter(to, from, next) {
-      store.getters.getUser ? next() : next({ name: "login" });
+      store.getters.isAuthenticated ? next() : next({ name: "login" });
     },
   },
   {
