@@ -149,7 +149,7 @@ export default async function(fastify) {
       ];
 
       const requests = [
-        fastify.parseTop(user._id, user.lastSpotifyToken, 5),
+        fastify.parseTop(user._id, user.lastSpotifyToken, 3),
         fastify.parseHistory(user._id, 20),
         User.aggregate(agg).then((body) => {
           if (!body[0]) return { plays: 0, playtime: 0 };
