@@ -1,6 +1,6 @@
 <template>
   <h2 class="h-title">Listening History</h2>
-  <h3 class="h-subtitle mt-4 mb-4">
+  <h3 class="h-subtitle my-4">
     Click the song's title, artist, or album name to get more info
   </h3>
   <base-input

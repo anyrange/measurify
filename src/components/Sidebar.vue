@@ -1,6 +1,6 @@
 <template>
-  <div class="sidebar">
-    <router-link class="sidebar__item" :to="{ name: 'account' }">
+  <aside class="sidebar">
+    <router-link class="sidebar__item sm:-mt-2 m-0" :to="{ name: 'account' }">
       <base-img
         class="sidebar__item__avatar"
         avatar
@@ -19,15 +19,15 @@
       <listening-history-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Listening History</span>
     </router-link>
-    <router-link class="sidebar__item" :to="{ name: 'top-listeners' }">
+    <router-link class="sidebar__item" :to="{ name: 'leaderboard' }">
       <listeners-top-icon class="sidebar__item__icon" />
-      <span class="sidebar__item__title">Top Listeners</span>
+      <span class="sidebar__item__title">Leaderboard</span>
     </router-link>
     <router-link class="sidebar__item" :to="{ name: 'friends' }">
       <friends-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Friends</span>
     </router-link>
-  </div>
+  </aside>
 </template>
 
 <script>
@@ -37,7 +37,7 @@ import {
   DashboardIcon,
   ListenersTopIcon,
   FriendsIcon,
-} from "@/components/icons";
+} from "@/components/icons/index.js";
 import BaseImg from "@/components/BaseImg.vue";
 
 export default {

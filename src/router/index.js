@@ -49,11 +49,11 @@ const routes = [
         },
       },
       {
-        path: "/top-listeners",
-        name: "top-listeners",
-        component: () => import("@/views/TopListeners.vue"),
+        path: "/leaderboard",
+        name: "leaderboard",
+        component: () => import("@/views/Leaderboard.vue"),
         meta: {
-          title: "Listeners Top",
+          title: "Listeners Leaderboard",
         },
       },
       {

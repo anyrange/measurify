@@ -2,7 +2,7 @@
   <h2 class="h-title">Friends</h2>
   <loading-spinner v-if="loading" />
   <template v-else>
-    <div class="mt-6 flex flex-col gap-3">
+    <div class="mt-6 flex flex-col gap-3 lg:w-1/2 xl:w-1/4">
       <div
         v-for="item in friends"
         :key="item.customID"

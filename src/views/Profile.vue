@@ -2,20 +2,18 @@
   <loading-spinner v-if="loading" />
   <template v-else>
     <div class="flex flex-col gap-4">
-      <figure class="responsive-picture">
+      <div class="flex flex-row items-center gap-4">
         <base-img
           :src="profile.avatar"
           :alt="profile.userName"
-          class="responsive-picture__image"
+          class="rounded-full sm:rounded-lg w-20 h-20 sm:w-48 sm:h-48 object-cover duration-300"
         />
-        <figcaption class="responsive-picture__title">
-          <span
-            class="text-white text-3xl sm:text-2xl md:text-3xl sm:font-medium font-semibold"
-          >
-            {{ profile.userName }}
-          </span>
-        </figcaption>
-      </figure>
+        <span
+          class="text-white truncate-2 sm:text-3xl text-2xl sm:font-medium font-semibold"
+        >
+          {{ profile.userName }}
+        </span>
+      </div>
       <div class="content">
         <div class="mt-2 flex flex-wrap gap-2">
           <card :title="profile.overview.plays" subtitle="tracks played" />

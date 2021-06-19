@@ -4,6 +4,7 @@
     <div class="flex flex-col gap-4">
       <figure class="responsive-picture">
         <base-img
+          parallax
           :src="artist.image"
           :alt="artist.name"
           class="responsive-picture__image"
@@ -26,7 +27,10 @@
             </badge>
           </div>
         </div>
-        <div class="content__item" v-if="tracks.length">
+        <div
+          class="content__item w-full md:w-3/4 lg:w-1/2"
+          v-if="tracks.length"
+        >
           <span class="content__item__label">
             Listened tracks
           </span>
@@ -34,20 +38,25 @@
             <div v-for="(track, index) in tracks" :key="index">
               <router-link
                 :to="{ name: 'track', params: { id: track.id } }"
-                class="flex flex-row items-center gap-3 pr-3 hover:bg-gray-700-spotify duration-100 rounded-lg w-full"
+                class="flex flex-row items-center justify-between pr-3 hover:bg-gray-700-spotify duration-100 rounded-lg w-full"
               >
-                <base-img
-                  :src="track.image"
-                  :alt="track.name"
-                  class="w-12 h-12 object-cover rounded-lg"
-                />
-                <div class="flex flex-col">
-                  <div class="text-white text-base">
-                    {{ track.name }}
+                <div class="flex items-center gap-3">
+                  <base-img
+                    :src="track.image"
+                    :alt="track.name"
+                    class="w-12 h-12 object-cover rounded-lg"
+                  />
+                  <div class="flex flex-col">
+                    <div class="text-white text-base">
+                      {{ track.name }}
+                    </div>
+                    <div class="text-gray-400-spotify text-sm font-normal">
+                      {{ getDateFromNow(track.lastPlayedAt) }}
+                    </div>
                   </div>
-                  <div class="text-gray-400-spotify text-sm font-normal">
-                    {{ getDateFromNow(track.lastPlayedAt) }}
-                  </div>
+                </div>
+                <div class="text-white text-base text-right font-medium">
+                  {{ track.playtime }}
                 </div>
               </router-link>
             </div>

@@ -1,5 +1,6 @@
 <template>
-  <img :src="imageUrl" :alt="alt" @error="setAltImg" />
+  <div v-if="parallax" :style="{ backgroundImage: `url('${imageUrl}')` }"></div>
+  <img v-else :src="imageUrl" :alt="alt" />
 </template>
 
 <script>
@@ -14,25 +15,44 @@ export default {
       type: String,
       required: true,
     },
+    parallax: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     avatar: {
       type: Boolean,
       required: false,
       default: false,
     },
   },
+  data() {
+    return {
+      imageExists: false,
+    };
+  },
   methods: {
-    setAltImg(event) {
-      event.target.src = this.defaultImage;
+    checkImage(url) {
+      const image = new Image();
+      image.src = url;
+      image.onerror = () => {
+        this.imageExists = false;
+        return;
+      };
+      this.imageExists = true;
     },
   },
+  created() {
+    this.checkImage(this.src);
+  },
   computed: {
-    defaultImage() {
+    imageUrl() {
+      if (this.imageExists) return this.src;
+      return this.fallbackImage;
+    },
+    fallbackImage() {
       if (this.avatar) return "/img/noavatar.svg";
       return "/img/noimage.svg";
-    },
-    imageUrl() {
-      if (this.src) return this.src;
-      return this.defaultImage;
     },
   },
 };

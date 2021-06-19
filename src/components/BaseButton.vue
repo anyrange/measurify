@@ -2,7 +2,7 @@
   <div>
     <button
       type="button"
-      class="w-full h-auto flex flex-row items-center justify-center px-10 py-2 hover:opacity-90 disabled:opacity-20 cursor-pointer text-center text-base font-semibold transition-all duration-150 ease-linear shadow outline-none focus:outline-none"
+      class="w-full h-auto flex flex-row items-center justify-center px-10 py-2 hover:opacity-80 disabled:opacity-20 cursor-pointer text-center text-base font-medium transition-all duration-150 ease-linear shadow outline-none focus:outline-none"
       :disabled="disabled || loading"
       :class="[
         this.color === 'positive'
@@ -49,7 +49,7 @@ export default {
     color: {
       type: String,
       required: false,
-      default: "primary",
+      default: "positive",
     },
     loading: {
       type: Boolean,

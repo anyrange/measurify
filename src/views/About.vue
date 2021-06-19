@@ -9,13 +9,13 @@
   </p>
   <p class="text-lg font-normal text-gray-400">
     Inspired by
-    <a href="https://waveous.com/" class="text-white hover:underline">
+    <a href="https://waveous.com/" class="link">
       Waveous
     </a>
-    <a href="https://spotiboi.ru/" class="text-white hover:underline">
+    <a href="https://spotiboi.ru/" class="link">
       SpotiBoi
     </a>
-    <a href="https://spotistats.app/" class="text-white hover:underline">
+    <a href="https://spotistats.app/" class="link">
       Spotistats
     </a>
   </p>

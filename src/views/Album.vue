@@ -4,6 +4,7 @@
     <div class="flex flex-col gap-4">
       <figure class="responsive-picture">
         <base-img
+          parallax
           :src="album.image"
           :alt="album.name"
           class="responsive-picture__image"
@@ -27,7 +28,10 @@
             </badge>
           </div>
         </div>
-        <div class="content__item w-full md:w-3/4 lg:w-1/2" v-if="tracks.length">
+        <div
+          class="content__item w-full md:w-3/4 lg:w-1/2"
+          v-if="tracks.length"
+        >
           <span class="content__item__label">
             Listened tracks
           </span>

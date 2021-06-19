@@ -1,0 +1,100 @@
+<template>
+  <h2 class="h-title">Leaderboard</h2>
+  <h3 class="h-subtitle my-4">
+    This rating is based on the number of listened tracks
+  </h3>
+  <loading-spinner v-if="loading" />
+  <template v-else>
+    <div class="flex flex-col gap-y-2 lg:w-1/3 xl:w-1/4">
+      <div
+        v-for="(item, index) in leaderboard"
+        :key="item.id"
+        class="flex flex-row p-2 items-center w-full bg-opacity-20 rounded-lg"
+        :class="[
+          privateProfile(item) ? 'opacity-30' : 'opacity-100',
+          item.userName === user.username
+            ? 'bg-gray-500-spotify'
+            : 'bg-gray-600-spotify',
+        ]"
+      >
+        <div class="flex flex-none w-10 ml-4 text-lg font-extrabold">
+          <span>
+            {{ index + 1 }}
+          </span>
+        </div>
+        <div class="flex flex-row items-center">
+          <div class="flex flex-col">
+            <router-link
+              :class="{ 'pointer-events-none': privateProfile(item) }"
+              :to="{ name: 'profile', params: { id: item.customID } }"
+            >
+              <div class="relative">
+                <base-img
+                  class="text-white object-cover w-11 h-11 rounded-full"
+                  avatar
+                  :src="item.avatar"
+                  :alt="item.userName"
+                />
+                <lock
+                  v-if="privateProfile(item)"
+                  class="cursor-not-allowed inset-center"
+                />
+              </div>
+            </router-link>
+          </div>
+          <div class="flex flex-col ml-4">
+            <div class="text-base text-white">
+              <router-link
+                :class="[
+                  privateProfile(item)
+                    ? 'pointer-events-none'
+                    : 'hover:underline',
+                ]"
+                :to="{ name: 'profile', params: { id: item.customID } }"
+              >
+                {{ item.userName }}
+              </router-link>
+            </div>
+            <div class="text-base font-semibold text-gray-500-spotify">
+              {{ item.listened }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</template>
+
+<script>
+import { getListenersTop } from "@/api";
+import { Lock } from "@/components/icons";
+import { mapGetters } from "vuex";
+import BaseImg from "@/components/BaseImg.vue";
+
+export default {
+  name: "Leaderboard",
+  components: { Lock, BaseImg },
+  data() {
+    return {
+      loading: true,
+      leaderboard: {},
+    };
+  },
+  computed: {
+    ...mapGetters({ user: "getUser" }),
+  },
+  methods: {
+    privateProfile(item) {
+      if (!item.canSee & (item.userName != this.user.username)) return true;
+      return false;
+    },
+  },
+  created() {
+    getListenersTop().then((response) => {
+      console.log(response);
+      this.leaderboard = response.top;
+      this.loading = false;
+    });
+  },
+};
+</script>

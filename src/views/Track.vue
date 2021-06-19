@@ -4,6 +4,7 @@
     <div class="flex flex-col gap-4">
       <figure class="responsive-picture">
         <base-img
+          parallax
           :src="track.image"
           :alt="track.name"
           class="responsive-picture__image"

@@ -1,55 +1,62 @@
 <template>
-  <div class="flex flex-col">
-    <label v-if="label" class="text-gray-300 text-base font-normal mb-2">
-      {{ label }}
-    </label>
-    <div>
-      <button
-        @click="opened = !opened"
-        type="button"
-        class="relative w-28 pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-default focus:outline-none"
-        aria-haspopup="listbox"
-        aria-expanded="true"
-        aria-labelledby="listbox-label"
-      >
-        <span class="flex items-center">
-          <span class="mr-1"> {{ selected }}</span>
-        </span>
-        <span
-          class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+  <div>
+    <div class="flex flex-col">
+      <label v-if="label" class="text-gray-300 text-base font-normal mb-2">
+        {{ label }}
+      </label>
+      <div>
+        <button
+          @click="opened = !opened"
+          type="button"
+          ref="selector"
+          class="relative w-full pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-pointer focus:outline-none"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            width="24px"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="h-5 w-5 text-gray-400"
+          <span class="flex items-center">
+            <span class="mr-1">{{ selected }}</span>
+          </span>
+          <span
+            class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
           >
-            <path
-              d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"
-            />
-          </svg>
-        </span>
-      </button>
-      <ul
-        class="w-28 absolute text-gray-400 pt-1 flex flex-col"
-        :class="{ hidden: !opened }"
-      >
-        <li
-          v-for="(option, index) in filteredOptions"
-          :key="index"
-          :value="modelValue"
-          @click="changeOption(option)"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              width="24px"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="h-5 w-5 text-gray-400"
+            >
+              <path
+                d="M8.12 9.29L12 13.17l3.88-3.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-4.59 4.59c-.39.39-1.02.39-1.41 0L6.7 10.7c-.39-.39-.39-1.02 0-1.41.39-.38 1.03-.39 1.42 0z"
+              />
+            </svg>
+          </span>
+        </button>
+        <transition
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
         >
-          <a
-            class="w-full rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
-            href="#"
+          <ul
+            v-if="opened"
+            class="absolute text-gray-400 z-10 pt-1 flex flex-col mt-1 py-1 bg-gray-700-spotify shadow-lg max-h-56 rounded-md text-sm focus:outline-none"
+            :style="{ width: `${width}px` }"
           >
-            {{ option.label }}
-          </a>
-        </li>
-      </ul>
+            <li
+              v-for="(option, index) in filteredOptions"
+              :key="index"
+              :value="modelValue"
+              @click="changeOption(option)"
+            >
+              <a
+                class="rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
+                href="#"
+              >
+                {{ option.label }}
+              </a>
+            </li>
+          </ul>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
@@ -74,6 +81,7 @@ export default {
     return {
       opened: false,
       selected: "",
+      width: "",
     };
   },
   computed: {
@@ -90,6 +98,9 @@ export default {
     getFilteredArray() {
       return this.options.filter((option) => option.value != this.modelValue);
     },
+    handleResize() {
+      console.log("23");
+    },
   },
   mounted() {
     this.options.find((option) => {
@@ -97,6 +108,7 @@ export default {
         this.selected = option.label;
       }
     });
+    this.width = this.$refs.selector.offsetWidth;
   },
   created() {
     function checkForDuplicates({ array, keyName }) {
