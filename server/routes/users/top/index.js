@@ -45,7 +45,7 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       const _id = req.user_id;
-      const requestor = await User.findOne({ _id }, { lastSpotifyToken: 1 });
+      const requestor = await User.findOne({ _id }, { spotifyID: 1 });
 
       if (!requestor) throw new this.CustomError("User not found", 404);
 

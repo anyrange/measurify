@@ -91,6 +91,7 @@ export default async function(fastify) {
           avatar: 1,
           lastLogin: 1,
           customID: 1,
+          spotifyID: 1,
           lastSpotifyToken: 1,
           refreshToken: 1,
         }
