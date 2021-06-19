@@ -23,9 +23,6 @@ export default async function(fastify) {
                     userName: {
                       type: "string",
                     },
-                    privacy: {
-                      type: "string",
-                    },
                     avatar: {
                       type: "string",
                     },

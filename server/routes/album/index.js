@@ -41,13 +41,16 @@ export default async function(fastify) {
             link: {
               type: "string",
             },
+            label: {
+              type: "string",
+            },
             genres: {
               type: "array",
               items: {
                 type: "string",
               },
             },
-            artist: {
+            artists: {
               type: "array",
               items: {
                 type: "object",
@@ -117,6 +120,7 @@ export default async function(fastify) {
           artists: album.artists.map(({ name, id }) => {
             return { name, id };
           }),
+          label: album.label || "",
         },
         audioFeatures,
         tracks,
