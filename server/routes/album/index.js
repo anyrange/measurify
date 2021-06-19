@@ -3,6 +3,7 @@ import history from "../../includes/listening-history.js";
 export default async function(fastify) {
   const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
+  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
 
   const responseSchema = {
     200: {
@@ -60,6 +61,7 @@ export default async function(fastify) {
           },
         },
         tracks,
+        audioFeatures: audioFeaturesSchema,
         status: {
           type: "number",
         },
@@ -92,12 +94,16 @@ export default async function(fastify) {
 
       const token = await this.getToken(_id);
 
-      const album = await fastify.spotifyAPI({
-        route: `albums/${albumID}`,
-        token,
-      });
-
-      const tracks = await history(_id, albumID);
+      const [album, tracks, audioFeatures] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `albums/${albumID}`,
+          token,
+        }),
+        history(_id, albumID),
+        fastify
+          .spotifyAPI({ route: `albums/${albumID}/tracks`, token })
+          .then(({ items }) => fastify.parseAudioFeatures(items, token)),
+      ]);
 
       const response = {
         album: {
@@ -112,6 +118,7 @@ export default async function(fastify) {
             return { name, id };
           }),
         },
+        audioFeatures,
         tracks,
         status: 200,
       };

@@ -3,6 +3,7 @@ import history from "../../includes/listening-history.js";
 export default async function(fastify) {
   const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
+  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
 
   const responseSchema = {
     200: {
@@ -11,7 +12,14 @@ export default async function(fastify) {
       properties: {
         artist: {
           type: "object",
-          required: ["followers", "genres", "name", "image", "link"],
+          required: [
+            "followers",
+            "genres",
+            "name",
+            "image",
+            "link",
+            "popularity",
+          ],
           properties: {
             followers: {
               type: "number",
@@ -22,12 +30,14 @@ export default async function(fastify) {
                 type: "string",
               },
             },
+            popularity: { type: "number" },
             name: { type: "string" },
             image: { type: "string" },
             link: { type: "string" },
           },
         },
         tracks,
+        audioFeatures: audioFeaturesSchema,
         status: {
           type: "number",
         },
@@ -59,25 +69,29 @@ export default async function(fastify) {
       const artistID = req.params.id;
       const token = await this.getToken(_id);
 
-      const artist = await fastify.spotifyAPI({
-        route: `artists/${artistID}`,
-        token,
-      });
-
-      // get data for graph
-
-      const tracks = await history(_id, artistID);
+      const [artist, tracks, audioFeatures] = await Promise.all([
+        fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
+        history(_id, artistID),
+        fastify
+          .spotifyAPI({
+            route: `artists/${artistID}/top-tracks?market=ES`,
+            token,
+          })
+          .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
+      ]);
 
       // response schema
       const response = {
         artist: {
           followers: artist.followers.total,
           genres: artist.genres,
+          popularity: artist.popularity,
           name: artist.name,
           image: artist.images.length ? artist.images[0].url : "",
           link: artist.external_urls.spotify,
         },
         tracks,
+        audioFeatures,
         status: 200,
       };
 

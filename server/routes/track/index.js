@@ -2,7 +2,7 @@ import User from "../../models/User.js";
 
 export default async function(fastify) {
   const headers = fastify.getSchema("cookie");
-
+  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
   const responseSchema = {
     200: {
       type: "object",
@@ -20,17 +20,6 @@ export default async function(fastify) {
             "album",
             "artists",
             "preview_url",
-            "danceability",
-            "energy",
-            "key",
-            "loudness",
-            "mode",
-            "speechiness",
-            "acousticness",
-            "instrumentalness",
-            "liveness",
-            "valence",
-            "tempo",
           ],
           properties: {
             name: {
@@ -53,39 +42,6 @@ export default async function(fastify) {
             },
             link: {
               type: "string",
-            },
-            danceability: {
-              type: "number",
-            },
-            energy: {
-              type: "number",
-            },
-            key: {
-              type: "number",
-            },
-            loudness: {
-              type: "number",
-            },
-            mode: {
-              type: "number",
-            },
-            speechiness: {
-              type: "number",
-            },
-            acousticness: {
-              type: "number",
-            },
-            instrumentalness: {
-              type: "number",
-            },
-            liveness: {
-              type: "number",
-            },
-            valence: {
-              type: "number",
-            },
-            tempo: {
-              type: "number",
             },
             artists: {
               type: "array",
@@ -117,6 +73,7 @@ export default async function(fastify) {
             playtime: { type: "number" },
           },
         },
+        audioFeatures: audioFeaturesSchema,
         status: {
           type: "number",
         },
@@ -204,19 +161,9 @@ export default async function(fastify) {
           link: track.external_urls.spotify,
           duration_ms: track.duration_ms,
           release_date: track.album.release_date,
-          danceability: audioFeatures.danceability,
-          energy: audioFeatures.energy,
-          key: audioFeatures.key,
-          loudness: audioFeatures.loudness,
-          mode: audioFeatures.mode,
-          speechiness: audioFeatures.speechiness,
-          acousticness: audioFeatures.acousticness,
-          instrumentalness: audioFeatures.instrumentalness,
-          liveness: audioFeatures.liveness,
-          valence: audioFeatures.valence,
-          tempo: audioFeatures.tempo,
         },
         overview,
+        audioFeatures,
         status: 200,
       };
 
