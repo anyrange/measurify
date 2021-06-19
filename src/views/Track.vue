@@ -17,8 +17,16 @@
           <card :title="track.popularity / 10" subtitle="popularity" />
           <card :title="trackDuration" subtitle="track length" />
           <card :title="releaseDate" subtitle="release date" />
-          <card :title="overview.playtime" subtitle="minutes listened" />
-          <card :title="overview.plays" subtitle="times played" />
+          <card
+            v-if="overview.playtime"
+            :title="overview.playtime"
+            subtitle="minutes listened"
+          />
+          <card
+            v-if="overview.plays"
+            :title="overview.plays"
+            subtitle="times played"
+          />
         </div>
         <div class="content__item">
           <span class="content__item__label">
@@ -30,7 +38,7 @@
             >
               <img :src="track.image" class="w-20 rounded-xl" />
               <div class="flex flex-col">
-                <div class="text-base text-white font-medium">
+                <div class="text-base text-white font-medium truncate-2">
                   {{ track.album.name }}
                 </div>
                 <div class="text-sm text-white font-light">

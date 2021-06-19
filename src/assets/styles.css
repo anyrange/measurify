@@ -9,24 +9,74 @@
   }
 }
 
-.h-title {
-  @apply md:text-5xl sm:text-4xl text-3xl font-semibold text-white;
+@media only screen and (max-width: 500px) {
+  .image-shadow {
+    mask-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.9) 30%
+    );
+  }
 }
-
-.h-subtitle {
-  @apply text-base sm:text-lg font-semibold text-gray-500;
-}
-
-.link {
-  @apply text-white hover:underline;
+.truncate-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  @apply w-11/12 sm:w-full;
 }
 
 .sidebar-spotify::-webkit-scrollbar,
 .content-spotify::-webkit-scrollbar {
   @apply w-2 bg-gray-900-spotify;
 }
-
 .sidebar-spotify::-webkit-scrollbar-thumb,
 .content-spotify::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-gray-450-spotify;
+}
+
+.link {
+  @apply text-white hover:underline;
+}
+
+.h-title {
+  @apply md:text-5xl sm:text-4xl text-3xl font-semibold text-white;
+}
+.h-subtitle {
+  @apply text-base sm:text-lg font-semibold text-gray-500;
+}
+
+.responsive-picture {
+  @apply relative sm:static -mt-8 -mx-4 sm:m-0 flex md:flex-row flex-col gap-4 sm:items-center items-start duration-300;
+}
+.responsive-picture__image {
+  @apply rounded-b-2xl image-shadow sm:rounded-full md:rounded-lg w-full h-72 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover duration-300;
+}
+.responsive-picture__title {
+  @apply truncate-2 absolute sm:relative sm:inset-0 bottom-0 m-4 sm:m-0;
+}
+
+.content {
+  @apply flex flex-col gap-3 items-start;
+}
+.content__item {
+  @apply flex flex-col gap-2;
+}
+.content__item__label {
+  @apply text-lg text-white font-medium;
+}
+.content__item__boxes {
+  @apply flex flex-row flex-wrap gap-2 justify-center;
+}
+.content__item__boxes__box {
+  @apply w-20 h-20 relative;
+}
+.content__item__boxes__box__image {
+  @apply absolute rounded-xl inset-0 w-full h-full object-cover bg-center opacity-40;
+}
+.content__item__boxes__box__label {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  @apply truncate-2 absolute flex text-center justify-center items-center text-white font-semibold;
 }

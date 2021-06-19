@@ -9,9 +9,11 @@
           class="responsive-picture__image"
         />
         <figcaption class="responsive-picture__title">
-          <h2 class="ml-4 text-4xl font-semibold text-white">
+          <span
+            class="text-white text-3xl sm:text-2xl md:text-3xl sm:font-medium font-semibold"
+          >
             {{ profile.userName }}
-          </h2>
+          </span>
         </figcaption>
       </figure>
       <div class="content">
@@ -122,21 +124,20 @@
                   class="w-16 h-16 object-cover rounded-lg"
                 />
                 <div class="flex flex-col">
-                  <div class="text-white text-base truncate w-64 sm:w-full">
+                  <div
+                    class="text-white sm:w-full w-48 overflow-hidden truncate"
+                  >
                     {{ item.name }}
                   </div>
                   <div
-                    class="flex flex-row items-center truncate w-64 sm:w-full"
+                    class="flex flex-row text-sm sm:w-full w-48 items-center overflow-hidden truncate"
                   >
-                    <div
-                      class="text-white"
-                      v-for="artist in item.artists"
-                      :key="artist.id"
-                    >
-                      {{ artist.name }}
-                    </div>
+                    <multi-router
+                      color="text-gray-400-spotify"
+                      :routes="item.artists"
+                    />
                   </div>
-                  <div class="text-gray-400-spotify text-sm font-normal">
+                  <div class="text-gray-500-spotify text-sm font-normal">
                     {{ getDateFromNow(item.played_at) }}
                   </div>
                 </div>
@@ -178,10 +179,11 @@ import { getProfile } from "@/api";
 import BaseImg from "@/components/BaseImg.vue";
 import Card from "@/components/Card.vue";
 import Badge from "@/components/Badge.vue";
+import MultiRouter from "@/components/MultiRouter.vue";
 import { formatDistanceToNowStrict } from "date-fns";
 
 export default {
-  components: { BaseImg, Card, Badge },
+  components: { BaseImg, Card, Badge, MultiRouter },
   methods: {
     getDateFromNow(date) {
       return formatDistanceToNowStrict(Date.parse(date), {
