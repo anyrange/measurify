@@ -32,6 +32,9 @@ export default async function(fastify) {
                     customID: {
                       type: "string",
                     },
+                    canSee: {
+                      type: "boolean",
+                    },
                     listened: {
                       type: "number",
                     },
@@ -45,9 +48,9 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       const _id = req.user_id;
-      const user = await User.findOne({ _id }, { _id: 1 });
+      const requestor = await User.findOne({ _id }, { lastSpotifyToken: 1 });
 
-      if (!user) throw new this.CustomError("User not found", 404);
+      if (!requestor) throw new this.CustomError("User not found", 404);
 
       const agg = [
         {
@@ -60,6 +63,7 @@ export default async function(fastify) {
             userName: 1,
             avatar: 1,
             customID: 1,
+            lastSpotifyToken: 1,
             privacy: 1,
             "recentlyPlayed.plays.played_at": 1,
           },
@@ -74,6 +78,7 @@ export default async function(fastify) {
             userName: 1,
             avatar: 1,
             customID: 1,
+            lastSpotifyToken: 1,
             privacy: 1,
             "recentlyPlayed.duration_ms": 1,
             "recentlyPlayed.plays": {
@@ -87,6 +92,7 @@ export default async function(fastify) {
               userName: "$userName",
               avatar: "$avatar",
               customID: "$customID",
+              lastSpotifyToken: "$lastSpotifyToken",
               privacy: "$privacy",
             },
             listened: { $sum: "$recentlyPlayed.plays" },
@@ -106,18 +112,41 @@ export default async function(fastify) {
         },
       ];
 
-      const top = await User.aggregate(agg);
+      const topRaw = await User.aggregate(agg);
+
+      const friendsOnly = topRaw.filter(
+        (user) => user._id.privacy === "friendsOnly"
+      );
+
+      const visibility = (
+        await Promise.all(
+          friendsOnly.map((user) =>
+            fastify.spotifyAPI({
+              route: `me/following/contains?type=user&ids=${requestor.spotifyID}`,
+              token: user._id.lastSpotifyToken,
+            })
+          )
+        )
+      ).flat(1);
+
+      const notFriendList = friendsOnly.filter((user, key) => !visibility[key]);
+
+      const top = topRaw.map((user) => {
+        return {
+          avatar: user._id.avatar,
+          customID: user._id.customID,
+          canSee: notFriendList.find(
+            (notFriend) => user._id.userName === notFriend._id.userName
+          )
+            ? false
+            : true,
+          userName: user._id.userName,
+          listened: user.listened,
+        };
+      });
 
       reply.code(200).send({
-        top: top.map((user) => {
-          return {
-            avatar: user._id.avatar,
-            customID: user._id.customID,
-            privacy: user._id.privacy,
-            userName: user._id.userName,
-            listened: user.listened,
-          };
-        }),
+        top,
         status: 200,
       });
     }
