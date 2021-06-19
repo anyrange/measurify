@@ -23,8 +23,8 @@ export default async function(fastify) {
                     userName: {
                       type: "string",
                     },
-                    private: {
-                      type: "boolean",
+                    privacy: {
+                      type: "string",
                     },
                     avatar: {
                       type: "string",
@@ -51,11 +51,16 @@ export default async function(fastify) {
 
       const agg = [
         {
+          $match: {
+            privacy: { $ne: "private" },
+          },
+        },
+        {
           $project: {
             userName: 1,
             avatar: 1,
             customID: 1,
-            private: 1,
+            privacy: 1,
             "recentlyPlayed.plays.played_at": 1,
           },
         },
@@ -69,7 +74,7 @@ export default async function(fastify) {
             userName: 1,
             avatar: 1,
             customID: 1,
-            private: 1,
+            privacy: 1,
             "recentlyPlayed.duration_ms": 1,
             "recentlyPlayed.plays": {
               $size: "$recentlyPlayed.plays",
@@ -82,7 +87,7 @@ export default async function(fastify) {
               userName: "$userName",
               avatar: "$avatar",
               customID: "$customID",
-              private: "$private",
+              privacy: "$privacy",
             },
             listened: { $sum: "$recentlyPlayed.plays" },
           },
@@ -108,7 +113,7 @@ export default async function(fastify) {
           return {
             avatar: user._id.avatar,
             customID: user._id.customID,
-            private: user._id.private,
+            privacy: user._id.privacy,
             userName: user._id.userName,
             listened: user.listened,
           };

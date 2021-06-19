@@ -38,9 +38,9 @@ const schema = new Schema({
   avatar: {
     type: String,
   },
-  private: {
-    type: Boolean,
-    default: false,
+  privacy: {
+    type: String,
+    default: "public",
     required: true,
   },
   subscriptions: {

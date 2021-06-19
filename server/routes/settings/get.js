@@ -11,9 +11,9 @@ export default async function(fastify) {
         response: {
           200: {
             type: "object",
-            required: ["private", "customID", "spotifyID", "status"],
+            required: ["privacy", "customID", "spotifyID", "status"],
             properties: {
-              private: { type: "boolean" },
+              privacy: { type: "string" },
               customID: { type: "string" },
               spotifyID: { type: "string" },
               status: {
@@ -28,13 +28,13 @@ export default async function(fastify) {
       const _id = req.user_id;
       const user = await User.findOne(
         { _id },
-        { private: 1, customID: 1, spotifyID: 1 }
+        { privacy: 1, customID: 1, spotifyID: 1 }
       );
 
       if (!user) throw new this.CustomError("User not found", 404);
 
       reply.code(200).send({
-        private: user.private,
+        privacy: user.privacy,
         customID: user.customID,
         spotifyID: user.spotifyID,
         status: 200,

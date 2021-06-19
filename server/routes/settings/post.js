@@ -10,9 +10,12 @@ export default async function(fastify) {
         headers,
         body: {
           type: "object",
-          required: ["private", "customID"],
+          required: ["privacy", "customID"],
           properties: {
-            private: { type: "boolean" },
+            privacy: {
+              type: "string",
+              pattern: "^(public)$|^(private)$|^(friendsOnly)$",
+            },
             customID: {
               type: "string",
               maxLength: 16,
@@ -38,7 +41,7 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       const _id = req.user_id;
-      const confidential = req.body.private;
+      const privacy = req.body.privacy;
       const customID = req.body.customID;
 
       const user = await User.findOne({ customID }, { _id: 1 });
@@ -46,10 +49,7 @@ export default async function(fastify) {
       if (user && user._id != _id)
         throw new this.CustomError("This id is already taken", 403);
 
-      const updateResult = await User.updateOne(
-        { _id },
-        { private: confidential, customID }
-      );
+      const updateResult = await User.updateOne({ _id }, { privacy, customID });
 
       if (updateResult.n === 0)
         throw new this.CustomError("User not found", 404);

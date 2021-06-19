@@ -87,7 +87,7 @@ export default async function(fastify) {
         { $or: [{ customID }, { _id }] },
         {
           userName: 1,
-          private: 1,
+          privacy: 1,
           avatar: 1,
           lastLogin: 1,
           customID: 1,
@@ -95,16 +95,25 @@ export default async function(fastify) {
           refreshToken: 1,
         }
       );
+      const requestor = users.find((user) => user._id == _id);
 
-      if (!users.find((user) => user._id == _id))
-        throw new this.CustomError("Unauthorized", 401);
+      if (!requestor) throw new this.CustomError("Unauthorized", 401);
 
       const user = users.find((user) => user.customID == customID);
 
       if (!user) throw new this.CustomError("User not found", 404);
 
-      if (user.private && _id != user._id)
+      if (user.privacy === "private" && _id != user._id)
         throw new this.CustomError("Private profile", 403);
+
+      if (user.privacy === "friendOnly") {
+        const [friendProof] = await fastify.spotifyAPI({
+          route: `me/following/contains?type=user&ids=${requestor.spotifyID}`,
+          token: user.lastSpotifyToken,
+        });
+
+        if (!friendProof) throw new this.CustomError("Not your friend", 403);
+      }
 
       const agg = [
         {
