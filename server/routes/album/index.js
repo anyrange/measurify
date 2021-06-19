@@ -54,9 +54,10 @@ export default async function(fastify) {
               type: "array",
               items: {
                 type: "object",
-                required: ["name", "id"],
+                required: ["name", "id", "image"],
                 properties: {
                   name: { type: "string" },
+                  image: { type: "string" },
                   id: { type: "string" },
                 },
               },
@@ -108,6 +109,11 @@ export default async function(fastify) {
           .then(({ items }) => fastify.parseAudioFeatures(items, token)),
       ]);
 
+      const { artists } = await fastify.spotifyAPI({
+        route: `artists?ids=${album.artists.map(({ id }) => id).join(",")}`,
+        token: token,
+      });
+
       const response = {
         album: {
           name: album.name,
@@ -117,8 +123,8 @@ export default async function(fastify) {
           total_tracks: album.total_tracks,
           link: album.external_urls.spotify,
           genres: album.genres,
-          artists: album.artists.map(({ name, id }) => {
-            return { name, id };
+          artists: artists.map(({ name, id, images }) => {
+            return { name, id, image: images.length ? images[0].url : "" };
           }),
           label: album.label || "",
         },
