@@ -18,6 +18,30 @@
           <card :title="album.popularity / 10" subtitle="popularity" />
           <card :title="album.total_tracks" subtitle="tracks amount" />
         </div>
+        <div class="content__item">
+          <span class="content__item__label">
+            Artist
+          </span>
+          <div class="content__item__boxes">
+            <router-link
+              class="link"
+              v-for="(item, index) in album.artists"
+              :key="index"
+              :to="{ name: 'artist', params: { id: item.id } }"
+            >
+              <div class="content__item__boxes__box">
+                <base-img
+                  :src="item.image"
+                  :alt="item.name"
+                  class="content__item__boxes__box__image"
+                />
+                <div class="content__item__boxes__box__label">
+                  {{ item.name }}
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </div>
         <div class="content__item" v-if="album.genres.length">
           <span class="content__item__label">
             Genres
