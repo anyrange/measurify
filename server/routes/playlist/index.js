@@ -3,6 +3,7 @@ import history from "../../includes/listening-history.js";
 export default async function(fastify) {
   const tracks = fastify.getSchema("listening-history");
   const headers = fastify.getSchema("cookie");
+  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
 
   const responseSchema = {
     200: {
@@ -54,6 +55,7 @@ export default async function(fastify) {
           },
         },
         tracks,
+        audioFeatures: audioFeaturesSchema,
         status: {
           type: "number",
         },
@@ -86,12 +88,18 @@ export default async function(fastify) {
 
       const token = await this.getToken(_id);
 
-      const playlist = await fastify.spotifyAPI({
-        route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total)`,
-        token,
-      });
+      const [playlist, tracks] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id)))`,
+          token,
+        }),
+        history(_id, playlistID),
+      ]);
 
-      const tracks = await history(_id, playlistID);
+      const audioFeatures = await fastify.parseAudioFeatures(
+        playlist.tracks.items.map(({ track }) => track),
+        token
+      );
 
       const response = {
         playlist: {
@@ -104,6 +112,7 @@ export default async function(fastify) {
           public: playlist.public,
           tracks: playlist.tracks.total,
         },
+        audioFeatures,
         tracks,
         status: 200,
       };
