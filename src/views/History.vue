@@ -22,62 +22,54 @@
     <empty-message v-if="emptyData" />
     <template v-else>
       <infinite-scroll @load="onScroll" :offset="350">
-        <table class="mt-4 w-full table-fixed history-table">
+        <table class="mt-4 history-table">
           <thead>
-            <tr>
-              <th class="row-head row-title">Title</th>
-              <th class="row-head row-artist">Artist</th>
-              <th class="row-head row-album">Album</th>
-              <th class="row-head row-when">When</th>
-              <th class="row-head row-duration">Duration</th>
+            <tr class="row-head">
+              <th class="cell-head cell-title">Title</th>
+              <th class="cell-head cell-artist">Artist</th>
+              <th class="cell-head cell-album">Album</th>
+              <th class="cell-head cell-listened">Listened</th>
+              <th class="cell-head cell-duration">Duration</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(track, index) in recentlyPlayed || []"
-              :key="index"
-              class="hover:bg-gray-700-spotify"
+              class="row"
+              v-for="track in recentlyPlayed"
+              :key="track.played_at"
             >
-              <td class="row row-title">
+              <td class="cell cell-title">
                 <router-link
-                  class="hover:underline"
+                  class="link"
                   :to="{ name: 'track', params: { id: track.id } }"
                 >
                   {{ track.name }}
                 </router-link>
               </td>
-              <td class="row row-artist">
-                <template v-for="(artist, index) in track.artists" :key="index">
-                  <router-link
-                    class="hover:underline"
-                    :to="{ name: 'artist', params: { id: artist.id } }"
-                  >
-                    {{ artist.name }}
-                  </router-link>
-                  <span v-if="index !== track.artists.length - 1">, </span>
-                </template>
+              <td class="cell cell-artist">
+                <multi-router :routes="track.artists" />
               </td>
-              <td class="row row-album">
+              <td class="cell cell-album">
                 <router-link
-                  class="hover:underline"
+                  class="link"
                   :to="{ name: 'album', params: { id: track.album.id } }"
                 >
                   {{ track.album.name }}
                 </router-link>
               </td>
-              <td class="row row-when">
+              <td class="cell cell-listened">
                 {{ getDateFromNow(track.played_at) }}
               </td>
-              <td class="row row-duration">
+              <td class="cell cell-duration">
                 {{ getDuration(track.duration_ms) }}
               </td>
             </tr>
           </tbody>
         </table>
+        <div v-if="loadingNextPage" class="leading-8 skeleton w-full">
+          &nbsp;
+        </div>
       </infinite-scroll>
-      <div v-if="loadingNextPage" class="leading-8 skeleton w-full">
-        &nbsp;
-      </div>
     </template>
   </template>
 </template>
@@ -88,10 +80,11 @@ import { getListeningHistory } from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
 import BaseInput from "@/components/BaseInput";
 import InfiniteScroll from "@/components/InfiniteScroll";
+import MultiRouter from "@/components/MultiRouter";
 
 export default {
   name: "History",
-  components: { EmptyMessage, BaseInput, InfiniteScroll },
+  components: { EmptyMessage, BaseInput, InfiniteScroll, MultiRouter },
   data() {
     return {
       recentlyPlayed: [],
@@ -159,27 +152,37 @@ export default {
 </script>
 
 <style lang="postcss" scoped>
+.history-table {
+  @apply w-full border-collapse table-fixed;
+}
 .history-table .row-head {
-  @apply px-4 py-3 text-left border-b border-gray-700-spotify font-normal text-sm capitalize leading-4;
+  @apply z-20 sticky top-0 bg-gray-800-spotify;
+}
+.history-table .cell-head {
+  @apply px-4 py-3 text-left text-sm font-semibold text-gray-500-spotify;
 }
 .history-table .row {
-  @apply px-4 py-2 text-left border-b border-gray-700-spotify text-sm leading-5 text-gray-100 overflow-ellipsis overflow-hidden whitespace-nowrap;
+  @apply border-b border-gray-700-spotify hover:bg-gray-700-spotify;
 }
-.history-table .row-title {
-  @apply md:w-3/10 w-1.5/10;
+.history-table .cell {
+  @apply px-4 py-2 text-left text-sm overflow-ellipsis overflow-hidden whitespace-nowrap text-white;
 }
-.history-table .row-artist {
-  @apply w-2.5/10 sm:table-cell hidden;
+.history-table .cell-title {
+  @apply w-1.5/10 md:w-3/10;
 }
-.history-table .row-album {
-  @apply w-2/10 md:table-cell hidden;
+.history-table .cell-artist {
+  @apply hidden w-2.5/10 sm:table-cell;
 }
-.history-table .row-when {
-  @apply md:w-1.5/10 w-1/10;
+.history-table .cell-album {
+  @apply hidden w-2/10 md:table-cell;
 }
-.history-table .row-duration {
-  @apply w-1/10 lg:table-cell hidden;
+.history-table .cell-listened {
+  @apply w-1/10 md:w-1.5/10;
 }
+.history-table .cell-duration {
+  @apply hidden w-1/10 lg:table-cell;
+}
+
 .skeleton {
   --text-opacity: 0;
   background-image: linear-gradient(

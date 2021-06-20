@@ -3,7 +3,7 @@
     <router-link
       class="hover:underline"
       :class="[color]"
-      :to="{ name: 'artist', params: { id: item.id } }"
+      :to="{ name: name, params: { id: item.id } }"
     >
       {{ item.name }}
     </router-link>
@@ -22,6 +22,11 @@ export default {
       type: String,
       required: false,
       default: "text-white",
+    },
+    name: {
+      type: String,
+      required: false,
+      default: "artist",
     },
   },
 };

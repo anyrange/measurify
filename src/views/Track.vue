@@ -37,7 +37,11 @@
             <div
               class="flex flex-row items-center justify-center gap-3 pr-3 hover:bg-gray-700-spotify duration-100 rounded-2xl"
             >
-              <img :src="track.image" class="w-20 rounded-xl" />
+              <base-img
+                class="w-20 h-20 rounded-xl"
+                :src="track.image"
+                :alt="track.name"
+              />
               <div class="flex flex-col">
                 <div class="text-base text-white font-medium truncate-2">
                   {{ track.album.name }}

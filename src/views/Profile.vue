@@ -4,6 +4,7 @@
     <div class="flex flex-col gap-4">
       <div class="flex flex-row items-center gap-4">
         <base-img
+          avatar
           :src="profile.avatar"
           :alt="profile.userName"
           class="rounded-full sm:rounded-lg w-20 h-20 sm:w-48 sm:h-48 object-cover duration-300"

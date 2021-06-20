@@ -54,13 +54,9 @@ export default {
   async created() {
     const response = await getUsersQuantity();
     this.quantity = response.quantity;
-
     if (this.$route.query.access_token) {
       try {
-        await this.authorise({
-          access_token: this.$route.query.access_token,
-          id: this.$route.query.id,
-        });
+        await this.authorise(this.$route.query.access_token);
         this.$router.push({ name: "home" });
       } catch (error) {
         this.$notify.show({
