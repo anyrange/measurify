@@ -3,9 +3,9 @@
     <router-link class="sidebar__item sm:-mt-2 m-0" :to="{ name: 'account' }">
       <base-img
         class="sidebar__item__avatar"
-        avatar
         :src="user.avatar"
         alt="profile avatar"
+        avatar
       />
       <span class="sidebar__item__title sidebar__item__username">
         @{{ user.username }}
@@ -20,7 +20,7 @@
       <span class="sidebar__item__title">Listening History</span>
     </router-link>
     <router-link class="sidebar__item" :to="{ name: 'leaderboard' }">
-      <listeners-top-icon class="sidebar__item__icon" />
+      <leaderboard-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Leaderboard</span>
     </router-link>
     <router-link class="sidebar__item" :to="{ name: 'friends' }">
@@ -33,19 +33,19 @@
 <script>
 import { mapGetters } from "vuex";
 import {
-  ListeningHistoryIcon,
   DashboardIcon,
-  ListenersTopIcon,
+  LeaderboardIcon,
   FriendsIcon,
+  ListeningHistoryIcon,
 } from "@/components/icons/index.js";
 import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   components: {
-    ListeningHistoryIcon,
     DashboardIcon,
-    ListenersTopIcon,
+    LeaderboardIcon,
     FriendsIcon,
+    ListeningHistoryIcon,
     BaseImg,
   },
   computed: {
@@ -68,12 +68,12 @@ export default {
   @apply text-white text-base font-medium;
 }
 .sidebar__item__icon {
-  @apply w-8 h-8 flex fill-current;
+  @apply h-7 w-7 sm:w-8 sm:h-8 fill-current;
+}
+.sidebar__item__avatar {
+  @apply h-7 w-7 sm:w-10 sm:h-10 rounded-full object-cover;
 }
 .sidebar .router-link-exact-active {
   @apply text-green-600-spotify sm:text-gray-400-spotify bg-gray-900-spotify sm:bg-gray-800-spotify;
-}
-.sidebar__item__avatar {
-  @apply w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover;
 }
 </style>
