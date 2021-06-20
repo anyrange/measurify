@@ -11,7 +11,7 @@ export default async function(fastify) {
         response: {
           200: {
             type: "object",
-            required: ["status", "token"],
+            required: ["status", "token", "autoUpdate", "userName", "avatar"],
             properties: {
               status: {
                 type: "number",
@@ -25,6 +25,9 @@ export default async function(fastify) {
               userName: {
                 type: "string",
               },
+              autoUpdate: {
+                type: "boolean",
+              },
             },
           },
         },
@@ -32,12 +35,15 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       const _id = req.user_id;
-      const token = await this.getToken(_id);
+      const { lastSpotifyToken: token, autoUpdate } = await User.findOne(
+        { _id },
+        { lastSpotifyToken: 1, autoUpdate: 1 }
+      );
 
-      const user = await this.spotifyAPI({ route: "me", token });
+      const newData = await this.spotifyAPI({ route: "me", token });
 
-      const userName = user.display_name;
-      const avatar = user.images.length ? user.images[0].url : "";
+      const userName = newData.display_name;
+      const avatar = newData.images.length ? newData.images[0].url : "";
       const filter = { _id };
       const update = {
         userName,
@@ -45,7 +51,9 @@ export default async function(fastify) {
         lastLogin: Date.now(),
       };
 
-      reply.code(200).send({ token, avatar, userName, status: 200 });
+      reply
+        .code(200)
+        .send({ token, avatar, autoUpdate, userName, status: 200 });
 
       await User.updateOne(filter, update);
     }
