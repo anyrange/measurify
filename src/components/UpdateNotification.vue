@@ -5,7 +5,7 @@
     leave-active-class="transition-leaving transition-leaving-from"
     leave-to-class="transition-leaving-to"
   >
-    <div class="static" v-if="updateExists">
+    <div class="static" v-if="updateExists && !autoUpdates">
       <div
         class="sm:h-auto h-20 justify-center absolute md:bottom-0 bottom-12 right-0 w-full px-3 py-3 shadow-2xl flex flex-col items-center border-t
         sm:w-auto sm:m-4 sm:rounded-lg sm:flex-row sm:border bg-gray-700-spotify border-gray-600-spotify text-white"
@@ -28,7 +28,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-
 export default {
   data() {
     return {
@@ -44,6 +43,7 @@ export default {
     showRefreshUI(e) {
       this.registration = e.detail;
       this.updateExists = true;
+      if (this.autoUpdates) this.refreshApp();
     },
     refreshApp() {
       this.updateExists = false;
@@ -52,9 +52,6 @@ export default {
       }
       this.registration.waiting.postMessage("skipWaiting");
     },
-  },
-  mounted() {
-    if (this.autoUpdates) this.refreshApp();
   },
   created() {
     document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
