@@ -28,6 +28,6 @@
   @apply opacity-80 h-80 flex items-center justify-center;
 }
 .loading-spinner-animate {
-  @apply animate-spin -ml-1 mr-3 h-12 w-12 dark:text-white;
+  @apply animate-spin h-12 w-12 text-white;
 }
 </style>
