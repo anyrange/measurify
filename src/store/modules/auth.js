@@ -8,20 +8,24 @@ export default {
       avatar: "",
       username: "",
       email: "",
+      autoUpdate: false,
     },
   },
   mutations: {
-    SET_ACCES_TOKEN(state, payload) {
-      state.user.access_token = payload;
+    SET_USER(state, user) {
+      state.user = user;
     },
-    SET_AVATAR(state, payload) {
-      state.user.avatar = payload;
+    UPDATE_USER(state, user) {
+      state.user = {
+        ...state.user,
+        access_token: user.access_token,
+        avatar: user.avatar,
+        username: user.username,
+        autoUpdate: user.autoUpdate,
+      };
     },
-    SET_EMAIL(state, payload) {
-      state.user.email = payload;
-    },
-    SET_USERNAME(state, payload) {
-      state.user.username = payload;
+    CHANGE_AUTOUPDATE(state, payload) {
+      state.user.autoUpdate = payload;
     },
   },
   getters: {
@@ -32,6 +36,9 @@ export default {
     getUser(state) {
       return state.user;
     },
+    getAutoupdates(state) {
+      return state.user.autoUpdate;
+    },
   },
   actions: {
     logout: async () => {
@@ -40,18 +47,26 @@ export default {
       window.sessionStorage.clear();
       location.reload();
     },
-    authorise: async ({ commit }, { access_token }) => {
+    authorise: async ({ commit }, access_token) => {
       const response = await authorise(access_token);
-      commit("SET_USERNAME", response.display_name);
-      commit("SET_EMAIL", response.email);
-      commit("SET_AVATAR", response.images[0].url);
-      commit("SET_ACCES_TOKEN", access_token);
+      commit("SET_USER", {
+        username: response.display_name,
+        email: response.email,
+        avatar: response.images[0].url,
+        access_token: access_token,
+      });
     },
     updateUser: async ({ commit }) => {
       const response = await getToken();
-      commit("SET_USERNAME", response.userName);
-      commit("SET_AVATAR", response.avatar);
-      commit("SET_ACCES_TOKEN", response.token);
+      commit("UPDATE_USER", {
+        username: response.userName,
+        avatar: response.avatar,
+        access_token: response.token,
+        autoUpdate: response.autoUpdate,
+      });
+    },
+    changeAutoupdate: ({ commit }, value) => {
+      commit("CHANGE_AUTOUPDATE", value);
     },
   },
 };

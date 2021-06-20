@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -34,6 +36,9 @@ export default {
       registration: null,
       updateExists: false,
     };
+  },
+  computed: {
+    ...mapGetters({ autoUpdates: "getAutoupdates" }),
   },
   methods: {
     showRefreshUI(e) {
@@ -47,6 +52,9 @@ export default {
       }
       this.registration.waiting.postMessage("skipWaiting");
     },
+  },
+  mounted() {
+    if (this.autoUpdates) this.refreshApp();
   },
   created() {
     document.addEventListener("swUpdated", this.showRefreshUI, { once: true });

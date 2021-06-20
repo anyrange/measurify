@@ -4,7 +4,7 @@
   <template v-else>
     <div class="md:w-full lg:w-1/2 xl:w-2/6 flex flex-col gap-4">
       <router-link
-        :to="{ name: 'profile', params: { id: account.customID.current } }"
+        :to="{ name: 'profile', params: { id: account.customID } }"
         class="flex flex-row items-center p-3 justify-between rounded-lg cursor-pointer duration-150 bg-gray-700-spotify hover:bg-gray-600-spotify"
       >
         <div class="flex flex-row items-center gap-3">
@@ -40,11 +40,11 @@
       </router-link>
       <base-input v-model="user.email" label="Spotify Email" disabled />
       <base-input v-model="account.spotifyID" label="Spotify ID" disabled />
-      <base-input v-model="account.customID.current" label="Profile URL" />
+      <base-input v-model="account.customID" label="Profile URL" />
       <div class="flex items-end justify-between w-full gap-6">
         <base-select
           class="w-2/4"
-          v-model="account.privacy.current"
+          v-model="account.privacy"
           :options="$options.privacyOptions"
           label="Profile visibility"
         />
@@ -59,6 +59,7 @@
           Save
         </base-button>
       </div>
+      <toggle label="Autoupdates" v-model="account.autoUpdate" />
       <div>&nbsp;</div>
       <base-button color="negative" @click="logout()">
         Logout
@@ -69,6 +70,7 @@
 
 <script>
 import BaseSelect from "@/components/BaseSelect";
+import Toggle from "@/components/Toggle";
 import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
 import BaseImg from "@/components/BaseImg";
@@ -76,22 +78,17 @@ import { updateAccount, getAccount } from "@/api";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
-  components: { BaseSelect, BaseInput, BaseButton, BaseImg },
+  components: { BaseSelect, BaseInput, BaseButton, BaseImg, Toggle },
   data() {
     return {
       loading: true,
       loadingButton: false,
       account: {
         spotifyID: "",
-        privacy: {
-          current: null,
-          previous: null,
-        },
-        customID: {
-          current: "",
-          previous: "",
-        },
+        privacy: null,
+        customID: "",
       },
+      account_copy: {},
     };
   },
   privacyOptions: [
@@ -102,57 +99,42 @@ export default {
   computed: {
     ...mapGetters({ user: "getUser" }),
     isDisabledSubmitButton() {
-      const customID = this.account.customID.current.toLowerCase();
-      const customIDPrev = this.account.customID.previous.toLowerCase();
-      const privacy = this.account.privacy.current;
-      const privacyPrev = this.account.privacy.previous;
-
-      const regex = new RegExp(`[A-Za-z0-9_-]{3,26}$`);
-      if (!customID.match(regex)) return true;
-
-      if (customIDPrev == customID && privacy == privacyPrev) return true;
-
+      const regex = new RegExp(`[a-z0-9_-]{3,26}$`);
+      if (!this.account.customID.match(regex)) return true;
+      if (this.compareObjects(this.account, this.account_copy)) return true;
       return false;
     },
   },
   methods: {
-    ...mapActions(["logout"]),
+    ...mapActions(["logout", "changeAutoupdate"]),
     async updateSettings() {
       try {
         this.loadingButton = true;
-        const account = {
-          spotifyID: this.account.spotifyID,
-          privacy: this.account.privacy.current,
-          customID: this.account.customID.current.toLowerCase(),
-        };
-        const response = await updateAccount(account);
-        this.account.privacy.previous = this.account.privacy.current;
-        this.account.customID.previous = this.account.customID.current;
-
-        this.$notify.show({
-          type: "success",
-          message: response.message,
-        });
-      } catch (error) {
-        console.log(error);
+        const response = await updateAccount(this.account);
+        this.changeAutoupdate(this.account.autoUpdate);
+        this.copyAccount();
+        this.$notify.show({ type: "success", message: response.message });
       } finally {
         this.loadingButton = false;
       }
     },
+    compareObjects(a, b) {
+      let s = (o) =>
+        Object.entries(o)
+          .sort()
+          .map((i) => {
+            if (i[1] instanceof Object) i[1] = s(i[1]);
+            return i;
+          });
+      return JSON.stringify(s(a)) === JSON.stringify(s(b));
+    },
+    copyAccount() {
+      this.account_copy = Object.assign({}, this.account);
+    },
   },
-  async created() {
-    const response = await getAccount();
-    this.account = {
-      spotifyID: response.spotifyID,
-      privacy: {
-        current: response.privacy,
-        previous: response.privacy,
-      },
-      customID: {
-        current: response.customID,
-        previous: response.customID,
-      },
-    };
+  async mounted() {
+    this.account = await getAccount();
+    this.copyAccount();
     this.loading = false;
   },
 };
