@@ -10,7 +10,7 @@ export default async function(fastify) {
         headers,
         body: {
           type: "object",
-          required: ["privacy", "customID"],
+          required: ["privacy", "customID", "autoUpdate"],
           properties: {
             privacy: {
               type: "string",
@@ -22,6 +22,9 @@ export default async function(fastify) {
               minLength: 3,
               pattern:
                 "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
+            },
+            autoUpdate: {
+              type: "boolean",
             },
           },
         },
@@ -41,15 +44,17 @@ export default async function(fastify) {
     },
     async function(req, reply) {
       const _id = req.user_id;
-      const privacy = req.body.privacy;
-      const customID = req.body.customID;
+      const { privacy, customID, autoUpdate } = req.body;
 
       const user = await User.findOne({ customID }, { _id: 1 });
 
       if (user && user._id != _id)
         throw new this.CustomError("This id is already taken", 403);
 
-      const updateResult = await User.updateOne({ _id }, { privacy, customID });
+      const updateResult = await User.updateOne(
+        { _id },
+        { privacy, customID, autoUpdate }
+      );
 
       if (updateResult.n === 0)
         throw new this.CustomError("User not found", 404);

@@ -47,6 +47,11 @@ const schema = new Schema({
     type: Object,
     default: {},
   },
+  autoUpdate: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 export default model("User", schema);
