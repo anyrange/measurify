@@ -1,9 +1,10 @@
 <template>
   <li
     v-if="visible"
-    class="px-5 py-3 text-gray-200 text-sm leading-4 font-medium cursor-pointer"
+    class="px-5 py-3 text-gray-200 text-sm rounded-md leading-4 font-medium cursor-pointer"
+    v-wave
     :class="{
-      'bg-gray-600-spotify rounded-md': isActive,
+      'bg-gray-600-spotify': isActive,
       'opacity-40 cursor-not-allowed': disabled,
     }"
     @click="activateTab(name)"

@@ -1,6 +1,10 @@
 <template>
   <aside class="sidebar">
-    <router-link class="sidebar__item sm:-mt-2 m-0" :to="{ name: 'account' }">
+    <router-link
+      v-wave
+      class="sidebar__item sm:-mt-2 m-0"
+      :to="{ name: 'account' }"
+    >
       <base-img
         class="sidebar__item__avatar"
         :src="user.avatar"
@@ -11,19 +15,23 @@
         @{{ user.username }}
       </span>
     </router-link>
-    <router-link class="sidebar__item" :to="{ name: 'overview' }">
+    <router-link v-wave class="sidebar__item" :to="{ name: 'overview' }">
       <dashboard-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Overview</span>
     </router-link>
-    <router-link class="sidebar__item" :to="{ name: 'listening-history' }">
+    <router-link
+      v-wave
+      class="sidebar__item"
+      :to="{ name: 'listening-history' }"
+    >
       <listening-history-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Listening History</span>
     </router-link>
-    <router-link class="sidebar__item" :to="{ name: 'leaderboard' }">
+    <router-link v-wave class="sidebar__item" :to="{ name: 'leaderboard' }">
       <leaderboard-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Leaderboard</span>
     </router-link>
-    <router-link class="sidebar__item" :to="{ name: 'friends' }">
+    <router-link v-wave class="sidebar__item" :to="{ name: 'friends' }">
       <friends-icon class="sidebar__item__icon" />
       <span class="sidebar__item__title">Friends</span>
     </router-link>

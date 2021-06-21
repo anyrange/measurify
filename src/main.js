@@ -9,6 +9,7 @@ import "./assets/tailwind.css";
 import "./assets/font.css";
 import "./assets/styles.css";
 import ApexCharts from "apexcharts";
+import VWave from "v-wave";
 
 const app = createApp(App);
 
@@ -18,6 +19,7 @@ app
   .use(store)
   .use(router)
   .use(notify)
+  .use(VWave)
   .mount("#app");
 
 app.component("LoadingSpinner", LoadingSpinner);
