@@ -43,7 +43,10 @@ export default {
     showRefreshUI(e) {
       this.registration = e.detail;
       this.updateExists = true;
-      if (this.autoUpdates) this.refreshApp();
+      if (this.autoUpdates) {
+        this.refreshApp();
+        this.$notify.show({ type: "success", message: "Updating..." });
+      }
     },
     refreshApp() {
       this.updateExists = false;
