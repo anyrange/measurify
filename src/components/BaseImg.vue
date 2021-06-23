@@ -1,6 +1,18 @@
 <template>
-  <div v-if="parallax" :style="{ backgroundImage: `url('${imageUrl}')` }"></div>
-  <img v-else :src="imageUrl" :alt="alt" />
+  <loading-spinner v-if="loading" />
+  <div
+    v-else-if="parallax"
+    class="bg-no-repeat bg-fixed bg-top bg-contain"
+    :style="{ backgroundImage: `url('${imageUrl}')` }"
+  ></div>
+  <img
+    v-else
+    :src="imageUrl"
+    :alt="alt"
+    aria-hidden="false"
+    draggable="false"
+    loading="lazy"
+  />
 </template>
 
 <script>
@@ -28,32 +40,32 @@ export default {
   },
   data() {
     return {
-      imageExists: false,
+      loading: true,
+      imageUrl: "",
     };
   },
   methods: {
     checkImage(url) {
-      const image = new Image();
-      image.src = url;
-      image.onerror = () => {
-        this.imageExists = false;
-        return;
-      };
-      this.imageExists = true;
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(url);
+        img.onerror = () => reject("Failed to load image");
+        img.src = url;
+      });
+    },
+    setFallbackImage() {
+      if (this.avatar) this.imageUrl = "/img/noavatar.svg";
+      this.imageUrl = "/img/noimage.svg";
     },
   },
-  created() {
-    this.checkImage(this.src);
-  },
-  computed: {
-    imageUrl() {
-      if (this.imageExists) return this.src;
-      return this.fallbackImage;
-    },
-    fallbackImage() {
-      if (this.avatar) return "/img/noavatar.svg";
-      return "/img/noimage.svg";
-    },
+  async created() {
+    try {
+      this.imageUrl = await this.checkImage(this.src);
+    } catch {
+      this.setFallbackImage();
+    } finally {
+      this.loading = false;
+    }
   },
 };
 </script>
