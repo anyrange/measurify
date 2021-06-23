@@ -50,7 +50,7 @@
   @apply relative sm:static -mt-8 -mx-4 sm:m-0 flex md:flex-row flex-col gap-4 sm:items-center items-start duration-300;
 }
 .responsive-picture__image {
-  @apply rounded-b-2xl flex flex-none image-shadow bg-no-repeat bg-fixed bg-top bg-contain sm:bg-local sm:bg-center sm:bg-cover sm:rounded-full md:rounded-lg w-full h-72 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover duration-300;
+  @apply flex flex-none rounded-b-2xl image-shadow sm:bg-local sm:bg-center sm:bg-cover sm:rounded-full md:rounded-lg w-full h-72 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover duration-300;
 }
 .responsive-picture__title {
   @apply absolute sm:relative sm:inset-0 bottom-0 m-4 sm:m-0;

@@ -7,7 +7,7 @@
           avatar
           :src="profile.avatar"
           :alt="profile.userName"
-          class="rounded-full sm:rounded-lg w-20 h-20 sm:w-48 sm:h-48 object-cover duration-300"
+          class="flex flex-none rounded-full sm:rounded-lg w-20 h-20 sm:w-48 sm:h-48 object-cover duration-300"
         />
         <span
           class="text-white truncate-2 sm:text-3xl text-2xl sm:font-medium font-semibold"
