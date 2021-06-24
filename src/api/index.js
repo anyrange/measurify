@@ -19,7 +19,7 @@ api.interceptors.response.use(
 
 export function redirect() {
   const url = location.protocol + "//" + location.host + location.pathname;
-  window.location.href = `${SERVER_URI}/login?sw_redirect=${url}`;
+  window.location.href = `${SERVER_URI}/auth/login?sw_redirect=${url}`;
 }
 export function authorise(access_token) {
   return axios
@@ -31,7 +31,7 @@ export function authorise(access_token) {
     .then((response) => response.data);
 }
 export function getToken() {
-  return api.get("/token");
+  return api.get("/users/current");
 }
 export function getUsersQuantity() {
   return api.get("/users");
@@ -49,7 +49,7 @@ export function getTop() {
   return api.get("/top");
 }
 export function deauthorize() {
-  return api.get("/logout");
+  return api.get("/auth/logout");
 }
 export function getAccount() {
   return api.get("/settings");

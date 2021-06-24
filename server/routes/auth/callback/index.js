@@ -1,8 +1,8 @@
-import formatTrack from "../../includes/format-track.js";
-import User from "../../models/User.js";
+import formatTrack from "../../../includes/format-track.js";
+import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-import { addTrack } from "../../includes/recently-played-parse.js";
+import { addTrack } from "../../../includes/recently-played-parse.js";
 
 export default async function(fastify) {
   fastify.get(
@@ -93,14 +93,14 @@ export default async function(fastify) {
         expires: expireDate,
       });
 
-      reply.redirect(`${query_uri}?access_token=${access_token}`);
+      reply.redirect(query_uri);
     }
   );
 }
 
 const fetchTokens = async (code, query_uri) => {
   const redirect_uri =
-    process.env.REDIRECT_URI || "http://localhost:8888/callback";
+    process.env.REDIRECT_URI || "http://localhost:8888/auth/callback";
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);

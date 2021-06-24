@@ -32,6 +32,9 @@ export default async function(fastify) {
                     canSee: {
                       type: "boolean",
                     },
+                    lastLogin: {
+                      type: "string",
+                    },
                     listened: {
                       type: "number",
                     },
@@ -61,6 +64,7 @@ export default async function(fastify) {
             avatar: 1,
             customID: 1,
             lastSpotifyToken: 1,
+            lastLogin: 1,
             privacy: 1,
             "recentlyPlayed.plays.played_at": 1,
           },
@@ -73,6 +77,7 @@ export default async function(fastify) {
         {
           $project: {
             userName: 1,
+            lastLogin: 1,
             avatar: 1,
             customID: 1,
             lastSpotifyToken: 1,
@@ -90,6 +95,7 @@ export default async function(fastify) {
               avatar: "$avatar",
               customID: "$customID",
               lastSpotifyToken: "$lastSpotifyToken",
+              lastLogin: "$lastLogin",
               privacy: "$privacy",
             },
             listened: { $sum: "$recentlyPlayed.plays" },
@@ -138,6 +144,7 @@ export default async function(fastify) {
             ? false
             : true,
           userName: user._id.userName,
+          lastLogin: user._id.lastLogin,
           listened: user.listened,
         };
       });
