@@ -55,20 +55,6 @@ export default {
     },
   },
   async created() {
-    if (this.$route.query.access_token) {
-      try {
-        this.loadingButton = true;
-        await this.authorise(this.$route.query.access_token);
-        this.$router.push({ name: "home" });
-      } catch (error) {
-        this.$notify.show({
-          type: "danger",
-          message: error.response.data.error.message,
-        });
-      } finally {
-        this.loadingButton = false;
-      }
-    }
     const response = await getUsersQuantity();
     this.quantity = response.quantity;
   },

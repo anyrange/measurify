@@ -38,7 +38,6 @@
           </svg>
         </div>
       </router-link>
-      <base-input v-model="user.email" label="Spotify Email" disabled />
       <base-input v-model="account.spotifyID" label="Spotify ID" disabled />
       <base-input v-model="account.customID" label="Profile URL" />
       <div class="flex items-end justify-between w-full gap-6">

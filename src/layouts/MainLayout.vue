@@ -15,16 +15,9 @@
 
 <script>
 import Sidebar from "@/components/Sidebar";
-import { mapActions } from "vuex";
 
 export default {
   name: "Layout",
   components: { Sidebar },
-  methods: {
-    ...mapActions(["updateUser"]),
-  },
-  async created() {
-    await this.updateUser();
-  },
 };
 </script>

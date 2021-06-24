@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from "@/store";
+import $store from "@/store";
 
 const routes = [
   {
@@ -7,7 +7,7 @@ const routes = [
     name: "login",
     component: () => import("@/views/Login.vue"),
     beforeEnter(to, from, next) {
-      store.getters.isAuthenticated ? next({ name: "home" }) : next();
+      $store.getters.isAuthenticated ? next({ name: "home" }) : next();
     },
   },
   {
@@ -106,7 +106,7 @@ const routes = [
       },
     ],
     beforeEnter(to, from, next) {
-      store.getters.isAuthenticated ? next() : next({ name: "login" });
+      $store.getters.isAuthenticated ? next() : next({ name: "login" });
     },
   },
   {

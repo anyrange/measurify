@@ -1,4 +1,5 @@
-import { authorise, deauthorize, getToken } from "@/api";
+import { deauthorize, getCurrentUser } from "@/api";
+import $router from "@/router";
 
 export default {
   namespaced: false,
@@ -7,7 +8,6 @@ export default {
       access_token: "",
       avatar: "",
       username: "",
-      email: "",
       autoUpdate: false,
     },
   },
@@ -41,23 +41,17 @@ export default {
     },
   },
   actions: {
-    logout: async () => {
+    logout: async ({ commit }) => {
       await deauthorize();
-      window.localStorage.clear();
-      window.sessionStorage.clear();
-      location.reload();
-    },
-    authorise: async ({ commit }, access_token) => {
-      const response = await authorise(access_token);
       commit("SET_USER", {
-        username: response.display_name,
-        email: response.email,
-        avatar: response.images[0].url,
-        access_token: access_token,
+        username: "",
+        avatar: "",
+        access_token: "",
       });
+      $router.push({ name: "login" });
     },
     updateUser: async ({ commit }) => {
-      const response = await getToken();
+      const response = await getCurrentUser();
       commit("UPDATE_USER", {
         username: response.userName,
         avatar: response.avatar,
