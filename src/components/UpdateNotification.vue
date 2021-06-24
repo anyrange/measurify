@@ -37,13 +37,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ autoUpdates: "getAutoupdates" }),
+    ...mapGetters({ user: "getUser" }),
   },
   methods: {
     showRefreshUI(e) {
       this.registration = e.detail;
       this.updateExists = true;
-      if (this.autoUpdates) {
+      if (this.user.autoUpdate) {
         this.refreshApp();
         this.$notify.show({ type: "success", message: "Updating..." });
       }

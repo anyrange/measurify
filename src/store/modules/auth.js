@@ -1,19 +1,26 @@
 import { deauthorize, getCurrentUser } from "@/api";
 import $router from "@/router";
 
-export default {
-  namespaced: false,
-  state: {
+const getDefaultState = () => {
+  return {
     user: {
       access_token: "",
       avatar: "",
       username: "",
       autoUpdate: false,
     },
-  },
+  };
+};
+
+export default {
+  namespaced: false,
+  state: getDefaultState(),
   mutations: {
     SET_USER(state, user) {
       state.user = user;
+    },
+    REMOVE_USER: (state) => {
+      Object.assign(state, getDefaultState());
     },
     UPDATE_USER(state, user) {
       state.user = {
@@ -36,18 +43,11 @@ export default {
     getUser(state) {
       return state.user;
     },
-    getAutoupdates(state) {
-      return state.user.autoUpdate;
-    },
   },
   actions: {
-    logout: async ({ commit }) => {
+    logout: async ({ commit, state }) => {
       await deauthorize();
-      commit("SET_USER", {
-        username: "",
-        avatar: "",
-        access_token: "",
-      });
+      commit("REMOVE_USER", state.user);
       $router.push({ name: "login" });
     },
     updateUser: async ({ commit }) => {
