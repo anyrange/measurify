@@ -67,6 +67,7 @@ export default async function(fastify) {
             lastLogin: 1,
             privacy: 1,
             "recentlyPlayed.plays.played_at": 1,
+            "recentlyPlayed.duration_ms": 1,
           },
         },
         {
@@ -98,7 +99,14 @@ export default async function(fastify) {
               lastLogin: "$lastLogin",
               privacy: "$privacy",
             },
-            listened: { $sum: "$recentlyPlayed.plays" },
+            listened: {
+              $sum: {
+                $multiply: [
+                  "$recentlyPlayed.plays",
+                  { $divide: ["$recentlyPlayed.duration_ms", 60000] },
+                ],
+              },
+            },
           },
         },
         {
@@ -145,7 +153,7 @@ export default async function(fastify) {
             : true,
           userName: user._id.userName,
           lastLogin: user._id.lastLogin,
-          listened: user.listened,
+          listened: Math.round(user.listened),
         };
       });
 

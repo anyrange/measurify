@@ -43,7 +43,7 @@ app.register(autoLoad, {
 });
 
 app.setNotFoundHandler((req, reply) => {
-  reply.code(400).send({ message: "Service not found", status: 404 });
+  reply.code(404).send({ message: "Service not found", status: 404 });
 });
 
 // for ape moments
