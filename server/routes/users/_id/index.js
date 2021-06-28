@@ -53,6 +53,18 @@ export default async function(fastify) {
             type: "string",
           },
         },
+        hourlyActivity: {
+          type: "array",
+          items: {
+            type: "object",
+            required: ["time", "playtime", "plays"],
+            properties: {
+              time: { type: "number" },
+              playtime: { type: "number" },
+              plays: { type: "number" },
+            },
+          },
+        },
         leaved: { type: "boolean" },
         status: {
           type: "number",
@@ -169,9 +181,98 @@ export default async function(fastify) {
           };
         }),
         genresTop(user.lastSpotifyToken),
+        User.aggregate([
+          {
+            $match: {
+              _id: new ObjectId(user._id),
+            },
+          },
+          {
+            $project: {
+              "recentlyPlayed.plays.played_at": 1,
+              "recentlyPlayed.duration_ms": 1,
+            },
+          },
+          {
+            $unwind: {
+              path: "$recentlyPlayed",
+            },
+          },
+          {
+            $unwind: {
+              path: "$recentlyPlayed.plays",
+            },
+          },
+          {
+            $addFields: {
+              "recentlyPlayed.played_at": {
+                $toDate: "$recentlyPlayed.plays.played_at",
+              },
+            },
+          },
+          {
+            $project: {
+              "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.time": {
+                $dateToString: {
+                  format: "%H",
+                  date: "$recentlyPlayed.played_at",
+                },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                time: "$recentlyPlayed.time",
+              },
+              plays: {
+                $sum: 1,
+              },
+              playtime: {
+                $sum: "$recentlyPlayed.duration_ms",
+              },
+            },
+          },
+          {
+            $project: {
+              time: "$_id.time",
+              plays: 1,
+              playtime: {
+                $round: {
+                  $divide: ["$playtime", 60000],
+                },
+              },
+              _id: 0,
+            },
+          },
+          {
+            $sort: {
+              time: -1,
+            },
+          },
+        ]).then((res) => {
+          const cal = [];
+          for (let i = 1; i <= 24; i++) {
+            cal.push(
+              res.find((hour) => Number(hour.time) === i) || {
+                time: i,
+                playtime: 0,
+                plays: 0,
+              }
+            );
+          }
+          return cal;
+        }),
       ];
 
-      const [top, history, overview, genres] = await Promise.all(requests);
+      const [
+        top,
+        history,
+        overview,
+        genres,
+        hourlyActivity,
+      ] = await Promise.all(requests);
 
       const response = {
         userName: user.userName,
@@ -181,6 +282,7 @@ export default async function(fastify) {
         history: history.length ? history[0].recentlyPlayed : [],
         overview,
         genres,
+        hourlyActivity,
         leaved: user.refreshToken === "",
         status: 200,
       };
