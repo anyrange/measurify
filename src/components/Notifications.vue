@@ -9,7 +9,7 @@
         v-for="notification in notifications"
         :key="notification"
         :notification="notification"
-        @close-notification="removeNotification({ notification })"
+        @close-notification="removeNotification(notification)"
         transition="fade"
       >
       </notification>

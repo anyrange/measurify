@@ -1,37 +1,25 @@
-import store from "@/store/";
+import $store from "@/store/";
 
 /**
  * @param {('success'|'warning'|'danger')} type
  */
 
-export function notify(app) {
-  const notify = {
-    show: ({ message, type, delay = 3000, progress = true }) => {
-      store.dispatch("addNotification", {
-        notification: {
-          message: message,
-          type: type,
-          delay: delay,
-          progress: progress,
-        },
-      });
-    },
-    reset: () => {
-      store.dispatch("resetNotifications");
-    },
-  };
-  app.config.globalProperties.$notify = notify;
-}
-
-export const notifyAPI = {
+const notification = {
   show: ({ message, type, delay = 3000, progress = true }) => {
-    store.dispatch("addNotification", {
-      notification: {
-        message: message,
-        type: type,
-        delay: delay,
-        progress: progress,
-      },
+    $store.dispatch("addNotification", {
+      message: message,
+      type: type,
+      delay: delay,
+      progress: progress,
     });
   },
+  reset: () => {
+    $store.dispatch("resetNotifications");
+  },
 };
+
+const notify = (app) => {
+  app.config.globalProperties.$notify = notification;
+};
+
+export { notification, notify };

@@ -21,7 +21,7 @@ export default {
     },
   },
   actions: {
-    addNotification: ({ commit, dispatch }, { notification }) => {
+    addNotification: ({ commit, dispatch }, notification) => {
       commit("ADD_NOTIFICATION", notification);
       if (notification.progress && notification.delay > 0) {
         setTimeout(() => {
@@ -29,7 +29,7 @@ export default {
         }, notification.delay);
       }
     },
-    removeNotification: ({ commit }, { notification }) => {
+    removeNotification: ({ commit }, notification) => {
       commit("REMOVE_NOTIFICATION", notification);
     },
     resetNotifications: ({ commit }) => {
