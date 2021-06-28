@@ -13,12 +13,18 @@ const plugin = fp(async function plugin(fastify) {
     const res = await fetch(
       `https://api.spotify.com/v1/${route}${query ? `?${query}` : ""}`,
       options
-    ).then((res) => res.json());
+    );
 
-    if (res.error)
+    if (!res.ok) {
+      console.log("Error:", res.statusText, res.status);
+      throw new fastify.CustomError("Try later", 503);
+    }
+
+    const body = await res.json();
+    if (body.error)
       throw new fastify.CustomError(res.error.message, res.error.status || 500);
 
-    return res;
+    return body;
   });
 });
 
