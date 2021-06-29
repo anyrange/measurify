@@ -2,9 +2,9 @@
   <div
     class="relative mt-4 p-2 table rounded text-sm bg-gray-700-spotify"
     :class="{
-      'text-green-500': this.notification.type === 'success',
-      'text-yellow-500': this.notification.type === 'warning',
-      'text-red-500': this.notification.type === 'danger',
+      'text-green-500': notification.type === 'success',
+      'text-yellow-500': notification.type === 'warning',
+      'text-red-500': notification.type === 'danger',
     }"
   >
     <div
