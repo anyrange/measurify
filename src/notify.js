@@ -1,16 +1,25 @@
 import $store from "@/store/";
 
 /**
- * @param {('success'|'warning'|'danger')} type
+ * @param {('info'|'success'|'warning'|'danger')} type
  */
 
 const notification = {
-  show: ({ message, type, delay = 3000, progress = true }) => {
+  show: ({
+    message,
+    type = "info",
+    delay = 3000,
+    progress = true,
+    closable = true,
+    actions,
+  }) => {
     $store.dispatch("addNotification", {
-      message: message,
-      type: type,
-      delay: delay,
-      progress: progress,
+      message,
+      type,
+      delay,
+      progress,
+      closable,
+      actions,
     });
   },
   reset: () => {
