@@ -103,8 +103,8 @@ export async function clean() {
     subscribers.map(
       ({ _id, lastSpotifyToken, subscriptions: { smartPlaylist }, userName }) =>
         cleanPlaylist({
-          _id: _id,
-          lastSpotifyToken: lastSpotifyToken,
+          _id,
+          lastSpotifyToken,
           id: smartPlaylist.id,
         }).catch((err) =>
           console.log(

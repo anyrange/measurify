@@ -9,20 +9,16 @@ export default async function(fastify) {
             type: "object",
             required: ["quantity", "status"],
             properties: {
-              quantity: {
-                type: "number",
-              },
-              status: {
-                type: "number",
-              },
+              quantity: { type: "number" },
+              status: { type: "number" },
             },
           },
         },
       },
     },
-    async function(request, reply) {
+    async function() {
       const quantity = await User.estimatedDocumentCount();
-      reply.code(200).send({ quantity, status: 200 });
+      return { quantity, status: 200 };
     }
   );
 }

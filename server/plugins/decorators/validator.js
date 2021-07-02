@@ -5,9 +5,6 @@ const plugin = fp(async function plugin(fastify) {
     const context = validationError.validationContext;
 
     switch (context) {
-      case "headers":
-        return { status: 401, message: "Unauthorized" };
-
       case "querystring": {
         const error = validationError.validation[0];
         return {

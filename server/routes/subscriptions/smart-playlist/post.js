@@ -5,12 +5,10 @@ import images from "../../../assets/images.js";
 import { parsePlaylists } from "../../../includes/smart-playlist.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
   fastify.post(
     "",
     {
       schema: {
-        headers,
         body: {
           type: "object",
           required: ["items"],
@@ -31,19 +29,15 @@ export default async function(fastify) {
             type: "object",
             required: ["message", "status"],
             properties: {
-              message: {
-                type: "string",
-              },
-              status: {
-                type: "number",
-              },
+              message: { type: "string" },
+              status: { type: "number" },
             },
           },
         },
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const user = await User.findOne(
         { _id },
         { spotifyID: 1, lastSpotifyToken: 1 }

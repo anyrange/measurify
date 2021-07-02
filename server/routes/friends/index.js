@@ -1,47 +1,24 @@
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-
   fastify.get(
     "",
     {
       schema: {
-        headers,
         response: {
           200: {
             type: "object",
             required: ["status", "friends"],
             properties: {
               status: { type: "number" },
-              friends: {
-                type: "array",
-                items: {
-                  type: "object",
-                  required: ["userName", "avatar", "customID", "lastLogin"],
-                  properties: {
-                    userName: {
-                      type: "string",
-                    },
-                    avatar: {
-                      type: "string",
-                    },
-                    customID: {
-                      type: "string",
-                    },
-                    lastLogin: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
+              friends: { type: "array", items: fastify.getSchema("user") },
             },
           },
         },
       },
     },
-    async function(request, reply) {
-      const _id = request.user_id;
+    async function(req, reply) {
+      const _id = await fastify.auth(req);
       let users = await User.find(
         {},
         {

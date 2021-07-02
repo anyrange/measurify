@@ -3,7 +3,6 @@ import autoLoad from "fastify-autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import dotenv from "dotenv";
-import fs from "fs";
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -11,6 +10,7 @@ const __dirname = dirname(__filename);
 
 const app = fastify();
 
+// plugins
 const WHITE_LIST = process.env.URI_LIST.split(",");
 app.register(import("fastify-cors"), {
   origin: WHITE_LIST,
@@ -25,25 +25,41 @@ app.register(import("fastify-cookie"), {
 
 app.register(import("fastify-websocket"));
 
-// plugins
+if (process.env.NODE_ENV != "production") {
+  app.ready(() => {
+    console.log(app.printRoutes({ commonPrefix: false }));
+  });
+  app.register(import("fastify-swagger"), {
+    routePrefix: "/doc",
+    swagger: {
+      info: {
+        title: "Spotiworm",
+        description: "Spotiworm API documentation",
+      },
+    },
+    uiConfig: {
+      deepLinking: true,
+      displayRequestDuration: true,
+      "syntaxHighlight.theme": "nord",
+    },
+    exposeRoute: true,
+  });
+}
+
+// custom plugins
 app.register(autoLoad, {
   dir: join(__dirname, "plugins"),
 });
 
 // schemas
-const schemas = fs.readdirSync(join(__dirname, "./schema"));
-schemas.forEach((schema) =>
-  import(`./schema/${schema}`).then((module) => app.addSchema(module.default))
-);
+app.register(autoLoad, {
+  dir: join(__dirname, "schema"),
+});
 
 // routes
 app.register(autoLoad, {
   dir: join(__dirname, "routes"),
   routeParams: true,
-});
-
-app.setNotFoundHandler((req, reply) => {
-  reply.code(404).send({ message: "Service not found", status: 404 });
 });
 
 // for ape moments

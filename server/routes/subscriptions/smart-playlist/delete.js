@@ -1,12 +1,10 @@
 import User from "../../../models/User.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
   fastify.delete(
     "",
     {
       schema: {
-        headers,
         body: {
           type: "object",
           required: ["items"],
@@ -39,7 +37,7 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const opResult = await User.updateOne(
         { _id },
         {

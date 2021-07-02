@@ -1,10 +1,5 @@
 import history from "../../includes/listening-history.js";
-
 export default async function(fastify) {
-  const tracks = fastify.getSchema("listening-history");
-  const headers = fastify.getSchema("cookie");
-  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
-
   const responseSchema = {
     200: {
       type: "object",
@@ -12,63 +7,21 @@ export default async function(fastify) {
       properties: {
         album: {
           type: "object",
-          required: [
-            "name",
-            "image",
-            "popularity",
-            "release_date",
-            "total_tracks",
-            "link",
-            "genres",
-            "artists",
-          ],
           properties: {
-            name: {
-              type: "string",
-            },
-            image: {
-              type: "string",
-            },
-            popularity: {
-              type: "number",
-            },
-            release_date: {
-              type: "string",
-            },
-            total_tracks: {
-              type: "number",
-            },
-            link: {
-              type: "string",
-            },
-            label: {
-              type: "string",
-            },
-            genres: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
-            artists: {
-              type: "array",
-              items: {
-                type: "object",
-                required: ["name", "id", "image"],
-                properties: {
-                  name: { type: "string" },
-                  image: { type: "string" },
-                  id: { type: "string" },
-                },
-              },
-            },
+            name: { type: "string" },
+            image: { type: "string" },
+            popularity: { type: "number" },
+            release_date: { type: "string" },
+            total_tracks: { type: "number" },
+            link: { type: "string" },
+            label: { type: "string" },
+            genres: { type: "array", items: { type: "string" } },
+            artists: fastify.getSchema("artists"),
           },
         },
-        tracks,
-        audioFeatures: audioFeaturesSchema,
-        status: {
-          type: "number",
-        },
+        tracks: fastify.getSchema("tracks"),
+        audioFeatures: fastify.getSchema("audioFeatures"),
+        status: { type: "number" },
       },
     },
   };
@@ -77,23 +30,16 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
-        headers,
         params: {
           type: "object",
           required: ["id"],
-          properties: {
-            id: {
-              type: "string",
-              minLength: 22,
-              maxLength: 22,
-            },
-          },
+          properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: responseSchema,
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const albumID = req.params.id;
 
       const token = await this.getToken(_id);

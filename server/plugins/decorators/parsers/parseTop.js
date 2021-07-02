@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import User from "../../models/User.js";
+import User from "../../../models/User.js";
 import mongodb from "mongodb";
 import fetch from "node-fetch";
 
@@ -78,11 +78,7 @@ const plugin = fp(async function plugin(fastify) {
 
 const tracks = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
-    {
-      $match: {
-        _id: ObjectId(_id),
-      },
-    },
+    { $match: { _id: ObjectId(_id) } },
     {
       $project: {
         "recentlyPlayed.plays.played_at": 1,
@@ -92,16 +88,8 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
         "recentlyPlayed.name": 1,
       },
     },
-    {
-      $unwind: {
-        path: "$recentlyPlayed",
-      },
-    },
-    {
-      $unwind: {
-        path: "$recentlyPlayed.plays",
-      },
-    },
+    { $unwind: { path: "$recentlyPlayed" } },
+    { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
         "recentlyPlayed.duration_ms": 1,
@@ -113,10 +101,7 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
     },
     {
       $match: {
-        "recentlyPlayed.played_at": {
-          $gte: firstDate,
-          $lte: lastDate,
-        },
+        "recentlyPlayed.played_at": { $gte: firstDate, $lte: lastDate },
       },
     },
     {
@@ -126,19 +111,11 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
           name: "$recentlyPlayed.name",
           image: "$recentlyPlayed.image",
         },
-        playtime: {
-          $sum: "$recentlyPlayed.duration_ms",
-        },
+        playtime: { $sum: "$recentlyPlayed.duration_ms" },
       },
     },
-    {
-      $sort: {
-        playtime: -1,
-      },
-    },
-    {
-      $limit: range,
-    },
+    { $sort: { playtime: -1 } },
+    { $limit: range },
   ];
 
   const tracks = await User.aggregate(agg);
@@ -155,11 +132,7 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
 
 const albums = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
-    {
-      $match: {
-        _id: ObjectId(_id),
-      },
-    },
+    { $match: { _id: ObjectId(_id) } },
     {
       $project: {
         _id: 0,
@@ -170,16 +143,8 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
         "recentlyPlayed.duration_ms": 1,
       },
     },
-    {
-      $unwind: {
-        path: "$recentlyPlayed",
-      },
-    },
-    {
-      $unwind: {
-        path: "$recentlyPlayed.plays",
-      },
-    },
+    { $unwind: { path: "$recentlyPlayed" } },
+    { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
         "recentlyPlayed.duration_ms": 1,
@@ -191,10 +156,7 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
     },
     {
       $match: {
-        "recentlyPlayed.played_at": {
-          $gte: firstDate,
-          $lte: lastDate,
-        },
+        "recentlyPlayed.played_at": { $gte: firstDate, $lte: lastDate },
       },
     },
     {
@@ -204,19 +166,11 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
           name: "$recentlyPlayed.album.name",
           image: "$recentlyPlayed.image",
         },
-        playtime: {
-          $sum: "$recentlyPlayed.duration_ms",
-        },
+        playtime: { $sum: "$recentlyPlayed.duration_ms" },
       },
     },
-    {
-      $sort: {
-        playtime: -1,
-      },
-    },
-    {
-      $limit: range,
-    },
+    { $sort: { playtime: -1 } },
+    { $limit: range },
   ];
   const albums = await User.aggregate(agg);
 
@@ -232,11 +186,7 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
 
 const playlists = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
-    {
-      $match: {
-        _id: ObjectId(_id),
-      },
-    },
+    { $match: { _id: ObjectId(_id) } },
     {
       $project: {
         _id: 0,
@@ -246,16 +196,8 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
         lastSpotifyToken: 1,
       },
     },
-    {
-      $unwind: {
-        path: "$recentlyPlayed",
-      },
-    },
-    {
-      $unwind: {
-        path: "$recentlyPlayed.plays",
-      },
-    },
+    { $unwind: { path: "$recentlyPlayed" } },
+    { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
         "recentlyPlayed.duration_ms": 1,
@@ -266,10 +208,7 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
     },
     {
       $match: {
-        "recentlyPlayed.played_at": {
-          $gte: firstDate,
-          $lte: lastDate,
-        },
+        "recentlyPlayed.played_at": { $gte: firstDate, $lte: lastDate },
         "recentlyPlayed.context": { $ne: null },
       },
     },
@@ -279,19 +218,11 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
           id: "$recentlyPlayed.context.id",
           access_token: "$lastSpotifyToken",
         },
-        playtime: {
-          $sum: "$recentlyPlayed.duration_ms",
-        },
+        playtime: { $sum: "$recentlyPlayed.duration_ms" },
       },
     },
-    {
-      $sort: {
-        playtime: -1,
-      },
-    },
-    {
-      $limit: range,
-    },
+    { $sort: { playtime: -1 } },
+    { $limit: range },
   ];
   let playlists = await User.aggregate(agg);
 
@@ -306,11 +237,7 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
 
 const artists = async ({ _id, firstDate, lastDate, range }) => {
   const agg = [
-    {
-      $match: {
-        _id: ObjectId(_id),
-      },
-    },
+    { $match: { _id: ObjectId(_id) } },
     {
       $project: {
         _id: 0,
@@ -320,16 +247,8 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
         "recentlyPlayed.duration_ms": 1,
       },
     },
-    {
-      $unwind: {
-        path: "$recentlyPlayed",
-      },
-    },
-    {
-      $unwind: {
-        path: "$recentlyPlayed.plays",
-      },
-    },
+    { $unwind: { path: "$recentlyPlayed" } },
+    { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
         "recentlyPlayed.duration_ms": 1,
@@ -340,10 +259,7 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
     },
     {
       $match: {
-        "recentlyPlayed.played_at": {
-          $gte: firstDate,
-          $lte: lastDate,
-        },
+        "recentlyPlayed.played_at": { $gte: firstDate, $lte: lastDate },
       },
     },
     {
@@ -353,19 +269,11 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
           name: { $arrayElemAt: ["$recentlyPlayed.artists.name", 0] },
           access_token: "$lastSpotifyToken",
         },
-        playtime: {
-          $sum: "$recentlyPlayed.duration_ms",
-        },
+        playtime: { $sum: "$recentlyPlayed.duration_ms" },
       },
     },
-    {
-      $sort: {
-        playtime: -1,
-      },
-    },
-    {
-      $limit: range,
-    },
+    { $sort: { playtime: -1 } },
+    { $limit: range },
   ];
 
   const artists = await User.aggregate(agg);
@@ -381,9 +289,7 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
 const addPlaylistInfo = (playlist, cb) => {
   fetch(
     `https://api.spotify.com/v1/playlists/${playlist.id}?fields=images,name`,
-    {
-      headers: { Authorization: "Bearer " + playlist.access_token },
-    }
+    { headers: { Authorization: "Bearer " + playlist.access_token } }
   )
     .then((res) => res.json())
     .then((body) => {

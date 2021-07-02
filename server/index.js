@@ -23,15 +23,13 @@ mongoose.connect(
 
 app.listen(PORT, "0.0.0.0", (err) => {
   if (err) return console.log(err);
-  console.info(`App listening on: http://localhost:${PORT}`);
+  console.info(
+    `App listening on: http://localhost:${PORT}
+Docs are available on: http://localhost:${PORT}/doc`
+  );
 });
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
-
-if (process.env.NODE_ENV != "production")
-  app.ready(() => {
-    console.log(app.printRoutes({ commonPrefix: false }));
-  });
 
 function startScheduledJobs() {
   refresh_tokens();

@@ -1,13 +1,10 @@
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-
   fastify.post(
     "",
     {
       schema: {
-        headers,
         body: {
           type: "object",
           required: ["privacy", "customID", "autoUpdate"],
@@ -43,7 +40,7 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const { privacy, customID, autoUpdate } = req.body;
 
       const user = await User.findOne({ customID }, { _id: 1 });
@@ -62,7 +59,7 @@ export default async function(fastify) {
       if (updateResult.nModified === 0)
         throw new this.CustomError("Nothing to update", 400);
 
-      reply.code(200).send({ message: "Successfully updated", status: 200 });
+      reply.send({ message: "Successfully updated", status: 200 });
     }
   );
 }

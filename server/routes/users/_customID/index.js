@@ -5,54 +5,17 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
-  const top = fastify.getSchema("top");
-  const history = fastify.getSchema("listening-history");
-  const headers = fastify.getSchema("cookie");
-
   const responseSchema = {
     200: {
       type: "object",
-      required: [
-        "userName",
-        "avatar",
-        "lastLogin",
-        "overview",
-        "history",
-        "top",
-        "leaved",
-        "genres",
-        "status",
-      ],
       properties: {
-        userName: {
-          type: "string",
-        },
-        avatar: {
-          type: "string",
-        },
-        lastlogin: {
-          type: "string",
-        },
-        history,
-        overview: {
-          type: "object",
-          required: ["plays", "playtime"],
-          properties: {
-            plays: {
-              type: "number",
-            },
-            playtime: {
-              type: "number",
-            },
-          },
-        },
-        top,
-        genres: {
-          type: "array",
-          items: {
-            type: "string",
-          },
-        },
+        userName: { type: "string" },
+        avatar: { type: "string" },
+        lastlogin: { type: "string" },
+        history: fastify.getSchema("tracks"),
+        overview: fastify.getSchema("overview"),
+        top: fastify.getSchema("top"),
+        genres: { type: "array", items: { type: "string" } },
         hourlyActivity: {
           type: "array",
           items: {
@@ -66,9 +29,7 @@ export default async function(fastify) {
           },
         },
         leaved: { type: "boolean" },
-        status: {
-          type: "number",
-        },
+        status: { type: "number" },
       },
     },
   };
@@ -77,22 +38,17 @@ export default async function(fastify) {
     "",
     {
       schema: {
-        headers,
         params: {
           type: "object",
-          required: ["id"],
-          properties: {
-            id: {
-              type: "string",
-            },
-          },
+          required: ["customID"],
+          properties: { customID: { type: "string" } },
         },
         response: responseSchema,
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
-      const customID = req.params.id;
+      const _id = await fastify.auth(req);
+      const { customID } = req.params;
 
       // find both the requesting and the searched user
       const users = await User.find(
@@ -129,11 +85,7 @@ export default async function(fastify) {
       }
 
       const agg = [
-        {
-          $match: {
-            _id: ObjectId(user._id),
-          },
-        },
+        { $match: { _id: ObjectId(user._id) } },
         {
           $project: {
             "recentlyPlayed.duration_ms": 1,
@@ -141,11 +93,7 @@ export default async function(fastify) {
             _id: 0,
           },
         },
-        {
-          $unwind: {
-            path: "$recentlyPlayed",
-          },
-        },
+        { $unwind: { path: "$recentlyPlayed" } },
         {
           $project: {
             "recentlyPlayed.duration_ms": 1,
@@ -182,27 +130,15 @@ export default async function(fastify) {
         }),
         genresTop(user.lastSpotifyToken),
         User.aggregate([
-          {
-            $match: {
-              _id: new ObjectId(user._id),
-            },
-          },
+          { $match: { _id: new ObjectId(user._id) } },
           {
             $project: {
               "recentlyPlayed.plays.played_at": 1,
               "recentlyPlayed.duration_ms": 1,
             },
           },
-          {
-            $unwind: {
-              path: "$recentlyPlayed",
-            },
-          },
-          {
-            $unwind: {
-              path: "$recentlyPlayed.plays",
-            },
-          },
+          { $unwind: { path: "$recentlyPlayed" } },
+          { $unwind: { path: "$recentlyPlayed.plays" } },
           {
             $addFields: {
               "recentlyPlayed.played_at": {
@@ -223,34 +159,20 @@ export default async function(fastify) {
           },
           {
             $group: {
-              _id: {
-                time: "$recentlyPlayed.time",
-              },
-              plays: {
-                $sum: 1,
-              },
-              playtime: {
-                $sum: "$recentlyPlayed.duration_ms",
-              },
+              _id: { time: "$recentlyPlayed.time" },
+              plays: { $sum: 1 },
+              playtime: { $sum: "$recentlyPlayed.duration_ms" },
             },
           },
           {
             $project: {
               time: "$_id.time",
               plays: 1,
-              playtime: {
-                $round: {
-                  $divide: ["$playtime", 60000],
-                },
-              },
+              playtime: { $round: { $divide: ["$playtime", 60000] } },
               _id: 0,
             },
           },
-          {
-            $sort: {
-              time: -1,
-            },
-          },
+          { $sort: { time: -1 } },
         ]).then((res) => {
           const cal = [];
           for (let i = 1; i <= 24; i++) {
@@ -287,7 +209,7 @@ export default async function(fastify) {
         status: 200,
       };
 
-      reply.code(200).send(response);
+      reply.send(response);
     }
   );
 }

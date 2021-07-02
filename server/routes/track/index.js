@@ -1,82 +1,14 @@
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
   const responseSchema = {
     200: {
       type: "object",
-      required: ["overview", "status"],
       properties: {
-        track: {
-          type: "object",
-          required: [
-            "name",
-            "image",
-            "popularity",
-            "release_date",
-            "duration_ms",
-            "link",
-            "album",
-            "artists",
-            "preview_url",
-          ],
-          properties: {
-            name: {
-              type: "string",
-            },
-            image: {
-              type: "string",
-            },
-            popularity: {
-              type: "number",
-            },
-            release_date: {
-              type: "string",
-            },
-            duration_ms: {
-              type: "number",
-            },
-            preview_url: {
-              type: "string",
-            },
-            link: {
-              type: "string",
-            },
-            artists: {
-              type: "array",
-              items: {
-                type: "object",
-                required: ["name", "id", "image"],
-                properties: {
-                  name: { type: "string" },
-                  id: { type: "string" },
-                  image: { type: "string" },
-                },
-              },
-            },
-            album: {
-              type: "object",
-              required: ["name", "id"],
-              properties: {
-                name: { type: "string" },
-                id: { type: "string" },
-              },
-            },
-          },
-        },
-        overview: {
-          type: "object",
-          required: ["plays", "playtime"],
-          properties: {
-            plays: { type: "number" },
-            playtime: { type: "number" },
-          },
-        },
-        audioFeatures: audioFeaturesSchema,
-        status: {
-          type: "number",
-        },
+        track: fastify.getSchema("track"),
+        overview: fastify.getSchema("overview"),
+        audioFeatures: fastify.getSchema("audioFeatures"),
+        status: { type: "number" },
       },
     },
   };
@@ -85,23 +17,16 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
-        headers,
         params: {
           type: "object",
           required: ["id"],
-          properties: {
-            id: {
-              type: "string",
-              minLength: 22,
-              maxLength: 22,
-            },
-          },
+          properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: responseSchema,
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const trackID = req.params.id;
 
       const user = await User.findOne(
@@ -124,9 +49,7 @@ export default async function(fastify) {
         }),
         User.findOne(
           { _id, "recentlyPlayed.id": trackID },
-          {
-            "recentlyPlayed.$": 1,
-          }
+          { "recentlyPlayed.$": 1 }
         ),
       ]);
 
@@ -147,10 +70,7 @@ export default async function(fastify) {
 
       const response = {
         track: {
-          album: {
-            name: track.album.name,
-            id: track.album.id,
-          },
+          album: { name: track.album.name, id: track.album.id },
           artists: artists.map(({ name, id, images }) => {
             return { name, id, image: images.length ? images[0].url : "" };
           }),
@@ -167,7 +87,7 @@ export default async function(fastify) {
         status: 200,
       };
 
-      reply.code(200).send(response);
+      reply.send(response);
     }
   );
 }

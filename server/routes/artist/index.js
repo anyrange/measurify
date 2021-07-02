@@ -1,10 +1,6 @@
 import history from "../../includes/listening-history.js";
 
 export default async function(fastify) {
-  const tracks = fastify.getSchema("listening-history");
-  const headers = fastify.getSchema("cookie");
-  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
-
   const responseSchema = {
     200: {
       type: "object",
@@ -12,35 +8,19 @@ export default async function(fastify) {
       properties: {
         artist: {
           type: "object",
-          required: [
-            "followers",
-            "genres",
-            "name",
-            "image",
-            "link",
-            "popularity",
-          ],
           properties: {
-            followers: {
-              type: "number",
-            },
-            genres: {
-              type: "array",
-              items: {
-                type: "string",
-              },
-            },
+            followers: { type: "number" },
+            genres: { type: "array", items: { type: "string" } },
             popularity: { type: "number" },
             name: { type: "string" },
             image: { type: "string" },
             link: { type: "string" },
           },
         },
-        tracks,
-        audioFeatures: audioFeaturesSchema,
-        status: {
-          type: "number",
-        },
+        tracks: fastify.getSchema("tracks"),
+
+        audioFeatures: fastify.getSchema("audioFeatures"),
+        status: { type: "number" },
       },
     },
   };
@@ -49,23 +29,16 @@ export default async function(fastify) {
     "/:id",
     {
       schema: {
-        headers,
         params: {
           type: "object",
           required: ["id"],
-          properties: {
-            id: {
-              type: "string",
-              minLength: 22,
-              maxLength: 22,
-            },
-          },
+          properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: responseSchema,
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const artistID = req.params.id;
       const token = await this.getToken(_id);
 

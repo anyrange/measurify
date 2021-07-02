@@ -1,63 +1,29 @@
 import User from "../../../models/User.js";
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-
   fastify.get(
     "",
     {
       schema: {
-        headers,
         response: {
           200: {
             type: "object",
             required: ["status", "top"],
             properties: {
-              status: {
-                type: "number",
-              },
-              top: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    userName: {
-                      type: "string",
-                    },
-                    avatar: {
-                      type: "string",
-                    },
-                    customID: {
-                      type: "string",
-                    },
-                    canSee: {
-                      type: "boolean",
-                    },
-                    lastLogin: {
-                      type: "string",
-                    },
-                    listened: {
-                      type: "number",
-                    },
-                  },
-                },
-              },
+              status: { type: "number" },
+              top: { type: "array", items: fastify.getSchema("user") },
             },
           },
         },
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const requestor = await User.findOne({ _id }, { spotifyID: 1 });
 
       if (!requestor) throw new this.CustomError("User not found", 404);
 
       const agg = [
-        {
-          $match: {
-            privacy: { $ne: "private" },
-          },
-        },
+        { $match: { privacy: { $ne: "private" } } },
         {
           $project: {
             userName: 1,
@@ -70,11 +36,7 @@ export default async function(fastify) {
             "recentlyPlayed.duration_ms": 1,
           },
         },
-        {
-          $unwind: {
-            path: "$recentlyPlayed",
-          },
-        },
+        { $unwind: { path: "$recentlyPlayed" } },
         {
           $project: {
             userName: 1,
@@ -109,18 +71,8 @@ export default async function(fastify) {
             },
           },
         },
-        {
-          $match: {
-            listened: {
-              $gt: 0,
-            },
-          },
-        },
-        {
-          $sort: {
-            listened: -1,
-          },
-        },
+        { $match: { listened: { $gt: 0 } } },
+        { $sort: { listened: -1 } },
       ];
 
       const topRaw = await User.aggregate(agg);
@@ -157,10 +109,7 @@ export default async function(fastify) {
         };
       });
 
-      reply.code(200).send({
-        top,
-        status: 200,
-      });
+      reply.send({ top, status: 200 });
     }
   );
 }

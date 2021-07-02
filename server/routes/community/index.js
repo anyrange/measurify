@@ -4,24 +4,16 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-
   fastify.get(
     "",
     {
       schema: {
-        headers,
+        description: "do not working properly yet",
         querystring: {
           type: "object",
           properties: {
-            page: {
-              type: "number",
-              minimum: 1,
-            },
-            range: {
-              type: "number",
-              minimum: 2,
-            },
+            page: { type: "number", minimum: 1 },
+            range: { type: "number", minimum: 2 },
           },
         },
         response: {
@@ -29,9 +21,7 @@ export default async function(fastify) {
             type: "object",
             required: ["status", "activity"],
             properties: {
-              status: {
-                type: "number",
-              },
+              status: { type: "number" },
               activity: {
                 type: "array",
                 items: {
@@ -41,26 +31,7 @@ export default async function(fastify) {
                     userName: { type: "string" },
                     avatar: { type: "string" },
                     customID: { type: "string" },
-                    track: {
-                      type: "object",
-                      required: ["id", "name", "played_at", "artists"],
-                      properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        played_at: { type: "string" },
-                        artists: {
-                          type: "array",
-                          items: {
-                            type: "object",
-                            required: ["id", "name"],
-                            properties: {
-                              id: { type: "string" },
-                              name: { type: "string" },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    track: fastify.getSchema("track"),
                     type: { type: "string" },
                   },
                 },
@@ -71,7 +42,7 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const range = req.query.range || 10;
       const page = req.query.page || 1;
 
@@ -129,11 +100,7 @@ export default async function(fastify) {
       const lastDate = trackActivity[trackActivity.length - 1].track.played_at;
       const requests = friends.map((friend) => {
         {
-          const options = {
-            friend,
-            firstDate,
-            lastDate,
-          };
+          const options = { friend, firstDate, lastDate };
           return getLiked(options);
         }
       });
@@ -199,16 +166,8 @@ const getTrackActivity = async (friends, page, range) => {
         avatar: 1,
       },
     },
-    {
-      $unwind: {
-        path: "$track",
-      },
-    },
-    {
-      $unwind: {
-        path: "$track.plays",
-      },
-    },
+    { $unwind: { path: "$track" } },
+    { $unwind: { path: "$track.plays" } },
     {
       $project: {
         track: {
@@ -226,23 +185,13 @@ const getTrackActivity = async (friends, page, range) => {
         avatar: 1,
       },
     },
-    {
-      $sort: {
-        "track.played_at": -1,
-      },
-    },
+    { $sort: { "track.played_at": -1 } },
     {
       $skip:
         page - 1 - Math.floor(page / (friends.length + 1)) * friends.length,
     },
-    {
-      $limit: range,
-    },
-    {
-      $addFields: {
-        type: "listened",
-      },
-    },
+    { $limit: range },
+    { $addFields: { type: "listened" } },
   ];
   return await User.aggregate(agg);
 };

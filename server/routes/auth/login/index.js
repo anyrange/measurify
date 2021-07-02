@@ -31,10 +31,10 @@ export default async function(fastify) {
 
       reply.redirect(
         "https://accounts.spotify.com/authorize?" +
-          `response_type=code&` +
-          `client_id=${process.env.SPOTIFY_CLIENT_ID}&` +
-          `scope=${scopes.join(" ")}&` +
-          `redirect_uri=${redirect_uri}?sw_redirect=${query_uri}`
+          `response_type=code` +
+          `&client_id=${process.env.SPOTIFY_CLIENT_ID}` +
+          `&scope=${scopes.join(" ")}` +
+          `&redirect_uri=${redirect_uri}?sw_redirect=${query_uri}`
       );
     }
   );

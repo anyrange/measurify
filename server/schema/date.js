@@ -2,10 +2,10 @@ import fp from "fastify-plugin";
 
 const plugin = fp(async function plugin(fastify) {
   fastify.addSchema({
-    $id: "tracks",
-    title: "tracks",
-    type: "array",
-    items: fastify.getSchema("track"),
+    $id: "date",
+    title: "date",
+    type: "string",
+    pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
   });
 });
 

@@ -4,21 +4,16 @@ const { ObjectId } = mongodb;
 import formatOverview from "../../includes/format-overview.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
-
   fastify.get(
     "",
     {
       schema: {
-        headers,
         response: {
           200: {
             type: "object",
             required: ["overview", "status"],
             properties: {
-              status: {
-                type: "number",
-              },
+              status: { type: "number" },
               overview: {
                 type: "array",
                 items: {
@@ -37,14 +32,10 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
 
       const agg = [
-        {
-          $match: {
-            _id: new ObjectId(_id),
-          },
-        },
+        { $match: { _id: new ObjectId(_id) } },
         {
           $project: {
             "recentlyPlayed.plays.played_at": 1,
@@ -52,15 +43,9 @@ export default async function(fastify) {
           },
         },
         {
-          $unwind: {
-            path: "$recentlyPlayed",
-          },
+          $unwind: { path: "$recentlyPlayed" },
         },
-        {
-          $unwind: {
-            path: "$recentlyPlayed.plays",
-          },
-        },
+        { $unwind: { path: "$recentlyPlayed.plays" } },
         {
           $addFields: {
             "recentlyPlayed.played_at": {
@@ -81,15 +66,9 @@ export default async function(fastify) {
         },
         {
           $group: {
-            _id: {
-              date: "$recentlyPlayed.played_at",
-            },
-            plays: {
-              $sum: 1,
-            },
-            playtime: {
-              $sum: "$recentlyPlayed.duration_ms",
-            },
+            _id: { date: "$recentlyPlayed.played_at" },
+            plays: { $sum: 1 },
+            playtime: { $sum: "$recentlyPlayed.duration_ms" },
           },
         },
         {
@@ -100,19 +79,15 @@ export default async function(fastify) {
             _id: 0,
           },
         },
-        {
-          $sort: {
-            date: -1,
-          },
-        },
+        { $sort: { date: -1 } },
       ];
 
       const plays = await User.aggregate(agg);
 
       if (!plays || !plays.length)
-        return reply.code(200).send({ status: 204, overview: [] });
+        return reply.send({ status: 204, overview: [] });
 
-      reply.code(200).send({ overview: formatOverview(plays), status: 200 });
+      reply.send({ overview: formatOverview(plays), status: 200 });
     }
   );
 }

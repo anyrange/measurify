@@ -1,14 +1,7 @@
 import fp from "fastify-plugin";
+import CustomError from "../../includes/CustomError.js";
 
 const plugin = fp(async function plugin(fastify) {
-  class CustomError extends Error {
-    constructor(message, status) {
-      super(message);
-      this.status = status;
-      this.name = "CustomError";
-    }
-  }
-
   fastify.decorate("CustomError", CustomError);
 });
 

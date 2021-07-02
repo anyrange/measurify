@@ -1,89 +1,50 @@
 import history from "../../includes/listening-history.js";
 
 export default async function(fastify) {
-  const tracks = fastify.getSchema("listening-history");
-  const headers = fastify.getSchema("cookie");
-  const audioFeaturesSchema = fastify.getSchema("audioFeatures");
-
-  const responseSchema = {
-    200: {
-      type: "object",
-      required: ["playlist", "tracks", "status"],
-      properties: {
-        playlist: {
-          type: "object",
-          required: [
-            "name",
-            "image",
-            "collaborative",
-            "link",
-            "followers",
-            "owner",
-            "public",
-            "tracks",
-          ],
-          properties: {
-            name: {
-              type: "string",
-            },
-            image: {
-              type: "string",
-            },
-            collaborative: {
-              type: "boolean",
-            },
-            followers: {
-              type: "number",
-            },
-            link: {
-              type: "string",
-            },
-            public: {
-              type: "boolean",
-            },
-            tracks: {
-              type: "number",
-            },
-            owner: {
-              type: "object",
-              required: ["name", "id"],
-              properties: {
-                name: { type: "string" },
-                id: { type: "string" },
-              },
-            },
-          },
-        },
-        tracks,
-        audioFeatures: audioFeaturesSchema,
-        status: {
-          type: "number",
-        },
-      },
-    },
-  };
-
   fastify.get(
     "/:id",
     {
       schema: {
-        headers,
         params: {
           type: "object",
           required: ["id"],
-          properties: {
-            id: {
-              type: "string",
-              minLength: 22,
-              maxLength: 22,
+          properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
+        },
+        response: {
+          200: {
+            type: "object",
+            required: ["playlist", "tracks", "status"],
+            properties: {
+              playlist: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  image: { type: "string" },
+                  collaborative: { type: "boolean" },
+                  followers: { type: "number" },
+                  link: { type: "string" },
+                  public: { type: "boolean" },
+                  tracks: { type: "number" },
+                  owner: {
+                    type: "object",
+                    required: ["name", "id"],
+                    properties: {
+                      name: { type: "string" },
+                      id: { type: "string" },
+                    },
+                  },
+                },
+              },
+              tracks: fastify.getSchema("tracks"),
+              audioFeatures: fastify.getSchema("audioFeatures"),
+              status: { type: "number" },
             },
           },
         },
-        response: responseSchema,
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const playlistID = req.params.id;
 
       const token = await this.getToken(_id);
@@ -117,7 +78,7 @@ export default async function(fastify) {
         status: 200,
       };
 
-      reply.code(200).send(response);
+      reply.send(response);
     }
   );
 }

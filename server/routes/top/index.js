@@ -1,34 +1,16 @@
-/**
- * @param {import('fastify').FastifyInstance} fastify
- */
-
 import User from "../../models/User.js";
 
 export default async function(fastify) {
-  const top = fastify.getSchema("top");
-  const headers = fastify.getSchema("cookie");
-
   fastify.get(
     "",
     {
       schema: {
-        headers,
         querystring: {
           type: "object",
           properties: {
-            range: {
-              type: "number",
-              minimum: 1,
-              maximum: 50,
-            },
-            firstDate: {
-              type: "string",
-              pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-            },
-            lastDate: {
-              type: "string",
-              pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-            },
+            range: { type: "number", minimum: 1, maximum: 50 },
+            firstDate: fastify.getSchema("date"),
+            lastDate: fastify.getSchema("date"),
           },
         },
         response: {
@@ -36,17 +18,15 @@ export default async function(fastify) {
             type: "object",
             required: ["top", "status"],
             properties: {
-              status: {
-                type: "number",
-              },
-              top,
+              status: { type: "number" },
+              top: fastify.getSchema("top"),
             },
           },
         },
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const range = req.query.range || 20;
       const firstDate = req.query.firstDate;
       let lastDate = req.query.lastDate;
@@ -84,7 +64,7 @@ export default async function(fastify) {
         lastDate
       );
 
-      reply.code(200).send({ top: response, status: 200 });
+      reply.send({ top: response, status: 200 });
     }
   );
 }

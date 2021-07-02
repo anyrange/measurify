@@ -9,10 +9,7 @@ export default async function(fastify) {
     fs.readFile(
       join(dirname(__filename), "../assets/index.html"),
       (err, html) => {
-        reply
-          .code(200)
-          .type("text/html")
-          .send(html);
+        reply.type("text/html").send(html);
       }
     );
   });
@@ -21,10 +18,7 @@ export default async function(fastify) {
     fs.readFile(
       join(dirname(__filename), "../assets/info.html"),
       (err, html) => {
-        reply
-          .code(200)
-          .type("text/html")
-          .send(html);
+        reply.type("text/html").send(html);
       }
     );
   });

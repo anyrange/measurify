@@ -1,12 +1,10 @@
 import User from "../../../models/User.js";
 
 export default async function(fastify) {
-  const headers = fastify.getSchema("cookie");
   fastify.put(
     "",
     {
       schema: {
-        headers,
         body: {
           type: "object",
           required: ["items"],
@@ -27,19 +25,15 @@ export default async function(fastify) {
             type: "object",
             required: ["message", "status"],
             properties: {
-              message: {
-                type: "string",
-              },
-              status: {
-                type: "number",
-              },
+              message: { type: "string" },
+              status: { type: "number" },
             },
           },
         },
       },
     },
     async function(req, reply) {
-      const _id = req.user_id;
+      const _id = await fastify.auth(req);
       const opResult = await User.updateOne(
         { _id },
         {
@@ -56,7 +50,7 @@ export default async function(fastify) {
       if (opResult.nModified === 0)
         throw new this.CustomError("Already exist", 400);
 
-      reply.code(200).send({ message: "Succesfully updated", status: 200 });
+      reply.send({ message: "Succesfully updated", status: 200 });
     }
   );
 }

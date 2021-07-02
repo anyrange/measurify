@@ -26,12 +26,8 @@ export default async function(fastify) {
       //get tokens
       const tokens = await fetchTokens(code, query_uri);
 
-      if (tokens.error) {
-        return reply.code(500).send({
-          message: tokens.error,
-          status: 500,
-        });
-      }
+      if (tokens.error)
+        return reply.code(500).send({ message: tokens.error, status: 500 });
 
       const access_token = tokens.access_token;
       const refresh_token = tokens.refresh_token;
@@ -57,7 +53,7 @@ export default async function(fastify) {
         userName: user.display_name,
         refreshToken: refresh_token,
         avatar: user.images.length ? user.images[0].url : "",
-        __v: 4,
+        __v: 5,
       };
       const projection = {
         recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
@@ -82,16 +78,7 @@ export default async function(fastify) {
       const secret = process.env.SECRET_JWT;
       const token = jwt.sign({ _id: document._id }, secret);
 
-      const expireDate = new Date();
-      expireDate.setDate(expireDate.getDate() + 365);
-
-      reply.setCookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-        expires: expireDate,
-      });
+      reply.setCookie("token", token, fastify.cookieOptions);
 
       reply.redirect(query_uri);
     }
@@ -124,11 +111,7 @@ const fetchTokens = async (code, query_uri) => {
 const fetchHistory = async (access_token, _id) => {
   const history = await fetch(
     `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
-    {
-      headers: {
-        Authorization: "Bearer " + access_token,
-      },
-    }
+    { headers: { Authorization: "Bearer " + access_token } }
   ).then((res) => res.json());
   if (history.error) return console.log(history.error);
 

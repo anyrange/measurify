@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import User from "../../models/User.js";
+import User from "../../../models/User.js";
 import mongodb from "mongodb";
 
 const { ObjectId } = mongodb;
@@ -9,11 +9,7 @@ const plugin = fp(async function plugin(fastify) {
     "parseHistory",
     async (_id, range = 50, page = 0, search) => {
       const agg = [
-        {
-          $match: {
-            _id: new ObjectId(_id),
-          },
-        },
+        { $match: { _id: new ObjectId(_id) } },
         {
           $project: {
             "recentlyPlayed.album.id": 1,
@@ -27,16 +23,8 @@ const plugin = fp(async function plugin(fastify) {
             "recentlyPlayed.plays.played_at": 1,
           },
         },
-        {
-          $unwind: {
-            path: "$recentlyPlayed",
-          },
-        },
-        {
-          $unwind: {
-            path: "$recentlyPlayed.plays",
-          },
-        },
+        { $unwind: { path: "$recentlyPlayed" } },
+        { $unwind: { path: "$recentlyPlayed.plays" } },
       ];
 
       if (search) {
@@ -69,11 +57,7 @@ const plugin = fp(async function plugin(fastify) {
             "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
           },
         },
-        {
-          $sort: {
-            "recentlyPlayed.played_at": -1,
-          },
-        },
+        { $sort: { "recentlyPlayed.played_at": -1 } },
         {
           $group: {
             _id: null,
