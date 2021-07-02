@@ -20,67 +20,64 @@ export default async function(fastify) {
       },
     },
     async (request, reply) => {
-      const code = request.query.code || null;
-      const query_uri = request.query.sw_redirect;
+      try {
+        const code = request.query.code || null;
+        const query_uri = request.query.sw_redirect;
 
-      //get tokens
-      const tokens = await fetchTokens(code, query_uri);
+        //get tokens
+        const tokens = await fetchTokens(code, query_uri);
 
-      if (tokens.error)
-        return reply.code(500).send({ message: tokens.error, status: 500 });
+        if (tokens.error)
+          return reply.code(500).send({ message: tokens.error, status: 500 });
 
-      const access_token = tokens.access_token;
-      const refresh_token = tokens.refresh_token;
+        const access_token = tokens.access_token;
+        const refresh_token = tokens.refresh_token;
 
-      //get user info
-      const user = await fetch(`https://api.spotify.com/v1/me`, {
-        headers: {
-          Authorization: "Bearer " + access_token,
-        },
-      }).then((res) => res.json());
+        //get user info
+        const user = await fetch(`https://api.spotify.com/v1/me`, {
+          headers: { Authorization: "Bearer " + access_token },
+        }).then((res) => res.json());
 
-      if (user.error)
-        return reply.code(tokens.error.status || 500).send({
-          message: tokens.error.message,
-          status: token.error.status || 500,
+        console.log(user.display_name + " logined");
+
+        const filter = { spotifyID: user.id };
+        const upsert = {
+          lastSpotifyToken: access_token,
+          userName: user.display_name,
+          refreshToken: refresh_token,
+          avatar: user.images.length ? user.images[0].url : "",
+          __v: 5,
+        };
+        const projection = {
+          recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
+          spotifyID: 1,
+          customID: 1,
+        };
+
+        const document = await User.findOneAndUpdate(filter, upsert, {
+          new: true,
+          upsert: true,
+          setDefaultsOnInsert: true,
+          projection,
         });
 
-      console.log(user.display_name + " logined");
+        // check if recentlyPlayed  is empty
+        if (!document.customID)
+          await User.updateOne(filter, { customID: user.id });
 
-      const filter = { spotifyID: user.id };
-      const upsert = {
-        lastSpotifyToken: access_token,
-        userName: user.display_name,
-        refreshToken: refresh_token,
-        avatar: user.images.length ? user.images[0].url : "",
-        __v: 5,
-      };
-      const projection = {
-        recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
-        spotifyID: 1,
-        customID: 1,
-      };
+        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
+          await fetchHistory(access_token, document._id);
 
-      const document = await User.findOneAndUpdate(filter, upsert, {
-        new: true,
-        upsert: true,
-        setDefaultsOnInsert: true,
-        projection,
-      });
+        const secret = process.env.SECRET_JWT;
+        const token = jwt.sign({ _id: document._id }, secret);
 
-      // check if recentlyPlayed  is empty
-      if (!document.customID)
-        await User.updateOne(filter, { customID: user.id });
+        reply.setCookie("token", token, fastify.cookieOptions);
 
-      if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-        await fetchHistory(access_token, document._id);
-
-      const secret = process.env.SECRET_JWT;
-      const token = jwt.sign({ _id: document._id }, secret);
-
-      reply.setCookie("token", token, fastify.cookieOptions);
-
-      reply.redirect(query_uri);
+        reply.redirect(query_uri);
+      } catch (err) {
+        console.log(err);
+        reply.redirect(query_uri);
+      }
     }
   );
 }
@@ -113,7 +110,6 @@ const fetchHistory = async (access_token, _id) => {
     `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
     { headers: { Authorization: "Bearer " + access_token } }
   ).then((res) => res.json());
-  if (history.error) return console.log(history.error);
 
   if (!history.items.length) return;
 

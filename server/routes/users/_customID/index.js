@@ -1,5 +1,4 @@
 import User from "../../../models/User.js";
-import fetch from "node-fetch";
 import mongodb from "mongodb";
 
 const { ObjectId } = mongodb;
@@ -128,7 +127,7 @@ export default async function(fastify) {
             playtime: Math.round(body[0].playtime / 1000 / 60),
           };
         }),
-        genresTop(user.lastSpotifyToken),
+        genresTop(user.lastSpotifyToken, fastify.spotifyAPI),
         User.aggregate([
           { $match: { _id: new ObjectId(user._id) } },
           {
@@ -214,15 +213,11 @@ export default async function(fastify) {
   );
 }
 
-const genresTop = async (lastSpotifyToken) => {
-  const artists = await fetch(
-    "https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=50",
-    {
-      headers: {
-        Authorization: "Bearer " + lastSpotifyToken,
-      },
-    }
-  ).then((res) => res.json());
+const genresTop = async (token, api) => {
+  const artists = await api({
+    route: "me/top/artists?time_range=medium_term&limit=50",
+    token,
+  });
 
   if (artists.error) return [];
   if (!artists.items.length) return [];

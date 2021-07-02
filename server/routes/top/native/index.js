@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 export default async function(fastify) {
   const response = {
     200: {
@@ -42,8 +40,8 @@ export default async function(fastify) {
 
       const options = { token, range, period };
       const [tracks, artists] = await Promise.all([
-        getTracks(options),
-        getArtists(options),
+        getTracks(options, fastify.spotifyAPI),
+        getArtists(options, fastify.spotifyAPI),
       ]);
 
       reply.send({ tracks, artists, status: 200 });
@@ -51,28 +49,20 @@ export default async function(fastify) {
   );
 }
 
-const getTracks = async ({ token, period, range }) => {
-  const tracks = await fetch(
-    `https://api.spotify.com/v1/me/top/tracks?limit=${range}&time_range=${period}`,
-    {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
-  ).then((res) => res.json());
+const getTracks = async ({ token, period, range }, api) => {
+  const tracks = await api({
+    route: `me/top/tracks?limit=${range}&time_range=${period}`,
+    token,
+  });
 
   return tracks.items.map((track) => formatTrack(track));
 };
 
-const getArtists = async ({ token, period, range }) => {
-  const artists = await fetch(
-    `https://api.spotify.com/v1/me/top/artists?limit=${range}&time_range=${period}`,
-    {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    }
-  ).then((res) => res.json());
+const getArtists = async ({ token, period, range }, api) => {
+  const artists = await api({
+    route: `me/top/artists?limit=${range}&time_range=${period}`,
+    token,
+  });
 
   return artists.items.map((artist) => {
     return {

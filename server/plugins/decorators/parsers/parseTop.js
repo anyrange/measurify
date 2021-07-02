@@ -1,7 +1,6 @@
 import fp from "fastify-plugin";
 import User from "../../../models/User.js";
 import mongodb from "mongodb";
-import fetch from "node-fetch";
 
 const { ObjectId } = mongodb;
 
@@ -15,7 +14,7 @@ const plugin = fp(async function plugin(fastify) {
       firstDate = "0000-00-00",
       lastDate = "9999-12-30"
     ) => {
-      let response = {};
+      const response = { tracks: [], albums: [], playlists: [], artists: [] };
 
       const options = { _id, firstDate, lastDate, range };
       const info = await Promise.all([
@@ -30,17 +29,25 @@ const plugin = fp(async function plugin(fastify) {
       response.artists = info[2];
       response.playlists = [];
 
-      const requests = info[3].map((playlist) => {
-        return new Promise((resolve) => {
-          addPlaylistInfo(playlist, resolve);
-        }).then((res) => {
-          if (!res) return;
-          response.playlists.push(res);
-        });
-      });
+      const requests = info[3].map(
+        (playlist) =>
+          new Promise(async (resolve) => {
+            const body = await fastify.spotifyAPI({
+              route: `playlists/${playlist.id}?fields=images,name`,
+              token: playlist.access_token,
+            });
+
+            response.playlists.push({
+              name: body.name,
+              id: playlist.id,
+              image: body.images?.length ? body.images[0].url : "",
+              playtime: playlist.playtime,
+            });
+            resolve();
+          })
+      );
 
       await Promise.all(requests);
-
       response.playlists.sort(function(a, b) {
         if (a.playtime < b.playtime) {
           return 1;
@@ -51,16 +58,12 @@ const plugin = fp(async function plugin(fastify) {
         return 0;
       });
 
-      const body = await fetch(
-        `https://api.spotify.com/v1/artists?ids=${response.artists
+      const body = await fastify.spotifyAPI({
+        route: `artists?ids=${response.artists
           .map((artist) => artist.id)
           .join()}`,
-        {
-          headers: {
-            Authorization: "Bearer " + access_token,
-          },
-        }
-      ).then((res) => res.json());
+        token: access_token,
+      });
 
       if (!body.error) {
         response.artists.forEach((artist, index) => {
@@ -284,27 +287,6 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
       playtime: Math.round(track.playtime / 1000 / 60),
     };
   });
-};
-
-const addPlaylistInfo = (playlist, cb) => {
-  fetch(
-    `https://api.spotify.com/v1/playlists/${playlist.id}?fields=images,name`,
-    { headers: { Authorization: "Bearer " + playlist.access_token } }
-  )
-    .then((res) => res.json())
-    .then((body) => {
-      if (body.error) return cb();
-
-      cb({
-        name: body.name,
-        id: playlist.id,
-        image: body.images ? body.images[0].url : "",
-        playtime: playlist.playtime,
-      });
-    })
-    .catch(() => {
-      cb();
-    });
 };
 
 export default plugin;

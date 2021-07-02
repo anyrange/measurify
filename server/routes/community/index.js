@@ -72,9 +72,8 @@ export default async function(fastify) {
         "me/following/contains?type=user&ids=" +
         users.map((user) => user.spotifyID).join();
 
-      const spotifyAPI = fastify.spotifyAPI;
       // check if users are followed
-      const friendList = await spotifyAPI({
+      const friendList = await fastify.spotifyAPI({
         route,
         token: access_token,
       });

@@ -3,6 +3,7 @@ import fp from "fastify-plugin";
 const plugin = fp(async function plugin(fastify) {
   fastify.setErrorHandler((error, request, reply) => {
     const { message, status, validation, name } = error;
+
     if (error instanceof fastify.CustomError)
       return reply.status(status).send({
         message,
@@ -30,10 +31,10 @@ const plugin = fp(async function plugin(fastify) {
           .send({ message: "Try again later", status: 503 });
         break;
       default:
+        console.log(error);
         reply
           .status(500)
           .send({ message: "Something went wrong!", status: 500 });
-        console.log(error);
         break;
     }
   });
