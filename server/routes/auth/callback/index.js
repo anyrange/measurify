@@ -1,4 +1,4 @@
-import formatTrack from "../../../includes/format-track.js";
+import formatTrack from "../../../utils/format-track.js";
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
@@ -11,7 +11,7 @@ export default async function(fastify) {
       schema: {
         querystring: {
           type: "object",
-          required: ["sw_redirect", "code"],
+          required: ["sw_redirect"],
           properties: {
             sw_redirect: { type: "string" },
             code: { type: "string" },
@@ -27,8 +27,7 @@ export default async function(fastify) {
         //get tokens
         const tokens = await fetchTokens(code, query_uri);
 
-        if (tokens.error)
-          return reply.code(500).send({ message: tokens.error, status: 500 });
+        if (tokens.error) throw new Error(tokens.error);
 
         const access_token = tokens.access_token;
         const refresh_token = tokens.refresh_token;
@@ -97,9 +96,7 @@ const fetchTokens = async (code, query_uri) => {
       Authorization:
         "Basic " +
         Buffer.from(
-          process.env.SPOTIFY_CLIENT_ID +
-            ":" +
-            process.env.SPOTIFY_CLIENT_SECRET
+          `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
         ).toString("base64"),
     },
   }).then((res) => res.json());

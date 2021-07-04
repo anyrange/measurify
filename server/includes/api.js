@@ -10,12 +10,10 @@ export default async function({ route, token, body = {}, method = "GET" }) {
       headers: { Authorization: "Bearer " + token },
     });
 
-  // console.log(`https://api.spotify.com/v1/${route}`, options);
-
   const callApi = async () => {
     const res = await fetch(`https://api.spotify.com/v1/${route}`, options);
     if (res.status === 403) {
-      console.log("fail");
+      console.log("api fail");
       return await callApi();
     }
     return res;

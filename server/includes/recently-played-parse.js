@@ -1,146 +1,104 @@
 import fetch from "node-fetch";
 import User from "../models/User.js";
-import formatTrack from "./format-track.js";
-import dotenv from "dotenv";
+import formatTrack from "../utils/format-track.js";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
-dotenv.config();
+import timeDiff from "../utils/timeDiff.js";
 
-function refresh_recently_played() {
-  const start = new Date();
+async function refresh_recently_played() {
+  try {
+    const start = new Date();
 
-  User.find(
-    { refreshToken: { $ne: "" } },
-    {
-      spotifyID: 1,
-      lastSpotifyToken: 1,
-      recentlyPlayed: {
-        $slice: ["$recentlyPlayed", 1],
-      },
-      userName: 1,
-    },
-    (err, users) => {
-      if (err) return console.log(err);
+    const users = await User.find(
+      { refreshToken: { $ne: "" } },
+      {
+        spotifyID: 1,
+        lastSpotifyToken: 1,
+        recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
+        userName: 1,
+      }
+    );
 
-      let requests = users.map((user) => {
-        return new Promise((resolve, reject) => {
-          parseNewTracks(user, resolve, reject);
+    const requests = users.map((user) =>
+      parseNewTracks(user)
+        .then(async (newTracks) => {
+          for (let i = 0; i < newTracks.length; i++) {
+            await addTrack(user._id, newTracks[i]);
+          }
         })
-          .then(async (newTracks) => {
-            for (let i = 0; i < newTracks.length; i++) {
-              await addTrack(user._id, newTracks[i]);
-            }
-          })
-          .catch(({ user, message }) => {
-            console.log(
-              "listening-histories: " + user + " got an error - " + message
-            );
-          });
-      });
+        .catch((err) => {
+          console.log(
+            `!listening-histories [${user.userName}]: ${err.message}`
+          );
+        })
+    );
 
-      Promise.all(requests).then(() => {
-        const end = new Date();
-        console.log(
-          `listening-histories [${requests.length}]: updated in ${(
-            (end.getTime() - start.getTime()) /
-            1000
-          ).toFixed(2)} sec`
-        );
-      });
-    }
-  );
+    Promise.all(requests).then(() => {
+      const end = new Date();
+      console.log(
+        `listening-histories [${requests.length}]: updated in ${timeDiff(
+          start,
+          end
+        )} sec`
+      );
+    });
+  } catch (err) {
+    console.error("!listening-histories [all]:" + err.message);
+  }
 }
 
-async function parseNewTracks(user, cb, reject) {
-  try {
-    const listenedTracks = await fetch(
-      "https://api.spotify.com/v1/me/player/recently-played?limit=15",
-      {
-        headers: {
-          Authorization: "Bearer " + user.lastSpotifyToken,
-        },
-      }
-    ).then((res) => res.json());
+async function parseNewTracks(user) {
+  const newSongs = [];
 
-    if (listenedTracks.error) throw new Error(listenedTracks.error.message);
-    if (!listenedTracks.items.length) return cb([]);
+  const listenedTracks = await fetch(
+    "https://api.spotify.com/v1/me/player/recently-played?limit=15",
+    { headers: { Authorization: "Bearer " + user.lastSpotifyToken } }
+  ).then((res) => res.json());
 
-    if (!user.recentlyPlayed || !user.recentlyPlayed.length)
-      cb(listenedTracks.items.map((item) => formatTrack(item)).reverse());
+  if (listenedTracks.error) throw new Error(listenedTracks.error.message);
+  if (!listenedTracks.items.length) return newSongs;
 
-    let i = 0;
-    let newSongs = [];
+  if (!user.recentlyPlayed || !user.recentlyPlayed.length)
+    return listenedTracks.items.map((item) => formatTrack(item)).reverse();
 
-    const lastListenedTrack = await User.aggregate([
-      {
-        $match: {
-          _id: ObjectId(user._id),
-        },
-      },
-      {
-        $project: {
-          recentlyPlayed: 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$recentlyPlayed",
-        },
-      },
-      {
-        $unwind: {
-          path: "$recentlyPlayed.plays",
-        },
-      },
-      {
-        $sort: {
-          "recentlyPlayed.plays.played_at": -1,
-        },
-      },
-      {
-        $limit: 1,
-      },
-    ]);
+  const lastListenedTrack = await User.aggregate([
+    { $match: { _id: ObjectId(user._id) } },
+    { $project: { recentlyPlayed: 1 } },
+    { $unwind: { path: "$recentlyPlayed" } },
+    { $unwind: { path: "$recentlyPlayed.plays" } },
+    { $sort: { "recentlyPlayed.plays.played_at": -1 } },
+    { $limit: 1 },
+  ]);
 
-    while (
-      i < listenedTracks.items.length &&
-      Date.parse(lastListenedTrack[0].recentlyPlayed.plays.played_at) <
-        Date.parse(listenedTracks.items[i].played_at)
-    ) {
-      newSongs.push(formatTrack(listenedTracks.items[i]));
-      i++;
-    }
-    cb(newSongs.reverse());
-  } catch (err) {
-    reject({ user: user.userName, message: err.message });
+  let i = 0;
+  const lastPlayedAt = lastListenedTrack[0].recentlyPlayed.plays.played_at;
+
+  while (
+    i < listenedTracks.items.length &&
+    Date.parse(lastPlayedAt) < Date.parse(listenedTracks.items[i].played_at)
+  ) {
+    newSongs.unshift(formatTrack(listenedTracks.items[i]));
+    i++;
   }
+  return newSongs;
 }
 
 export async function addTrack(_id, track) {
   const existingTrack = await User.findOne(
-    {
-      _id,
-      "recentlyPlayed.id": track.id,
-    },
+    { _id, "recentlyPlayed.id": track.id },
     { "recentlyPlayed.$": 1 }
   );
 
   if (!existingTrack) {
-    const update = {
-      $push: {
-        recentlyPlayed: { $each: [track], $position: 0 },
-      },
-    };
-
-    await User.updateOne({ _id }, update);
+    await User.updateOne(
+      { _id },
+      { $push: { recentlyPlayed: { $each: [track], $position: 0 } } }
+    );
     return;
   }
 
   await User.updateOne(
-    {
-      _id,
-      "recentlyPlayed.id": track.id,
-    },
+    { _id, "recentlyPlayed.id": track.id },
     {
       $push: { "recentlyPlayed.$.plays": { $each: track.plays, $position: 0 } },
     }

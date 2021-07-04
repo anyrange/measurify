@@ -1,7 +1,7 @@
 import User from "../../models/User.js";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
-import formatOverview from "../../includes/format-overview.js";
+import formatOverview from "../../utils/format-overview.js";
 
 export default async function(fastify) {
   fastify.get(
@@ -42,9 +42,7 @@ export default async function(fastify) {
             "recentlyPlayed.duration_ms": 1,
           },
         },
-        {
-          $unwind: { path: "$recentlyPlayed" },
-        },
+        { $unwind: { path: "$recentlyPlayed" } },
         { $unwind: { path: "$recentlyPlayed.plays" } },
         {
           $addFields: {

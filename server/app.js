@@ -63,8 +63,8 @@ app.register(autoLoad, {
 });
 
 // for ape moments
-process.on("unhandledRejection", (error) => {
-  console.log("Unhandled - " + error);
-});
+process.on("unhandledRejection", (error) =>
+  console.error(`Unhandled - ${error}`)
+);
 
 export default app;
