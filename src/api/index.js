@@ -56,13 +56,13 @@ export function getProfile(id) {
   return api.get(`/users/${id}`);
 }
 export function getTrack(id) {
-  return api.get(`/track/${id}`);
+  return api.get(`/infopage/track/${id}`);
 }
 export function getArtist(id) {
-  return api.get(`/artist/${id}`);
+  return api.get(`/infopage/artist/${id}`);
 }
 export function getAlbum(id) {
-  return api.get(`/album/${id}`);
+  return api.get(`/infopage/album/${id}`);
 }
 export function getFriends() {
   return api.get("/friends");

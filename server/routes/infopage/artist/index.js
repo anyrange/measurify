@@ -1,4 +1,4 @@
-import history from "../../includes/listening-history.js";
+import history from "../../../includes/listening-history.js";
 
 export default async function(fastify) {
   const responseSchema = {

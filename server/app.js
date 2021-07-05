@@ -60,6 +60,8 @@ app.register(autoLoad, {
 app.register(autoLoad, {
   dir: join(__dirname, "routes"),
   routeParams: true,
+  autoHooks: true,
+  cascadeHooks: true,
 });
 
 // for ape moments
