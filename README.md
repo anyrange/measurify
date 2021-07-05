@@ -7,7 +7,7 @@
 
 ## Development
 
-### Setup environemnt
+### Setup environment
 
 ```bash
 $ git clone https://github.com/anyrange/spotiworm.git
