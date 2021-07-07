@@ -26,7 +26,7 @@ export function redirect() {
   window.location.href = `${SERVER_URI}/auth/login?sw_redirect=${url}`;
 }
 export function getCurrentUser() {
-  return api.get("/users/current");
+  return api.get("/users/me");
 }
 export function getUsersQuantity() {
   return api.get("/users");

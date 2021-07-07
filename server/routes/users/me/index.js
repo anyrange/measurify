@@ -13,6 +13,7 @@ export default async function(fastify) {
               token: { type: "string" },
               avatar: { type: "string" },
               userName: { type: "string" },
+              country: { type: "string" },
               autoUpdate: { type: "boolean" },
             },
           },
@@ -37,7 +38,14 @@ export default async function(fastify) {
         lastLogin: Date.now(),
       };
 
-      reply.send({ token, avatar, autoUpdate, userName, status: 200 });
+      reply.send({
+        token,
+        avatar,
+        autoUpdate,
+        userName,
+        country: newData.country,
+        status: 200,
+      });
 
       await User.updateOne(filter, update);
     }
