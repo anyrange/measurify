@@ -20,6 +20,17 @@ export default async function(fastify) {
         tracks: fastify.getSchema("tracks"),
 
         audioFeatures: fastify.getSchema("audioFeatures"),
+        rates: {
+          type: "object",
+          properties: {
+            artLT: { type: "number" },
+            artMT: { type: "number" },
+            artST: { type: "number" },
+            trcLT: { type: "number" },
+            trcMT: { type: "number" },
+            trcST: { type: "number" },
+          },
+        },
         status: { type: "number" },
       },
     },
@@ -42,7 +53,7 @@ export default async function(fastify) {
       const artistID = req.params.id;
       const token = await this.getToken(_id);
 
-      const [artist, tracks, audioFeatures] = await Promise.all([
+      const request = [
         fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
         history(_id, artistID),
         fastify
@@ -51,7 +62,52 @@ export default async function(fastify) {
             token,
           })
           .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
-      ]);
+        fastify.spotifyAPI({
+          route: `me/top/artists?limit=30&time_range=long_term`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `me/top/artists?limit=30&time_range=medium_term`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `me/top/artists?limit=30&time_range=short_term`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `me/top/tracks?limit=50&time_range=long_term`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `me/top/tracks?limit=50&time_range=medium_term`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `me/top/tracks?limit=50&time_range=short_term`,
+          token,
+        }),
+      ];
+
+      const [
+        artist,
+        tracks,
+        audioFeatures,
+        artLT,
+        artMT,
+        artST,
+        trcLT,
+        trcMT,
+        trcST,
+      ] = await Promise.all(request);
+
+      const rates = {
+        artLT: findPlace(artist.name, artLT),
+        artMT: findPlace(artist.name, artMT),
+        artST: findPlace(artist.name, artST),
+        trcLT: countTracks(artist.name, trcLT),
+        trcMT: countTracks(artist.name, trcMT),
+        trcST: countTracks(artist.name, trcST),
+      };
 
       // response schema
       const response = {
@@ -65,6 +121,7 @@ export default async function(fastify) {
         },
         tracks,
         audioFeatures,
+        rates,
         status: 200,
       };
 
@@ -72,3 +129,20 @@ export default async function(fastify) {
     }
   );
 }
+
+const findPlace = (name, { items }) => {
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].name == name) return i + 1;
+  }
+  return 0;
+};
+
+const countTracks = (name, { items }) => {
+  let tracksInTop = 0;
+  items.forEach((track) =>
+    track.artists.forEach((artist) => {
+      if (artist.name == name) tracksInTop++;
+    })
+  );
+  return tracksInTop;
+};
