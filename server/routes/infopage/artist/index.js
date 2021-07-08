@@ -1,41 +1,6 @@
 import history from "../../../includes/listening-history.js";
 
 export default async function(fastify) {
-  const responseSchema = {
-    200: {
-      type: "object",
-      required: ["artist", "tracks", "status"],
-      properties: {
-        artist: {
-          type: "object",
-          properties: {
-            followers: { type: "number" },
-            genres: { type: "array", items: { type: "string" } },
-            popularity: { type: "number" },
-            name: { type: "string" },
-            image: { type: "string" },
-            link: { type: "string" },
-          },
-        },
-        tracks: fastify.getSchema("tracks"),
-
-        audioFeatures: fastify.getSchema("audioFeatures"),
-        rates: {
-          type: "object",
-          properties: {
-            artLT: { type: "number" },
-            artMT: { type: "number" },
-            artST: { type: "number" },
-            trcLT: { type: "number" },
-            trcMT: { type: "number" },
-            trcST: { type: "number" },
-          },
-        },
-        status: { type: "number" },
-      },
-    },
-  };
-
   fastify.get(
     "/:id",
     {
@@ -45,13 +10,43 @@ export default async function(fastify) {
           required: ["id"],
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
-        response: responseSchema,
+        response: {
+          200: {
+            type: "object",
+            required: ["artist", "tracks", "status"],
+            properties: {
+              artist: {
+                type: "object",
+                properties: {
+                  followers: { type: "number" },
+                  genres: { type: "array", items: { type: "string" } },
+                  popularity: { type: "number" },
+                  name: { type: "string" },
+                  image: { type: "string" },
+                  link: { type: "string" },
+                },
+              },
+              tracks: fastify.getSchema("tracks"),
+              audioFeatures: fastify.getSchema("audioFeatures"),
+              rates: {
+                type: "object",
+                properties: {
+                  art: fastify.getSchema("rates"),
+                  trc: fastify.getSchema("rates"),
+                },
+              },
+              status: { type: "number" },
+            },
+          },
+        },
       },
     },
     async function(req, reply) {
       const _id = await fastify.auth(req);
       const artistID = req.params.id;
       const token = await this.getToken(_id);
+
+      const time_range = ["long_term", "medium_term", "short_term"];
 
       const request = [
         fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
@@ -62,30 +57,18 @@ export default async function(fastify) {
             token,
           })
           .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
-        fastify.spotifyAPI({
-          route: `me/top/artists?limit=30&time_range=long_term`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `me/top/artists?limit=30&time_range=medium_term`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `me/top/artists?limit=30&time_range=short_term`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `me/top/tracks?limit=50&time_range=long_term`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `me/top/tracks?limit=50&time_range=medium_term`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `me/top/tracks?limit=50&time_range=short_term`,
-          token,
-        }),
+        time_range.map((range) =>
+          fastify.spotifyAPI({
+            route: `me/top/artists?limit=30&time_range=${range}`,
+            token,
+          })
+        ),
+        time_range.map((range) =>
+          fastify.spotifyAPI({
+            route: `me/top/tracks?limit=50&time_range=${range}`,
+            token,
+          })
+        ),
       ];
 
       const [
@@ -98,15 +81,19 @@ export default async function(fastify) {
         trcLT,
         trcMT,
         trcST,
-      ] = await Promise.all(request);
+      ] = await Promise.all(request.flat(1));
 
       const rates = {
-        artLT: findPlace(artist.name, artLT),
-        artMT: findPlace(artist.name, artMT),
-        artST: findPlace(artist.name, artST),
-        trcLT: countTracks(artist.name, trcLT),
-        trcMT: countTracks(artist.name, trcMT),
-        trcST: countTracks(artist.name, trcST),
+        art: {
+          LT: findPlace(artist.name, artLT),
+          MT: findPlace(artist.name, artMT),
+          ST: findPlace(artist.name, artST),
+        },
+        trc: {
+          LT: countTracks(artist.name, trcLT),
+          MT: countTracks(artist.name, trcMT),
+          ST: countTracks(artist.name, trcST),
+        },
       };
 
       // response schema
