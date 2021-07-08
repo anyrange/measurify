@@ -3,6 +3,7 @@ import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
 import { addTrack } from "../../../includes/recently-played-parse.js";
+import api from "../../../includes/api.js";
 
 export default async function(fastify) {
   fastify.get(
@@ -33,9 +34,7 @@ export default async function(fastify) {
         const refresh_token = tokens.refresh_token;
 
         //get user info
-        const user = await fetch(`https://api.spotify.com/v1/me`, {
-          headers: { Authorization: "Bearer " + access_token },
-        }).then((res) => res.json());
+        const user = await api({ route: "me", token: access_token });
 
         console.log(user.display_name + " logined");
 
@@ -89,7 +88,7 @@ const fetchTokens = async (code, query_uri) => {
   params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);
   params.append("grant_type", "authorization_code");
 
-  return await fetch(`https://accounts.spotify.com/api/token`, {
+  const res = await fetch(`https://accounts.spotify.com/api/token`, {
     method: "POST",
     body: params,
     headers: {
@@ -99,14 +98,16 @@ const fetchTokens = async (code, query_uri) => {
           `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
         ).toString("base64"),
     },
-  }).then((res) => res.json());
+  });
+
+  return res.json();
 };
 
-const fetchHistory = async (access_token, _id) => {
-  const history = await fetch(
-    `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
-    { headers: { Authorization: "Bearer " + access_token } }
-  ).then((res) => res.json());
+const fetchHistory = async (token, _id) => {
+  const history = await api({
+    route: `me/player/recently-played?limit=50`,
+    token,
+  });
 
   if (!history.items.length) return;
 
