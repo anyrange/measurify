@@ -1,7 +1,7 @@
-import User from "../models/User.js";
+import User from "../../models/User.js";
 import fetch from "node-fetch";
 import { URLSearchParams } from "url";
-import timeDiff from "../utils/timeDiff.js";
+import timeDiff from "../../utils/timeDiff.js";
 import dotenv from "dotenv";
 dotenv.config();
 

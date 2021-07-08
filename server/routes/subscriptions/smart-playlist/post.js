@@ -2,7 +2,7 @@ import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import images from "../../../assets/images.js";
 
-import { parsePlaylists } from "../../../includes/smart-playlist.js";
+import { parsePlaylists } from "../../../includes/cron-workers/smart-playlist.js";
 
 export default async function(fastify) {
   fastify.post(

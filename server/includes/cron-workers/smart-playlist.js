@@ -1,9 +1,7 @@
-import User from "../models/User.js";
+import User from "../../models/User.js";
 import fetch from "node-fetch";
 import mongo from "mongodb";
 const { ObjectId } = mongo;
-import dotenv from "dotenv";
-dotenv.config();
 
 export async function update() {
   const start = new Date();

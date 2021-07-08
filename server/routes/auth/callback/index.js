@@ -2,7 +2,7 @@ import formatTrack from "../../../utils/format-track.js";
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
 import jwt from "jsonwebtoken";
-import { addTrack } from "../../../includes/recently-played-parse.js";
+import { addTrack } from "../../../includes/cron-workers/recently-played-parse.js";
 import api from "../../../includes/api.js";
 
 export default async function(fastify) {
