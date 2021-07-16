@@ -7,10 +7,27 @@
           avatar
           :src="profile.avatar"
           :alt="profile.userName"
-          class="flex flex-none rounded-full sm:rounded-lg w-20 h-20 sm:w-48 sm:h-48 object-cover duration-300"
+          class="
+            flex flex-none
+            rounded-full
+            sm:rounded-lg
+            w-20
+            h-20
+            sm:w-48
+            sm:h-48
+            object-cover
+            duration-300
+          "
         />
         <span
-          class="text-white truncate-2 sm:text-3xl text-2xl sm:font-medium font-semibold"
+          class="
+            text-white
+            truncate-2
+            sm:text-3xl
+            text-2xl
+            sm:font-medium
+            font-semibold
+          "
         >
           {{ profile.userName }}
         </span>
@@ -24,9 +41,7 @@
           />
         </div>
         <div class="content__item" v-if="profile.genres.length">
-          <span class="content__item__label">
-            Genres
-          </span>
+          <span class="content__item__label"> Genres </span>
           <div class="flex flex-wrap gap-2">
             <badge v-for="(genre, index) in profile.genres" :key="index">
               {{ genre }}
@@ -35,9 +50,7 @@
         </div>
         <div class="flex flex-row items-center gap-x-12 gap-y-3 flex-wrap">
           <div class="content__item">
-            <span class="content__item__label">
-              Top Albums
-            </span>
+            <span class="content__item__label"> Top Albums </span>
             <div class="content__item__boxes">
               <router-link
                 class="link"
@@ -59,9 +72,7 @@
             </div>
           </div>
           <div class="content__item">
-            <span class="content__item__label">
-              Top Artists
-            </span>
+            <span class="content__item__label"> Top Artists </span>
             <div class="content__item__boxes">
               <router-link
                 class="link"
@@ -83,9 +94,7 @@
             </div>
           </div>
           <div class="content__item">
-            <span class="content__item__label">
-              Top Tracks
-            </span>
+            <span class="content__item__label"> Top Tracks </span>
             <div class="content__item__boxes">
               <router-link
                 class="link"
@@ -107,15 +116,28 @@
             </div>
           </div>
         </div>
+
+        <apexchart
+          type="polarArea"
+          :options="chartOptions"
+          :series="activityHours"
+        ></apexchart>
+
         <div class="content__item">
-          <span class="content__item__label">
-            Listened tracks
-          </span>
+          <span class="content__item__label"> Listened tracks </span>
           <div class="flex flex-col gap-3">
             <div v-for="(item, index) in profile.history" :key="index">
               <router-link
                 :to="{ name: 'track', params: { id: item.id } }"
-                class="flex flex-row items-center gap-3 pr-3 hover:bg-gray-700-spotify duration-100 rounded-lg"
+                class="
+                  flex flex-row
+                  items-center
+                  gap-3
+                  pr-3
+                  hover:bg-gray-700-spotify
+                  duration-100
+                  rounded-lg
+                "
               >
                 <base-img
                   :src="item.image"
@@ -129,7 +151,15 @@
                     {{ item.name }}
                   </div>
                   <div
-                    class="flex flex-row text-sm sm:w-full w-48 items-center overflow-hidden truncate"
+                    class="
+                      flex flex-row
+                      text-sm
+                      sm:w-full
+                      w-48
+                      items-center
+                      overflow-hidden
+                      truncate
+                    "
                   >
                     <multi-router
                       color="text-gray-400-spotify"
@@ -180,21 +210,93 @@ import Card from "@/components/Card.vue";
 import Badge from "@/components/Badge.vue";
 import MultiRouter from "@/components/MultiRouter.vue";
 import { formatDistanceToNowStrict } from "date-fns";
+import VueApexCharts from "vue3-apexcharts";
 
 export default {
-  components: { BaseImg, Card, Badge, MultiRouter },
+  components: {
+    BaseImg,
+    Card,
+    Badge,
+    MultiRouter,
+    apexchart: VueApexCharts,
+  },
+  data() {
+    return {
+      loading: true,
+      profile: {},
+
+      series: [14, 23, 21, 17, 15, 10, 12, 17, 21],
+      chartOptions: {
+        chart: {
+          type: "polarArea",
+        },
+        labels: [
+          "0:00",
+          "1:00",
+          "2:00",
+          "3:00",
+          "4:00",
+          "5:00",
+          "6:00",
+          "8:00",
+          "9:00",
+          "10:00",
+          "11:00",
+          "12:00",
+          "13:00",
+          "14:00",
+          "15:00",
+          "16:00",
+          "17:00",
+          "18:00",
+          "19:00",
+          "20:00",
+          "21:00",
+          "22:00",
+          "23:00",
+          "24:00",
+        ],
+        fill: {
+          opacity: 0.8,
+        },
+        plotOptions: {
+          polarArea: {
+            rings: {
+              strokeWidth: 0,
+            },
+            spokes: {
+              strokeWidth: 1,
+            },
+          },
+        },
+        stroke: {
+          width: 1,
+          colors: undefined,
+        },
+        yaxis: {
+          show: false,
+        },
+        legend: {
+          show: false,
+          position: "bottom",
+        },
+      },
+    };
+  },
+  computed: {
+    activityHours() {
+      return this.profile.hourlyActivity.map((item) => item.plays);
+    },
+    activityLabels() {
+      return this.profile.hourlyActivity.map((item) => item.time);
+    },
+  },
   methods: {
     getDateFromNow(date) {
       return formatDistanceToNowStrict(Date.parse(date), {
         addSuffix: true,
       });
     },
-  },
-  data() {
-    return {
-      loading: true,
-      profile: {},
-    };
   },
   async created() {
     try {

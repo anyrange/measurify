@@ -1,24 +1,44 @@
 # spotiworm
 
+Yet another app using Spotify Web API
+
 [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m787497444-7b36a8b8a8545c2335febb2b)](https://stats.uptimerobot.com/kXD0runRnw/787497444)
 [![Netlify](https://img.shields.io/netlify/2b93b34b-9fc4-47e4-ab20-bca6b8d6c6dd)](https://app.netlify.com/sites/spotiworm/deploys)
-
-> Yet another app using Spotify Web API
 
 ## Development
 
 ### Setup environment
 
-```bash
-$ git clone https://github.com/anyrange/spotiworm.git
-$ cd spotiworm && npm install
-$ cd server && npm install && cd ..
-$ npm run dev
-```
+Install dev-dependencies to run client and server concurrently
+
+`npm install`
+
+Then, install client and server dependencies
+
+`npm run install-all`
+
+Run client and server concurrently
+
+`npm run dev`
+
+Or separately using commands
+
+`npm run serve`  
+`npm run server`
 
 ### Environment variables
 
 Rename [.env.example](/.env.example) to `.env` and don't forget to set your variables
+
+### API documentation
+
+Starting the app will let you investigate the API via Swagger by getting detailed information about endpoints, and their request/response schemas at [http://localhost:8887/doc](http://localhost:8887/doc)
+
+![Swagger](https://i.imgur.com/fULUHZr.png)
+
+## Contributing
+
+Contributions are welcome. Just submit a pull request or open an issue
 
 ## License
 
