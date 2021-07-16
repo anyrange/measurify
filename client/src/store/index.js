@@ -1,9 +1,21 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import authModule from "@/store/modules/auth";
-import notificationsModule from "@/store/modules/notifications";
+
+const requireModule = require.context("./modules", false, /\.js$/);
+const modules = {};
+requireModule.keys().forEach((fileName) => {
+  if (fileName === "./index.js") return;
+  const moduleName = fileName.replace(/(\.\/|\.js)/g, "");
+  modules[moduleName] = {
+    ...requireModule(fileName).default,
+  };
+});
 
 export default createStore({
-  modules: { authModule, notificationsModule },
-  plugins: [createPersistedState()],
+  modules,
+  plugins: [
+    createPersistedState({
+      paths: ["auth"],
+    }),
+  ],
 });
