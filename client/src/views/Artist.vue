@@ -18,9 +18,7 @@
           <card :title="artist.followers" subtitle="followers" />
         </div>
         <div class="content__item" v-if="artist.genres.length">
-          <span class="content__item__label">
-            Genres
-          </span>
+          <span class="content__item__label"> Genres </span>
           <div class="flex flex-wrap gap-2">
             <badge v-for="(genre, index) in artist.genres" :key="index">
               {{ genre }}
@@ -31,14 +29,21 @@
           class="content__item w-full md:w-3/4 lg:w-1/2"
           v-if="tracks.length"
         >
-          <span class="content__item__label">
-            Listened tracks
-          </span>
+          <span class="content__item__label"> Listened tracks </span>
           <div class="flex flex-col gap-3">
             <div v-for="(track, index) in tracks" :key="index">
               <router-link
                 :to="{ name: 'track', params: { id: track.id } }"
-                class="flex flex-row items-center justify-between pr-3 hover:bg-gray-700-spotify duration-100 rounded-lg w-full"
+                class="
+                  flex flex-row
+                  items-center
+                  justify-between
+                  pr-3
+                  hover:bg-gray-700-spotify
+                  duration-100
+                  rounded-lg
+                  w-full
+                "
               >
                 <div class="flex items-center gap-3">
                   <base-img
@@ -84,13 +89,6 @@ export default {
       tracks: [],
     };
   },
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
-  },
   async created() {
     try {
       const response = await getArtist(this.$route.params.id);
@@ -103,6 +101,13 @@ export default {
     } finally {
       this.loading = false;
     }
+  },
+  methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), {
+        addSuffix: true,
+      });
+    },
   },
 };
 </script>

@@ -19,9 +19,7 @@
           <card :title="album.total_tracks" subtitle="tracks amount" />
         </div>
         <div class="content__item">
-          <span class="content__item__label">
-            Artist
-          </span>
+          <span class="content__item__label"> Artist </span>
           <div class="content__item__boxes">
             <router-link
               class="link"
@@ -43,9 +41,7 @@
           </div>
         </div>
         <div class="content__item" v-if="album.genres.length">
-          <span class="content__item__label">
-            Genres
-          </span>
+          <span class="content__item__label"> Genres </span>
           <div class="flex flex-wrap gap-2">
             <badge v-for="(genre, index) in album.genres" :key="index">
               {{ genre }}
@@ -56,14 +52,21 @@
           class="content__item w-full md:w-3/4 lg:w-1/2"
           v-if="tracks.length"
         >
-          <span class="content__item__label">
-            Listened tracks
-          </span>
+          <span class="content__item__label"> Listened tracks </span>
           <div class="flex flex-col gap-3">
             <div v-for="(item, index) in tracks" :key="index">
               <router-link
                 :to="{ name: 'track', params: { id: item.id } }"
-                class="flex flex-row items-center justify-between pr-3 hover:bg-gray-700-spotify duration-100 rounded-lg w-full"
+                class="
+                  flex flex-row
+                  items-center
+                  justify-between
+                  pr-3
+                  hover:bg-gray-700-spotify
+                  duration-100
+                  rounded-lg
+                  w-full
+                "
               >
                 <div class="flex items-center gap-3">
                   <base-img
@@ -110,13 +113,6 @@ export default {
       tracks: [],
     };
   },
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
-  },
   async created() {
     try {
       const response = await getAlbum(this.$route.params.id);
@@ -129,6 +125,13 @@ export default {
     } finally {
       this.loading = false;
     }
+  },
+  methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), {
+        addSuffix: true,
+      });
+    },
   },
 };
 </script>

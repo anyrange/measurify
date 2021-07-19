@@ -83,18 +83,18 @@ export default {
   computed: {
     ...mapGetters({ user: "getUser" }),
   },
-  methods: {
-    privateProfile(item) {
-      if (!item.canSee & (item.userName != this.user.username)) return true;
-      return false;
-    },
-  },
   created() {
     getListenersTop().then((response) => {
       console.log(response);
       this.leaderboard = response.top;
       this.loading = false;
     });
+  },
+  methods: {
+    privateProfile(item) {
+      if (!item.canSee & (item.userName != this.user.username)) return true;
+      return false;
+    },
   },
 };
 </script>

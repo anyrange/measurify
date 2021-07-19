@@ -12,6 +12,15 @@
 <script>
 export default {
   name: "Card",
-  props: ["title", "subtitle"],
+  props: {
+    title: {
+      type: [String, Number],
+      required: true,
+    },
+    subtitle: {
+      type: String,
+      required: true,
+    },
+  },
 };
 </script>

@@ -7,17 +7,6 @@
 <script>
 export default {
   name: "Tabs",
-  props: {
-    modelValue: {
-      type: [String, Number],
-    },
-  },
-  emits: ["update:modelValue"],
-  computed: {
-    active() {
-      return this.modelValue;
-    },
-  },
   provide() {
     return {
       state: {
@@ -25,6 +14,18 @@ export default {
       },
       selectTab: (tab) => this.$emit("update:modelValue", tab),
     };
+  },
+  props: {
+    modelValue: {
+      type: [String, Number],
+      required: true,
+    },
+  },
+  emits: ["update:modelValue"],
+  computed: {
+    active() {
+      return this.modelValue;
+    },
   },
 };
 </script>

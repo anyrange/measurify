@@ -4,7 +4,7 @@
     v-else-if="parallax"
     class="bg-no-repeat bg-fixed bg-top bg-contain"
     :style="{ backgroundImage: `url('${imageUrl}')` }"
-  ></div>
+  />
   <img
     v-else
     :src="imageUrl"
@@ -12,7 +12,7 @@
     aria-hidden="false"
     draggable="false"
     loading="lazy"
-  />
+  >
 </template>
 
 <script>
@@ -44,6 +44,15 @@ export default {
       imageUrl: "",
     };
   },
+  async created() {
+    try {
+      this.imageUrl = await this.checkImage(this.src);
+    } catch {
+      this.setFallbackImage();
+    } finally {
+      this.loading = false;
+    }
+  },
   methods: {
     checkImage(url) {
       return new Promise((resolve, reject) => {
@@ -57,15 +66,6 @@ export default {
       if (this.avatar) this.imageUrl = "/img/noavatar.svg";
       this.imageUrl = "/img/noimage.svg";
     },
-  },
-  async created() {
-    try {
-      this.imageUrl = await this.checkImage(this.src);
-    } catch {
-      this.setFallbackImage();
-    } finally {
-      this.loading = false;
-    }
   },
 };
 </script>

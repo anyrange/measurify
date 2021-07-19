@@ -16,18 +16,39 @@
             :class="{ 'left-0': iconLeft, 'right-0': iconRight }"
           >
             <div
-              class="flex items-center justify-center z-10 text-gray-500 text-lg h-full w-full"
+              class="
+                flex
+                items-center
+                justify-center
+                z-10
+                text-gray-500 text-lg
+                h-full
+                w-full
+              "
             >
-              <slot></slot>
+              <slot />
             </div>
           </div>
           <input
             v-bind="$attrs"
             :id="label"
             :value="modelValue"
-            @input="handleInput($event.target.value)"
-            class="relative w-full px-4 py-2 border rounded border-gray-600-spotify bg-gray-700-spotify placeholder-gray-400 focus:ring-2 focus:ring-opacity-50 focus:outline-none disabled:opacity-40"
             :class="{ 'pl-12': iconLeft, 'pr-12': iconRight }"
+            class="
+              relative
+              w-full
+              px-4
+              py-2
+              border
+              rounded
+              border-gray-600-spotify
+              bg-gray-700-spotify
+              placeholder-gray-400
+              focus:ring-2 focus:ring-opacity-50
+              focus:outline-none
+              disabled:opacity-40
+            "
+            @input="handleInput($event.target.value)"
           />
         </div>
       </div>
@@ -41,7 +62,7 @@ export default {
   props: {
     modelValue: {
       type: String,
-      required: false,
+      required: true,
     },
     label: {
       type: String,

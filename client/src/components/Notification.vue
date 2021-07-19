@@ -19,8 +19,8 @@
         </button>
       </div>
       <span
-        class="notify-close"
         v-if="notification.closable"
+        class="notify-close"
         @click="closeNotification(notification)"
       >
         <svg
@@ -48,6 +48,7 @@ export default {
       required: true,
     },
   },
+  emits: ["close-notification"],
   data() {
     return {
       interval: 0,

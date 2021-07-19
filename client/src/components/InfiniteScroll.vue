@@ -1,7 +1,7 @@
 <template>
   <div ref="shit">
-    <slot></slot>
-    <slot name="loading"></slot>
+    <slot />
+    <slot name="loading" />
   </div>
 </template>
 
@@ -21,6 +21,13 @@ export default {
       contentWindow: null,
     };
   },
+  mounted() {
+    this.contentWindow = document.querySelector(".content-spotify");
+    this.contentWindow.addEventListener("scroll", this.handleScroll);
+  },
+  unmounted() {
+    this.contentWindow.removeEventListener("scroll", this.handleScroll);
+  },
   methods: {
     handleScroll() {
       if (
@@ -30,13 +37,6 @@ export default {
         this.$emit("load");
       }
     },
-  },
-  mounted() {
-    this.contentWindow = document.querySelector(".content-spotify");
-    this.contentWindow.addEventListener("scroll", this.handleScroll);
-  },
-  unmounted() {
-    this.contentWindow.removeEventListener("scroll", this.handleScroll);
   },
 };
 </script>

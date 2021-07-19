@@ -5,7 +5,17 @@
     <div class="md:w-full lg:w-1/2 xl:w-2/6 flex flex-col gap-4">
       <router-link
         :to="{ name: 'profile', params: { id: account.customID } }"
-        class="flex flex-row items-center p-3 justify-between rounded-lg cursor-pointer duration-150 bg-gray-700-spotify hover:bg-gray-600-spotify"
+        class="
+          flex flex-row
+          items-center
+          p-3
+          justify-between
+          rounded-lg
+          cursor-pointer
+          duration-150
+          bg-gray-700-spotify
+          hover:bg-gray-600-spotify
+        "
       >
         <div class="flex flex-row items-center gap-3">
           <base-img
@@ -18,9 +28,7 @@
             <p class="text-lg font-medium text-gray-400-spotify">
               {{ user.username }}
             </p>
-            <p class="text-sm text-gray-500-spotify">
-              Open profile
-            </p>
+            <p class="text-sm text-gray-500-spotify">Open profile</p>
           </div>
         </div>
         <div class="flex flex-row items-center">
@@ -60,9 +68,7 @@
       </div>
       <toggle label="Autoupdates" v-model="account.autoUpdate" />
       <div>&nbsp;</div>
-      <base-button color="negative" @click="logout()">
-        Logout
-      </base-button>
+      <base-button color="negative" @click="logout()">Logout</base-button>
     </div>
   </template>
 </template>
@@ -104,6 +110,11 @@ export default {
       return false;
     },
   },
+  async mounted() {
+    this.account = await getAccount();
+    this.copyAccount();
+    this.loading = false;
+  },
   methods: {
     ...mapActions(["logout", "changeAutoupdate"]),
     async updateSettings() {
@@ -130,11 +141,6 @@ export default {
     copyAccount() {
       this.account_copy = Object.assign({}, this.account);
     },
-  },
-  async mounted() {
-    this.account = await getAccount();
-    this.copyAccount();
-    this.loading = false;
   },
 };
 </script>

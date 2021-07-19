@@ -10,8 +10,7 @@
         :key="notification"
         :notification="notification"
         @close-notification="removeNotification(notification)"
-      >
-      </notification>
+      />
     </transition-group>
   </div>
 </template>

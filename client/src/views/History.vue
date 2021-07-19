@@ -97,31 +97,9 @@ export default {
       emptyData: false,
     };
   },
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
-    getDuration(time) {
-      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
-    },
-    async onScroll() {
-      if (!this.loadingNextPage && this.page < this.pagesMax) {
-        this.page++;
-        this.loadingNextPage = true;
-        const response = await getListeningHistory({
-          page: this.page,
-          query: this.searchQuery,
-        });
-        this.recentlyPlayed.push(...response.history);
-        this.loadingNextPage = false;
-      }
-    },
-  },
   watch: {
     searchQuery: {
-      handler: async function() {
+      handler: async function () {
         this.page = 1;
         this.loading = true;
 
@@ -146,6 +124,28 @@ export default {
         this.recentlyPlayed = response.history;
       },
       immediate: true,
+    },
+  },
+  methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), {
+        addSuffix: true,
+      });
+    },
+    getDuration(time) {
+      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
+    },
+    async onScroll() {
+      if (!this.loadingNextPage && this.page < this.pagesMax) {
+        this.page++;
+        this.loadingNextPage = true;
+        const response = await getListeningHistory({
+          page: this.page,
+          query: this.searchQuery,
+        });
+        this.recentlyPlayed.push(...response.history);
+        this.loadingNextPage = false;
+      }
     },
   },
 };

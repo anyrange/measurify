@@ -30,12 +30,19 @@
           />
         </div>
         <div class="content__item">
-          <span class="content__item__label">
-            Album
-          </span>
+          <span class="content__item__label"> Album </span>
           <router-link :to="{ name: 'album', params: { id: track.album.id } }">
             <div
-              class="flex flex-row items-center justify-center gap-3 pr-3 hover:bg-gray-700-spotify duration-100 rounded-2xl"
+              class="
+                flex flex-row
+                items-center
+                justify-center
+                gap-3
+                pr-3
+                hover:bg-gray-700-spotify
+                duration-100
+                rounded-2xl
+              "
             >
               <base-img
                 class="w-20 h-20 rounded-xl"
@@ -56,9 +63,7 @@
           </router-link>
         </div>
         <div class="content__item">
-          <span class="content__item__label">
-            Artist
-          </span>
+          <span class="content__item__label"> Artist </span>
           <div class="content__item__boxes">
             <router-link
               class="link"

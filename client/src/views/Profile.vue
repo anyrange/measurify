@@ -291,13 +291,6 @@ export default {
       return this.profile.hourlyActivity.map((item) => item.time);
     },
   },
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
-  },
   async created() {
     try {
       this.profile = await getProfile(this.$route.params.id);
@@ -307,6 +300,13 @@ export default {
     } catch (error) {
       this.$router.push({ name: "home" });
     }
+  },
+  methods: {
+    getDateFromNow(date) {
+      return formatDistanceToNowStrict(Date.parse(date), {
+        addSuffix: true,
+      });
+    },
   },
 };
 </script>

@@ -25,6 +25,25 @@ export default {
       isAuthenticated: "isAuthenticated",
     }),
   },
+  async created() {
+    const isAuthenticated = this.isAuthenticated;
+    try {
+      await this.updateUser();
+      if (!isAuthenticated) this.$router.push({ name: "home" });
+    } catch {
+      this.logout();
+    }
+  },
+  mounted() {
+    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (this.refreshing) return;
+        this.refreshing = true;
+        window.location.reload();
+      });
+    }
+  },
   methods: {
     ...mapActions(["updateUser", "logout"]),
     showRefreshUI(e) {
@@ -56,25 +75,6 @@ export default {
       }
       this.registration.waiting.postMessage("skipWaiting");
     },
-  },
-  async created() {
-    const isAuthenticated = this.isAuthenticated;
-    try {
-      await this.updateUser();
-      if (!isAuthenticated) this.$router.push({ name: "home" });
-    } catch {
-      this.logout();
-    }
-  },
-  mounted() {
-    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (this.refreshing) return;
-        this.refreshing = true;
-        window.location.reload();
-      });
-    }
   },
 };
 </script>

@@ -50,8 +50,8 @@
 import BaseImg from "@/components/BaseImg.vue";
 
 export default {
-  components: { BaseImg },
   name: "RatingTable",
+  components: { BaseImg },
   props: {
     title: {
       type: String,

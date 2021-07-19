@@ -1,27 +1,32 @@
 <template>
   <h2 class="h-title">About</h2>
-  <h3 class="h-subtitle mt-4">
-    Yet another app using Spotify Web API
-  </h3>
+  <h3 class="h-subtitle mt-4">Yet another app using Spotify Web API</h3>
   <hr class="my-4 w-10 border-gray-600-spotify" />
   <p class="mt-4 text-lg font-normal text-gray-400">
     We did what we liked the most in other services working with spotify api.
   </p>
   <p class="text-lg font-normal text-gray-400">
     Inspired by
-    <a href="https://waveous.com/" class="link">
-      Waveous
-    </a>
-    <a href="https://spotiboi.ru/" class="link">
-      SpotiBoi
-    </a>
-    <a href="https://spotistats.app/" class="link">
-      Spotistats
-    </a>
+    <a href="https://waveous.com/" class="link"> Waveous </a>
+    <a href="https://spotiboi.ru/" class="link"> SpotiBoi </a>
+    <a href="https://spotistats.app/" class="link"> Spotistats </a>
   </p>
   <a
     href="https://github.com/anyrange/spotify-worm/"
-    class="inline-flex items-center justify-center mt-4 px-2 py-1 space-x-2 bg-gray-600-spotify rounded-md shadow hover:bg-opacity-70 duration-100"
+    class="
+      inline-flex
+      items-center
+      justify-center
+      mt-4
+      px-2
+      py-1
+      space-x-2
+      bg-gray-600-spotify
+      rounded-md
+      shadow
+      hover:bg-opacity-70
+      duration-100
+    "
   >
     <span class="w-4 h-4 text-gray-500">
       <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">

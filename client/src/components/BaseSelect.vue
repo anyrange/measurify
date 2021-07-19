@@ -9,13 +9,35 @@
           @click="opened = !opened"
           type="button"
           ref="selector"
-          class="relative w-full pl-3 pr-10 py-2 bg-gray-700-spotify border border-gray-600-spotify rounded shadow-sm text-left cursor-pointer focus:outline-none"
+          class="
+            relative
+            w-full
+            pl-3
+            pr-10
+            py-2
+            bg-gray-700-spotify
+            border border-gray-600-spotify
+            rounded
+            shadow-sm
+            text-left
+            cursor-pointer
+            focus:outline-none
+          "
         >
           <span class="flex items-center">
             <span class="mr-1">{{ selected }}</span>
           </span>
           <span
-            class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+            class="
+              ml-3
+              absolute
+              inset-y-0
+              right-0
+              flex
+              items-center
+              pr-2
+              pointer-events-none
+            "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +60,21 @@
         >
           <ul
             v-if="opened"
-            class="absolute text-gray-400 z-10 pt-1 flex flex-col mt-1 py-1 bg-gray-700-spotify shadow-lg max-h-56 rounded-md text-sm focus:outline-none"
+            class="
+              absolute
+              text-gray-400
+              z-10
+              pt-1
+              flex flex-col
+              mt-1
+              py-1
+              bg-gray-700-spotify
+              shadow-lg
+              max-h-56
+              rounded-md
+              text-sm
+              focus:outline-none
+            "
             :style="{ width: `${width}px` }"
           >
             <li
@@ -48,7 +84,15 @@
               @click="changeOption(option)"
             >
               <a
-                class="rounded bg-gray-700-spotify hover:bg-gray-600-spotify py-2 px-4 block whitespace-no-wrap"
+                class="
+                  rounded
+                  bg-gray-700-spotify
+                  hover:bg-gray-600-spotify
+                  py-2
+                  px-4
+                  block
+                  whitespace-no-wrap
+                "
                 href="#"
               >
                 {{ option.label }}
@@ -65,11 +109,12 @@
 export default {
   props: {
     modelValue: {
+      type: String,
       required: true,
     },
     label: {
       type: String,
-      required: false,
+      required: true,
     },
     options: {
       type: Array,
@@ -89,19 +134,6 @@ export default {
       return this.options.filter((option) => option.value != this.modelValue);
     },
   },
-  methods: {
-    changeOption(option) {
-      this.opened = false;
-      this.selected = option.label;
-      this.$emit("update:modelValue", option.value);
-    },
-    getFilteredArray() {
-      return this.options.filter((option) => option.value != this.modelValue);
-    },
-    handleResize() {
-      console.log("23");
-    },
-  },
   mounted() {
     this.options.find((option) => {
       if (this.modelValue === option.value) {
@@ -117,6 +149,16 @@ export default {
     if (checkForDuplicates({ array: this.options, keyName: "value" })) {
       console.error("Duplicate 'value' key found in :options");
     }
+  },
+  methods: {
+    changeOption(option) {
+      this.opened = false;
+      this.selected = option.label;
+      this.$emit("update:modelValue", option.value);
+    },
+    getFilteredArray() {
+      return this.options.filter((option) => option.value != this.modelValue);
+    },
   },
 };
 </script>

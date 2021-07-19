@@ -1,8 +1,8 @@
 <template>
   <li
     v-if="visible"
-    class="px-5 py-3 text-gray-200 text-sm rounded-md leading-4 font-medium cursor-pointer"
     v-wave
+    class="px-5 py-3 text-gray-200 text-sm rounded-md leading-4 font-medium cursor-pointer"
     :class="{
       'bg-gray-600-spotify': isActive,
       'opacity-40 cursor-not-allowed': disabled,
@@ -32,11 +32,6 @@ export default {
       required: false,
     },
   },
-  methods: {
-    activateTab(name) {
-      if (!this.disabled && name !== this.active) return this.selectTab(name);
-    },
-  },
   computed: {
     active() {
       return this.state.active();
@@ -44,6 +39,11 @@ export default {
     isActive() {
       if (this.name === this.active) return true;
       return false;
+    },
+  },
+  methods: {
+    activateTab(name) {
+      if (!this.disabled && name !== this.active) return this.selectTab(name);
     },
   },
 };

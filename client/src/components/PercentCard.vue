@@ -30,9 +30,18 @@
 export default {
   name: "PercentCard",
   props: {
-    selected: String,
-    value: Number,
-    previousValue: Number,
+    selected: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: Number,
+      required: true,
+    },
+    previousValue: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
     rise() {

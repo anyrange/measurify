@@ -45,18 +45,18 @@ export default {
       friends: [],
     };
   },
+  created() {
+    getFriends().then((response) => {
+      this.friends = response.friends;
+      this.loading = false;
+    });
+  },
   methods: {
     getDateFromNow(date) {
       return formatDistanceToNowStrict(Date.parse(date), {
         addSuffix: true,
       });
     },
-  },
-  created() {
-    getFriends().then((response) => {
-      this.friends = response.friends;
-      this.loading = false;
-    });
   },
 };
 </script>

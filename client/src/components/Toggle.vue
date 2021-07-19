@@ -11,18 +11,38 @@
       <div class="flex items-center group">
         <div class="relative inline-block w-12 mr-2 align-middle select-none">
           <input
-            type="checkbox"
             id="toggle"
+            type="checkbox"
             v-bind="$attrs"
             :checked="modelValue"
+            class="
+              toggle
+              absolute
+              block
+              w-6
+              h-6
+              rounded-full
+              bg-gray-100
+              appearance-none
+              cursor-pointer
+              outline-none
+            "
             @change="handleInput($event.target.checked)"
-            class="toggle absolute block w-6 h-6 rounded-full bg-gray-100 appearance-none cursor-pointer outline-none"
-          />
+          >
           <label
             for="toggle"
-            class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-600-spotify cursor-pointer transition-colors duration-200"
-          >
-          </label>
+            class="
+              toggle-label
+              block
+              overflow-hidden
+              h-6
+              rounded-full
+              bg-gray-600-spotify
+              cursor-pointer
+              transition-colors
+              duration-200
+            "
+          />
         </div>
       </div>
     </div>
@@ -39,9 +59,10 @@ export default {
     },
     label: {
       type: String,
-      required: false,
+      required: true,
     },
   },
+  emits: ["update:modelValue"],
   methods: {
     handleInput(value) {
       this.$emit("update:modelValue", value);

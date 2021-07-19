@@ -33,9 +33,7 @@
           :series="overviewData"
         ></apexchart>
       </div>
-      <h2 class="mt-6 h-title">
-        Top Played
-      </h2>
+      <h2 class="mt-6 h-title">Top Played</h2>
       <tabs class="my-6" v-model="selectedTop">
         <tab name="artists">Artists</tab>
         <tab name="tracks">Track</tab>
@@ -111,9 +109,21 @@ export default {
     },
   },
   watch: {
-    selectedPeriod: function() {
+    selectedPeriod: function () {
       this.updateChart(this.selectedPeriod);
     },
+  },
+  async created() {
+    const [{ overview, status: overviewStatus }, { top }] = await Promise.all([
+      getOverview(),
+      getTop(),
+    ]);
+    this.totalOverview = overview.reverse();
+    this.totalTop = top;
+    this.emptyData = overviewStatus === 204 ? true : false;
+    this.loading = false;
+    this.pushToChart();
+    this.calculateAllTotals();
   },
   methods: {
     updateChart(period) {
@@ -192,18 +202,6 @@ export default {
       );
       this.getTotals(this.totals.alltime, this.totalOverview);
     },
-  },
-  async created() {
-    const response = await Promise.all([getOverview(), getTop()]);
-
-    const overview = response[0].overview.reverse();
-    this.totalOverview = overview;
-    this.totalTop = response[1].top;
-    this.emptyData = response[0].status === 204 ? true : false;
-    this.loading = false;
-
-    this.pushToChart();
-    this.calculateAllTotals();
   },
 };
 </script>
