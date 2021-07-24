@@ -2,7 +2,6 @@ import app from "./app.js";
 import cron from "node-cron";
 import refresh_tokens from "./includes/cron-workers/refresh-tokens.js";
 import refresh_recently_played from "./includes/cron-workers/recently-played-parse.js";
-// import * as smartPlaylist from "./includes/cron-workers/smart-playlist.js";
 import refresh_avatars from "./includes/cron-workers/refresh-avatars.js";
 
 import mongoose from "mongoose";
@@ -47,11 +46,4 @@ function startScheduledJobs() {
   cron.schedule("0 */12 * * *", () => {
     refresh_avatars();
   });
-
-  // cron.schedule("0 0 * * *", () => {
-  //   smartPlaylist.update();
-  // });
-  // cron.schedule("*/15 * * * *", () => {
-  //   smartPlaylist.clean();
-  // });
 }
