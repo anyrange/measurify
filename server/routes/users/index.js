@@ -14,6 +14,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["users"],
       },
     },
     async function() {

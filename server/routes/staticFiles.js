@@ -14,12 +14,16 @@ export default async function(fastify) {
     );
   });
 
-  fastify.get("/info", (request, reply) => {
-    fs.readFile(
-      join(dirname(__filename), "../assets/info.html"),
-      (err, html) => {
-        reply.type("text/html").send(html);
-      }
-    );
-  });
+  fastify.get(
+    "/info",
+    { schema: { tags: ["server status"] } },
+    (request, reply) => {
+      fs.readFile(
+        join(dirname(__filename), "../assets/info.html"),
+        (err, html) => {
+          reply.type("text/html").send(html);
+        }
+      );
+    }
+  );
 }

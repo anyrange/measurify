@@ -43,6 +43,7 @@ export default async function(fastify) {
           properties: { customID: { type: "string" } },
         },
         response: responseSchema,
+        tags: ["users"],
       },
     },
     async function(req, reply) {

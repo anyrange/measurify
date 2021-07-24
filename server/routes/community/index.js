@@ -8,7 +8,7 @@ export default async function(fastify) {
     "",
     {
       schema: {
-        description: "do not working properly yet",
+        description: "do not work properly yet",
         querystring: {
           type: "object",
           properties: {
@@ -39,6 +39,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["pages"],
       },
     },
     async function(req, reply) {

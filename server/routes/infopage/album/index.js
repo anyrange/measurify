@@ -36,6 +36,7 @@ export default async function(fastify) {
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: responseSchema,
+        tags: ["infopages"],
       },
     },
     async function(req, reply) {

@@ -18,6 +18,7 @@ export default async function(fastify) {
             code: { type: "string" },
           },
         },
+        tags: ["auth"],
       },
     },
     async (request, reply) => {

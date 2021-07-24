@@ -26,9 +26,6 @@ app.register(import("fastify-cookie"), {
 app.register(import("fastify-websocket"));
 
 if (process.env.NODE_ENV != "production") {
-  app.ready(() => {
-    console.log(app.printRoutes({ commonPrefix: false }));
-  });
   app.register(import("fastify-swagger"), {
     routePrefix: "/doc",
     swagger: {
@@ -41,6 +38,7 @@ if (process.env.NODE_ENV != "production") {
       deepLinking: true,
       displayRequestDuration: true,
       "syntaxHighlight.theme": "nord",
+      docExpansion: "none",
     },
     exposeRoute: true,
   });

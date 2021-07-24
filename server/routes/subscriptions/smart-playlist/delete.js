@@ -34,6 +34,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["smart-playlist"],
       },
     },
     async function(req, reply) {

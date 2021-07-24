@@ -6,6 +6,7 @@ export default async function(fastify) {
         response: {
           200: { type: "object", properties: { message: { type: "string" } } },
         },
+        tags: ["server status"],
       },
     },
     () => {

@@ -17,6 +17,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["user settings"],
       },
     },
     async function(req, reply) {

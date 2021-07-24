@@ -29,6 +29,7 @@ export default async function(fastify) {
           },
         },
         response,
+        tags: ["pages"],
       },
     },
     async function(req, reply) {

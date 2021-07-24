@@ -39,6 +39,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["infopages"],
       },
     },
     async function(req, reply) {

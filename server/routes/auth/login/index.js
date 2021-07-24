@@ -8,6 +8,7 @@ export default async function(fastify) {
           required: ["sw_redirect"],
           properties: { sw_redirect: { type: "string" } },
         },
+        tags: ["auth"],
       },
     },
     (request, reply) => {

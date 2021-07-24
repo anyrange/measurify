@@ -29,6 +29,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["dashboard"],
       },
     },
     async function(req, reply) {

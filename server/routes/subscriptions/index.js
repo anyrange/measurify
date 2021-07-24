@@ -17,6 +17,7 @@ export default async function(fastify) {
             },
           },
         },
+        tags: ["subscriptions"],
       },
     },
     async function(req, reply) {
