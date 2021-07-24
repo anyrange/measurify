@@ -22,32 +22,15 @@ export default async function(fastify) {
       },
     },
     async function(req, reply) {
-      const _id = await fastify.auth(req);
-      const { lastSpotifyToken: token, autoUpdate } = await User.findOne(
-        { _id },
-        { lastSpotifyToken: 1, autoUpdate: 1 }
-      );
+      const id = await fastify.auth(req);
 
-      const newData = await this.spotifyAPI({ route: "me", token });
+      const user = await User.findByIdAndUpdate(id, { lastLogin: Date.now() })
+        .select("lastSpotifyToken autoUpdate userName country avatar")
+        .lean();
 
-      const userName = newData.display_name;
-      const avatar = newData.images.length ? newData.images[0].url : "";
-      const filter = { _id };
-      const update = {
-        userName,
-        avatar,
-        lastLogin: Date.now(),
-      };
+      user.token = user.lastSpotifyToken;
 
-      reply.send({
-        token,
-        avatar,
-        autoUpdate,
-        userName,
-        country: newData.country,
-      });
-
-      await User.updateOne(filter, update);
+      reply.send(user);
     }
   );
 }

@@ -38,14 +38,14 @@ const schema = new Schema({
   avatar: {
     type: String,
   },
+  country: {
+    type: String,
+    default: "US",
+  },
   privacy: {
     type: String,
     default: "public",
     required: true,
-  },
-  subscriptions: {
-    type: Object,
-    default: {},
   },
   autoUpdate: {
     type: Boolean,

@@ -43,9 +43,10 @@ export default async function(fastify) {
         const upsert = {
           lastSpotifyToken: access_token,
           userName: user.display_name,
+          country: user.country,
           refreshToken: refresh_token,
           avatar: user.images.length ? user.images[0].url : "",
-          __v: 5,
+          __v: 6,
         };
         const projection = {
           recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },

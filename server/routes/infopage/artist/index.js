@@ -1,4 +1,5 @@
 import history from "../../../includes/listening-history.js";
+import User from "../../../models/User.js";
 
 export default async function(fastify) {
   fastify.get(
@@ -45,7 +46,9 @@ export default async function(fastify) {
     async function(req, reply) {
       const _id = await fastify.auth(req);
       const artistID = req.params.id;
-      const token = await this.getToken(_id);
+      const { lastSpotifyToken: token, country } = await User.findById(
+        _id
+      ).select("lastSpotifyToken country");
 
       const time_range = ["long_term", "medium_term", "short_term"];
 
@@ -54,7 +57,7 @@ export default async function(fastify) {
         history(_id, artistID),
         fastify
           .spotifyAPI({
-            route: `artists/${artistID}/top-tracks?market=ES`,
+            route: `artists/${artistID}/top-tracks?market=${country}`,
             token,
           })
           .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
