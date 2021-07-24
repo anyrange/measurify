@@ -92,7 +92,7 @@ export default async function(fastify) {
         id: createdPlaylist.id,
       });
 
-      reply.code(201).send({ message: "Succesfully subscribed", status: 201 });
+      reply.code(201).send({ message: "Succesfully subscribed" });
     }
   );
 }

@@ -27,7 +27,7 @@ export default async function(fastify) {
         { subscriptions: 1 }
       );
 
-      reply.send({ subscriptions: Object.keys(subscriptions), status: 200 });
+      reply.send({ subscriptions: Object.keys(subscriptions) });
     }
   );
 }

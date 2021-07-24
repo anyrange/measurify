@@ -95,7 +95,6 @@ export default async function(fastify) {
         overview,
         rates,
         audioFeatures,
-        status: 200,
       };
 
       reply.send(response);

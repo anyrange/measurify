@@ -43,7 +43,7 @@ export default async function(fastify) {
       if (!document) throw new this.CustomError("User not found", 404);
 
       if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-        return reply.code(200).send({
+        return reply.send({
           status: 204,
           top: { tracks: [], albums: [], artists: [], playlists: [] },
         });
@@ -65,7 +65,7 @@ export default async function(fastify) {
         lastDate
       );
 
-      reply.send({ top: response, status: 200 });
+      reply.send({ top: response });
     }
   );
 }

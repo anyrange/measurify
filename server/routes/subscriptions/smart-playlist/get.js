@@ -34,7 +34,7 @@ export default async function(fastify) {
       if (!subscriptions?.smartPlaylist?.playlists.length)
         return reply.send({ items: [], status: 204 });
 
-      reply.send({ items: subscriptions.smartPlaylist.playlists, status: 200 });
+      reply.send({ items: subscriptions.smartPlaylist.playlists });
     }
   );
 }

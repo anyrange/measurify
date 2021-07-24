@@ -19,7 +19,7 @@ export default async function(fastify) {
     },
     async function() {
       const quantity = await User.estimatedDocumentCount();
-      return { quantity, status: 200 };
+      return { quantity };
     }
   );
 }

@@ -110,7 +110,7 @@ export default async function(fastify) {
         };
       });
 
-      reply.send({ top, status: 200 });
+      reply.send({ top });
     }
   );
 }

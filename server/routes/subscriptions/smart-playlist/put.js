@@ -51,7 +51,7 @@ export default async function(fastify) {
       if (opResult.nModified === 0)
         throw new this.CustomError("Already exist", 400);
 
-      reply.send({ message: "Succesfully updated", status: 200 });
+      reply.send({ message: "Succesfully updated" });
     }
   );
 }

@@ -77,10 +77,9 @@ export default async function(fastify) {
         },
         audioFeatures,
         tracks,
-        status: 200,
       };
 
-      reply.code(200).send(response);
+      reply.send(response);
     }
   );
 }

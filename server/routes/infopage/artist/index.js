@@ -110,10 +110,9 @@ export default async function(fastify) {
         tracks,
         audioFeatures,
         rates,
-        status: 200,
       };
 
-      reply.code(200).send(response);
+      reply.send(response);
     }
   );
 }

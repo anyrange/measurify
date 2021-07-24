@@ -45,7 +45,6 @@ export default async function(fastify) {
         autoUpdate,
         userName,
         country: newData.country,
-        status: 200,
       });
 
       await User.updateOne(filter, update);

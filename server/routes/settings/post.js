@@ -60,7 +60,7 @@ export default async function(fastify) {
       if (updateResult.nModified === 0)
         throw new this.CustomError("Nothing to update", 400);
 
-      reply.send({ message: "Successfully updated", status: 200 });
+      reply.send({ message: "Successfully updated" });
     }
   );
 }

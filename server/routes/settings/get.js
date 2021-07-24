@@ -29,12 +29,11 @@ export default async function(fastify) {
 
       if (!user) throw new this.CustomError("User not found", 404);
 
-      reply.code(200).send({
+      reply.send({
         privacy: user.privacy,
         customID: user.customID,
         spotifyID: user.spotifyID,
         autoUpdate: user.autoUpdate,
-        status: 200,
       });
     }
   );

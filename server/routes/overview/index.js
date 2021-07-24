@@ -86,7 +86,7 @@ export default async function(fastify) {
       if (!plays || !plays.length)
         return reply.send({ status: 204, overview: [] });
 
-      reply.send({ overview: formatOverview(plays), status: 200 });
+      reply.send({ overview: formatOverview(plays) });
     }
   );
 }

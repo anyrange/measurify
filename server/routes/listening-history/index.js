@@ -39,7 +39,6 @@ export default async function(fastify) {
       reply.send({
         pages: Math.ceil(history.tracksQuantity / range),
         history: history.recentlyPlayed,
-        status: 200,
       });
     }
   );

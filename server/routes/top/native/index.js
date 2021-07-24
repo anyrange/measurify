@@ -45,7 +45,7 @@ export default async function(fastify) {
         getArtists(options, fastify.spotifyAPI),
       ]);
 
-      reply.send({ tracks, artists, status: 200 });
+      reply.send({ tracks, artists });
     }
   );
 }

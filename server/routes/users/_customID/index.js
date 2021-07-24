@@ -206,7 +206,6 @@ export default async function(fastify) {
         genres,
         hourlyActivity,
         leaved: user.refreshToken === "",
-        status: 200,
       };
 
       reply.send(response);

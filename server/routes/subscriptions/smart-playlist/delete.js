@@ -53,7 +53,7 @@ export default async function(fastify) {
       if (opResult.nModified === 0)
         throw new this.CustomError("Nothing to delete", 400);
 
-      reply.code(200).send({ message: "Succesfully updated", status: 200 });
+      reply.send({ message: "Succesfully updated" });
     }
   );
 }
