@@ -13,8 +13,7 @@
             sm:rounded-lg
             w-20
             h-20
-            sm:w-48
-            sm:h-48
+            sm:w-48 sm:h-48
             object-cover
             duration-300
           "
@@ -116,13 +115,35 @@
             </div>
           </div>
         </div>
-
-        <apexchart
-          type="polarArea"
-          :options="chartOptions"
-          :series="activityHours"
-        ></apexchart>
-
+        <div class="content__item">
+          <span class="content__item__label"> Hourly activity </span>
+          <div
+            class="
+              flex flex-row
+              text-center
+              -mx-10
+              font-medium
+              text-base text-gray-400-spotify
+            "
+          >
+            <div>
+              AM
+              <apexchart
+                type="polarArea"
+                :options="chartOptions"
+                :series="activityHours.AM"
+              ></apexchart>
+            </div>
+            <div>
+              PM
+              <apexchart
+                type="polarArea"
+                :options="chartOptions"
+                :series="activityHours.PM"
+              ></apexchart>
+            </div>
+          </div>
+        </div>
         <div class="content__item">
           <span class="content__item__label"> Listened tracks </span>
           <div class="flex flex-col gap-3">
@@ -224,41 +245,26 @@ export default {
     return {
       loading: true,
       profile: {},
-
-      series: [14, 23, 21, 17, 15, 10, 12, 17, 21],
+      series: [],
       chartOptions: {
         chart: {
           type: "polarArea",
         },
         labels: [
-          "0:00",
           "1:00",
           "2:00",
           "3:00",
           "4:00",
           "5:00",
           "6:00",
+          "7:00",
           "8:00",
           "9:00",
           "10:00",
           "11:00",
           "12:00",
-          "13:00",
-          "14:00",
-          "15:00",
-          "16:00",
-          "17:00",
-          "18:00",
-          "19:00",
-          "20:00",
-          "21:00",
-          "22:00",
-          "23:00",
-          "24:00",
         ],
-        fill: {
-          opacity: 0.8,
-        },
+        fill: {},
         plotOptions: {
           polarArea: {
             rings: {
@@ -266,26 +272,45 @@ export default {
             },
             spokes: {
               strokeWidth: 1,
+              connectorColors: "#282828",
             },
           },
         },
         stroke: {
           width: 1,
-          colors: undefined,
         },
         yaxis: {
           show: false,
         },
         legend: {
           show: false,
-          position: "bottom",
+        },
+        theme: {
+          monochrome: {
+            enabled: true,
+            color: "#1eb252",
+            shadeTo: "dark",
+            shadeIntensity: 0,
+          },
         },
       },
     };
   },
   computed: {
     activityHours() {
-      return this.profile.hourlyActivity.map((item) => item.plays);
+      const activity = this.profile.hourlyActivity.map((item) => item.plays);
+      const hourOffset = new Date().getTimezoneOffset() / 60;
+      if (hourOffset < 0) {
+        const shift = activity.splice(hourOffset, Math.abs(hourOffset));
+        activity.unshift(...shift);
+      } else {
+        const shift = activity.splice(0, hourOffset);
+        activity.push(...shift);
+      }
+      return {
+        AM: activity.slice(0, 12),
+        PM: activity.slice(12),
+      };
     },
     activityLabels() {
       return this.profile.hourlyActivity.map((item) => item.time);
