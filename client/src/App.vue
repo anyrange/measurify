@@ -8,6 +8,7 @@
 <script>
 import Notifications from "@/components/Notifications";
 import { mapActions, mapGetters } from "vuex";
+import { notify } from "@/services/notify";
 
 export default {
   components: {
@@ -50,10 +51,10 @@ export default {
       this.registration = e.detail;
       if (this.user.autoUpdate) {
         this.refreshApp();
-        this.$notify.show({ type: "success", message: "Updating..." });
+        notify.show({ type: "success", message: "Updating..." });
         return;
       } else {
-        this.$notify.show({
+        notify.show({
           type: "success",
           message: "Update available",
           progress: false,

@@ -81,6 +81,7 @@ import BaseButton from "@/components/BaseButton";
 import BaseImg from "@/components/BaseImg";
 import { updateAccount, getAccount } from "@/api";
 import { mapGetters, mapActions } from "vuex";
+import { notify } from "@/services/notify";
 
 export default {
   components: { BaseSelect, BaseInput, BaseButton, BaseImg, Toggle },
@@ -123,7 +124,7 @@ export default {
         const response = await updateAccount(this.account);
         this.changeAutoupdate(this.account.autoUpdate);
         this.copyAccount();
-        this.$notify.show({ type: "success", message: response.message });
+        notify.show({ type: "success", message: response.message });
       } finally {
         this.loadingButton = false;
       }

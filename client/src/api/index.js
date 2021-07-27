@@ -1,7 +1,7 @@
 import axios from "axios";
 import $store from "@/store";
 import $router from "@/router";
-import { notification } from "@/notify.js";
+import { notify } from "@/services/notify";
 
 const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
 
@@ -13,9 +13,9 @@ api.interceptors.response.use(
   (error) => {
     if (error.response.data.status === 401) $store.dispatch("logout");
     if ($router.currentRoute.value.path === "/") return;
-    notification.show({
+    notify.show({
       type: "danger",
-      message: error.response.data.message || "Something went wrong!",
+      message: error?.response?.data?.message || "Something went wrong!",
     });
     return Promise.reject(error);
   }

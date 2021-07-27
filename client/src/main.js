@@ -3,7 +3,6 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { notify } from "./notify.js";
 import "./registerServiceWorker";
 import "./assets/tailwind.css";
 import "./assets/font.css";
@@ -18,7 +17,6 @@ app.config.globalProperties.$apexcharts = ApexCharts;
 app
   .use(store)
   .use(router)
-  .use(notify)
   .use(VWave)
   .mount("#app");
 
