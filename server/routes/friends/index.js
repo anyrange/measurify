@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -17,9 +17,10 @@ export default async function(fastify) {
         },
         tags: ["pages"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       let users = await User.find(
         {},
         {

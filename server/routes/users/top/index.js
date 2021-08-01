@@ -1,5 +1,5 @@
 import User from "../../../models/User.js";
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -16,9 +16,11 @@ export default async function(fastify) {
         },
         tags: ["users"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
+
       const requestor = await User.findOne({ _id }, { spotifyID: 1 });
 
       if (!requestor) throw new this.CustomError("User not found", 404);

@@ -1,4 +1,4 @@
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -24,9 +24,10 @@ export default async function(fastify) {
         },
         tags: ["pages"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const range = req.query.range || 50;
       const page = req.query.page - 1 || 0;
       const search = req.query.search || "";

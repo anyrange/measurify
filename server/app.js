@@ -27,7 +27,7 @@ app.register(import("fastify-websocket"));
 
 if (process.env.NODE_ENV != "production") {
   app.register(import("fastify-swagger"), {
-    routePrefix: "/doc",
+    routePrefix: "/docs",
     swagger: {
       info: {
         title: "Spotiworm",
@@ -45,14 +45,10 @@ if (process.env.NODE_ENV != "production") {
 }
 
 // custom plugins
-app.register(autoLoad, {
-  dir: join(__dirname, "plugins"),
-});
+app.register(autoLoad, { dir: join(__dirname, "plugins") });
 
 // schemas
-app.register(autoLoad, {
-  dir: join(__dirname, "schema"),
-});
+app.register(autoLoad, { dir: join(__dirname, "schema") });
 
 // routes
 app.register(autoLoad, {

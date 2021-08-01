@@ -1,4 +1,4 @@
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -12,7 +12,7 @@ export default async function(fastify) {
             },
           },
         },
-        tags: ["server status"],
+        tags: ["server"],
       },
     },
     () => {

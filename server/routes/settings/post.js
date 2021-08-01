@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.post(
     "",
     {
@@ -40,8 +40,8 @@ export default async function(fastify) {
         tags: ["user settings"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const { privacy, customID, autoUpdate } = req.body;
 
       const user = await User.findOne({ customID }, { _id: 1 });

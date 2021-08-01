@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -26,8 +26,8 @@ export default async function(fastify) {
         tags: ["dashboard"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const range = req.query.range || 20;
       const firstDate = req.query.firstDate;
       let lastDate = req.query.lastDate;

@@ -3,7 +3,7 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 import formatOverview from "../../utils/format-overview.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -31,57 +31,46 @@ export default async function(fastify) {
         },
         tags: ["dashboard"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
 
-      const agg = [
-        { $match: { _id: new ObjectId(_id) } },
-        {
-          $project: {
-            "recentlyPlayed.plays.played_at": 1,
-            "recentlyPlayed.duration_ms": 1,
+      const plays = await User.aggregate()
+        .match({ _id: new ObjectId(_id) })
+        .project({
+          recentlyPlayed: { "plays.played_at": 1, duration_ms: 1 },
+        })
+        .unwind("recentlyPlayed")
+        .unwind("recentlyPlayed.plays")
+        .addFields({
+          "recentlyPlayed.played_at": {
+            $toDate: "$recentlyPlayed.plays.played_at",
           },
-        },
-        { $unwind: { path: "$recentlyPlayed" } },
-        { $unwind: { path: "$recentlyPlayed.plays" } },
-        {
-          $addFields: {
-            "recentlyPlayed.played_at": {
-              $toDate: "$recentlyPlayed.plays.played_at",
-            },
-          },
-        },
-        {
-          $project: {
-            "recentlyPlayed.duration_ms": 1,
-            "recentlyPlayed.played_at": {
+        })
+        .project({
+          recentlyPlayed: {
+            duration_ms: 1,
+            played_at: {
               $dateToString: {
                 format: "%Y-%m-%d",
                 date: "$recentlyPlayed.played_at",
               },
             },
           },
-        },
-        {
-          $group: {
-            _id: { date: "$recentlyPlayed.played_at" },
-            plays: { $sum: 1 },
-            playtime: { $sum: "$recentlyPlayed.duration_ms" },
-          },
-        },
-        {
-          $project: {
-            date: "$_id.date",
-            plays: 1,
-            duration: { $round: { $divide: ["$playtime", 60000] } },
-            _id: 0,
-          },
-        },
-        { $sort: { date: -1 } },
-      ];
-
-      const plays = await User.aggregate(agg);
+        })
+        .group({
+          _id: { date: "$recentlyPlayed.played_at" },
+          plays: { $sum: 1 },
+          playtime: { $sum: "$recentlyPlayed.duration_ms" },
+        })
+        .project({
+          date: "$_id.date",
+          plays: 1,
+          duration: { $round: { $divide: ["$playtime", 60000] } },
+          _id: 0,
+        })
+        .sort("-date");
 
       if (!plays || !plays.length)
         return reply.send({ status: 204, overview: [] });

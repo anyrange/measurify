@@ -3,7 +3,7 @@ import mongodb from "mongodb";
 
 const { ObjectId } = mongodb;
 
-export default async function(fastify) {
+export default async function (fastify) {
   const responseSchema = {
     200: {
       type: "object",
@@ -45,9 +45,11 @@ export default async function(fastify) {
         response: responseSchema,
         tags: ["users"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
+
       const { customID } = req.params;
 
       // find both the requesting and the searched user
@@ -188,13 +190,8 @@ export default async function(fastify) {
         }),
       ];
 
-      const [
-        top,
-        history,
-        overview,
-        genres,
-        hourlyActivity,
-      ] = await Promise.all(requests);
+      const [top, history, overview, genres, hourlyActivity] =
+        await Promise.all(requests);
 
       const response = {
         userName: user.userName,
@@ -239,7 +236,7 @@ const genresTop = async (token, api) => {
   });
 
   return genresTop
-    .sort(function(a, b) {
+    .sort(function (a, b) {
       return b.times - a.times;
     })
     .map(({ genre }) => genre)

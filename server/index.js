@@ -26,7 +26,7 @@ app.listen(PORT, "0.0.0.0", (err) => {
   if (err) return console.log(err);
   console.info(
     `App listening on: http://localhost:${PORT}
-Docs are available on: http://localhost:${PORT}/doc`
+Docs are available on: http://localhost:${PORT}/docs`
   );
 });
 

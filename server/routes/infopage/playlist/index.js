@@ -1,6 +1,6 @@
 import history from "../../../includes/listening-history.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "/:id",
     {
@@ -44,8 +44,8 @@ export default async function(fastify) {
         tags: ["infopages"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const playlistID = req.params.id;
 
       const token = await this.getToken(_id);

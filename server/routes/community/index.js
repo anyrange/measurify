@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -41,9 +41,11 @@ export default async function(fastify) {
         },
         tags: ["pages"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
+
       const range = req.query.range || 10;
       const page = req.query.page || 1;
 
@@ -106,15 +108,13 @@ export default async function(fastify) {
 
       const likeActivity = await Promise.all(requests);
 
-      const activity = [
-        ...likeActivity.flat(1),
-        ...trackActivity,
-      ].sort((a, b) =>
-        a.track.played_at < b.track.played_at
-          ? 1
-          : a.track.played_at > b.track.played_at
-          ? -1
-          : 0
+      const activity = [...likeActivity.flat(1), ...trackActivity].sort(
+        (a, b) =>
+          a.track.played_at < b.track.played_at
+            ? 1
+            : a.track.played_at > b.track.played_at
+            ? -1
+            : 0
       );
 
       reply.send({ activity });

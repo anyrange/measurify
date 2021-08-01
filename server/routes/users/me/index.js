@@ -1,6 +1,6 @@
 import User from "../../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -20,11 +20,12 @@ export default async function(fastify) {
         },
         tags: ["users"],
       },
+      preValidation: [fastify.auth],
     },
-    async function(req, reply) {
-      const id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
 
-      const user = await User.findByIdAndUpdate(id, { lastLogin: Date.now() })
+      const user = await User.findByIdAndUpdate(_id, { lastLogin: Date.now() })
         .select("lastSpotifyToken autoUpdate userName country avatar")
         .lean();
 

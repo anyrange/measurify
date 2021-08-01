@@ -28,7 +28,7 @@
       <div class="-mx-4 w-full">
         <apexchart
           type="area"
-          height="350"
+          height="250"
           :options="chartOptions"
           :series="overviewData"
         ></apexchart>
@@ -109,7 +109,7 @@ export default {
     },
   },
   watch: {
-    selectedPeriod: function () {
+    selectedPeriod: function() {
       this.updateChart(this.selectedPeriod);
     },
   },

@@ -1,7 +1,7 @@
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
-    { websocket: true, schema: { tags: ["server status"] } },
+    { websocket: true, schema: { tags: ["server"] } },
     (connection) => {
       const sendMessage = () => {
         const { heapUsed, rss, heapTotal, external } = process.memoryUsage();

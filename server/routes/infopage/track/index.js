@@ -1,6 +1,6 @@
 import User from "../../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "/:id",
     {
@@ -25,8 +25,8 @@ export default async function(fastify) {
         tags: ["infopages"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const trackID = req.params.id;
 
       const token = await fastify.getToken(_id);
@@ -48,14 +48,8 @@ export default async function(fastify) {
         ),
       ];
 
-      const [
-        track,
-        audioFeatures,
-        listenedOne,
-        trcLT,
-        trcMT,
-        trcST,
-      ] = await Promise.all(request.flat(1));
+      const [track, audioFeatures, listenedOne, trcLT, trcMT, trcST] =
+        await Promise.all(request.flat(1));
 
       const overview = {
         plays: listenedOne?.recentlyPlayed[0].plays.length || 0,

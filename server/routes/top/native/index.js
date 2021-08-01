@@ -1,4 +1,4 @@
-export default async function(fastify) {
+export default async function (fastify) {
   const response = {
     200: {
       type: "object",
@@ -32,8 +32,8 @@ export default async function(fastify) {
         tags: ["pages"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const range = req.query.range || 20;
       const period = req.query.period || "long_term";
 

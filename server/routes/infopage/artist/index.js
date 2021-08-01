@@ -1,7 +1,7 @@
 import history from "../../../includes/listening-history.js";
 import User from "../../../models/User.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "/:id",
     {
@@ -43,8 +43,8 @@ export default async function(fastify) {
         tags: ["infopages"],
       },
     },
-    async function(req, reply) {
-      const _id = await fastify.auth(req);
+    async function (req, reply) {
+      const { _id } = req;
       const artistID = req.params.id;
       const { lastSpotifyToken: token, country } = await User.findById(
         _id
