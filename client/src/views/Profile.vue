@@ -13,8 +13,7 @@
             sm:rounded-lg
             w-20
             h-20
-            sm:w-48
-            sm:h-48
+            sm:w-48 sm:h-48
             object-cover
             duration-300
           "
@@ -34,11 +33,8 @@
       </div>
       <div class="content">
         <div class="mt-2 flex flex-wrap gap-2">
-          <card :title="profile.overview.plays" subtitle="tracks played" />
-          <card
-            :title="profile.overview.playtime"
-            subtitle="minutes listened"
-          />
+          <card :title="profile.overview.plays">tracks played</card>
+          <card :title="profile.overview.playtime">minutes listened</card>
         </div>
         <div class="content__item" v-if="profile.genres.length">
           <span class="content__item__label"> Genres </span>

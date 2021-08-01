@@ -15,6 +15,19 @@ export default async function (fastify) {
           200: {
             type: "object",
             required: ["artist", "tracks", "status"],
+            definitions: {
+              tracksInTop: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    place: { type: "number" },
+                    id: { type: "string" },
+                  },
+                },
+              },
+            },
             properties: {
               artist: {
                 type: "object",
@@ -33,7 +46,14 @@ export default async function (fastify) {
                 type: "object",
                 properties: {
                   art: fastify.getSchema("rates"),
-                  trc: fastify.getSchema("rates"),
+                  trc: {
+                    type: "object",
+                    properties: {
+                      LT: { $ref: "#/definitions/tracksInTop" },
+                      MT: { $ref: "#/definitions/tracksInTop" },
+                      ST: { $ref: "#/definitions/tracksInTop" },
+                    },
+                  },
                 },
               },
               status: { type: "number" },
@@ -94,9 +114,9 @@ export default async function (fastify) {
           ST: findPlace(artist.name, artST),
         },
         trc: {
-          LT: countTracks(artist.name, trcLT),
-          MT: countTracks(artist.name, trcMT),
-          ST: countTracks(artist.name, trcST),
+          LT: findTracks(artist.name, trcLT),
+          MT: findTracks(artist.name, trcMT),
+          ST: findTracks(artist.name, trcST),
         },
       };
 
@@ -127,11 +147,12 @@ const findPlace = (name, { items }) => {
   return 0;
 };
 
-const countTracks = (name, { items }) => {
-  let tracksInTop = 0;
-  items.forEach((track) =>
+const findTracks = (name, { items }) => {
+  const tracksInTop = [];
+  items.forEach((track, index) =>
     track.artists.forEach((artist) => {
-      if (artist.name == name) tracksInTop++;
+      if (artist.name == name)
+        tracksInTop.push({ name: track.name, place: index + 1, id: track.id });
     })
   );
   return tracksInTop;

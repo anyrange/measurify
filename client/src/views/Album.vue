@@ -15,8 +15,8 @@
       </figure>
       <div class="content">
         <div class="mt-2 flex flex-wrap gap-2">
-          <card :title="album.popularity / 10" subtitle="popularity" />
-          <card :title="album.total_tracks" subtitle="tracks amount" />
+          <card :title="album.popularity / 10">popularity</card>
+          <card :title="album.total_tracks">tracks amount</card>
         </div>
         <div class="content__item">
           <span class="content__item__label"> Artist </span>

@@ -7,5 +7,6 @@
 <script>
 export default {
   name: "Badge",
+  functional: true,
 };
 </script>

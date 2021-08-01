@@ -80,3 +80,9 @@
   transform: translate(-50%, -50%);
   @apply truncate-2 absolute flex text-center justify-center items-center text-white font-semibold;
 }
+.default-border {
+  @apply border-gray-700-spotify;
+}
+hr {
+  @apply default-border;
+}

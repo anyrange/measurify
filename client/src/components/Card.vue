@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col p-2 bg-gray-700-spotify rounded-lg">
+  <div class="flex flex-col p-2 w-32 bg-gray-700-spotify rounded-lg">
     <div class="text-green-500-spotify text-lg font-bold">
       {{ title }}
     </div>
     <div class="text-white text-base font-normal">
-      {{ subtitle }}
+      <slot />
     </div>
   </div>
 </template>
@@ -15,10 +15,6 @@ export default {
   props: {
     title: {
       type: [String, Number],
-      required: true,
-    },
-    subtitle: {
-      type: String,
       required: true,
     },
   },

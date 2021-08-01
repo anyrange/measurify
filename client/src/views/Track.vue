@@ -15,19 +15,15 @@
       </figure>
       <div class="content">
         <div class="mt-2 flex flex-wrap gap-2">
-          <card :title="track.popularity / 10" subtitle="popularity" />
-          <card :title="trackDuration" subtitle="track length" />
-          <card :title="releaseDate" subtitle="release date" />
-          <card
-            v-if="overview.playtime"
-            :title="overview.playtime"
-            subtitle="minutes listened"
-          />
-          <card
-            v-if="overview.plays"
-            :title="overview.plays"
-            subtitle="times played"
-          />
+          <card :title="track.popularity / 10">popularity</card>
+          <card :title="trackDuration">track length</card>
+          <card :title="releaseDate">release date</card>
+          <card v-if="overview.playtime" :title="overview.playtime">
+            minutes listened
+          </card>
+          <card v-if="overview.plays" :title="overview.plays">
+            times played
+          </card>
         </div>
         <div class="content__item">
           <span class="content__item__label"> Album </span>
