@@ -28,7 +28,7 @@
       <div class="-mx-4 w-full">
         <apexchart
           type="area"
-          height="250"
+          height="350"
           :options="chartOptions"
           :series="overviewData"
         ></apexchart>
