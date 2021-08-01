@@ -13,7 +13,8 @@
             sm:rounded-lg
             w-20
             h-20
-            sm:w-48 sm:h-48
+            sm:w-48
+            sm:h-48
             object-cover
             duration-300
           "
@@ -119,7 +120,9 @@
           <span class="content__item__label"> Hourly activity </span>
           <div
             class="
-              flex flex-row
+              flex
+              md:flex-row
+              flex-col
               text-center
               -mx-10
               font-medium
