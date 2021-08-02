@@ -72,6 +72,7 @@ export default async function (fastify) {
         ST: findPlace(track.name, trcST),
       };
 
+      audioFeatures.popularity = track.popularity / 100;
       const response = {
         track: {
           album: { name: track.album.name, id: track.album.id },

@@ -60,7 +60,7 @@ export default async function (fastify) {
         route: `artists?ids=${album.artists.map(({ id }) => id).join(",")}`,
         token: token,
       });
-
+      audioFeatures.popularity = album.popularity / 100;
       const response = {
         album: {
           name: album.name,

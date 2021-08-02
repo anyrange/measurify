@@ -47,6 +47,10 @@
             }}
           </card>
         </div>
+        <div class="content__item">
+          <span class="content__item__label"> Audio features </span>
+          <audio-features :audioFeatures="audioFeatures" />
+        </div>
         <div class="content__item" v-if="artist.genres.length">
           <span class="content__item__label"> Genres </span>
           <div class="flex flex-wrap gap-2">
@@ -140,15 +144,17 @@ import BaseImg from "@/components/BaseImg.vue";
 import Badge from "@/components/Badge.vue";
 import Card from "@/components/Card.vue";
 import Modal from "@/components/Modal.vue";
+import AudioFeatures from "@/components/AudioFeatures.vue";
 
 export default {
-  components: { SpotifyTitle, BaseImg, Badge, Card, Modal },
+  components: { SpotifyTitle, BaseImg, Badge, Card, Modal, AudioFeatures },
   data() {
     return {
       loading: true,
       artist: {},
       tracks: [],
       rates: {},
+      audioFeatures: {},
       modalOpened: false,
       currentItem: null,
     };
@@ -176,6 +182,7 @@ export default {
       this.artist = response.artist;
       this.tracks = response.tracks;
       this.rates = response.rates;
+      this.audioFeatures = response.audioFeatures;
       document.title = `${this.artist.name} - Spotiworm`;
     } catch (error) {
       this.$router.push({ name: "home" });

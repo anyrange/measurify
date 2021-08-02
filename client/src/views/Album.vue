@@ -19,6 +19,10 @@
           <card :title="album.total_tracks">tracks amount</card>
         </div>
         <div class="content__item">
+          <span class="content__item__label"> Audio features </span>
+          <audio-features :audioFeatures="audioFeatures" />
+        </div>
+        <div class="content__item">
           <span class="content__item__label"> Artist </span>
           <div class="content__item__boxes">
             <router-link
@@ -102,14 +106,16 @@ import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import Badge from "@/components/Badge.vue";
 import { formatDistanceToNowStrict } from "date-fns";
+import AudioFeatures from "@/components/AudioFeatures.vue";
 
 export default {
   name: "Album",
-  components: { SpotifyTitle, Card, Badge, BaseImg },
+  components: { SpotifyTitle, Card, Badge, BaseImg, AudioFeatures },
   data() {
     return {
       loading: true,
       album: {},
+      audioFeatures: {},
       tracks: [],
     };
   },
@@ -118,6 +124,7 @@ export default {
       const response = await getAlbum(this.$route.params.id);
       this.album = response.album;
       this.tracks = response.tracks;
+      this.audioFeatures = response.audioFeatures;
       console.log(response);
       document.title = `${this.album.name} - Spotiworm`;
     } catch (error) {

@@ -119,6 +119,7 @@ export default async function (fastify) {
           ST: findTracks(artist.name, trcST),
         },
       };
+      audioFeatures.popularity = artist.popularity / 100;
 
       // response schema
       const response = {

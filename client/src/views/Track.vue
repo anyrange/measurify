@@ -24,6 +24,17 @@
           <card v-if="overview.plays" :title="overview.plays">
             times played
           </card>
+          <card
+            v-for="(rate, index) in filteredTrackRates"
+            :title="'#' + rate[1]"
+            :key="index"
+          >
+            of your most streamed tracks {{ $options.PERIODS[rate[0]] }}
+          </card>
+        </div>
+        <div class="content__item">
+          <span class="content__item__label"> Audio features </span>
+          <audio-features :audioFeatures="audioFeatures" />
         </div>
         <div class="content__item">
           <span class="content__item__label"> Album </span>
@@ -91,16 +102,24 @@ import { getTrack } from "@/api";
 import SpotifyTitle from "@/components/SpotifyTitle.vue";
 import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
+import AudioFeatures from "@/components/AudioFeatures.vue";
 
 export default {
-  components: { SpotifyTitle, Card, BaseImg },
+  components: { SpotifyTitle, Card, BaseImg, AudioFeatures },
   data() {
     return {
       loading: true,
       selectedPeriod: "alltime",
       track: {},
+      rates: {},
       overview: {},
+      audioFeatures: {},
     };
+  },
+  PERIODS: {
+    LT: "lifetime",
+    MT: "past 6 months",
+    ST: "past 4 weeks",
   },
   computed: {
     releaseDate() {
@@ -112,12 +131,17 @@ export default {
         "mm:ss"
       );
     },
+    filteredTrackRates() {
+      return Object.entries(this.rates).filter((item) => item[1]);
+    },
   },
   async created() {
     try {
       const response = await getTrack(this.$route.params.id);
       this.track = response.track;
+      this.rates = response.rates;
       this.overview = response.overview;
+      this.audioFeatures = response.audioFeatures;
       document.title = `${this.track.name} - Spotiworm`;
     } catch (error) {
       this.$router.push({ name: "home" });
