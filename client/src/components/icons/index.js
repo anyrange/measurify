@@ -1,15 +1,6 @@
-import DashboardIcon from "./DashboardIcon";
-import ListeningHistoryIcon from "./ListeningHistoryIcon";
-import LeaderboardIcon from "./LeaderboardIcon";
-import FriendsIcon from "./FriendsIcon";
-import TimeIcon from "./TimeIcon";
-import Lock from "./Lock";
-
-export {
-  DashboardIcon,
-  ListeningHistoryIcon,
-  LeaderboardIcon,
-  FriendsIcon,
-  TimeIcon,
-  Lock,
-};
+export { default as DashboardIcon } from "./DashboardIcon";
+export { default as ListeningHistoryIcon } from "./ListeningHistoryIcon";
+export { default as LeaderboardIcon } from "./LeaderboardIcon";
+export { default as FriendsIcon } from "./FriendsIcon";
+export { default as TimeIcon } from "./TimeIcon";
+export { default as Lock } from "./Lock";

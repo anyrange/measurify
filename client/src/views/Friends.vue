@@ -34,7 +34,7 @@
 <script>
 import { getFriends } from "@/api";
 import BaseImg from "@/components/BaseImg.vue";
-import { formatDistanceToNowStrict } from "date-fns";
+import { getDateFromNow } from "@/utils/formatters";
 
 export default {
   name: "Friends",
@@ -52,11 +52,7 @@ export default {
     });
   },
   methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
+    getDateFromNow,
   },
 };
 </script>

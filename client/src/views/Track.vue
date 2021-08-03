@@ -14,7 +14,7 @@
         </figcaption>
       </figure>
       <div class="content">
-        <div class="mt-2 flex flex-wrap gap-2">
+        <div class="content-cards">
           <card :title="track.popularity / 10">popularity</card>
           <card :title="trackDuration">track length</card>
           <card :title="releaseDate">release date</card>

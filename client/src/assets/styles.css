@@ -57,13 +57,16 @@
 }
 
 .content {
-  @apply flex flex-col gap-3 items-start;
+  @apply flex flex-col gap-4 items-start;
+}
+.content-cards {
+  @apply mt-2 flex items-start flex-wrap gap-2 content-start;
 }
 .content__item {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-3;
 }
 .content__item__label {
-  @apply text-lg text-white font-medium;
+  @apply text-xl text-white font-medium;
 }
 .content__item__boxes {
   @apply flex flex-row flex-wrap gap-2 justify-center;

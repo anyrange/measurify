@@ -7,6 +7,7 @@
   />
   <img
     v-else
+    class="select-none"
     :src="imageUrl"
     :alt="alt"
     aria-hidden="false"

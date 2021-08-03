@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
+import { getDateFromNow, getDuration } from "@/utils/formatters";
 import { getListeningHistory } from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
 import BaseInput from "@/components/BaseInput";
@@ -127,14 +127,8 @@ export default {
     },
   },
   methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
-    getDuration(time) {
-      return format(addSeconds(new Date(0), time / 1000), "mm:ss");
-    },
+    getDateFromNow,
+    getDuration,
     async onScroll() {
       if (!this.loadingNextPage && this.page < this.pagesMax) {
         this.page++;

@@ -1,23 +1,18 @@
 <template>
-  <div class="item">
-    <div class="item-container">
-      <h3 class="item-subject">
+  <div class="flex flex-col rounded w-36 bg-gray-700-spotify text-white">
+    <div class="flex flex-col gap p-2">
+      <h3 class="text-base font-medium truncate">
         {{ name }}
       </h3>
-      <div class="item-bottom">
-        <div>
-          <span class="item-title">
-            {{ beforeDecimal }}
-          </span>
-          <span v-show="afterDecimal" class="item-subtitle">
-            .{{ afterDecimal }}
-          </span>
-          <span class="item-subtitle">%</span>
-        </div>
+      <div>
+        <span class="text-lg font-medium">{{ beforeDecimal }}</span>
+        <span class="text-xs font-normal">
+          {{ afterDecimal ? "." + afterDecimal : "" }}%
+        </span>
       </div>
     </div>
-    <div class="item-progress-container bg-green-500-spotify">
-      <div class="item-progress-bar bg-green-500-spotify" :style="barStyle">
+    <div class="rounded-b-md bg-opacity-10 bg-green-500-spotify">
+      <div class="h-1 rounded-bl-md bg-green-500-spotify" :style="barStyle">
         &nbsp;
       </div>
     </div>
@@ -26,7 +21,7 @@
 
 <script>
 export default {
-  name: "SubjectDiary",
+  name: "AudioFeature",
   props: {
     name: {
       type: String,
@@ -55,30 +50,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss" scoped>
-.item {
-  @apply flex flex-col rounded shadow w-36  bg-gray-700-spotify;
-}
-.item-container {
-  @apply flex flex-col gap-2 p-2;
-}
-.item-subject {
-  @apply text-base font-medium truncate;
-}
-.item-bottom {
-  @apply flex justify-between;
-}
-.item-title {
-  @apply text-lg font-medium;
-}
-.item-subtitle {
-  @apply text-xs font-normal;
-}
-.item-progress-container {
-  @apply rounded-b-md bg-opacity-10;
-}
-.item-progress-bar {
-  @apply h-1 rounded-bl-md;
-}
-</style>

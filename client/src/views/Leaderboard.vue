@@ -85,7 +85,6 @@ export default {
   },
   created() {
     getListenersTop().then((response) => {
-      console.log(response);
       this.leaderboard = response.top;
       this.loading = false;
     });

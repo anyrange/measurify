@@ -64,7 +64,7 @@ export default {
 
 <style lang="postcss">
 .sidebar {
-  @apply flex sm:flex-col flex-row flex-none sm:h-screen sm:px-2 sm:pt-8 p-0 h-12 sm:w-20 md:w-56 w-full sm:relative fixed bottom-0 sm:inset-0 gap-2 font-semibold bg-gray-900-spotify;
+  @apply flex sm:flex-col z-50 flex-row flex-none sm:h-screen sm:px-2 sm:pt-8 p-0 h-12 sm:w-20 md:w-56 w-full sm:relative fixed bottom-0 sm:inset-0 gap-2 font-semibold bg-gray-900-spotify;
 }
 .sidebar__item {
   @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 items-center md:justify-start sm:justify-center justify-center w-full cursor-pointer sm:rounded-md rounded-none sm:hover:bg-gray-800-spotify;

@@ -14,7 +14,7 @@
         </figcaption>
       </figure>
       <div class="content">
-        <div class="mt-2 flex flex-wrap gap-2">
+        <div class="content-cards">
           <card :title="album.popularity / 10">popularity</card>
           <card :title="album.total_tracks">tracks amount</card>
         </div>
@@ -56,43 +56,8 @@
           class="content__item w-full md:w-3/4 lg:w-1/2"
           v-if="tracks.length"
         >
-          <span class="content__item__label"> Listened tracks </span>
-          <div class="flex flex-col gap-3">
-            <div v-for="(item, index) in tracks" :key="index">
-              <router-link
-                :to="{ name: 'track', params: { id: item.id } }"
-                class="
-                  flex flex-row
-                  items-center
-                  justify-between
-                  pr-3
-                  hover:bg-gray-700-spotify
-                  duration-100
-                  rounded-lg
-                  w-full
-                "
-              >
-                <div class="flex items-center gap-3">
-                  <base-img
-                    :src="item.image"
-                    :alt="item.name"
-                    class="w-12 h-12 object-cover rounded-lg"
-                  />
-                  <div class="flex flex-col">
-                    <div class="text-white text-base">
-                      {{ item.name }}
-                    </div>
-                    <div class="text-gray-400-spotify text-sm font-normal">
-                      {{ getDateFromNow(item.lastPlayedAt) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="text-white text-lg font-medium">
-                  {{ item.playtime }}
-                </div>
-              </router-link>
-            </div>
-          </div>
+          <span class="content__item__label"> Favourite tracks </span>
+          <top-tracks :tracks="tracks" />
         </div>
       </div>
     </div>
@@ -105,12 +70,19 @@ import SpotifyTitle from "@/components/SpotifyTitle.vue";
 import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import Badge from "@/components/Badge.vue";
-import { formatDistanceToNowStrict } from "date-fns";
 import AudioFeatures from "@/components/AudioFeatures.vue";
+import TopTracks from "@/components/TopTracks.vue";
 
 export default {
   name: "Album",
-  components: { SpotifyTitle, Card, Badge, BaseImg, AudioFeatures },
+  components: {
+    SpotifyTitle,
+    Card,
+    Badge,
+    BaseImg,
+    AudioFeatures,
+    TopTracks,
+  },
   data() {
     return {
       loading: true,
@@ -125,20 +97,12 @@ export default {
       this.album = response.album;
       this.tracks = response.tracks;
       this.audioFeatures = response.audioFeatures;
-      console.log(response);
       document.title = `${this.album.name} - Spotiworm`;
     } catch (error) {
       this.$router.push({ name: "home" });
     } finally {
       this.loading = false;
     }
-  },
-  methods: {
-    getDateFromNow(date) {
-      return formatDistanceToNowStrict(Date.parse(date), {
-        addSuffix: true,
-      });
-    },
   },
 };
 </script>

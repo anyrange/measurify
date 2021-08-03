@@ -13,7 +13,7 @@
 import AudioFeature from "@/components/AudioFeature";
 
 export default {
-  name: "SubjectDiary",
+  name: "AudioFeatures",
   components: { AudioFeature },
   props: {
     audioFeatures: {
@@ -40,5 +40,3 @@ export default {
   },
 };
 </script>
-
-<style lang="postcss" scoped></style>
