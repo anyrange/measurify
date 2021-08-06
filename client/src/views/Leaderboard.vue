@@ -23,7 +23,7 @@
           </span>
         </div>
         <div class="flex flex-row items-center">
-          <div class="flex flex-col">
+          <div class="flex flex-col flex-none">
             <router-link
               :class="{ 'pointer-events-none': privateProfile(item) }"
               :to="{ name: 'profile', params: { id: item.customID } }"
@@ -42,22 +42,21 @@
               </div>
             </router-link>
           </div>
-          <div class="flex flex-col ml-4">
-            <div class="text-base text-white">
-              <router-link
-                :class="[
-                  privateProfile(item)
-                    ? 'pointer-events-none'
-                    : 'hover:underline',
-                ]"
-                :to="{ name: 'profile', params: { id: item.customID } }"
-              >
-                {{ item.userName }}
-              </router-link>
-            </div>
-            <div class="text-base font-semibold text-gray-500-spotify">
+          <div class="flex flex-col ml-4 truncate">
+            <router-link
+              class="text-base text-white truncate"
+              :class="[
+                privateProfile(item)
+                  ? 'pointer-events-none'
+                  : 'hover:underline',
+              ]"
+              :to="{ name: 'profile', params: { id: item.customID } }"
+            >
+              {{ item.userName }}
+            </router-link>
+            <span class="text-base font-semibold text-gray-500-spotify">
               {{ item.listened }}
-            </div>
+            </span>
           </div>
         </div>
       </div>
