@@ -8,6 +8,7 @@ export default async function (fastify) {
     200: {
       type: "object",
       properties: {
+        spotifyID: { type: "string" },
         userName: { type: "string" },
         avatar: { type: "string" },
         lastlogin: { type: "string" },
@@ -67,11 +68,9 @@ export default async function (fastify) {
         }
       );
       const requestor = users.find((user) => user._id == _id);
-
       if (!requestor) throw new this.CustomError("Unauthorized", 401);
 
       const user = users.find((user) => user.customID == customID);
-
       if (!user) throw new this.CustomError("User not found", 404);
 
       if (user.privacy === "private" && _id != user._id)
@@ -86,44 +85,42 @@ export default async function (fastify) {
         if (!friendProof) throw new this.CustomError("Not your friend", 403);
       }
 
-      const agg = [
-        { $match: { _id: ObjectId(user._id) } },
-        {
-          $project: {
-            "recentlyPlayed.duration_ms": 1,
-            "recentlyPlayed.plays.played_at": 1,
-            _id: 0,
-          },
-        },
-        { $unwind: { path: "$recentlyPlayed" } },
-        {
-          $project: {
-            "recentlyPlayed.duration_ms": 1,
-            "recentlyPlayed.plays": {
-              $size: "$recentlyPlayed.plays",
-            },
-          },
-        },
-        {
-          $group: {
-            _id: {},
-            plays: { $sum: "$recentlyPlayed.plays" },
-            playtime: {
-              $sum: {
-                $multiply: [
-                  "$recentlyPlayed.duration_ms",
-                  "$recentlyPlayed.plays",
-                ],
-              },
-            },
-          },
-        },
-      ];
-
       const requests = [
         fastify.parseTop(user._id, user.lastSpotifyToken, 3),
         fastify.parseHistory(user._id, 20),
-        User.aggregate(agg).then((body) => {
+        User.aggregate([
+          { $match: { _id: ObjectId(user._id) } },
+          {
+            $project: {
+              "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.plays.played_at": 1,
+              _id: 0,
+            },
+          },
+          { $unwind: { path: "$recentlyPlayed" } },
+          {
+            $project: {
+              "recentlyPlayed.duration_ms": 1,
+              "recentlyPlayed.plays": {
+                $size: "$recentlyPlayed.plays",
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {},
+              plays: { $sum: "$recentlyPlayed.plays" },
+              playtime: {
+                $sum: {
+                  $multiply: [
+                    "$recentlyPlayed.duration_ms",
+                    "$recentlyPlayed.plays",
+                  ],
+                },
+              },
+            },
+          },
+        ]).then((body) => {
           if (!body[0]) return { plays: 0, playtime: 0 };
           return {
             plays: body[0].plays,
@@ -176,9 +173,9 @@ export default async function (fastify) {
           },
           { $sort: { time: -1 } },
         ]).then((res) => {
-          const cal = [];
+          const hourlyActivity = [];
           for (let i = 1; i <= 24; i++) {
-            cal.push(
+            hourlyActivity.push(
               res.find((hour) => Number(hour.time) === i) || {
                 time: i,
                 playtime: 0,
@@ -186,7 +183,7 @@ export default async function (fastify) {
               }
             );
           }
-          return cal;
+          return hourlyActivity;
         }),
       ];
 
@@ -194,6 +191,7 @@ export default async function (fastify) {
         await Promise.all(requests);
 
       const response = {
+        spotifyID: user.spotifyID,
         userName: user.userName,
         avatar: user.avatar,
         lastLogin: user.lastLogin,
