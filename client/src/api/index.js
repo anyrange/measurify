@@ -64,6 +64,9 @@ export function getArtist(id) {
 export function getAlbum(id) {
   return api.get(`/infopage/album/${id}`);
 }
+export function getPlaylist(id) {
+  return api.get(`/infopage/playlist/${id}`);
+}
 export function getFriends() {
   return api.get("/friends");
 }
