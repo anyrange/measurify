@@ -1,7 +1,7 @@
 <template>
   <h2 class="h-title">Leaderboard</h2>
   <h3 class="h-subtitle my-4">
-    This rating is based on the number of listened tracks
+    This rating is based on the number of listened minutes
   </h3>
   <loading-spinner v-if="loading" />
   <template v-else>

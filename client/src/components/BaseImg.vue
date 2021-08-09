@@ -13,7 +13,7 @@
     aria-hidden="false"
     draggable="false"
     loading="lazy"
-  >
+  />
 </template>
 
 <script>
@@ -48,8 +48,9 @@ export default {
   async created() {
     try {
       this.imageUrl = await this.checkImage(this.src);
-    } catch {
+    } catch (err) {
       this.setFallbackImage();
+      console.log(`${err} for ${this.alt}`);
     } finally {
       this.loading = false;
     }
@@ -58,14 +59,13 @@ export default {
     checkImage(url) {
       return new Promise((resolve, reject) => {
         const img = new Image();
+        img.src = url;
         img.onload = () => resolve(url);
         img.onerror = () => reject("Failed to load image");
-        img.src = url;
       });
     },
     setFallbackImage() {
-      if (this.avatar) this.imageUrl = "/img/noavatar.svg";
-      this.imageUrl = "/img/noimage.svg";
+      this.imageUrl = this.avatar ? "/img/noavatar.svg" : "/img/noimage.svg";
     },
   },
 };

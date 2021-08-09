@@ -1,109 +1,114 @@
 <template>
   <loading-spinner v-if="loading" />
-  <template v-else>
-    <div class="flex flex-col gap-4">
-      <figure class="responsive-picture">
-        <base-img
-          parallax
-          :src="artist.image"
-          :alt="artist.name"
-          class="responsive-picture__image"
-        />
-        <figcaption class="responsive-picture__title">
-          <spotify-title :name="artist.name" :link="artist.link" />
-        </figcaption>
-      </figure>
-      <div class="content">
-        <div class="content-cards">
-          <card :title="artist.followers">followers</card>
-          <card
-            v-for="(rate, index) in filteredArtistRates"
-            :title="'#' + rate[1]"
-            :key="index"
-          >
-            of your most streamed artists {{ $options.PERIODS[rate[0]] }}
-          </card>
-          <card
-            v-for="(rate, index) in filteredTracksRates"
-            :title="rate[1].length"
-            :key="index"
-          >
-            times
-            <span
-              class="text-green-500-spotify font-bold cursor-pointer"
-              @click="
-                currentItem = rate[0];
-                modalOpened = true;
-              "
-            >
-              {{ artist.name }}
-            </span>
-            appeared in top 50 tracks
-
-            {{
-              rate[0] === "LT"
-                ? $options.PERIODS[rate[0]]
-                : "from the " + $options.PERIODS[rate[0]]
-            }}
-          </card>
-        </div>
-        <div class="content__item">
-          <span class="content__item__label"> Audio features </span>
-          <audio-features :audioFeatures="audioFeatures" />
-        </div>
-        <div class="content__item" v-if="artist.genres.length">
-          <span class="content__item__label"> Genres </span>
-          <div class="flex flex-wrap gap-2">
-            <badge v-for="(genre, index) in artist.genres" :key="index">
-              {{ genre }}
-            </badge>
-          </div>
-        </div>
-        <div
-          class="content__item w-full md:w-3/4 lg:w-1/2"
-          v-if="tracks.length"
+  <div v-else class="flex flex-col gap-4">
+    <figure class="responsive-picture">
+      <base-img
+        parallax
+        :src="artist.image"
+        :alt="artist.name"
+        class="responsive-picture__image"
+      />
+      <figcaption class="responsive-picture__title">
+        <spotify-link :link="artist.link">
+          {{ artist.name }}
+        </spotify-link>
+      </figcaption>
+    </figure>
+    <div class="content">
+      <div class="content-cards">
+        <card :title="artist.followers">followers</card>
+        <card
+          v-for="(rate, index) in filteredArtistRates"
+          :title="'#' + rate[1]"
+          :key="index"
         >
-          <span class="content__item__label"> Favourite tracks </span>
-          <top-tracks :tracks="tracks" />
+          of your most streamed artists {{ $options.PERIODS[rate[0]] }}
+        </card>
+        <card
+          v-for="(rate, index) in filteredTracksRates"
+          :title="rate[1].length"
+          :key="index"
+        >
+          times
+          <span
+            class="text-green-500-spotify font-bold cursor-pointer"
+            @click="
+              currentItem = rate[0];
+              modalOpened = true;
+            "
+          >
+            {{ artist.name }}
+          </span>
+          appeared in top 50 tracks
+
+          {{
+            rate[0] === "LT"
+              ? $options.PERIODS[rate[0]]
+              : "from the " + $options.PERIODS[rate[0]]
+          }}
+        </card>
+      </div>
+      <div class="content__item">
+        <span class="content__item__label">Audio features</span>
+        <audio-features
+          class="content-audio-features"
+          :audioFeatures="audioFeatures"
+        />
+      </div>
+      <div class="content__item" v-if="artist.genres.length">
+        <span class="content__item__label"> Genres </span>
+        <div class="flex flex-wrap gap-2">
+          <badge v-for="(genre, index) in artist.genres" :key="index">
+            {{ genre }}
+          </badge>
         </div>
+      </div>
+      <div class="content__item" v-if="tracks.length">
+        <span class="content__item__label"> Favourite tracks </span>
+        <top-tracks :tracks="tracks" />
       </div>
     </div>
     <modal :show="modalOpened" @close="modalOpened = false">
       <div class="flex flex-col gap-3 p-3">
-        <h3 class="md:text-3xl sm:text-2xl text-xl font-semibold text-white">
-          Most streamed tracks
-        </h3>
-        <span class="h-subtitle">
-          The amount of times a track by {{ artist.name }} appeares in your top
-          {{
-            currentItem === "LT"
-              ? $options.PERIODS[currentItem]
-              : "from the " + $options.PERIODS[currentItem]
-          }}
-        </span>
+        <div class="flex flex-col gap-1">
+          <h3 class="sm:text-2xl text-xl font-semibold">
+            Most streamed tracks
+          </h3>
+          <span class="text-gray-500-spotify">
+            The amount of times a track by {{ artist.name }} appears in your top
+            <strong>
+              {{
+                currentItem === "LT"
+                  ? $options.PERIODS[currentItem]
+                  : "in the " + $options.PERIODS[currentItem]
+              }}
+            </strong>
+          </span>
+        </div>
         <hr />
-        <div>
+        <div class="flex flex-col gap-y-2">
           <div
-            class="flex flex-col gap-2 text-lg"
+            class="flex flex-row items-end gap-x-2 text-base"
             v-for="(track, index) in tracksOfSelectedTerm"
             :key="index"
           >
+            <span class="text-gray-500-spotify">#{{ track.place }}</span>
             <router-link
-              :to="{ name: 'track', params: { id: track.id } }"
               class="link"
+              :to="{ name: 'track', params: { id: track.id } }"
             >
-              #{{ track.place }} {{ track.name }}
+              {{ track.name }}
             </router-link>
           </div>
         </div>
       </div>
     </modal>
-  </template>
+  </div>
 </template>
 
 <script>
 import { getArtist } from "@/api";
-import SpotifyTitle from "@/components/SpotifyTitle.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import Badge from "@/components/Badge.vue";
 import Card from "@/components/Card.vue";
@@ -113,7 +118,7 @@ import TopTracks from "@/components/TopTracks.vue";
 
 export default {
   components: {
-    SpotifyTitle,
+    SpotifyLink,
     BaseImg,
     Badge,
     Card,

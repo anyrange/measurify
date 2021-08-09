@@ -159,7 +159,7 @@ export default {
   @apply border-b border-gray-700-spotify hover:bg-gray-700-spotify;
 }
 .history-table .cell {
-  @apply px-4 py-2 text-left text-sm overflow-ellipsis overflow-hidden whitespace-nowrap text-white;
+  @apply px-4 py-2 text-left text-sm overflow-ellipsis overflow-hidden whitespace-nowrap text-gray-500-spotify;
 }
 .history-table .cell-title {
   @apply w-1.5/10 md:w-3/10;

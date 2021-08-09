@@ -26,6 +26,29 @@
   @apply w-11/12 sm:w-full;
 }
 
+.masonry {
+  column-count: 2;
+  column-gap: 1rem;
+}
+@screen sm {
+  .masonry {
+    column-count: 3;
+  }
+}
+@screen xl {
+  .masonry {
+    column-count: 5;
+  }
+}
+@screen 2xl {
+  .masonry {
+    column-count: 6;
+  }
+}
+.break-inside {
+  break-inside: avoid;
+}
+
 .sidebar-spotify::-webkit-scrollbar,
 .content-spotify::-webkit-scrollbar {
   @apply w-2 bg-gray-900-spotify;
@@ -57,19 +80,24 @@
 }
 
 .content {
-  @apply flex flex-col gap-4 items-start;
+  @apply w-full 2xl:w-3/4 flex flex-col gap-4 items-start;
 }
-.content-cards {
-  @apply mt-2 flex items-start flex-wrap gap-2 content-start;
+.content-cards,
+.content-audio-features {
+  @apply md:w-auto w-full masonry;
 }
+.content-tops {
+  @apply flex flex-row flex-wrap items-center gap-x-6 gap-y-3;
+}
+
 .content__item {
-  @apply flex flex-col gap-3;
+  @apply md:w-auto w-full flex flex-col gap-3 items-start;
 }
 .content__item__label {
   @apply text-xl text-white font-medium;
 }
 .content__item__boxes {
-  @apply flex flex-row flex-wrap gap-2 justify-center;
+  @apply flex flex-row flex-wrap gap-2;
 }
 .content__item__boxes__box {
   @apply w-20 h-20 relative;

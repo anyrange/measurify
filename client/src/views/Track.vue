@@ -10,10 +10,12 @@
           class="responsive-picture__image"
         />
         <figcaption class="responsive-picture__title">
-          <spotify-title :name="track.name" :link="track.link" />
+          <spotify-link :link="track.link">
+            {{ track.name }}
+          </spotify-link>
         </figcaption>
       </figure>
-      <div class="content">
+      <div class="content w-full">
         <div class="content-cards">
           <card :title="track.popularity / 10">popularity</card>
           <card :title="trackDuration">track length</card>
@@ -33,62 +35,57 @@
           </card>
         </div>
         <div class="content__item">
-          <span class="content__item__label"> Audio features </span>
-          <audio-features :audioFeatures="audioFeatures" />
+          <span class="content__item__label">Audio features</span>
+          <audio-features
+            class="content-audio-features"
+            :audioFeatures="audioFeatures"
+          />
         </div>
         <div class="content__item">
           <span class="content__item__label"> Album </span>
-          <router-link :to="{ name: 'album', params: { id: track.album.id } }">
+          <div class="w-full table table-fixed">
             <div
               class="
                 flex flex-row
                 items-center
-                justify-center
+                duration-100
+                rounded-lg
                 gap-3
                 pr-3
-                hover:bg-gray-700-spotify
-                duration-100
-                rounded-2xl
+                truncate
               "
             >
-              <base-img
-                class="w-20 h-20 rounded-xl"
-                :src="track.image"
-                :alt="track.name"
-              />
-              <div class="flex flex-col">
-                <div class="text-base text-white font-medium truncate-2">
+              <router-link
+                class="flex-shrink-0"
+                :to="{ name: 'album', params: { id: track.album.id } }"
+              >
+                <base-img
+                  class="w-20 h-20 rounded-lg"
+                  :src="track.image"
+                  :alt="track.name"
+                />
+              </router-link>
+              <div class="flex flex-col gap-1">
+                <router-link
+                  class="link font-medium truncate-2"
+                  :to="{ name: 'album', params: { id: track.album.id } }"
+                >
                   {{ track.album.name }}
-                </div>
-                <div class="text-sm text-white font-light">
-                  <template v-for="artist in track.artists" :key="artist.id">
-                    {{ artist.name }}
-                  </template>
-                </div>
+                </router-link>
+                <multi-router :routes="track.artists" />
               </div>
             </div>
-          </router-link>
+          </div>
         </div>
         <div class="content__item">
-          <span class="content__item__label"> Artist </span>
+          <span class="content__item__label">Artist</span>
           <div class="content__item__boxes">
-            <router-link
-              class="link"
-              v-for="(item, index) in track.artists"
-              :key="index"
-              :to="{ name: 'artist', params: { id: item.id } }"
-            >
-              <div class="content__item__boxes__box">
-                <base-img
-                  :src="item.image"
-                  :alt="item.name"
-                  class="content__item__boxes__box__image"
-                />
-                <div class="content__item__boxes__box__label">
-                  {{ item.name }}
-                </div>
-              </div>
-            </router-link>
+            <spotify-box
+              v-for="item in track.artists"
+              :key="item.id"
+              :item="item"
+              type="artist"
+            />
           </div>
         </div>
       </div>
@@ -99,13 +96,22 @@
 <script>
 import { addSeconds, format } from "date-fns";
 import { getTrack } from "@/api";
-import SpotifyTitle from "@/components/SpotifyTitle.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
 import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import AudioFeatures from "@/components/AudioFeatures.vue";
+import SpotifyBox from "@/components/SpotifyBox.vue";
+import MultiRouter from "@/components/MultiRouter.vue";
 
 export default {
-  components: { SpotifyTitle, Card, BaseImg, AudioFeatures },
+  components: {
+    SpotifyLink,
+    Card,
+    BaseImg,
+    AudioFeatures,
+    SpotifyBox,
+    MultiRouter,
+  },
   data() {
     return {
       loading: true,

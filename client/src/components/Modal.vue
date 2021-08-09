@@ -8,7 +8,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-show="show" class="absolute inset-0 bg-black bg-opacity-40">
+      <div v-show="show" class="absolute inset-0 bg-black bg-opacity-40 z-50">
         <div
           class="fixed inset-0 flex items-center justify-center"
           @click="close"
@@ -37,14 +37,39 @@
                 sm:max-w-lg
                 w-full
                 p-2
-                mr-0
-                sm:mr-2
               "
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-headline"
               @click.stop
             >
+              <svg
+                @click="close"
+                class="
+                  w-8
+                  h-8
+                  p-1
+                  text-gray-500-spotify
+                  hover:bg-gray-800-spotify
+                  rounded-full
+                  duration-100
+                  cursor-pointer
+                  absolute
+                  right-2
+                  topp-2
+                "
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
               <slot />
             </div>
           </transition>

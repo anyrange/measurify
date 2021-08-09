@@ -1,56 +1,52 @@
 <template>
-  <div class="flex flex-col gap-3">
-    <div v-for="(item, index) in tracks" :key="index">
-      <router-link
-        :to="{ name: 'track', params: { id: item.id } }"
+  <div class="w-full table table-fixed">
+    <div class="flex flex-col gap-3">
+      <div
         class="
           flex flex-row
           items-center
-          gap-3
-          pr-3
-          hover:bg-gray-700-spotify
+          gap-2
+          min-w-0
           duration-100
           rounded-lg
+          pr-3
         "
+        v-for="item in tracks"
+        :key="item.id"
       >
-        <base-img
-          :src="item.image"
-          :alt="item.name"
-          class="w-16 h-16 object-cover rounded-lg"
-        />
-        <div class="flex flex-col">
-          <div class="text-white sm:w-full w-48 overflow-hidden truncate">
-            {{ item.name }}
-          </div>
-          <div
-            class="
-              flex flex-row
-              text-sm
-              sm:w-full
-              w-48
-              items-center
-              overflow-hidden
-              truncate
-            "
+        <router-link
+          class="flex-shrink-0"
+          :to="{ name: 'track', params: { id: item.id } }"
+        >
+          <base-img
+            :src="item.image"
+            :alt="item.name"
+            class="w-16 h-16 object-cover rounded-lg"
+          />
+        </router-link>
+        <div class="w-full flex flex-col truncate">
+          <router-link
+            class="link truncate"
+            :to="{ name: 'track', params: { id: item.id } }"
           >
-            <multi-router
-              color="text-gray-400-spotify"
-              :routes="item.artists"
-            />
+            {{ item.name }}
+          </router-link>
+          <div class="flex w-full flex-row text-sm items-center">
+            <multi-router :routes="item.artists" />
           </div>
-          <div class="text-gray-500-spotify text-sm font-normal">
+          <span class="text-gray-500-spotify text-sm font-normal">
             {{ getDateFromNow(item.played_at) }}
-          </div>
+          </span>
         </div>
-      </router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import BaseImg from "@/components/BaseImg.vue";
-import { getDateFromNow } from "@/utils/formatters";
 import MultiRouter from "@/components/MultiRouter.vue";
+import { getDateFromNow } from "@/utils/formatters";
 
 export default {
   name: "TracksList",

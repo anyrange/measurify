@@ -1,18 +1,10 @@
 <template>
-  <div class="flex flex-col rounded w-36 bg-gray-700-spotify text-white">
-    <div class="flex flex-col gap p-2">
-      <h3 class="text-base font-medium truncate">
-        {{ name }}
-      </h3>
-      <div>
-        <span class="text-lg font-medium">{{ beforeDecimal }}</span>
-        <span class="text-xs font-normal">
-          {{ afterDecimal ? "." + afterDecimal : "" }}%
-        </span>
-      </div>
-    </div>
-    <div class="rounded-b-md bg-opacity-10 bg-green-500-spotify">
-      <div class="h-1 rounded-bl-md bg-green-500-spotify" :style="barStyle">
+  <div class="flex flex-col gap-1 sm:gap-2 md:w-36 w-auto text-white">
+    <h6 class="text-sm sm:text-base font-normal truncate">
+      {{ name }}
+    </h6>
+    <div class="bg-opacity-10 rounded-full bg-green-500-spotify">
+      <div class="h-1 rounded-l-full bg-green-600-spotify" :style="barStyle">
         &nbsp;
       </div>
     </div>

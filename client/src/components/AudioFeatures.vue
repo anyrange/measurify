@@ -1,11 +1,11 @@
 <template>
   <div class="grid lg:grid-cols-4 lg:grid-rows-2 grid-cols-2 grid-rows-4 gap-2">
-    <div v-for="(feature, index) in formatedFeatures" :key="index">
-      <audio-feature
-        :name="$options.FEATURE_NAMES[feature[0]]"
-        :score="feature[1] * 100"
-      />
-    </div>
+    <audio-feature
+      v-for="(feature, index) in formatedFeatures"
+      :key="index"
+      :name="$options.FEATURE_NAMES[feature[0]]"
+      :score="feature[1] * 100"
+    />
   </div>
 </template>
 

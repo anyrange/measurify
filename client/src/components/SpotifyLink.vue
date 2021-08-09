@@ -3,24 +3,18 @@
     <span
       class="
         text-3xl
-        truncate-2
         sm:text-2xl
         md:text-3xl
         sm:font-medium
         font-semibold
+        truncate-2
       "
     >
-      {{ name }}
+      <slot />
     </span>
-    <a :href="link" class="link" target="_blank">
+    <a :href="link" target="_blank" referrerpolicy="no-referrer" rel="icon">
       <svg
-        class="
-          w-10
-          sm:w-8
-          hover:text-green-500-spotify
-          cursor-pointer
-          duration-200
-        "
+        class="w-8 hover:text-green-500-spotify cursor-pointer duration-200"
         role="img"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 496 512"
@@ -36,11 +30,8 @@
 
 <script>
 export default {
+  name: "SpotifyLink",
   props: {
-    name: {
-      type: String,
-      required: true,
-    },
     link: {
       type: String,
       required: true,

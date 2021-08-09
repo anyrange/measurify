@@ -11,7 +11,7 @@ const routes = [
     },
   },
   {
-    path: "/",
+    path: "/dashboard",
     name: "home",
     component: () => import("@/layouts/MainLayout.vue"),
     redirect: { name: "overview" },
@@ -26,7 +26,7 @@ const routes = [
       },
       {
         path: "/history",
-        name: "listening-history",
+        name: "history",
         component: () => import("@/views/History.vue"),
         meta: {
           title: "Listening History",
@@ -120,9 +120,8 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.afterEach((to) => {
   document.title = to.meta.title ? `${to.meta.title} - Spotiworm` : "Spotiworm";
-  next();
 });
 
 export default router;

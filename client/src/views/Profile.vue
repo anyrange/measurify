@@ -1,180 +1,123 @@
 <template>
   <loading-spinner v-if="loading" />
-  <template v-else>
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-row items-center gap-4">
-        <base-img
-          avatar
-          :src="profile.avatar"
-          :alt="profile.userName"
+  <div v-else class="w-ful flex flex-col gap-4">
+    <div class="w-full flex flex-row items-center gap-4">
+      <base-img
+        avatar
+        :src="profile.avatar"
+        :alt="profile.userName"
+        class="
+          flex flex-none
+          object-cover
+          rounded-full
+          sm:rounded-lg
+          w-20
+          h-20
+          sm:w-48
+          sm:h-48
+          duration-300
+        "
+      />
+      <spotify-link
+        :link="`https://open.spotify.com/user/${profile.spotifyID}`"
+      >
+        {{ profile.userName }}
+      </spotify-link>
+    </div>
+    <div class="content">
+      <div class="content-cards">
+        <card :title="profile.overview.plays">tracks played</card>
+        <card :title="profile.overview.playtime">minutes listened</card>
+      </div>
+      <div class="content__item" v-if="profile.genres.length">
+        <span class="content__item__label">Genres</span>
+        <div class="flex flex-wrap gap-2">
+          <badge v-for="genre in profile.genres" :key="genre">
+            {{ genre }}
+          </badge>
+        </div>
+      </div>
+      <div class="content-tops">
+        <div class="content__item">
+          <span class="content__item__label">Favourite Albums</span>
+          <div class="content__item__boxes">
+            <spotify-box
+              v-for="item in profile.top.albums"
+              :key="item.id"
+              :item="item"
+              type="album"
+            />
+          </div>
+        </div>
+        <div class="content__item">
+          <span class="content__item__label">Favourite Artists</span>
+          <div class="content__item__boxes">
+            <spotify-box
+              v-for="item in profile.top.artists"
+              :key="item.id"
+              :item="item"
+              type="artist"
+            />
+          </div>
+        </div>
+        <div class="content__item">
+          <span class="content__item__label">Favourite Tracks</span>
+          <div class="content__item__boxes">
+            <spotify-box
+              v-for="item in profile.top.tracks"
+              :key="item.id"
+              :item="item"
+              type="track"
+            />
+          </div>
+        </div>
+        <div class="content__item">
+          <span class="content__item__label">Favourite Playlists</span>
+          <div class="content__item__boxes">
+            <spotify-box
+              v-for="item in profile.top.playlists"
+              :key="item.id"
+              :item="item"
+              type="playlist"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="content__item">
+        <span class="content__item__label">Hourly activity</span>
+        <div
           class="
-            flex flex-none
-            rounded-full
-            sm:rounded-lg
-            w-20
-            h-20
-            sm:w-48
-            sm:h-48
-            object-cover
-            duration-300
-          "
-        />
-        <span
-          class="
-            text-white
-            truncate-2
-            sm:text-3xl
-            text-2xl
-            sm:font-medium
-            font-semibold
+            flex flex-col
+            lg:flex-row
+            text-center text-base text-gray-400-spotify
+            font-medium
+            -mx-10
           "
         >
-          {{ profile.userName }}
-        </span>
+          <div class="flex-shrink-0">
+            AM
+            <apexchart
+              type="polarArea"
+              :options="chartOptions"
+              :series="activityHours.AM"
+            ></apexchart>
+          </div>
+          <div class="flex-shrink-0">
+            PM
+            <apexchart
+              type="polarArea"
+              :options="chartOptions"
+              :series="activityHours.PM"
+            ></apexchart>
+          </div>
+        </div>
       </div>
-      <div class="content">
-        <div class="mt-2 flex flex-wrap gap-2">
-          <card :title="profile.overview.plays">tracks played</card>
-          <card :title="profile.overview.playtime">minutes listened</card>
-        </div>
-        <div class="content__item" v-if="profile.genres.length">
-          <span class="content__item__label"> Genres </span>
-          <div class="flex flex-wrap gap-2">
-            <badge v-for="(genre, index) in profile.genres" :key="index">
-              {{ genre }}
-            </badge>
-          </div>
-        </div>
-        <div class="flex flex-row items-center gap-x-12 gap-y-3 flex-wrap">
-          <div class="content__item">
-            <span class="content__item__label"> Top Albums </span>
-            <div class="content__item__boxes">
-              <router-link
-                class="link"
-                v-for="(item, index) in profile.top.albums"
-                :key="index"
-                :to="{ name: 'album', params: { id: item.id } }"
-              >
-                <div class="content__item__boxes__box">
-                  <base-img
-                    :src="item.image"
-                    :alt="item.name"
-                    class="content__item__boxes__box__image"
-                  />
-                  <div class="content__item__boxes__box__label">
-                    {{ item.name }}
-                  </div>
-                </div>
-              </router-link>
-            </div>
-          </div>
-          <div class="content__item">
-            <span class="content__item__label"> Top Artists </span>
-            <div class="content__item__boxes">
-              <router-link
-                class="link"
-                v-for="(item, index) in profile.top.artists"
-                :key="index"
-                :to="{ name: 'artist', params: { id: item.id } }"
-              >
-                <div class="content__item__boxes__box">
-                  <base-img
-                    :src="item.image"
-                    :alt="item.name"
-                    class="content__item__boxes__box__image"
-                  />
-                  <div class="content__item__boxes__box__label">
-                    {{ item.name }}
-                  </div>
-                </div>
-              </router-link>
-            </div>
-          </div>
-          <div class="content__item">
-            <span class="content__item__label"> Top Tracks </span>
-            <div class="content__item__boxes">
-              <router-link
-                class="link"
-                v-for="(item, index) in profile.top.tracks"
-                :key="index"
-                :to="{ name: 'track', params: { id: item.id } }"
-              >
-                <div class="content__item__boxes__box">
-                  <base-img
-                    :src="item.image"
-                    :alt="item.name"
-                    class="content__item__boxes__box__image"
-                  />
-                  <div class="content__item__boxes__box__label">
-                    {{ item.name }}
-                  </div>
-                </div>
-              </router-link>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="content__item">
-          <span class="content__item__label">
-            Top Playlists
-          </span>
-          <div class="content__item__boxes">
-            <router-link
-              class="link"
-              v-for="(item, index) in profile.top.playlists"
-              :key="index"
-              :to="{ name: 'playlists', params: { id: item.id } }"
-            >
-              <div class="content__item__boxes__box">
-                <base-img
-                  :src="item.image"
-                  :alt="item.name"
-                  class="content__item__boxes__box__image"
-                />
-                <div class="content__item__boxes__box__label">
-                  {{ item.name }}
-                </div>
-              </div>
-            </router-link>
-          </div>
-        </div> -->
-        <div class="content__item">
-          <span class="content__item__label"> Hourly activity </span>
-          <div
-            class="
-              flex
-              md:flex-row
-              flex-col
-              text-center
-              -mx-10
-              font-medium
-              text-base text-gray-400-spotify
-            "
-          >
-            <div>
-              AM
-              <apexchart
-                type="polarArea"
-                :options="chartOptions"
-                :series="activityHours.AM"
-              ></apexchart>
-            </div>
-            <div>
-              PM
-              <apexchart
-                type="polarArea"
-                :options="chartOptions"
-                :series="activityHours.PM"
-              ></apexchart>
-            </div>
-          </div>
-        </div>
-        <div class="content__item">
-          <span class="content__item__label"> Listened tracks </span>
-          <tracks-list :tracks="profile.history" />
-        </div>
+      <div class="content__item">
+        <span class="content__item__label">Listened tracks</span>
+        <tracks-list :tracks="profile.history" />
       </div>
     </div>
-  </template>
+  </div>
 </template>
 
 <script>
@@ -182,8 +125,11 @@ import { getProfile } from "@/api";
 import BaseImg from "@/components/BaseImg.vue";
 import Card from "@/components/Card.vue";
 import Badge from "@/components/Badge.vue";
-import VueApexCharts from "vue3-apexcharts";
 import TracksList from "@/components/TracksList.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
+import SpotifyBox from "@/components/SpotifyBox.vue";
+import VueApexCharts from "vue3-apexcharts";
+import activityHoursChart from "@/mixins/activityHoursChart";
 
 export default {
   components: {
@@ -191,61 +137,15 @@ export default {
     Card,
     Badge,
     TracksList,
+    SpotifyLink,
+    SpotifyBox,
     apexchart: VueApexCharts,
   },
+  mixins: [activityHoursChart],
   data() {
     return {
       loading: true,
       profile: {},
-      series: [],
-      chartOptions: {
-        chart: {
-          type: "polarArea",
-        },
-        labels: [
-          "1:00",
-          "2:00",
-          "3:00",
-          "4:00",
-          "5:00",
-          "6:00",
-          "7:00",
-          "8:00",
-          "9:00",
-          "10:00",
-          "11:00",
-          "12:00",
-        ],
-        fill: {},
-        plotOptions: {
-          polarArea: {
-            rings: {
-              strokeWidth: 0,
-            },
-            spokes: {
-              strokeWidth: 1,
-              connectorColors: "#282828",
-            },
-          },
-        },
-        stroke: {
-          width: 1,
-        },
-        yaxis: {
-          show: false,
-        },
-        legend: {
-          show: false,
-        },
-        theme: {
-          monochrome: {
-            enabled: true,
-            color: "#1eb252",
-            shadeTo: "dark",
-            shadeIntensity: 0,
-          },
-        },
-      },
     };
   },
   computed: {

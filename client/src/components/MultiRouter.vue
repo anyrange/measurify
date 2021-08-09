@@ -1,14 +1,15 @@
 <template>
-  <template v-for="(item, index) in routes" :key="index">
-    <router-link
-      class="hover:underline"
-      :class="[color]"
-      :to="{ name: name, params: { id: item.id } }"
-    >
-      {{ item.name }}
-    </router-link>
-    <span v-if="index !== routes.length - 1">,&nbsp;</span>
-  </template>
+  <div class="flex flex-row w-full">
+    <div class="truncate" v-for="(item, index) in routes" :key="index">
+      <router-link
+        class="link truncate"
+        :to="{ name: name, params: { id: item.id } }"
+      >
+        {{ item.name }}
+      </router-link>
+      <span v-if="index !== routes.length - 1">,&nbsp;</span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -17,11 +18,6 @@ export default {
     routes: {
       type: Array,
       required: true,
-    },
-    color: {
-      type: String,
-      required: false,
-      default: "text-white",
     },
     name: {
       type: String,

@@ -1,15 +1,9 @@
 export default {
   data() {
     return {
-      overviewData: [
-        {
-          name: "Plays",
-          data: [],
-        },
-      ],
       chartOptions: {
         chart: {
-          id: "chart",
+          id: "dashboardChart",
           zoom: {
             autoScaleYaxis: true,
           },

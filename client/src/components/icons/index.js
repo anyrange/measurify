@@ -3,4 +3,5 @@ export { default as ListeningHistoryIcon } from "./ListeningHistoryIcon";
 export { default as LeaderboardIcon } from "./LeaderboardIcon";
 export { default as FriendsIcon } from "./FriendsIcon";
 export { default as TimeIcon } from "./TimeIcon";
+export { default as AccountIcon } from "./AccountIcon";
 export { default as Lock } from "./Lock";

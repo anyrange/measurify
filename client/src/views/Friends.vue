@@ -14,7 +14,7 @@
               :src="item.avatar"
               :alt="item.customID"
               avatar
-              class="w-16 h-16 object-cover rounded-full"
+              class="w-16 h-16 object-cover rounded-full flex-shrink-0"
             />
             <div class="flex flex-col">
               <div class="text-white text-base font-medium">

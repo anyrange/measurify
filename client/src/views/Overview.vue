@@ -36,7 +36,7 @@
       <h2 class="mt-6 h-title">Top Played</h2>
       <tabs class="my-6" v-model="selectedTop">
         <tab name="artists">Artists</tab>
-        <tab name="tracks">Track</tab>
+        <tab name="tracks">Tracks</tab>
         <tab name="albums">Albums</tab>
         <tab name="playlists" :visible="totalTopExists">Playlists</tab>
       </tabs>
@@ -47,7 +47,7 @@
 
 <script>
 import * as utd from "@/utils/dates";
-import chartOptions from "@/mixins/chartOptions";
+import dashboardChart from "@/mixins/dashboardChart";
 import EmptyMessage from "@/components/EmptyMessage";
 import RatingTable from "@/components/RatingTable";
 import PercentCard from "@/components/PercentCard";
@@ -66,18 +66,16 @@ export default {
     Tab,
     apexchart: VueApexCharts,
   },
-  mixins: [chartOptions],
+  mixins: [dashboardChart],
   data() {
     return {
       loading: true,
       emptyData: false,
-
       selectedPeriod: "alltime",
       selectedTop: "artists",
-
+      overviewData: [{ name: "Plays", data: [] }],
       totalOverview: [],
       totalTop: [],
-
       totals: {
         alltime: {},
         week: {},
@@ -109,7 +107,7 @@ export default {
     },
   },
   watch: {
-    selectedPeriod: function() {
+    selectedPeriod: function () {
       this.updateChart(this.selectedPeriod);
     },
   },
@@ -135,7 +133,7 @@ export default {
         this.zoomChart(utd.firstDayOfWeek, this.currentDate);
     },
     zoomChart(start, end) {
-      this.$apexcharts.exec("chart", "zoomX", start, end);
+      this.$apexcharts.exec("dashboardChart", "zoomX", start, end);
     },
     pushToChart() {
       for (const item of this.totalOverview) {

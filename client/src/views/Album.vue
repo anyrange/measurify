@@ -1,72 +1,72 @@
 <template>
   <loading-spinner v-if="loading" />
-  <template v-else>
-    <div class="flex flex-col gap-4">
-      <figure class="responsive-picture">
-        <base-img
-          parallax
-          :src="album.image"
-          :alt="album.name"
-          class="responsive-picture__image"
+  <div v-else class="flex flex-col gap-4">
+    <figure class="responsive-picture">
+      <base-img
+        parallax
+        :src="album.image"
+        :alt="album.name"
+        class="responsive-picture__image"
+      />
+      <figcaption class="responsive-picture__title">
+        <spotify-link :link="album.link">
+          {{ album.name }}
+        </spotify-link>
+      </figcaption>
+    </figure>
+    <div class="content">
+      <div class="content-cards">
+        <card :title="album.popularity / 10">popularity</card>
+        <card :title="album.total_tracks">tracks amount</card>
+      </div>
+      <div class="content__item">
+        <span class="content__item__label"> Audio features </span>
+        <audio-features
+          class="content-audio-features"
+          :audioFeatures="audioFeatures"
         />
-        <figcaption class="responsive-picture__title">
-          <spotify-title :name="album.name" :link="album.link" />
-        </figcaption>
-      </figure>
-      <div class="content">
-        <div class="content-cards">
-          <card :title="album.popularity / 10">popularity</card>
-          <card :title="album.total_tracks">tracks amount</card>
-        </div>
-        <div class="content__item">
-          <span class="content__item__label"> Audio features </span>
-          <audio-features :audioFeatures="audioFeatures" />
-        </div>
-        <div class="content__item">
-          <span class="content__item__label"> Artist </span>
-          <div class="content__item__boxes">
-            <router-link
-              class="link"
-              v-for="(item, index) in album.artists"
-              :key="index"
-              :to="{ name: 'artist', params: { id: item.id } }"
-            >
-              <div class="content__item__boxes__box">
-                <base-img
-                  :src="item.image"
-                  :alt="item.name"
-                  class="content__item__boxes__box__image"
-                />
-                <div class="content__item__boxes__box__label">
-                  {{ item.name }}
-                </div>
+      </div>
+      <div class="content__item">
+        <span class="content__item__label"> Artist </span>
+        <div class="content__item__boxes">
+          <router-link
+            class="link"
+            v-for="(item, index) in album.artists"
+            :key="index"
+            :to="{ name: 'artist', params: { id: item.id } }"
+          >
+            <div class="content__item__boxes__box">
+              <base-img
+                :src="item.image"
+                :alt="item.name"
+                class="content__item__boxes__box__image"
+              />
+              <div class="content__item__boxes__box__label">
+                {{ item.name }}
               </div>
-            </router-link>
-          </div>
-        </div>
-        <div class="content__item" v-if="album.genres.length">
-          <span class="content__item__label"> Genres </span>
-          <div class="flex flex-wrap gap-2">
-            <badge v-for="(genre, index) in album.genres" :key="index">
-              {{ genre }}
-            </badge>
-          </div>
-        </div>
-        <div
-          class="content__item w-full md:w-3/4 lg:w-1/2"
-          v-if="tracks.length"
-        >
-          <span class="content__item__label"> Favourite tracks </span>
-          <top-tracks :tracks="tracks" />
+            </div>
+          </router-link>
         </div>
       </div>
+      <div class="content__item" v-if="album.genres.length">
+        <span class="content__item__label"> Genres </span>
+        <div class="flex flex-wrap gap-2">
+          <badge v-for="(genre, index) in album.genres" :key="index">
+            {{ genre }}
+          </badge>
+        </div>
+      </div>
+      <div class="content__item" v-if="tracks.length">
+        <span class="content__item__label"> Favourite tracks </span>
+        <top-tracks :tracks="tracks" />
+      </div>
     </div>
-  </template>
+  </div>
 </template>
 
 <script>
 import { getAlbum } from "@/api";
-import SpotifyTitle from "@/components/SpotifyTitle.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
 import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import Badge from "@/components/Badge.vue";
@@ -76,7 +76,7 @@ import TopTracks from "@/components/TopTracks.vue";
 export default {
   name: "Album",
   components: {
-    SpotifyTitle,
+    SpotifyLink,
     Card,
     Badge,
     BaseImg,

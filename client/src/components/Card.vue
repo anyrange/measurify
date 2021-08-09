@@ -1,5 +1,15 @@
 <template>
-  <div class="flex flex-col p-2 w-32 bg-gray-700-spotify rounded-lg">
+  <div
+    class="
+      bg-gray-700-spotify bg-opacity-50
+      flex flex-col
+      break-inside
+      rounded-lg
+      w-auto
+      mb-4
+      p-2
+    "
+  >
     <div class="text-green-500-spotify text-lg font-bold">
       {{ formattedTitle }}
     </div>
