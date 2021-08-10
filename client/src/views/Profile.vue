@@ -29,7 +29,7 @@
         <card :title="profile.overview.plays">tracks played</card>
         <card :title="profile.overview.playtime">minutes listened</card>
       </div>
-      <div class="content__item" v-if="profile.genres.length">
+      <div class="content__item -mt-4" v-if="profile.genres.length">
         <span class="content__item__label">Genres</span>
         <div class="flex flex-wrap gap-2">
           <badge v-for="genre in profile.genres" :key="genre">
@@ -37,79 +37,101 @@
           </badge>
         </div>
       </div>
+      <!-- Tops -->
       <div class="content-tops">
-        <div class="content__item">
-          <span class="content__item__label">Favourite Albums</span>
-          <div class="content__item__boxes">
-            <spotify-box
-              v-for="item in profile.top.albums"
-              :key="item.id"
-              :item="item"
-              type="album"
-            />
+        <div class="fullwidth">
+          <div class="content-top">
+            <span class="content__item__label">Favourite Albums</span>
+            <div class="content-top__items">
+              <spotify-box
+                v-for="item in profile.top.albums"
+                :key="item.id"
+                :item="item"
+                type="album"
+              />
+            </div>
           </div>
         </div>
-        <div class="content__item">
-          <span class="content__item__label">Favourite Artists</span>
-          <div class="content__item__boxes">
-            <spotify-box
-              v-for="item in profile.top.artists"
-              :key="item.id"
-              :item="item"
-              type="artist"
-            />
+        <div class="fullwidth">
+          <div class="content-top">
+            <span class="content__item__label">Favourite Artists</span>
+            <div class="content-top__items">
+              <spotify-box
+                v-for="item in profile.top.artists"
+                :key="item.id"
+                :item="item"
+                type="artist"
+              />
+            </div>
           </div>
         </div>
-        <div class="content__item">
-          <span class="content__item__label">Favourite Tracks</span>
-          <div class="content__item__boxes">
-            <spotify-box
-              v-for="item in profile.top.tracks"
-              :key="item.id"
-              :item="item"
-              type="track"
-            />
+        <div class="fullwidth">
+          <div class="content-top">
+            <span class="content__item__label">Favourite Tracks</span>
+            <div class="content-top__items">
+              <spotify-box
+                v-for="item in profile.top.tracks"
+                :key="item.id"
+                :item="item"
+                type="track"
+              />
+            </div>
           </div>
         </div>
-        <div class="content__item">
-          <span class="content__item__label">Favourite Playlists</span>
-          <div class="content__item__boxes">
-            <spotify-box
-              v-for="item in profile.top.playlists"
-              :key="item.id"
-              :item="item"
-              type="playlist"
-            />
+        <div class="fullwidth">
+          <div class="content-top">
+            <span class="content__item__label">Favourite Playlists</span>
+            <div class="content-top__items">
+              <spotify-box
+                v-for="item in profile.top.playlists"
+                :key="item.id"
+                :item="item"
+                type="playlist"
+              />
+            </div>
           </div>
         </div>
       </div>
-      <div class="content__item">
-        <span class="content__item__label">Hourly activity</span>
+    </div>
+    <!--  -->
+    <div class="content__item">
+      <span class="content__item__label">Hourly activity</span>
+      <tabs v-if="isMobile" v-model="timePeriod">
+        <tab name="pm">PM</tab>
+        <tab name="am">AM</tab>
+      </tabs>
+      <div
+        class="
+          flex flex-col
+          lg:flex-row
+          text-center text-base text-gray-400-spotify
+          font-medium
+          -mx-12
+          -mb-4
+          -mt-2
+        "
+      >
         <div
-          class="
-            flex flex-col
-            lg:flex-row
-            text-center text-base text-gray-400-spotify
-            font-medium
-            -mx-10
-          "
+          class="flex-shrink-0"
+          v-if="!isMobile || (isMobile && timePeriod === 'am')"
         >
-          <div class="flex-shrink-0">
-            AM
-            <apexchart
-              type="polarArea"
-              :options="chartOptions"
-              :series="activityHours.AM"
-            ></apexchart>
-          </div>
-          <div class="flex-shrink-0">
-            PM
-            <apexchart
-              type="polarArea"
-              :options="chartOptions"
-              :series="activityHours.PM"
-            ></apexchart>
-          </div>
+          <span v-show="!isMobile">AM</span>
+          <apexchart
+            type="polarArea"
+            :options="chartOptions"
+            :series="activityHours.AM"
+          ></apexchart>
+        </div>
+        <div
+          class="flex-shrink-0"
+          v-if="!isMobile || (isMobile && timePeriod === 'pm')"
+        >
+          <span v-show="!isMobile">PM</span>
+          <apexchart
+            type="polarArea"
+            :options="chartOptions"
+            :series="activityHours.PM"
+          ></apexchart>
         </div>
       </div>
       <div class="content__item">
@@ -128,6 +150,8 @@ import Badge from "@/components/Badge.vue";
 import TracksList from "@/components/TracksList.vue";
 import SpotifyLink from "@/components/SpotifyLink.vue";
 import SpotifyBox from "@/components/SpotifyBox.vue";
+import Tabs from "@/components/Tabs";
+import Tab from "@/components/Tab";
 import VueApexCharts from "vue3-apexcharts";
 import activityHoursChart from "@/mixins/activityHoursChart";
 
@@ -135,6 +159,8 @@ export default {
   components: {
     BaseImg,
     Card,
+    Tabs,
+    Tab,
     Badge,
     TracksList,
     SpotifyLink,
@@ -146,6 +172,7 @@ export default {
     return {
       loading: true,
       profile: {},
+      timePeriod: "pm",
     };
   },
   computed: {

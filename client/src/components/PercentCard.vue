@@ -1,10 +1,10 @@
 <template>
-  <div class="card">
-    <div class="text-2xl text-gray-400-spotify">
+  <div class="flex flex-col gap-1">
+    <div class="text-2xl text-gray-500-spotify">
       <slot />
     </div>
-    <div class="flex items-center pt-1">
-      <div class="text-4xl font-semibold text-gray-100 leading-tight mr-2">
+    <div class="flex flex-row gap-2 items-center">
+      <div class="sm:text-4xl text-3xl font-semibold text-white leading-tight">
         {{ value }}
       </div>
       <transition name="slide-fade">

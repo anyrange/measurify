@@ -1,6 +1,6 @@
 <template>
-  <h2 class="h-title">About</h2>
-  <h3 class="h-subtitle mt-4">Yet another app using Spotify Web API</h3>
+  <h1 class="h-title">About</h1>
+  <h2 class="h-subtitle">Yet another app using Spotify Web API</h2>
   <hr class="my-4 w-10 border-gray-600-spotify" />
   <p class="mt-4 text-lg font-normal text-gray-400">
     We did what we liked the most in other services working with spotify api.

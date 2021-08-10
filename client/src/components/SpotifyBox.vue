@@ -1,6 +1,6 @@
 <template>
   <router-link :to="{ name: type, params: { id: item.id } }">
-    <div class="w-20 h-20 relative">
+    <div class="sm:w-20 sm:h-20 w-24 h-24 relative horizontal-scroll-card">
       <base-img
         :src="item.image"
         :alt="item.name"

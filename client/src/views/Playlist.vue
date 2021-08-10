@@ -1,6 +1,6 @@
 <template>
   <loading-spinner v-if="loading" />
-  <div v-else class="w-ful flex flex-col gap-4">
+  <div v-else class="w-full flex flex-col gap-4">
     <div class="w-full flex flex-row items-center gap-4">
       <base-img
         avatar

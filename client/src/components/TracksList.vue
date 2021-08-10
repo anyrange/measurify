@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full table table-fixed">
-    <div class="flex flex-col gap-3">
+  <div class="fullwidth">
+    <div class="flex flex-col gap-2 sm:gap-3">
       <div
         class="
           flex flex-row
@@ -10,6 +10,8 @@
           duration-100
           rounded-lg
           pr-3
+          sm:bg-transparent
+          bg-gray-600-spotify bg-opacity-20
         "
         v-for="item in tracks"
         :key="item.id"
@@ -21,20 +23,38 @@
           <base-img
             :src="item.image"
             :alt="item.name"
-            class="w-16 h-16 object-cover rounded-lg"
+            class="sm:w-16 sm:h-16 w-12 h-12 object-cover rounded-lg"
           />
         </router-link>
-        <div class="w-full flex flex-col truncate">
-          <router-link
-            class="link truncate"
-            :to="{ name: 'track', params: { id: item.id } }"
-          >
-            {{ item.name }}
-          </router-link>
-          <div class="flex w-full flex-row text-sm items-center">
-            <multi-router :routes="item.artists" />
+        <div
+          class="
+            truncate
+            w-full
+            flex
+            sm:flex-col
+            flex-row
+            gap-2
+            sm:gap-0
+            items-center
+            sm:items-start
+            justify-between
+            sm:justify-center
+          "
+        >
+          <div class="flex flex-col truncate">
+            <router-link
+              class="link truncate"
+              :to="{ name: 'track', params: { id: item.id } }"
+            >
+              {{ item.name }}
+            </router-link>
+            <div class="flex w-full flex-row text-sm items-center">
+              <multi-router :routes="item.artists" />
+            </div>
           </div>
-          <span class="text-gray-500-spotify text-sm font-normal">
+          <span
+            class="flex flex-grow-0 text-gray-500-spotify text-sm font-normal"
+          >
             {{ getDateFromNow(item.played_at) }}
           </span>
         </div>

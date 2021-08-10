@@ -2,7 +2,17 @@
   <li
     v-if="visible"
     v-wave
-    class="px-5 py-3 text-gray-200 text-sm rounded-md leading-4 font-medium cursor-pointer"
+    class="
+      px-5
+      py-3
+      text-gray-200 text-sm
+      rounded-md
+      leading-4
+      font-medium
+      cursor-pointer
+      select-none
+      horizontal-scroll-card
+    "
     :class="{
       'bg-gray-600-spotify': isActive,
       'opacity-40 cursor-not-allowed': disabled,
@@ -43,7 +53,8 @@ export default {
   },
   methods: {
     activateTab(name) {
-      if (!this.disabled && name !== this.active) return this.selectTab(name);
+      // if (!this.disabled && name !== this.active)
+      if (!this.disabled) return this.selectTab(name);
     },
   },
 };

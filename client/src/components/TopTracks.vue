@@ -1,13 +1,13 @@
 <template>
-  <div class="w-full table table-fixed">
+  <div class="fullwidth">
     <div class="flex flex-col gap-3">
       <div
         v-for="(track, index) in tracks"
         :key="track.id"
-        class="flex flex-row items-center gap-4"
+        class="flex flex-row items-center gap-3"
       >
-        <span class="text-white font-semibold text-base flex-none w-6">
-          {{ index + 1 }}
+        <span class="text-white font-semibold text-base flex-none w-7">
+          #{{ index + 1 }}
         </span>
         <div
           class="

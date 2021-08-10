@@ -49,6 +49,21 @@
   break-inside: avoid;
 }
 
+.fullwidth {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+.horizontal-scroll-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.horizontal-scroll-card {
+  flex: 0 0 auto;
+}
+
 .sidebar-spotify::-webkit-scrollbar,
 .content-spotify::-webkit-scrollbar {
   @apply w-2 bg-gray-900-spotify;
@@ -63,7 +78,7 @@
 }
 
 .h-title {
-  @apply md:text-5xl sm:text-4xl text-3xl font-semibold text-white;
+  @apply sm:text-4xl text-3xl font-semibold text-white;
 }
 .h-subtitle {
   @apply text-base sm:text-lg font-semibold text-gray-500;
@@ -86,12 +101,20 @@
 .content-audio-features {
   @apply md:w-auto w-full masonry;
 }
+
 .content-tops {
-  @apply flex flex-row flex-wrap items-center gap-x-6 gap-y-3;
+  @apply flex flex-row gap-3 flex-wrap xl:flex-nowrap;
+}
+.content-top {
+  @apply flex flex-col gap-3;
+}
+.content-top__items {
+  @apply flex-row gap-3 sm:overflow-x-hidden overflow-x-auto flex sm:flex-wrap flex-nowrap sm:mx-0 -mx-4 px-4 sm:px-0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .content__item {
-  @apply md:w-auto w-full flex flex-col gap-3 items-start;
+  @apply flex flex-col gap-3 md:w-auto w-full items-start;
 }
 .content__item__label {
   @apply text-xl text-white font-medium;
