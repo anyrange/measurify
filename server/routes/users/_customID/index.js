@@ -86,7 +86,7 @@ export default async function (fastify) {
       }
 
       const requests = [
-        fastify.parseTop(user._id, user.lastSpotifyToken, 3),
+        fastify.parseTop(user._id, user.lastSpotifyToken, 6),
         fastify.parseHistory(user._id, 20),
         User.aggregate([
           { $match: { _id: ObjectId(user._id) } },
