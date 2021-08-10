@@ -1,16 +1,17 @@
 <template>
-  <h2 class="h-title">Overview</h2>
+  <h1 class="h-title">Overview</h1>
   <loading-spinner v-if="loading" />
   <template v-else>
     <empty-message v-if="emptyData" />
     <template v-else>
-      <tabs class="mt-6" v-model="selectedPeriod">
+      <tabs v-model="selectedPeriod">
         <tab name="alltime">All Time</tab>
         <tab name="month">This Month</tab>
         <tab name="week">This Week</tab>
       </tabs>
-      <div class="mt-6 grid gap-7 xl:grid-cols-4 lg:grid-cols-2">
+      <div class="xl:w-1/2 w-full flex sm:flex-row flex-col flex-wrap gap-y-3">
         <percent-card
+          class="md:w-1/2 w-full"
           :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalTracksPlayed"
           :previousValue="totals[selectedPeriod].totalTracksPlayedPrev"
@@ -18,6 +19,7 @@
           Tracks Played
         </percent-card>
         <percent-card
+          class="md:w-1/2 w-full"
           :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalMinutesListened"
           :previousValue="totals[selectedPeriod].totalMinutesListenedPrev"
@@ -25,7 +27,7 @@
           Minutes Listened
         </percent-card>
       </div>
-      <div class="-mx-4 w-full">
+      <div v-if="!isMobile" class="-mx-4 w-full">
         <apexchart
           type="area"
           height="350"
@@ -33,12 +35,14 @@
           :series="overviewData"
         ></apexchart>
       </div>
-      <h2 class="mt-6 h-title">Top Played</h2>
-      <tabs class="my-6" v-model="selectedTop">
+      <h1 class="h-title">Top Played</h1>
+      <tabs v-model="selectedTop">
         <tab name="artists">Artists</tab>
         <tab name="tracks">Tracks</tab>
         <tab name="albums">Albums</tab>
-        <tab name="playlists" :visible="totalTopExists">Playlists</tab>
+        <tab name="playlists" :visible="!!this.totalTop.playlists.length">
+          Playlists
+        </tab>
       </tabs>
       <rating-table :title="selectedTop" :data="totalTop[selectedTop]" />
     </template>
@@ -92,10 +96,6 @@ export default {
     };
   },
   computed: {
-    totalTopExists() {
-      if (this.totalTop.playlists?.length) return true;
-      return false;
-    },
     currentDate() {
       const now = new Date();
       const date = new Date(now).toISOString().substr(0, 10);
@@ -107,8 +107,8 @@ export default {
     },
   },
   watch: {
-    selectedPeriod: function () {
-      this.updateChart(this.selectedPeriod);
+    selectedPeriod() {
+      if (!this.isMobile) this.updateChart(this.selectedPeriod);
     },
   },
   async created() {
@@ -118,19 +118,26 @@ export default {
     ]);
     this.totalOverview = overview.reverse();
     this.totalTop = top;
-    this.emptyData = overviewStatus === 204 ? true : false;
+    this.emptyData = overviewStatus === 204;
     this.loading = false;
     this.pushToChart();
     this.calculateAllTotals();
   },
   methods: {
     updateChart(period) {
-      if (period === "alltime")
-        this.zoomChart(this.firstDayOnGraph, this.currentDate);
-      if (period === "month")
-        this.zoomChart(utd.firstDayOfMonth, this.currentDate);
-      if (period === "week")
-        this.zoomChart(utd.firstDayOfWeek, this.currentDate);
+      switch (period) {
+        case "alltime":
+          this.zoomChart(this.firstDayOnGraph, this.currentDate);
+          break;
+        case "month":
+          this.zoomChart(utd.firstDayOfMonth, this.currentDate);
+          break;
+        case "week":
+          this.zoomChart(utd.firstDayOfWeek, this.currentDate);
+          break;
+        default:
+          break;
+      }
     },
     zoomChart(start, end) {
       this.$apexcharts.exec("dashboardChart", "zoomX", start, end);

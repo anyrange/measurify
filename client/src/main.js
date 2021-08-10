@@ -9,6 +9,7 @@ import "./assets/font.css";
 import "./assets/styles.css";
 import ApexCharts from "apexcharts";
 import VWave from "v-wave";
+import isMobile from "./mixins/isMobile";
 
 const app = createApp(App);
 
@@ -21,3 +22,4 @@ app
   .mount("#app");
 
 app.component("LoadingSpinner", LoadingSpinner);
+app.mixin(isMobile);
