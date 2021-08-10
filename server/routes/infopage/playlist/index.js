@@ -1,4 +1,5 @@
 import history from "../../../includes/listening-history.js";
+import User from "../../../models/User.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -48,7 +49,10 @@ export default async function (fastify) {
       const { _id } = req;
       const playlistID = req.params.id;
 
-      const token = await this.getToken(_id);
+      const { lastSpotifyToken: token, customID } = await User.findById(
+        _id,
+        "lastSpotifyToken customID"
+      );
 
       const [playlist, tracks] = await Promise.all([
         fastify.spotifyAPI({
@@ -70,7 +74,7 @@ export default async function (fastify) {
           collaborative: playlist.collaborative,
           link: playlist.external_urls.spotify,
           followers: playlist.followers.total,
-          owner: { name: playlist.owner.display_name, id: playlist.owner.id },
+          owner: { name: playlist.owner.display_name, id: customID },
           public: playlist.public,
           tracks: playlist.tracks.total,
         },
