@@ -97,8 +97,8 @@
     <div class="content__item">
       <span class="content__item__label">Hourly activity</span>
       <tabs v-if="isMobile" v-model="timePeriod">
-        <tab name="pm">PM</tab>
         <tab name="am">AM</tab>
+        <tab name="pm">PM</tab>
       </tabs>
       <div
         class="
@@ -172,7 +172,7 @@ export default {
     return {
       loading: true,
       profile: {},
-      timePeriod: "pm",
+      timePeriod: "am",
     };
   },
   computed: {

@@ -133,7 +133,7 @@ export default {
   methods: {
     getDateFromNow,
     getDuration,
-    async onScroll() {
+    async handleScroll() {
       if (
         this.contentWindow.offsetHeight + this.contentWindow.scrollTop >=
         this.contentWindow.scrollHeight - this.offset
