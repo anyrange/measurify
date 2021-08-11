@@ -11,6 +11,7 @@ const plugin = fp(async function plugin(fastify) {
       image: { type: "string" },
       duration_ms: { type: "number" },
       playtime: { type: "number" },
+      plays: { type: "number" },
       popularity: { type: "number" },
       preview_url: { type: "string" },
       release_date: { type: "string" },

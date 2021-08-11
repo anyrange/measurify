@@ -2,7 +2,7 @@ import mongodb from "mongodb";
 const { ObjectId } = mongodb;
 import User from "../models/User.js";
 
-export default async function(_id, filterId) {
+export default async function (_id, filterId) {
   try {
     const agg = [
       {
@@ -32,6 +32,7 @@ export default async function(_id, filterId) {
       },
       {
         $project: {
+          plays: { $size: "$recentlyPlayed.plays" },
           playtime: {
             $round: {
               $divide: [
@@ -55,7 +56,7 @@ export default async function(_id, filterId) {
       },
       {
         $sort: {
-          playtime: -1,
+          plays: -1,
         },
       },
       {
