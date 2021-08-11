@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
-import { createNanoEvents } from "nanoevents";
-const emitter = createNanoEvents();
+import emitter from "./eventBus";
 
 /**
  * @param {('info'|'success'|'warning'|'danger')} type

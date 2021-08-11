@@ -29,7 +29,7 @@
         <card :title="profile.overview.plays">tracks played</card>
         <card :title="profile.overview.playtime">minutes listened</card>
       </div>
-      <div class="content__item -mt-4" v-if="profile.genres.length">
+      <div class="content__item" v-if="profile.genres.length">
         <span class="content__item__label">Genres</span>
         <div class="flex flex-wrap gap-2">
           <badge v-for="genre in profile.genres" :key="genre">
