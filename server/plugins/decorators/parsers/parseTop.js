@@ -48,7 +48,7 @@ const plugin = fp(async function plugin(fastify) {
       );
 
       await Promise.all(requests);
-      response.playlists.sort(function(a, b) {
+      response.playlists.sort(function (a, b) {
         if (a.playtime < b.playtime) {
           return 1;
         }
@@ -58,12 +58,14 @@ const plugin = fp(async function plugin(fastify) {
         return 0;
       });
 
-      const body = await fastify.spotifyAPI({
-        route: `artists?ids=${response.artists
-          .map((artist) => artist.id)
-          .join()}`,
-        token: access_token,
-      });
+      const body = response.artists.length
+        ? await fastify.spotifyAPI({
+            route: `artists?ids=${response.artists
+              .map((artist) => artist.id)
+              .join()}`,
+            token: access_token,
+          })
+        : [];
 
       if (!body.error) {
         response.artists.forEach((artist, index) => {
