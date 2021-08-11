@@ -12,7 +12,12 @@
     >
       <slot />
     </span>
-    <a :href="link" target="_blank" referrerpolicy="no-referrer" rel="icon">
+    <a
+      :href="formattedLink"
+      target="_blank"
+      referrerpolicy="no-referrer"
+      rel="icon"
+    >
       <svg
         class="w-8 hover:text-green-500-spotify cursor-pointer duration-200"
         role="img"
@@ -35,6 +40,20 @@ export default {
     link: {
       type: String,
       required: true,
+    },
+  },
+  types: ["artist", "track", "album", "user", "playlist"],
+  computed: {
+    linkType() {
+      return this.$options.types.find((v) => this.link.includes(v));
+    },
+    linkURI() {
+      return this.link.slice(-22);
+    },
+    formattedLink() {
+      return this.isMobile
+        ? `spotify:${this.linkType}:${this.linkURI}`
+        : this.link;
     },
   },
 };
