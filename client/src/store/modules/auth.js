@@ -7,6 +7,7 @@ const getDefaultState = () => {
       access_token: "",
       avatar: "",
       username: "",
+      country: "",
       autoUpdate: false,
     },
   };
@@ -35,7 +36,8 @@ export default {
   },
   getters: {
     isAuthenticated(state) {
-      return Object.keys(state.user).every((k) => state.user[k]);
+      if (Object.keys(state.user).every((k) => !state.user[k])) return false;
+      return true;
     },
     getUser(state) {
       return state.user;
