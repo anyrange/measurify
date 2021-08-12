@@ -73,6 +73,13 @@
   @apply rounded-lg bg-gray-450-spotify;
 }
 
+.custom-scrollbars .horizontal-scrollbar::-webkit-scrollbar {
+  @apply h-1 bg-gray-900-spotify;
+}
+.custom-scrollbars .horizontal-scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-lg bg-gray-450-spotify;
+}
+
 .link {
   @apply text-white hover:underline;
 }
@@ -110,6 +117,7 @@
 }
 .content-top__items {
   @apply flex-row gap-3 sm:overflow-x-hidden overflow-x-auto flex sm:flex-wrap flex-nowrap sm:mx-0 -mx-4 px-4 sm:px-0;
+  @apply horizontal-scrollbar;
   -webkit-overflow-scrolling: touch;
 }
 
