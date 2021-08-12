@@ -64,12 +64,12 @@
   flex: 0 0 auto;
 }
 
-.sidebar-spotify::-webkit-scrollbar,
-.content-spotify::-webkit-scrollbar {
+.custom-scrollbars .sidebar-spotify::-webkit-scrollbar,
+.custom-scrollbars .content-spotify::-webkit-scrollbar {
   @apply w-2 bg-gray-900-spotify;
 }
-.sidebar-spotify::-webkit-scrollbar-thumb,
-.content-spotify::-webkit-scrollbar-thumb {
+.custom-scrollbars .sidebar-spotify::-webkit-scrollbar-thumb,
+.custom-scrollbars .content-spotify::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-gray-450-spotify;
 }
 

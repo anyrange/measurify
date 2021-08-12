@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-col h-screen text-sm text-gray-500-spotify">
+  <div
+    class="flex flex-col h-screen text-sm text-gray-500-spotify"
+    :class="{ 'custom-scrollbars': !isMobile }"
+  >
     <div class="flex-1 flex overflow-y-hidden">
       <sidebar />
       <div class="flex-1 flex flex-col bg-gray-800-spotify">
