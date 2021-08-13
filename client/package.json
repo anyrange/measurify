@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "date-fns": "^2.19.0",
     "dotenv": "^10.0.0",
+    "genius-lyrics-api": "^3.0.6",
     "nanoevents": "^6.0.0",
     "nanoid": "^3.1.23",
     "register-service-worker": "^1.7.1",

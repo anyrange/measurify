@@ -14,7 +14,7 @@
         </spotify-link>
       </figcaption>
     </figure>
-    <div class="content w-full">
+    <div class="content">
       <div class="content-cards">
         <card :title="track.popularity / 10">popularity</card>
         <card :title="trackDuration">track length</card>
@@ -45,6 +45,7 @@
         <div class="fullwidth">
           <div
             class="
+              w-full
               flex flex-row
               items-center
               duration-100
@@ -59,12 +60,12 @@
               :to="{ name: 'album', params: { id: track.album.id } }"
             >
               <base-img
-                class="w-20 h-20 rounded-lg"
+                class="sm:w-20 sm:h-20 w-24 h-24 rounded-lg"
                 :src="track.image"
                 :alt="track.name"
               />
             </router-link>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 w-full">
               <router-link
                 class="link font-medium truncate-2"
                 :to="{ name: 'album', params: { id: track.album.id } }"
@@ -87,13 +88,37 @@
           />
         </div>
       </div>
+      <div class="content__item">
+        <span class="content__item__label">Lyrics</span>
+        <div
+          @click="getLyrics()"
+          class="
+            text-white text-sm
+            bg-gray-700-spotify bg-opacity-50
+            cursor-pointer
+            p-2
+            rounded-lg
+            w-full
+            sm:w-auto
+          "
+        >
+          <template v-if="lyrics.status === 'idle'">Click to load</template>
+          <template v-else-if="lyrics.status === 'loading'">
+            Loading...
+          </template>
+          <template v-else>Failed to load</template>
+          <pre v-show="lyrics.text" class="whitespace-pre-wrap">{{
+            lyrics.text
+          }}</pre>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { addSeconds, format } from "date-fns";
-import { getTrack } from "@/api";
+import { getTrack, getTrackLyrics } from "@/api";
 import SpotifyLink from "@/components/SpotifyLink.vue";
 import Card from "@/components/Card.vue";
 import BaseImg from "@/components/BaseImg.vue";
@@ -115,6 +140,10 @@ export default {
       loading: true,
       selectedPeriod: "alltime",
       track: {},
+      lyrics: {
+        status: "idle",
+        text: "",
+      },
       rates: {},
       overview: {},
       audioFeatures: {},
@@ -152,6 +181,20 @@ export default {
     } finally {
       this.loading = false;
     }
+  },
+  methods: {
+    async getLyrics() {
+      try {
+        this.lyrics.status = "loading";
+        this.lyrics.text = await getTrackLyrics({
+          title: this.track.name,
+          artist: this.track.artists[0].name,
+        });
+        this.lyrics.status = "success";
+      } catch {
+        this.lyrics.status = "failure";
+      }
+    },
   },
 };
 </script>

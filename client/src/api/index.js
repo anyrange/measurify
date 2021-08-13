@@ -2,8 +2,10 @@ import axios from "axios";
 import $store from "@/store";
 import $router from "@/router";
 import { notify } from "@/services/notify";
+import { getLyrics } from "genius-lyrics-api";
 
 const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
+const GENIUS_API_SECRET_KEY = process.env.VUE_APP_GENIUS_API_SECRET_KEY;
 
 const api = axios.create({ baseURL: SERVER_URI, withCredentials: true });
 api.interceptors.response.use(
@@ -69,4 +71,12 @@ export function getPlaylist(id) {
 }
 export function getFriends() {
   return api.get("/friends");
+}
+export function getTrackLyrics({ title, artist }) {
+  return getLyrics({
+    apiKey: GENIUS_API_SECRET_KEY,
+    title: title,
+    artist: artist,
+    optimizeQuery: true,
+  });
 }
