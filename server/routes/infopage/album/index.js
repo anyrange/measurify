@@ -22,6 +22,7 @@ export default async function (fastify) {
         },
         tracks: fastify.getSchema("tracks"),
         audioFeatures: fastify.getSchema("audioFeatures"),
+        content: fastify.getSchema("tracks"),
         status: { type: "number" },
       },
     },
@@ -81,6 +82,7 @@ export default async function (fastify) {
           label: album.label || "",
           isLiked,
         },
+        content: album.tracks.items.map((track) => formatTrack(track)),
         audioFeatures,
         tracks,
       };
@@ -89,3 +91,16 @@ export default async function (fastify) {
     }
   );
 }
+
+const formatTrack = (track) => {
+  const artists = track.artists.map(({ id, name }) => {
+    return { id, name };
+  });
+
+  return {
+    id: track.id,
+    name: track.name,
+    duration_ms: track.duration_ms,
+    artists,
+  };
+};

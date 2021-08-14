@@ -39,6 +39,7 @@ export default async function (fastify) {
               },
               tracks: fastify.getSchema("tracks"),
               audioFeatures: fastify.getSchema("audioFeatures"),
+              content: fastify.getSchema("tracks"),
               status: { type: "number" },
             },
           },
@@ -58,7 +59,7 @@ export default async function (fastify) {
 
       const [playlist, tracks, [isLiked]] = await Promise.all([
         fastify.spotifyAPI({
-          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id)))`,
+          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id,name,album(id,name,images(url)),artists(id,name))))`,
           token,
         }),
         history(_id, playlistID),
@@ -85,6 +86,7 @@ export default async function (fastify) {
           tracks: playlist.tracks.total,
           isLiked,
         },
+        content: playlist.tracks.items.map(({ track }) => formatTrack(track)),
         audioFeatures,
         tracks,
       };
@@ -93,3 +95,26 @@ export default async function (fastify) {
     }
   );
 }
+
+const formatTrack = (track) => {
+  const album = {
+    id: track.album.id,
+    name: track.album.name,
+  };
+
+  const artists = track.artists.map(({ id, name }) => ({
+    id,
+    name,
+  }));
+
+  return {
+    id: track.id,
+    name: track.name,
+    image:
+      track.album.images && track.album.images.length
+        ? track.album.images[1].url
+        : "",
+    album,
+    artists,
+  };
+};

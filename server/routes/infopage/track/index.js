@@ -1,4 +1,5 @@
 import User from "../../../models/User.js";
+import formatTrack from "../../../utils/format-track.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -17,6 +18,7 @@ export default async function (fastify) {
               track: fastify.getSchema("track"),
               overview: fastify.getSchema("overview"),
               audioFeatures: fastify.getSchema("audioFeatures"),
+              moreTracks: fastify.getSchema("tracks"),
               rates: fastify.getSchema("rates"),
               status: { type: "number" },
             },
@@ -29,7 +31,10 @@ export default async function (fastify) {
       const { _id } = req;
       const trackID = req.params.id;
 
-      const token = await fastify.getToken(_id);
+      const { lastSpotifyToken: token, country } = await User.findById(
+        _id,
+        "lastSpotifyToken country"
+      );
 
       const time_range = ["long_term", "medium_term", "short_term"];
 
@@ -72,10 +77,16 @@ export default async function (fastify) {
           ) || 0,
       };
 
-      const { artists } = await fastify.spotifyAPI({
-        route: `artists?ids=${track.artists.map(({ id }) => id).join(",")}`,
-        token,
-      });
+      const [{ artists }, { tracks: moreTracks }] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `artists?ids=${track.artists.map(({ id }) => id).join(",")}`,
+          token,
+        }),
+        fastify.spotifyAPI({
+          route: `artists/${track.artists[0].id}/top-tracks?market=${country}`,
+          token,
+        }),
+      ]);
 
       const rates = {
         LT: findPlace(track.name, trcLT),
@@ -99,6 +110,7 @@ export default async function (fastify) {
           release_date: track.album.release_date,
           isLiked,
         },
+        moreTracks: moreTracks.map((track) => formatTrack({ track })),
         overview,
         rates,
         audioFeatures,
