@@ -18,6 +18,7 @@ const plugin = fp(async function plugin(fastify) {
       played_at: { type: "string" },
       link: { type: "string" },
       lastPlayedAt: { type: "string" },
+      isLiked: { type: "boolean" },
       album: {
         type: "object",
         properties: {

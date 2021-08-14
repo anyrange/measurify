@@ -46,10 +46,21 @@ export default async function (fastify) {
             token,
           })
         ),
+        fastify.spotifyAPI({
+          route: `me/tracks/contains?ids=${trackID}`,
+          token,
+        }),
       ];
 
-      const [track, audioFeatures, listenedOne, trcLT, trcMT, trcST] =
-        await Promise.all(request.flat(1));
+      const [
+        track,
+        audioFeatures,
+        listenedOne,
+        trcLT,
+        trcMT,
+        trcST,
+        [isLiked],
+      ] = await Promise.all(request.flat(1));
 
       const overview = {
         plays: listenedOne?.recentlyPlayed[0].plays.length || 0,
@@ -86,6 +97,7 @@ export default async function (fastify) {
           link: track.external_urls.spotify,
           duration_ms: track.duration_ms,
           release_date: track.album.release_date,
+          isLiked,
         },
         overview,
         rates,

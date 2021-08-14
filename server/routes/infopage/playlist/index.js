@@ -34,6 +34,7 @@ export default async function (fastify) {
                       id: { type: "string" },
                     },
                   },
+                  isLiked: { type: "boolean" },
                 },
               },
               tracks: fastify.getSchema("tracks"),
@@ -49,17 +50,22 @@ export default async function (fastify) {
       const { _id } = req;
       const playlistID = req.params.id;
 
-      const { lastSpotifyToken: token, customID } = await User.findById(
-        _id,
-        "lastSpotifyToken customID"
-      );
+      const {
+        lastSpotifyToken: token,
+        customID,
+        spotifyID,
+      } = await User.findById(_id, "lastSpotifyToken customID spotifyID");
 
-      const [playlist, tracks] = await Promise.all([
+      const [playlist, tracks, [isLiked]] = await Promise.all([
         fastify.spotifyAPI({
           route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id)))`,
           token,
         }),
         history(_id, playlistID),
+        fastify.spotifyAPI({
+          route: `playlists/${playlistID}/followers/contains?ids=${spotifyID}`,
+          token,
+        }),
       ]);
 
       const audioFeatures = await fastify.parseAudioFeatures(
@@ -77,6 +83,7 @@ export default async function (fastify) {
           owner: { name: playlist.owner.display_name, id: customID },
           public: playlist.public,
           tracks: playlist.tracks.total,
+          isLiked,
         },
         audioFeatures,
         tracks,

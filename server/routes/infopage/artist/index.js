@@ -38,6 +38,7 @@ export default async function (fastify) {
                   name: { type: "string" },
                   image: { type: "string" },
                   link: { type: "string" },
+                  isLiked: { type: "boolean" },
                 },
               },
               tracks: fastify.getSchema("tracks"),
@@ -93,6 +94,10 @@ export default async function (fastify) {
             token,
           })
         ),
+        fastify.spotifyAPI({
+          route: `me/following/contains?type=artist&ids=${artistID}`,
+          token,
+        }),
       ];
 
       const [
@@ -105,6 +110,7 @@ export default async function (fastify) {
         trcLT,
         trcMT,
         trcST,
+        [isLiked],
       ] = await Promise.all(request.flat(1));
 
       const rates = {
@@ -130,6 +136,7 @@ export default async function (fastify) {
           name: artist.name,
           image: artist.images.length ? artist.images[0].url : "",
           link: artist.external_urls.spotify,
+          isLiked,
         },
         tracks,
         audioFeatures,

@@ -16,6 +16,7 @@ export default async function (fastify) {
             link: { type: "string" },
             label: { type: "string" },
             genres: { type: "array", items: { type: "string" } },
+            isLiked: { type: "boolean" },
             artists: fastify.getSchema("artists"),
           },
         },
@@ -45,7 +46,7 @@ export default async function (fastify) {
 
       const token = await this.getToken(_id);
 
-      const [album, tracks, audioFeatures] = await Promise.all([
+      const [album, tracks, audioFeatures, [isLiked]] = await Promise.all([
         fastify.spotifyAPI({
           route: `albums/${albumID}`,
           token,
@@ -54,6 +55,10 @@ export default async function (fastify) {
         fastify
           .spotifyAPI({ route: `albums/${albumID}/tracks`, token })
           .then(({ items }) => fastify.parseAudioFeatures(items, token)),
+        fastify.spotifyAPI({
+          route: `me/albums/contains?ids=${albumID}`,
+          token,
+        }),
       ]);
 
       const { artists } = await fastify.spotifyAPI({
@@ -74,6 +79,7 @@ export default async function (fastify) {
             return { name, id, image: images.length ? images[0].url : "" };
           }),
           label: album.label || "",
+          isLiked,
         },
         audioFeatures,
         tracks,
