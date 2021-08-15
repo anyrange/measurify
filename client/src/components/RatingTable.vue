@@ -5,7 +5,7 @@
         <div class="row h-8 capitalize font-semibold">
           <div class="w-6">#</div>
           <div class="w-3/10">{{ name }}</div>
-          <div class="w-auto text-right ml-auto">minutes listened</div>
+          <div class="w-auto text-right ml-auto">plays</div>
         </div>
         <router-link
           :to="{ name: name, params: { id: item.id } }"
@@ -25,7 +25,7 @@
             </span>
           </div>
           <span class="w-2/10 text-right ml-auto">
-            {{ item.playtime }}
+            {{ item.plays }}
           </span>
         </router-link>
       </div>
