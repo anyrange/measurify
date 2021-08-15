@@ -16,7 +16,7 @@
       </span>
       <slot name="title"></slot>
     </div>
-    <div class="text-white sm:text-base text-sm font-normal lowercase">
+    <div class="text-white text-base font-normal lowercase">
       <slot />
     </div>
   </div>
