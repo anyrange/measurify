@@ -38,7 +38,7 @@ export default async function (fastify) {
           recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
           lastSpotifyToken: 1,
         }
-      );
+      ).lean();
 
       if (!document) throw new this.CustomError("User not found", 404);
 

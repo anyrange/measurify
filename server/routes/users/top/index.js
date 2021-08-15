@@ -65,12 +65,7 @@ export default async function (fastify) {
               privacy: "$privacy",
             },
             listened: {
-              $sum: {
-                $multiply: [
-                  "$recentlyPlayed.plays",
-                  { $divide: ["$recentlyPlayed.duration_ms", 60000] },
-                ],
-              },
+              $sum: "$recentlyPlayed.plays",
             },
           },
         },

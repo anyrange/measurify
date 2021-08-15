@@ -2,12 +2,12 @@ import fp from "fastify-plugin";
 
 const topItem = {
   type: "object",
-  required: ["id", "image", "name", "playtime"],
+  required: ["id", "image", "name", "plays"],
   properties: {
     id: { type: "string" },
     image: { type: "string" },
     name: { type: "string" },
-    playtime: { type: "number" },
+    plays: { type: "number" },
   },
 };
 

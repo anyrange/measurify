@@ -41,7 +41,7 @@ const plugin = fp(async function plugin(fastify) {
               name: body.name,
               id: playlist.id,
               image: body.images?.length ? body.images[0].url : "",
-              playtime: playlist.playtime,
+              plays: playlist.plays,
             });
             resolve();
           })
@@ -49,10 +49,10 @@ const plugin = fp(async function plugin(fastify) {
 
       await Promise.all(requests);
       response.playlists.sort(function (a, b) {
-        if (a.playtime < b.playtime) {
+        if (a.plays < b.plays) {
           return 1;
         }
-        if (a.playtime > b.playtime) {
+        if (a.plays > b.plays) {
           return -1;
         }
         return 0;
@@ -88,7 +88,6 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
       $project: {
         "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.image": 1,
-        "recentlyPlayed.duration_ms": 1,
         "recentlyPlayed.id": 1,
         "recentlyPlayed.name": 1,
       },
@@ -116,10 +115,10 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
           name: "$recentlyPlayed.name",
           image: "$recentlyPlayed.image",
         },
-        playtime: { $sum: "$recentlyPlayed.duration_ms" },
+        plays: { $sum: 1 },
       },
     },
-    { $sort: { playtime: -1 } },
+    { $sort: { plays: -1 } },
     { $limit: range },
   ];
 
@@ -130,7 +129,7 @@ const tracks = async ({ _id, firstDate, lastDate, range }) => {
       id: track._id.id,
       image: track._id.image,
       name: track._id.name,
-      playtime: Math.round(track.playtime / 1000 / 60),
+      plays: track.plays,
     };
   });
 };
@@ -145,14 +144,12 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
         "recentlyPlayed.album.id": 1,
         "recentlyPlayed.album.name": 1,
         "recentlyPlayed.image": 1,
-        "recentlyPlayed.duration_ms": 1,
       },
     },
     { $unwind: { path: "$recentlyPlayed" } },
     { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
-        "recentlyPlayed.duration_ms": 1,
         "recentlyPlayed.album.id": 1,
         "recentlyPlayed.album.name": 1,
         "recentlyPlayed.image": 1,
@@ -171,10 +168,10 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
           name: "$recentlyPlayed.album.name",
           image: "$recentlyPlayed.image",
         },
-        playtime: { $sum: "$recentlyPlayed.duration_ms" },
+        plays: { $sum: 1 },
       },
     },
-    { $sort: { playtime: -1 } },
+    { $sort: { plays: -1 } },
     { $limit: range },
   ];
   const albums = await User.aggregate(agg);
@@ -184,7 +181,7 @@ const albums = async ({ _id, firstDate, lastDate, range }) => {
       id: track._id.id,
       image: track._id.image,
       name: track._id.name,
-      playtime: Math.round(track.playtime / 1000 / 60),
+      plays: track.plays,
     };
   });
 };
@@ -197,7 +194,6 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
         _id: 0,
         "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.plays.context": 1,
-        "recentlyPlayed.duration_ms": 1,
         lastSpotifyToken: 1,
       },
     },
@@ -205,7 +201,6 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
     { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
-        "recentlyPlayed.duration_ms": 1,
         "recentlyPlayed.context": "$recentlyPlayed.plays.context",
         lastSpotifyToken: 1,
         "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
@@ -223,10 +218,10 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
           id: "$recentlyPlayed.context.id",
           access_token: "$lastSpotifyToken",
         },
-        playtime: { $sum: "$recentlyPlayed.duration_ms" },
+        plays: { $sum: 1 },
       },
     },
-    { $sort: { playtime: -1 } },
+    { $sort: { plays: -1 } },
     { $limit: range },
   ];
   let playlists = await User.aggregate(agg);
@@ -235,7 +230,7 @@ const playlists = async ({ _id, firstDate, lastDate, range }) => {
     return {
       id: track._id.id,
       access_token: track._id.access_token,
-      playtime: Math.round(track.playtime / 1000 / 60),
+      plays: track.plays,
     };
   });
 };
@@ -249,14 +244,12 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
         "recentlyPlayed.plays.played_at": 1,
         "recentlyPlayed.artists.name": 1,
         "recentlyPlayed.artists.id": 1,
-        "recentlyPlayed.duration_ms": 1,
       },
     },
     { $unwind: { path: "$recentlyPlayed" } },
     { $unwind: { path: "$recentlyPlayed.plays" } },
     {
       $project: {
-        "recentlyPlayed.duration_ms": 1,
         "recentlyPlayed.artists.name": 1,
         "recentlyPlayed.artists.id": 1,
         "recentlyPlayed.played_at": "$recentlyPlayed.plays.played_at",
@@ -274,10 +267,10 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
           name: { $arrayElemAt: ["$recentlyPlayed.artists.name", 0] },
           access_token: "$lastSpotifyToken",
         },
-        playtime: { $sum: "$recentlyPlayed.duration_ms" },
+        plays: { $sum: 1 },
       },
     },
-    { $sort: { playtime: -1 } },
+    { $sort: { plays: -1 } },
     { $limit: range },
   ];
 
@@ -286,7 +279,7 @@ const artists = async ({ _id, firstDate, lastDate, range }) => {
     return {
       id: track._id.id,
       name: track._id.name,
-      playtime: Math.round(track.playtime / 1000 / 60),
+      plays: track.plays,
     };
   });
 };
