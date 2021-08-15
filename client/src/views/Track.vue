@@ -95,18 +95,16 @@
           class="
             text-white text-sm
             bg-gray-700-spotify bg-opacity-50
-            cursor-pointer
             p-2
             rounded-lg
             w-full
             sm:w-auto
           "
+          :class="[lyrics.text ? 'pointer-events-none' : ' cursor-pointer']"
         >
           <template v-if="lyrics.status === 'idle'">Click to load</template>
-          <template v-else-if="lyrics.status === 'loading'">
-            Loading...
-          </template>
-          <template v-else>Failed to load</template>
+          <template v-if="lyrics.status === 'loading'">Loading...</template>
+          <template v-if="lyrics.status === 'failure'">Failed to load</template>
           <pre v-show="lyrics.text" class="whitespace-pre-wrap">{{
             lyrics.text
           }}</pre>
@@ -189,7 +187,7 @@ export default {
         this.lyrics.text = await getTrackLyrics({
           title: this.track.name,
           artist: this.track.artists[0].name,
-        });
+        }).then((res) => res.lyrics);
         this.lyrics.status = "success";
       } catch {
         this.lyrics.status = "failure";
