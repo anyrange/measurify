@@ -9,18 +9,14 @@
         <tab name="month">This Month</tab>
         <tab name="week">This Week</tab>
       </tabs>
-      <div class="xl:w-1/2 w-full flex sm:flex-row flex-col flex-wrap gap-y-3">
+      <div class="content-cards">
         <percent-card
-          class="md:w-1/2 w-full"
-          :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalTracksPlayed"
           :previousValue="totals[selectedPeriod].totalTracksPlayedPrev"
         >
           Tracks Played
         </percent-card>
         <percent-card
-          class="md:w-1/2 w-full"
-          :selected="selectedPeriod"
           :value="totals[selectedPeriod].totalMinutesListened"
           :previousValue="totals[selectedPeriod].totalMinutesListenedPrev"
         >

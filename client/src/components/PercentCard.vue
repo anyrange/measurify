@@ -1,39 +1,35 @@
 <template>
-  <div class="flex flex-col gap-1">
-    <div class="text-2xl text-gray-500-spotify">
-      <slot />
-    </div>
-    <div class="flex flex-row gap-2 items-center">
-      <div class="sm:text-4xl text-3xl font-semibold text-white leading-tight">
-        {{ value }}
-      </div>
+  <card :title="value">
+    <slot />
+    <template #title>
       <transition name="slide-fade">
         <template v-if="(value && previousValue) || previousValue">
-          <div class="flex flex-col">
-            <template v-if="value - previousValue > 0">
-              <p class="text-xs text-green-500 leading-tight">▲ {{ rise }}%</p>
-            </template>
-            <template v-else>
-              <p class="text-xs text-red-500 leading-tight">▼ {{ fall }}%</p>
-            </template>
-            <p class="text-xs">
-              {{ value - previousValue }} since last {{ selected }}
-            </p>
+          <div class="flex gap-2">
+            <transition name="slide-fade" mode="out-in">
+              <p
+                v-if="value - previousValue > 0"
+                class="text-xs text-green-500-spotify"
+              >
+                ▲ {{ rise }}%
+              </p>
+              <p v-else class="text-xs text-red-500">▼ {{ fall }}%</p>
+            </transition>
           </div>
         </template>
       </transition>
-    </div>
-  </div>
+    </template>
+  </card>
 </template>
 
 <script>
+import Card from "@/components/Card.vue";
+
 export default {
   name: "PercentCard",
+  components: {
+    Card,
+  },
   props: {
-    selected: {
-      type: String,
-      required: true,
-    },
     value: {
       type: Number,
       required: true,
@@ -75,7 +71,7 @@ export default {
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateX(20px);
+  transform: translateY(5px);
   opacity: 0;
 }
 </style>

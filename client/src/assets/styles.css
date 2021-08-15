@@ -64,20 +64,22 @@
   flex: 0 0 auto;
 }
 
-.custom-scrollbars .sidebar-spotify::-webkit-scrollbar,
-.custom-scrollbars .content-spotify::-webkit-scrollbar {
+.custom-scrollbar .content-window::-webkit-scrollbar {
   @apply w-2 bg-gray-900-spotify;
 }
-.custom-scrollbars .sidebar-spotify::-webkit-scrollbar-thumb,
-.custom-scrollbars .content-spotify::-webkit-scrollbar-thumb {
+.custom-scrollbar .content-window::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-gray-450-spotify;
 }
 
-.custom-scrollbars .horizontal-scrollbar::-webkit-scrollbar {
+.custom-scrollbar .horizontal-scrollbar::-webkit-scrollbar {
   @apply h-1 bg-gray-900-spotify;
 }
-.custom-scrollbars .horizontal-scrollbar::-webkit-scrollbar-thumb {
+.custom-scrollbar .horizontal-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-gray-450-spotify;
+}
+
+.content-window {
+  @apply overflow-y-auto flex flex-col gap-4 xl:px-20 px-4 sm:pt-8 pt-4 pb-4 sm:mb-0 mb-12;
 }
 
 .link {
@@ -85,7 +87,7 @@
 }
 
 .h-title {
-  @apply sm:text-4xl text-3xl font-semibold text-white;
+  @apply sm:text-2xl text-xl font-semibold text-white;
 }
 .h-subtitle {
   @apply text-base sm:text-lg font-semibold text-gray-500;
@@ -95,7 +97,9 @@
   @apply relative sm:static -mt-8 -mx-4 sm:m-0 flex md:flex-row flex-col gap-4 sm:items-center items-start duration-300;
 }
 .responsive-picture__image {
-  @apply flex flex-none rounded-b-2xl image-shadow sm:bg-local sm:bg-center sm:bg-cover sm:rounded-full md:rounded-lg w-full h-72 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover duration-300;
+  @apply flex flex-none image-shadow;
+  @apply rounded-b-2xl sm:rounded-full md:rounded-lg w-full h-half sm:w-40 sm:h-40 md:w-48 md:h-48 duration-300;
+  @apply bg-fixed	sm:bg-local sm:bg-cover;
 }
 .responsive-picture__title {
   @apply absolute sm:relative sm:inset-0 bottom-0 m-4 sm:m-0;

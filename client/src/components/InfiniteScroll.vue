@@ -22,7 +22,7 @@ export default {
     };
   },
   mounted() {
-    this.contentWindow = document.querySelector(".content-spotify");
+    this.contentWindow = document.querySelector(".content-window");
     this.contentWindow.addEventListener("scroll", this.handleScroll);
   },
   unmounted() {

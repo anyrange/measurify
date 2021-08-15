@@ -10,10 +10,13 @@
       p-2
     "
   >
-    <div class="text-green-500-spotify text-lg font-bold">
-      {{ formattedTitle }}
+    <div class="flex flex-row items-center gap-3">
+      <span class="text-green-500-spotify text-lg font-bold">
+        {{ formattedTitle }}
+      </span>
+      <slot name="title"></slot>
     </div>
-    <div class="text-white text-base font-normal">
+    <div class="text-white sm:text-base text-sm font-normal lowercase">
       <slot />
     </div>
   </div>

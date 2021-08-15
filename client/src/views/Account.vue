@@ -1,7 +1,7 @@
 <template>
   <h1 class="h-title">Account</h1>
   <loading-spinner v-if="loading" />
-  <div v-else class="md:w-full lg:w-1/2 xl:w-2/6 flex flex-col gap-4">
+  <div v-else class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
     <router-link
       :to="{ name: 'profile', params: { id: account.customID } }"
       class="

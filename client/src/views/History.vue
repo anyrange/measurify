@@ -22,7 +22,7 @@
   <loading-spinner v-if="loading" />
   <template v-else>
     <empty-message v-if="emptyData" />
-    <div v-else class="h-full history-page -mx-4 sm:mx-0">
+    <div v-else class="-mx-4 sm:mx-0">
       <div class="track-row-head">
         <div class="track-row__title">Title</div>
         <div class="track-row__artists">Artist</div>
@@ -32,13 +32,13 @@
       </div>
       <div
         class="overflow-y-auto fullwidth"
-        ref="viewport"
         :style="viewportStyle"
+        ref="viewport"
       >
         <div
-          ref="spacer"
-          :style="spacerStyle"
           class="flex flex-col divide-y divide-gray-600-spotify"
+          :style="spacerStyle"
+          ref="spacer"
         >
           <div
             class="track-row hover:bg-gray-700-spotify"
@@ -165,7 +165,7 @@ export default {
   },
   async mounted() {
     await this.loadListeningHistory();
-    this.contentWindow = document.querySelector(".content-spotify");
+    this.contentWindow = document.querySelector(".content-window");
     this.contentWindow.addEventListener("scroll", this.handleScroll);
     const largestHeight = this.calculateInitialRowHeight();
     this.rowHeight =
@@ -232,7 +232,7 @@ export default {
 }
 .track-row-head {
   @apply track-row;
-  @apply sticky z-20 top-0 font-semibold text-gray-500-spotify bg-gray-800-spotify;
+  @apply sticky z-20 top-0 font-semibold bg-gray-800-spotify;
 }
 .track-row__title {
   @apply truncate lg:w-2.5/10 md:w-3/10 w-7/10;

@@ -18,6 +18,7 @@
             duration-100
             rounded
             w-full
+            truncate
           "
         >
           <div class="flex items-center gap-3">
@@ -33,7 +34,7 @@
             </router-link>
             <div class="flex flex-col">
               <router-link
-                class="link text-base"
+                class="link text-base truncate"
                 :to="{ name: 'track', params: { id: track.id } }"
               >
                 {{ track.name }}

@@ -29,7 +29,7 @@
         <card :title="profile.overview.plays">tracks played</card>
         <card :title="profile.overview.playtime">minutes listened</card>
       </div>
-      <div class="content__item" v-if="profile.genres.length">
+      <div class="content__item -mt-4 sm:-mt-0" v-if="!!profile.genres.length">
         <span class="content__item__label">Genres</span>
         <div class="flex flex-wrap gap-2">
           <badge v-for="genre in profile.genres" :key="genre">
@@ -39,20 +39,7 @@
       </div>
       <!-- Tops -->
       <div class="content-tops">
-        <div class="fullwidth">
-          <div class="content-top">
-            <span class="content__item__label">Favourite Albums</span>
-            <div class="content-top__items">
-              <spotify-box
-                v-for="item in profile.top.albums"
-                :key="item.id"
-                :item="item"
-                type="album"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="fullwidth">
+        <div class="fullwidth" v-if="!!profile.top.artists.length">
           <div class="content-top">
             <span class="content__item__label">Favourite Artists</span>
             <div class="content-top__items">
@@ -65,7 +52,20 @@
             </div>
           </div>
         </div>
-        <div class="fullwidth">
+        <div class="fullwidth" v-if="!!profile.top.albums.length">
+          <div class="content-top">
+            <span class="content__item__label">Favourite Albums</span>
+            <div class="content-top__items">
+              <spotify-box
+                v-for="item in profile.top.albums"
+                :key="item.id"
+                :item="item"
+                type="album"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="fullwidth" v-if="!!profile.top.tracks.length">
           <div class="content-top">
             <span class="content__item__label">Favourite Tracks</span>
             <div class="content-top__items">
@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-        <div class="fullwidth">
+        <div class="fullwidth" v-if="!!profile.top.playlists.length">
           <div class="content-top">
             <span class="content__item__label">Favourite Playlists</span>
             <div class="content-top__items">
