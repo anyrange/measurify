@@ -1,4 +1,3 @@
-import history from "../../../includes/listening-history.js";
 import User from "../../../models/User.js";
 
 export default async function (fastify) {
@@ -14,7 +13,6 @@ export default async function (fastify) {
         response: {
           200: {
             type: "object",
-            required: ["artist", "tracks", "status"],
             definitions: {
               tracksInTop: {
                 type: "array",
@@ -29,24 +27,17 @@ export default async function (fastify) {
               },
             },
             properties: {
-              artist: {
-                type: "object",
-                properties: {
-                  followers: { type: "number" },
-                  genres: { type: "array", items: { type: "string" } },
-                  popularity: { type: "number" },
-                  name: { type: "string" },
-                  image: { type: "string" },
-                  link: { type: "string" },
-                  isLiked: { type: "boolean" },
-                },
-              },
-              tracks: fastify.getSchema("tracks"),
-              audioFeatures: fastify.getSchema("audioFeatures"),
+              artist: { $ref: "entity#" },
+              followers: { type: "number" },
+              genres: { type: "array", items: { type: "string" } },
+              popularity: { type: "number" },
+              link: { type: "string" },
+              isLiked: { type: "boolean" },
+              audioFeatures: { $ref: "audioFeatures#" },
               rates: {
                 type: "object",
                 properties: {
-                  art: fastify.getSchema("rates"),
+                  art: { $ref: "rates#" },
                   trc: {
                     type: "object",
                     properties: {
@@ -57,7 +48,19 @@ export default async function (fastify) {
                   },
                 },
               },
-              relatedArtists: fastify.getSchema("artists"),
+              relatedArtists: { $ref: "entities#" },
+              favouriteTracks: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("entity").properties,
+                    lastPlayedAt: { type: "string" },
+                    playtime: { type: "number" },
+                    plays: { type: "number" },
+                  },
+                },
+              },
               status: { type: "number" },
             },
           },
@@ -76,20 +79,20 @@ export default async function (fastify) {
 
       const request = [
         fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
-        history(_id, artistID),
+        fastify.favouriteTracks(_id, artistID),
         fastify
           .spotifyAPI({
             route: `artists/${artistID}/top-tracks?market=${country}`,
             token,
           })
           .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
-        time_range.map((range) =>
+        ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/artists?limit=30&time_range=${range}`,
             token,
           })
         ),
-        time_range.map((range) =>
+        ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/tracks?limit=50&time_range=${range}`,
             token,
@@ -107,7 +110,7 @@ export default async function (fastify) {
 
       const [
         artist,
-        tracks,
+        favouriteTracks,
         audioFeatures,
         artLT,
         artMT,
@@ -117,7 +120,7 @@ export default async function (fastify) {
         trcST,
         [isLiked],
         { artists: relatedArtists },
-      ] = await Promise.all(request.flat(1));
+      ] = await Promise.all(request);
 
       const rates = {
         art: {
@@ -136,20 +139,20 @@ export default async function (fastify) {
       // response schema
       const response = {
         artist: {
-          followers: artist.followers.total,
-          genres: artist.genres,
-          popularity: artist.popularity,
           name: artist.name,
           image: artist.images.length ? artist.images[0].url : "",
-          link: artist.external_urls.spotify,
-          isLiked,
         },
+        followers: artist.followers.total,
+        genres: artist.genres,
+        popularity: artist.popularity,
+        link: artist.external_urls.spotify,
+        isLiked,
         relatedArtists: relatedArtists.map(({ images, name, id }) => ({
           image: images.length ? images[0].url : "",
           name,
           id,
         })),
-        tracks,
+        favouriteTracks,
         audioFeatures,
         rates,
       };

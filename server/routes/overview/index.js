@@ -1,7 +1,6 @@
 import User from "../../models/User.js";
 import mongodb from "mongodb";
 const { ObjectId } = mongodb;
-import formatOverview from "../../utils/format-overview.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -20,7 +19,7 @@ export default async function (fastify) {
                   type: "object",
                   required: ["date", "duration", "plays"],
                   properties: {
-                    date: { type: "string" },
+                    date: { type: "string", format: "date" },
                     duration: { type: "number" },
                     plays: { type: "number" },
                   },
@@ -75,7 +74,31 @@ export default async function (fastify) {
       if (!plays || !plays.length)
         return reply.send({ status: 204, overview: [] });
 
-      reply.send({ overview: formatOverview(plays) });
+      reply.send({ overview: fillEmptyDates(plays) });
     }
   );
 }
+
+const fillEmptyDates = (plays) => {
+  if (!plays || !plays.length) return [];
+  let overview = [];
+  const firstDate = plays[plays.length - 1].date;
+  const date = new Date();
+  let day = date.toISOString().split("T")[0];
+
+  while (day >= firstDate) {
+    const play = plays.find((play) => play.date === day);
+
+    if (play) {
+      overview.push(play);
+    } else {
+      overview.push({ date: day, plays: 0, duration: 0 });
+    }
+
+    day = new Date(day);
+    day.setDate(day.getDate() - 1);
+    day = day.toISOString().split("T")[0];
+  }
+
+  return overview;
+};

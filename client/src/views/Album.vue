@@ -9,15 +9,15 @@
         class="responsive-picture__image"
       />
       <figcaption class="responsive-picture__title">
-        <spotify-link :link="album.link">
+        <spotify-link :link="link">
           {{ album.name }}
         </spotify-link>
       </figcaption>
     </figure>
     <div class="content">
       <div class="content-cards">
-        <card :title="album.popularity / 10">popularity</card>
-        <card :title="album.total_tracks">tracks amount</card>
+        <card :title="popularity / 10">popularity</card>
+        <card :title="total_tracks">tracks amount</card>
       </div>
       <div class="content__item">
         <span class="content__item__label"> Audio features </span>
@@ -48,17 +48,17 @@
           </router-link>
         </div>
       </div>
-      <div class="content__item" v-if="album.genres.length">
+      <div class="content__item" v-if="genres.length">
         <span class="content__item__label"> Genres </span>
         <div class="flex flex-wrap gap-2">
-          <badge v-for="(genre, index) in album.genres" :key="index">
+          <badge v-for="(genre, index) in genres" :key="index">
             {{ genre }}
           </badge>
         </div>
       </div>
-      <div class="content__item" v-if="tracks.length">
+      <div class="content__item" v-if="favouriteTracks.length">
         <span class="content__item__label"> Favourite tracks </span>
-        <top-tracks :tracks="tracks" />
+        <top-tracks :tracks="favouriteTracks" />
       </div>
     </div>
   </div>
@@ -87,15 +87,23 @@ export default {
     return {
       loading: true,
       album: {},
+      popularity: null,
+      total_tracks: null,
+      link: null,
+      genres: [],
       audioFeatures: {},
-      tracks: [],
+      favouriteTracks: [],
     };
   },
   async created() {
     try {
       const response = await getAlbum(this.$route.params.id);
       this.album = response.album;
-      this.tracks = response.tracks;
+      this.favouriteTracks = response.favouriteTracks;
+      this.total_tracks = response.total_tracks;
+      this.link = response.link;
+      this.genres = response.genres;
+      this.popularity = response.popularity;
       this.audioFeatures = response.audioFeatures;
       document.title = `${this.album.name} - Spotiworm`;
     } catch (error) {

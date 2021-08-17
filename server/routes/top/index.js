@@ -9,8 +9,8 @@ export default async function (fastify) {
           type: "object",
           properties: {
             range: { type: "number", minimum: 1, maximum: 50 },
-            firstDate: fastify.getSchema("date"),
-            lastDate: fastify.getSchema("date"),
+            firstDate: { type: "string", format: "date" },
+            lastDate: { type: "string", format: "date" },
           },
         },
         response: {
@@ -19,7 +19,7 @@ export default async function (fastify) {
             required: ["top", "status"],
             properties: {
               status: { type: "number" },
-              top: fastify.getSchema("top"),
+              top: { $ref: "top" },
             },
           },
         },

@@ -1,12 +1,18 @@
 import fp from "fastify-plugin";
-import User from "../../../models/User.js";
+import User from "../../models/User.js";
 import mongodb from "mongodb";
 
 const { ObjectId } = mongodb;
 
 const plugin = fp(async function plugin(fastify) {
   fastify.decorate(
-    "parseHistory",
+    "userListeningHistory",
+    /**
+     * @param {string} _id
+     * @param {number} range
+     * @param {number} page
+     * @param {string} search
+     */
     async (_id, range = 50, page = 0, search) => {
       const agg = [
         { $match: { _id: new ObjectId(_id) } },

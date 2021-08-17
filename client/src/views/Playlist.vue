@@ -19,37 +19,32 @@
         "
       />
       <div>
-        <spotify-link :link="playlist.link">
+        <spotify-link :link="link">
           {{ playlist.name }}
         </spotify-link>
         <div class="text-base">
           <span class="text-gray-500-spotify">by </span>
           <router-link
             class="link"
-            :to="{ name: 'profile', params: { id: playlist.owner.id } }"
+            :to="{ name: 'profile', params: { id: owner.id } }"
           >
-            {{ playlist.owner.name }}
+            {{ owner.name }}
           </router-link>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="content-cards">
-        <card
-          :title="
-            playlist.collaborative ? 'collaborative' : 'non-collaborative'
-          "
-        >
+        <card :title="collaborative ? 'collaborative' : 'non-collaborative'">
           type
         </card>
-        <card :title="playlist.public ? 'public' : 'private'">privacy</card>
-        <card :title="playlist.followers">followers</card>
-        <card :title="playlist.tracks">tracks</card>
+        <card :title="privacy ? 'public' : 'private'">privacy</card>
+        <card :title="followers">followers</card>
+        <card :title="totalTracks">tracks</card>
       </div>
-      <div class="content__item" v-if="tracks.length">
-        <span class="content__item__label">Listened tracks</span>
-        <!-- <tracks-list :tracks="tracks" /> -->
-        {{ tracks }}
+      <div class="content__item" v-if="favouriteTracks.length">
+        <span class="content__item__label"> Favourite tracks </span>
+        <top-tracks :tracks="favouriteTracks" />
       </div>
     </div>
   </div>
@@ -59,31 +54,42 @@
 import { getPlaylist } from "@/api";
 import BaseImg from "@/components/BaseImg.vue";
 import Card from "@/components/Card.vue";
-import TracksList from "@/components/TracksList.vue";
+import TopTracks from "@/components/TopTracks.vue";
 import SpotifyLink from "@/components/SpotifyLink.vue";
 
 export default {
   components: {
     BaseImg,
     Card,
-    // eslint-disable-next-line vue/no-unused-components
-    TracksList,
+    TopTracks,
     SpotifyLink,
   },
   data() {
     return {
       loading: true,
       playlist: {},
-      tracks: [],
+      favouriteTracks: [],
+      link: "",
+      collaborative: null,
+      public: null,
+      totalTracks: null,
+      followers: null,
+      owner: {},
       audioFeatures: {},
     };
   },
   async created() {
     try {
       const response = await getPlaylist(this.$route.params.id);
-      this.playlist = response.playlist;
-      this.tracks = response.tracks;
+      this.favouriteTracks = response.favouriteTracks;
+      this.collaborative = response.collaborative;
       this.audioFeatures = response.audioFeatures;
+      this.totalTracks = response.totalTracks;
+      this.followers = response.followers;
+      this.playlist = response.playlist;
+      this.privacy = response.public;
+      this.owner = response.owner;
+      this.link = response.link;
       document.title = `${this.playlist.name} - Spotiworm`;
       this.loading = false;
     } catch (error) {

@@ -18,7 +18,17 @@ export default async function (fastify) {
             properties: {
               status: { type: "number" },
               pages: { type: "number" },
-              history: fastify.getSchema("tracks"),
+              history: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("track").properties,
+                    duration_ms: { type: "number" },
+                    played_at: { type: "string", format: "date" },
+                  },
+                },
+              },
             },
           },
         },
@@ -32,7 +42,12 @@ export default async function (fastify) {
       const page = req.query.page - 1 || 0;
       const search = req.query.search || "";
 
-      const [history] = await fastify.parseHistory(_id, range, page, search);
+      const [history] = await fastify.userListeningHistory(
+        _id,
+        range,
+        page,
+        search
+      );
 
       if (!history || !history.tracksQuantity)
         return reply.send({ pages: 0, history: [], status: 204 });

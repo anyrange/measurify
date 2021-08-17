@@ -1,13 +1,12 @@
 import fp from "fastify-plugin";
+import { entity } from "./entity.js";
 
-const topItem = {
-  type: "object",
-  required: ["id", "image", "name", "plays"],
-  properties: {
-    id: { type: "string" },
-    image: { type: "string" },
-    name: { type: "string" },
-    plays: { type: "number" },
+const topItems = {
+  type: "array",
+  items: {
+    type: "object",
+    required: ["id", "image", "name", "plays"],
+    properties: Object.assign({ plays: { type: "number" } }, entity.properties),
   },
 };
 
@@ -17,10 +16,10 @@ const plugin = fp(async function plugin(fastify) {
     title: "top",
     type: "object",
     properties: {
-      tracks: { type: "array", items: topItem },
-      albums: { type: "array", items: topItem },
-      artists: { type: "array", items: topItem },
-      playlists: { type: "array", items: topItem },
+      tracks: topItems,
+      albums: topItems,
+      artists: topItems,
+      playlists: topItems,
     },
   });
 });

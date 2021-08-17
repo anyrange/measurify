@@ -23,15 +23,8 @@ export default async function (fastify) {
       const { _id } = req;
       let users = await User.find(
         {},
-        {
-          customID: 1,
-          spotifyID: 1,
-          lastSpotifyToken: 1,
-          userName: 1,
-          avatar: 1,
-          lastLogin: 1,
-        }
-      );
+        "customID spotifyID lastSpotifyToken userName avatar lastLogin"
+      ).lean();
 
       // get requestor's info
       const requestor = users.find((user) => user._id == _id);
@@ -51,8 +44,8 @@ export default async function (fastify) {
         route,
         token: requestor.lastSpotifyToken,
       });
-      const followed = users.filter((user, key) => followedList[key]);
 
+      const followed = users.filter((user, key) => followedList[key]);
       if (!followed.length) return reply.send({ status: 204, friends: [] });
 
       // check if users follow requestor
@@ -68,7 +61,6 @@ export default async function (fastify) {
       ).flat(1);
 
       const friends = followed.filter((user, key) => mutualFollowedList[key]);
-
       if (!friends.length) return reply.send({ status: 204, friends: [] });
 
       reply.send({ friends });

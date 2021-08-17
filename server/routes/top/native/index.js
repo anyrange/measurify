@@ -1,19 +1,6 @@
-export default async function (fastify) {
-  const response = {
-    200: {
-      type: "object",
-      required: ["tracks", "artists", "status"],
-      properties: {
-        tracks: {
-          type: "array",
-          items: fastify.getSchema("track"),
-        },
-        artists: fastify.getSchema("artists"),
-        status: { type: "number" },
-      },
-    },
-  };
+import User from "../../../models/User.js";
 
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -28,7 +15,37 @@ export default async function (fastify) {
             },
           },
         },
-        response,
+        response: {
+          200: {
+            type: "object",
+            required: ["tracks", "artists", "status"],
+            properties: {
+              tracks: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("track").properties,
+                    genres: { type: "array", items: { type: "string" } },
+                    popularity: { type: "number" },
+                  },
+                },
+              },
+              artists: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("entity").properties,
+                    genres: { type: "array", items: { type: "string" } },
+                    popularity: { type: "number" },
+                  },
+                },
+              },
+              status: { type: "number" },
+            },
+          },
+        },
         tags: ["pages"],
       },
     },
@@ -37,7 +54,9 @@ export default async function (fastify) {
       const range = req.query.range || 20;
       const period = req.query.period || "long_term";
 
-      const token = await this.getToken(_id);
+      const user = await User.findById(_id, "lastSpotifyToken").lean();
+      if (!user) throw new fastify.CustomError("User not found", 404);
+      const token = user.lastSpotifyToken;
 
       const options = { token, range, period };
       const [tracks, artists] = await Promise.all([
@@ -79,27 +98,10 @@ const getArtists = async ({ token, period, range }, api) => {
 };
 
 function formatTrack(track) {
-  if (!track) return;
-
-  const album = {
-    id: track.album.id,
-    name: track.album.name,
-  };
-
-  const artists = track.artists.map(({ id, name }) => {
-    return { id, name };
-  });
-
-  return {
-    id: track.id,
-    name: track.name,
-    duration_ms: track.duration_ms,
-    popularity: track.popularity,
+  return Object.assign(track, {
     image:
       track.album.images && track.album.images.length
         ? track.album.images[2].url
         : "",
-    album,
-    artists,
-  };
+  });
 }

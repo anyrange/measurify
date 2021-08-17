@@ -10,7 +10,7 @@ export default async function (fastify) {
             required: ["status", "top"],
             properties: {
               status: { type: "number" },
-              top: { type: "array", items: fastify.getSchema("user") },
+              top: { type: "array", items: { $ref: "user#" } },
             },
           },
         },

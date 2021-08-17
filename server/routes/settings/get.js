@@ -22,19 +22,14 @@ export default async function (fastify) {
     },
     async function (req, reply) {
       const { _id } = req;
-      const user = await User.findOne(
-        { _id },
-        { privacy: 1, customID: 1, spotifyID: 1, autoUpdate: 1 }
-      );
+      const user = await User.findById(
+        _id,
+        "privacy customID spotifyID autoUpdate -_id"
+      ).lean();
 
       if (!user) throw new this.CustomError("User not found", 404);
 
-      reply.send({
-        privacy: user.privacy,
-        customID: user.customID,
-        spotifyID: user.spotifyID,
-        autoUpdate: user.autoUpdate,
-      });
+      reply.send(user);
     }
   );
 }

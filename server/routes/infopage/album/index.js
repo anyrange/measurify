@@ -1,33 +1,6 @@
-import history from "../../../includes/listening-history.js";
-export default async function (fastify) {
-  const responseSchema = {
-    200: {
-      type: "object",
-      required: ["album", "tracks", "status"],
-      properties: {
-        album: {
-          type: "object",
-          properties: {
-            name: { type: "string" },
-            image: { type: "string" },
-            popularity: { type: "number" },
-            release_date: { type: "string" },
-            total_tracks: { type: "number" },
-            link: { type: "string" },
-            label: { type: "string" },
-            genres: { type: "array", items: { type: "string" } },
-            isLiked: { type: "boolean" },
-            artists: fastify.getSchema("artists"),
-          },
-        },
-        tracks: fastify.getSchema("tracks"),
-        audioFeatures: fastify.getSchema("audioFeatures"),
-        content: fastify.getSchema("tracks"),
-        status: { type: "number" },
-      },
-    },
-  };
+import User from "../../../models/User.js";
 
+export default async function (fastify) {
   fastify.get(
     "/:id",
     {
@@ -37,7 +10,36 @@ export default async function (fastify) {
           required: ["id"],
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
-        response: responseSchema,
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              album: { $ref: "album#" },
+              popularity: { type: "number" },
+              link: { type: "string" },
+              release_date: { type: "string" },
+              total_tracks: { type: "number" },
+              label: { type: "string" },
+              genres: { type: "array", items: { type: "string" } },
+              isLiked: { type: "boolean" },
+              favouriteTracks: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("entity").properties,
+                    lastPlayedAt: { type: "string" },
+                    playtime: { type: "number" },
+                    plays: { type: "number" },
+                  },
+                },
+              },
+              audioFeatures: { $ref: "audioFeatures#" },
+              content: { $ref: "tracks#/definitions/withDuration" },
+              status: { type: "number" },
+            },
+          },
+        },
         tags: ["infopages"],
       },
     },
@@ -45,22 +47,25 @@ export default async function (fastify) {
       const { _id } = req;
       const albumID = req.params.id;
 
-      const token = await this.getToken(_id);
+      const user = await User.findById(_id, "lastSpotifyToken").lean();
+      if (!user) throw new fastify.CustomError("User not found", 404);
+      const token = user.lastSpotifyToken;
 
-      const [album, tracks, audioFeatures, [isLiked]] = await Promise.all([
-        fastify.spotifyAPI({
-          route: `albums/${albumID}`,
-          token,
-        }),
-        history(_id, albumID),
-        fastify
-          .spotifyAPI({ route: `albums/${albumID}/tracks`, token })
-          .then(({ items }) => fastify.parseAudioFeatures(items, token)),
-        fastify.spotifyAPI({
-          route: `me/albums/contains?ids=${albumID}`,
-          token,
-        }),
-      ]);
+      const [album, favouriteTracks, audioFeatures, [isLiked]] =
+        await Promise.all([
+          fastify.spotifyAPI({
+            route: `albums/${albumID}`,
+            token,
+          }),
+          fastify.favouriteTracks(_id, albumID),
+          fastify
+            .spotifyAPI({ route: `albums/${albumID}/tracks`, token })
+            .then(({ items }) => fastify.parseAudioFeatures(items, token)),
+          fastify.spotifyAPI({
+            route: `me/albums/contains?ids=${albumID}`,
+            token,
+          }),
+        ]);
 
       const { artists } = await fastify.spotifyAPI({
         route: `artists?ids=${album.artists.map(({ id }) => id).join(",")}`,
@@ -69,38 +74,25 @@ export default async function (fastify) {
       audioFeatures.popularity = album.popularity / 100;
       const response = {
         album: {
-          name: album.name,
-          image: album.images.length ? album.images[0].url : "",
-          popularity: album.popularity,
-          release_date: album.release_date,
-          total_tracks: album.total_tracks,
-          link: album.external_urls.spotify,
-          genres: album.genres,
           artists: artists.map(({ name, id, images }) => {
             return { name, id, image: images.length ? images[0].url : "" };
           }),
-          label: album.label || "",
-          isLiked,
+          name: album.name,
+          image: album.images.length ? album.images[0].url : "",
         },
-        content: album.tracks.items.map((track) => formatTrack(track)),
+        popularity: album.popularity,
+        release_date: album.release_date,
+        total_tracks: album.total_tracks,
+        link: album.external_urls.spotify,
+        genres: album.genres,
+        label: album.label || "",
+        isLiked,
+        content: album.tracks.items,
         audioFeatures,
-        tracks,
+        favouriteTracks,
       };
 
       reply.send(response);
     }
   );
 }
-
-const formatTrack = (track) => {
-  const artists = track.artists.map(({ id, name }) => {
-    return { id, name };
-  });
-
-  return {
-    id: track.id,
-    name: track.name,
-    duration_ms: track.duration_ms,
-    artists,
-  };
-};

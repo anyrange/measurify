@@ -9,14 +9,14 @@
         class="responsive-picture__image"
       />
       <figcaption class="responsive-picture__title">
-        <spotify-link :link="track.link">
+        <spotify-link :link="link">
           {{ track.name }}
         </spotify-link>
       </figcaption>
     </figure>
     <div class="content">
       <div class="content-cards">
-        <card :title="track.popularity / 10">popularity</card>
+        <card :title="popularity / 10">popularity</card>
         <card :title="trackDuration">track length</card>
         <card :title="releaseDate">release date</card>
         <card v-if="overview.playtime" :title="overview.playtime">
@@ -142,6 +142,10 @@ export default {
         status: "idle",
         text: "",
       },
+      popularity: null,
+      release_date: null,
+      link: "",
+      duration_ms: null,
       rates: {},
       overview: {},
       audioFeatures: {},
@@ -154,13 +158,10 @@ export default {
   },
   computed: {
     releaseDate() {
-      return format(new Date(this.track.release_date), "MMM do yyyy");
+      return format(new Date(this.release_date), "MMM do yyyy");
     },
     trackDuration() {
-      return format(
-        addSeconds(new Date(0), this.track.duration_ms / 1000),
-        "mm:ss"
-      );
+      return format(addSeconds(new Date(0), this.duration_ms / 1000), "mm:ss");
     },
     filteredTrackRates() {
       return Object.entries(this.rates).filter((item) => item[1]);
@@ -170,6 +171,10 @@ export default {
     try {
       const response = await getTrack(this.$route.params.id);
       this.track = response.track;
+      this.popularity = response.popularity;
+      this.release_date = response.release_date;
+      this.duration_ms = response.duration_ms;
+      this.link = response.link;
       this.rates = response.rates;
       this.overview = response.overview;
       this.audioFeatures = response.audioFeatures;

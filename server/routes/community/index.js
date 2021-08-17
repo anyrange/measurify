@@ -31,7 +31,7 @@ export default async function (fastify) {
                     userName: { type: "string" },
                     avatar: { type: "string" },
                     customID: { type: "string" },
-                    track: fastify.getSchema("track"),
+                    track: { $ref: "track#" },
                     type: { type: "string" },
                   },
                 },

@@ -12,9 +12,19 @@ export default async function (fastify) {
         userName: { type: "string" },
         avatar: { type: "string" },
         lastlogin: { type: "string" },
-        history: fastify.getSchema("tracks"),
-        overview: fastify.getSchema("overview"),
-        top: fastify.getSchema("top"),
+        history: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              ...fastify.getSchema("track").properties,
+              duration_ms: { type: "number" },
+              played_at: { type: "string", format: "date" },
+            },
+          },
+        },
+        overview: { $ref: "overview#" },
+        top: { $ref: "top#" },
         genres: { type: "array", items: { type: "string" } },
         hourlyActivity: {
           type: "array",
@@ -87,7 +97,7 @@ export default async function (fastify) {
 
       const requests = [
         fastify.parseTop(user._id, user.lastSpotifyToken, 6),
-        fastify.parseHistory(user._id, 51),
+        fastify.userListeningHistory(user._id, 51),
         User.aggregate([
           { $match: { _id: ObjectId(user._id) } },
           {

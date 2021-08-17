@@ -9,14 +9,14 @@
         class="responsive-picture__image"
       />
       <figcaption class="responsive-picture__title">
-        <spotify-link :link="artist.link">
+        <spotify-link :link="link">
           {{ artist.name }}
         </spotify-link>
       </figcaption>
     </figure>
     <div class="content">
       <div class="content-cards">
-        <card :title="artist.followers">followers</card>
+        <card :title="followers">followers</card>
         <card
           v-for="(rate, index) in filteredArtistRates"
           :title="'#' + rate[1]"
@@ -55,17 +55,17 @@
           :audioFeatures="audioFeatures"
         />
       </div>
-      <div class="content__item" v-if="artist.genres.length">
+      <div class="content__item" v-if="genres.length">
         <span class="content__item__label"> Genres </span>
         <div class="flex flex-wrap gap-2">
-          <badge v-for="(genre, index) in artist.genres" :key="index">
+          <badge v-for="(genre, index) in genres" :key="index">
             {{ genre }}
           </badge>
         </div>
       </div>
-      <div class="content__item" v-if="tracks.length">
+      <div class="content__item" v-if="favouriteTracks.length">
         <span class="content__item__label"> Favourite tracks </span>
-        <top-tracks :tracks="tracks" />
+        <top-tracks :tracks="favouriteTracks" />
       </div>
     </div>
     <modal :show="modalOpened" @close="modalOpened = false">
@@ -130,8 +130,11 @@ export default {
     return {
       loading: true,
       artist: {},
-      tracks: [],
+      favouriteTracks: [],
       rates: {},
+      genres: [],
+      link: "",
+      followers: null,
       audioFeatures: {},
       modalOpened: false,
       currentItem: null,
@@ -157,8 +160,11 @@ export default {
     try {
       const response = await getArtist(this.$route.params.id);
       this.artist = response.artist;
-      this.tracks = response.tracks;
+      this.favouriteTracks = response.favouriteTracks;
+      this.genres = response.genres;
+      this.link = response.link;
       this.rates = response.rates;
+      this.followers = response.followers;
       this.audioFeatures = response.audioFeatures;
       document.title = `${this.artist.name} - Spotiworm`;
     } catch (error) {

@@ -1,15 +1,46 @@
 import fp from "fastify-plugin";
+import { entity, entities } from "./entity.js";
 
-const plugin = fp(async function plugin(fastify) {
-  fastify.addSchema({
-    $id: "track",
-    title: "track",
-    type: "object",
-    properties: {
-      id: { type: "string" },
-      name: { type: "string" },
-      image: { type: "string" },
-      duration_ms: { type: "number" },
+const track = {
+  type: "object",
+  properties: Object.assign(
+    { album: entity, artists: entities },
+    entity.properties
+  ),
+};
+
+const tracks = { type: "array", items: track };
+
+const withDuration = {
+  type: "object",
+  properties: Object.assign(
+    { duration_ms: { type: "number" } },
+    track.properties
+  ),
+};
+
+const plugin = fp(async (fastify) => {
+  fastify.addSchema(
+    Object.assign(
+      { $id: "track", title: "track", definitions: { withDuration } },
+      track
+    )
+  );
+  fastify.addSchema(
+    Object.assign(
+      {
+        $id: "tracks",
+        title: "tracks",
+        definitions: { withDuration: { type: "array", items: withDuration } },
+      },
+      tracks
+    )
+  );
+});
+
+export default plugin;
+export { track, tracks };
+/*
       playtime: { type: "number" },
       plays: { type: "number" },
       popularity: { type: "number" },
@@ -19,16 +50,4 @@ const plugin = fp(async function plugin(fastify) {
       link: { type: "string" },
       lastPlayedAt: { type: "string" },
       isLiked: { type: "boolean" },
-      album: {
-        type: "object",
-        properties: {
-          id: { type: "string" },
-          name: { type: "string" },
-        },
-      },
-      artists: fastify.getSchema("artists"),
-    },
-  });
-});
-
-export default plugin;
+      */

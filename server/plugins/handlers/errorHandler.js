@@ -11,7 +11,7 @@ const plugin = fp(async function plugin(fastify) {
       });
 
     if (validation) {
-      const { status, message } = fastify.validate(error);
+      const { status, message } = validate(error);
       return reply.code(status).send({ message, status });
     }
 
@@ -40,4 +40,31 @@ const plugin = fp(async function plugin(fastify) {
   });
 });
 
+const validate = (validationError) => {
+  const context = validationError.validationContext;
+
+  switch (context) {
+    case "querystring": {
+      const error = validationError.validation[0];
+      return {
+        status: 400,
+        message: `Invalid query parameters: ${error.dataPath.substring(1)} ${
+          error.message
+        }`,
+      };
+    }
+
+    case "params":
+      return { status: 400, message: "Invalid id" };
+
+    case "body":
+      return {
+        status: 400,
+        message: `Invalid body: ${validationError.validation[0].message}`,
+      };
+
+    default:
+      return { status: 400, message: "Bad request" };
+  }
+};
 export default plugin;

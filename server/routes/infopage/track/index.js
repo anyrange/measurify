@@ -15,11 +15,17 @@ export default async function (fastify) {
           200: {
             type: "object",
             properties: {
-              track: fastify.getSchema("track"),
-              overview: fastify.getSchema("overview"),
-              audioFeatures: fastify.getSchema("audioFeatures"),
-              moreTracks: fastify.getSchema("tracks"),
-              rates: fastify.getSchema("rates"),
+              track: { $ref: "track" },
+              overview: { $ref: "overview#" },
+              audioFeatures: { $ref: "audioFeatures#" },
+              popularity: { type: "number" },
+              preview_url: { type: "string" },
+              release_date: { type: "string" },
+              duration_ms: { type: "string" },
+              lastPlayedAt: { type: "string", format: "date" },
+              link: { type: "string" },
+              rates: { $ref: "rates#" },
+              moreTracks: { $ref: "tracks#" },
               status: { type: "number" },
             },
           },
@@ -34,7 +40,7 @@ export default async function (fastify) {
       const { lastSpotifyToken: token, country } = await User.findById(
         _id,
         "lastSpotifyToken country"
-      );
+      ).lean();
 
       const time_range = ["long_term", "medium_term", "short_term"];
 
@@ -45,7 +51,7 @@ export default async function (fastify) {
           { _id, "recentlyPlayed.id": trackID },
           { "recentlyPlayed.$": 1 }
         ),
-        time_range.map((range) =>
+        ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/tracks?limit=50&time_range=${range}`,
             token,
@@ -65,7 +71,7 @@ export default async function (fastify) {
         trcMT,
         trcST,
         [isLiked],
-      ] = await Promise.all(request.flat(1));
+      ] = await Promise.all(request);
 
       const overview = {
         plays: listenedOne?.recentlyPlayed[0].plays.length || 0,
@@ -98,22 +104,25 @@ export default async function (fastify) {
       const response = {
         track: {
           album: { name: track.album.name, id: track.album.id },
-          artists: artists.map(({ name, id, images }) => {
-            return { name, id, image: images.length ? images[0].url : "" };
-          }),
+          artists: artists.map(({ name, id, images }) => ({
+            name,
+            id,
+            image: images.length ? images[0].url : "",
+          })),
           name: track.name,
-          preview_url: track.preview_url,
-          popularity: track.popularity,
           image: track.album.images.length ? track.album.images[0].url : "",
-          link: track.external_urls.spotify,
-          duration_ms: track.duration_ms,
-          release_date: track.album.release_date,
-          isLiked,
         },
-        moreTracks: moreTracks.map((track) => formatTrack({ track })),
+        duration_ms: track.duration_ms,
+        preview_url: track.preview_url,
+        popularity: track.popularity,
+        link: track.external_urls.spotify,
+        release_date: track.album.release_date,
+        lastPlayedAt: listenedOne?.recentlyPlayed[0].plays[0].played_at,
+        isLiked,
         overview,
         rates,
         audioFeatures,
+        moreTracks: moreTracks.map((track) => formatTrack({ track })),
       };
 
       reply.send(response);
