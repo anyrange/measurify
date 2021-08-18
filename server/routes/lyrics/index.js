@@ -22,7 +22,7 @@ export default async function (fastify) {
             },
           },
         },
-        tags: ["lyrics"],
+        tags: ["other"],
       },
     },
     async function (req, reply) {

@@ -26,7 +26,7 @@ export default async function (fastify) {
             },
           },
         },
-        tags: ["search"],
+        tags: ["other"],
       },
       preValidation: [fastify.auth],
     },

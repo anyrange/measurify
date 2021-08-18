@@ -1,4 +1,4 @@
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -17,17 +17,18 @@ export default async function(fastify) {
 
       const query_uri = request.query.sw_redirect;
       const scopes = [
-        "user-read-private",
-        "user-read-email",
-        "ugc-image-upload",
-        "user-top-read",
-        "playlist-modify-public",
-        "user-read-recently-played",
-        "playlist-modify-private",
-        "user-follow-read",
-        "playlist-read-private",
-        "user-library-read",
         "playlist-read-collaborative",
+        "user-read-currently-playing",
+        "user-read-recently-played",
+        // "playlist-modify-private",
+        // "playlist-modify-public",
+        "playlist-read-private",
+        "user-read-private",
+        "user-library-read",
+        "user-follow-read",
+        // "ugc-image-upload",
+        "user-read-email",
+        "user-top-read",
       ];
 
       reply.redirect(
