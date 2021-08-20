@@ -24,6 +24,8 @@ export default async function (fastify) {
               duration_ms: { type: "string" },
               lastPlayedAt: { type: "string", format: "date" },
               link: { type: "string" },
+              isPlaying: { type: "boolean" },
+              isLiked: { type: "boolean" },
               rates: { $ref: "rates#" },
               moreTracks: { $ref: "tracks#" },
               status: { type: "number" },
@@ -61,6 +63,12 @@ export default async function (fastify) {
           route: `me/tracks/contains?ids=${trackID}`,
           token,
         }),
+        fastify
+          .spotifyAPI({
+            route: `me/player/currently-playing?market=${country}`,
+            token,
+          })
+          .catch(() => ({})),
       ];
 
       const [
@@ -71,6 +79,7 @@ export default async function (fastify) {
         trcMT,
         trcST,
         [isLiked],
+        currentPlayer,
       ] = await Promise.all(request);
 
       const overview = {
@@ -101,6 +110,7 @@ export default async function (fastify) {
       };
 
       audioFeatures.popularity = track.popularity / 100;
+
       const response = {
         track: {
           album: { name: track.album.name, id: track.album.id },
@@ -122,6 +132,7 @@ export default async function (fastify) {
         overview,
         rates,
         audioFeatures,
+        isPlaying: currentPlayer.item?.id === trackID,
         moreTracks: moreTracks.map((track) => formatTrack({ track })),
       };
 
