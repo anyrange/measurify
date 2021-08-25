@@ -213,7 +213,7 @@ export default async function (fastify) {
         leaved: user.refreshToken === "",
       };
 
-      reply.send(response);
+      reply.header("Cache-Control", "public, max-age=20").send(response);
     }
   );
 }

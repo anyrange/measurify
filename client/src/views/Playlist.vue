@@ -25,11 +25,21 @@
         <div class="text-base">
           <span class="text-gray-500-spotify">by </span>
           <router-link
+            v-if="owner.id"
             class="link"
             :to="{ name: 'profile', params: { id: owner.id } }"
           >
             {{ owner.name }}
           </router-link>
+          <a
+            v-else
+            class="link"
+            :href="owner.url"
+            target="_blank"
+            referrerpolicy="no-referrer"
+          >
+            {{ owner.name }}
+          </a>
         </div>
       </div>
     </div>

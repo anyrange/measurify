@@ -20,7 +20,13 @@ export default async function (fastify) {
               link: { type: "string" },
               public: { type: "boolean" },
               totalTracks: { type: "number" },
-              owner: { $ref: "entity#" },
+              owner: {
+                type: "object",
+                properties: {
+                  ...fastify.getSchema("entity").properties,
+                  url: { type: "string" },
+                },
+              },
               isLiked: { type: "boolean" },
               favouriteTracks: {
                 type: "array",
@@ -70,6 +76,11 @@ export default async function (fastify) {
         token
       );
 
+      const owner = await User.findOne(
+        { spotifyID: playlist.owner.id },
+        "customID"
+      ).lean();
+
       const response = {
         playlist: {
           name: playlist.name,
@@ -78,7 +89,11 @@ export default async function (fastify) {
         collaborative: playlist.collaborative,
         link: playlist.external_urls.spotify,
         followers: playlist.followers.total,
-        owner: { name: playlist.owner.display_name, id: customID },
+        owner: {
+          name: playlist.owner.display_name,
+          id: owner?.customID || "",
+          url: `https://open.spotify.com/user/${playlist.owner.id}`,
+        },
         public: playlist.public,
         totalTracks: playlist.tracks.total,
         isLiked,
