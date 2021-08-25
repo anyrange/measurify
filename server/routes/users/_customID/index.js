@@ -86,7 +86,7 @@ export default async function (fastify) {
       if (user.privacy === "private" && _id != user._id)
         throw new this.CustomError("Private profile", 403);
 
-      if (user.privacy === "friendsOnly") {
+      if (user.privacy === "friendsOnly" && _id != user._id) {
         const [friendProof] = await fastify.spotifyAPI({
           route: `me/following/contains?type=user&ids=${requestor.spotifyID}`,
           token: user.lastSpotifyToken,
