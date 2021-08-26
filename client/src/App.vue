@@ -43,6 +43,7 @@ export default {
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (this.refreshing) return;
         this.refreshing = true;
+        window.localStorage.clear();
         window.location.reload();
       });
     }
