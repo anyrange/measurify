@@ -29,7 +29,17 @@
         <card :title="profile.overview.plays">tracks played</card>
         <card :title="profile.overview.playtime">minutes listened</card>
       </div>
-      <div class="content__item -mt-4 sm:-mt-0" v-if="!!profile.genres.length">
+      <div class="content__item -mt-4 sm:-mt-0">
+        <span class="content__item__label">Recent Tracks</span>
+        <div class="flex flex-col gap-4 sm:w-auto w-full">
+          <track-item
+            v-for="(item, index) in profile.history.slice(0, 10)"
+            :key="index"
+            :track="item"
+          />
+        </div>
+      </div>
+      <div class="content__item" v-if="!!profile.genres.length">
         <span class="content__item__label">Genres</span>
         <div class="flex flex-wrap gap-2">
           <badge v-for="genre in profile.genres" :key="genre">
@@ -93,7 +103,6 @@
         </div>
       </div>
     </div>
-    <!--  -->
     <div class="content__item">
       <span class="content__item__label">Hourly activity</span>
       <tabs v-if="isMobile" v-model="timePeriod">
@@ -134,10 +143,6 @@
           ></apexchart>
         </div>
       </div>
-      <div class="content__item">
-        <span class="content__item__label">Listened tracks</span>
-        <tracks-list :tracks="profile.history" />
-      </div>
     </div>
   </div>
 </template>
@@ -147,7 +152,7 @@ import { getProfile } from "@/api";
 import BaseImg from "@/components/BaseImg.vue";
 import Card from "@/components/Card.vue";
 import Badge from "@/components/Badge.vue";
-import TracksList from "@/components/TracksList.vue";
+import TrackItem from "@/components/TrackItem.vue";
 import SpotifyLink from "@/components/SpotifyLink.vue";
 import SpotifyBox from "@/components/SpotifyBox.vue";
 import Tabs from "@/components/Tabs";
@@ -162,7 +167,7 @@ export default {
     Tabs,
     Tab,
     Badge,
-    TracksList,
+    TrackItem,
     SpotifyLink,
     SpotifyBox,
     apexchart: VueApexCharts,
@@ -198,6 +203,7 @@ export default {
   async created() {
     try {
       this.profile = await getProfile(this.$route.params.id);
+      console.log(this.profile)
       document.title = `${this.profile.userName} - Spotiworm`;
       this.loading = false;
     } catch (error) {

@@ -13,7 +13,7 @@
         avatar
       />
       <span class="sidebar__item__title sidebar__item__username">
-        @{{ user.username }}
+        @{{ user.displayName }}
       </span>
     </router-link>
     -->
@@ -61,7 +61,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+/* eslint-disable vue/no-unused-components */
+import { mapState } from "vuex";
 import {
   AccountIcon,
   DashboardIcon,
@@ -79,7 +80,9 @@ export default {
     ListeningHistoryIcon,
   },
   computed: {
-    ...mapGetters({ user: "getUser" }),
+    ...mapState({
+      user: (state) => state.auth.user,
+    }),
   },
 };
 </script>

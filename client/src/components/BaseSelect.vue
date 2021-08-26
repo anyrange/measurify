@@ -14,7 +14,7 @@
             w-full
             pl-3
             pr-10
-            py-2
+            h-9
             bg-gray-700-spotify
             border border-gray-600-spotify
             rounded

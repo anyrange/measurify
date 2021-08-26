@@ -52,6 +52,7 @@ module.exports = {
     extend: {
       opacity: ["disabled"],
       translate: ["motion-safe"],
+      scale: ["active", "group-hover"],
     },
   },
 };

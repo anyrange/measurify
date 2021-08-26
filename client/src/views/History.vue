@@ -40,6 +40,26 @@
           :style="spacerStyle"
           ref="spacer"
         >
+          <!-- <div
+            v-if="showCurrentTrack"
+            class="track-row hover:bg-gray-700-spotify"
+          >
+            <div class="track-row__title">
+              track
+            </div>
+            <div class="track-row__artists">
+              artists
+            </div>
+            <div class="track-row__album">
+              album
+            </div>
+            <div class="track-row__listened">
+              track.played_at
+            </div>
+            <div class="track-row__duration">
+              track.duration_ms
+            </div>
+          </div> -->
           <div
             class="track-row hover:bg-gray-700-spotify"
             v-for="track in visibleItems"
@@ -82,7 +102,8 @@
 
 <script>
 import { getDateFromNow, getDuration } from "@/utils/formatters";
-import { getListeningHistory } from "@/api";
+// eslint-disable-next-line no-unused-vars
+import { getListeningHistory, getCurrentPlayingTrack } from "@/api";
 import EmptyMessage from "@/components/EmptyMessage";
 import BaseInput from "@/components/BaseInput";
 import MultiRouter from "@/components/MultiRouter";
@@ -106,6 +127,7 @@ export default {
       loadingNextPage: false,
 
       recentlyPlayed: [],
+      // currentTrack: false,
 
       offset: 350,
       rootHeight: 400,
@@ -122,6 +144,9 @@ export default {
     },
   },
   computed: {
+    // showCurrentTrack() {
+    //   return !this.searchQuery.length && this.page === 1;
+    // },
     viewportHeight() {
       return this.itemCount * this.rowHeight;
     },
@@ -232,7 +257,7 @@ export default {
 }
 .track-row-head {
   @apply track-row;
-  @apply sticky z-20 top-0 font-semibold bg-gray-800-spotify;
+  @apply sticky z-20 -top-4 font-semibold bg-gray-800-spotify;
 }
 .track-row__title {
   @apply truncate lg:w-2.5/10 md:w-3/10 w-7/10;

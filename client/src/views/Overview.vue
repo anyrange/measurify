@@ -26,7 +26,7 @@
       <div v-if="!isMobile" class="-mx-4 w-full">
         <apexchart
           type="area"
-          height="350"
+          height="300"
           :options="chartOptions"
           :series="overviewData"
         ></apexchart>

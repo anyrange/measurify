@@ -2,7 +2,8 @@
   <div class="flex flex-row w-full">
     <div class="truncate" v-for="(item, index) in routes" :key="index">
       <router-link
-        class="link truncate"
+        class="truncate"
+        :class="[disabled ? '' : 'link']"
         :to="{ name: name, params: { id: item.id } }"
       >
         {{ item.name }}
@@ -23,6 +24,11 @@ export default {
       type: String,
       required: false,
       default: "artist",
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
 };

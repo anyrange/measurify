@@ -3,7 +3,7 @@
   <loading-spinner v-if="loading" />
   <div v-else class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
     <router-link
-      :to="{ name: 'profile', params: { id: account.customID } }"
+      :to="{ name: 'profile', params: { id: user.username } }"
       class="
         flex flex-row
         items-center
@@ -25,7 +25,7 @@
         />
         <div class="flex flex-col">
           <p class="text-lg font-medium text-gray-400-spotify">
-            {{ user.username }}
+            {{ user.displayName }}
           </p>
           <p class="text-sm text-gray-500-spotify">Open profile</p>
         </div>
@@ -45,9 +45,9 @@
         </svg>
       </div>
     </router-link>
-    <base-input v-model="account.spotifyID" label="Spotify ID" disabled />
-    <base-input v-model="account.customID" label="Profile URL" />
-    <div class="flex items-end justify-between w-full gap-6">
+    <base-input v-model="user.displayName" label="Display Name" disabled />
+    <base-input v-model="account.customID" label="Username" />
+    <div class="flex items-end justify-between w-full">
       <base-select
         class="w-2/4"
         v-model="account.privacy"
@@ -65,7 +65,7 @@
         Save
       </base-button>
     </div>
-    <toggle label="Autoupdates" v-model="account.autoUpdate" />
+    <toggle v-model="account.autoUpdate" label="Autoupdates" />
     <div>&nbsp;</div>
     <base-button color="negative" @click="logout()">Logout</base-button>
   </div>
@@ -78,8 +78,9 @@ import BaseInput from "@/components/BaseInput";
 import BaseButton from "@/components/BaseButton";
 import BaseImg from "@/components/BaseImg";
 import { updateAccount, getAccount } from "@/api";
-import { mapGetters, mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 import { notify } from "@/services/notify";
+import { deepEqual } from "@/utils/objects";
 
 export default {
   components: { BaseSelect, BaseInput, BaseButton, BaseImg, Toggle },
@@ -87,12 +88,8 @@ export default {
     return {
       loading: true,
       loadingButton: false,
-      account: {
-        spotifyID: "",
-        privacy: null,
-        customID: "",
-      },
-      account_copy: {},
+      account: {},
+      accountCopy: {},
     };
   },
   privacyOptions: [
@@ -100,45 +97,47 @@ export default {
     { label: "Public", value: "public" },
     { label: "Friends only", value: "friendsOnly" },
   ],
+  usernameRegex: new RegExp(`[a-z0-9_-]{3,26}$`),
   computed: {
-    ...mapGetters({ user: "getUser" }),
+    ...mapState({
+      user: (state) => state.auth.user,
+    }),
     isDisabledSubmitButton() {
-      const regex = new RegExp(`[a-z0-9_-]{3,26}$`);
-      if (!this.account.customID.match(regex)) return true;
-      if (this.compareObjects(this.account, this.account_copy)) return true;
-      return false;
+      return (
+        !!this.account.customID.match(this.$options.usernameRegex) &&
+        deepEqual(this.account, this.accountCopy)
+      );
     },
   },
   async mounted() {
-    this.account = await getAccount();
-    this.copyAccount();
-    this.loading = false;
+    try {
+      this.account = await getAccount();
+      this.copyAccount();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.loading = false;
+    }
   },
   methods: {
-    ...mapActions(["logout", "changeAutoupdate"]),
+    deepEqual,
+    ...mapActions({
+      logout: "auth/logout",
+      updateUser: "auth/updateUser",
+    }),
     async updateSettings() {
       try {
         this.loadingButton = true;
         const response = await updateAccount(this.account);
-        this.changeAutoupdate(this.account.autoUpdate);
         this.copyAccount();
+        this.updateUser();
         notify.show({ type: "success", message: response.message });
       } finally {
         this.loadingButton = false;
       }
     },
-    compareObjects(a, b) {
-      let s = (o) =>
-        Object.entries(o)
-          .sort()
-          .map((i) => {
-            if (i[1] instanceof Object) i[1] = s(i[1]);
-            return i;
-          });
-      return JSON.stringify(s(a)) === JSON.stringify(s(b));
-    },
-    copyAccount() {
-      this.account_copy = Object.assign({}, this.account);
+    async copyAccount() {
+      this.accountCopy = Object.assign({}, this.account);
     },
   },
 };

@@ -10,9 +10,10 @@ export default async function (fastify) {
             type: "object",
             properties: {
               status: { type: "number" },
-              token: { type: "string" },
+              lastSpotifyToken: { type: "string" },
               avatar: { type: "string" },
               userName: { type: "string" },
+              customID: { type: "string" },
               country: { type: "string" },
               autoUpdate: { type: "boolean" },
             },
@@ -26,10 +27,8 @@ export default async function (fastify) {
       const { _id } = req;
 
       const user = await User.findByIdAndUpdate(_id, { lastLogin: Date.now() })
-        .select("lastSpotifyToken autoUpdate userName country avatar")
+        .select("lastSpotifyToken autoUpdate userName customID country avatar")
         .lean();
-
-      user.token = user.lastSpotifyToken;
 
       reply.send(user);
     }

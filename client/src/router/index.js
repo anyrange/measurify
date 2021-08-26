@@ -1,13 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import $store from "@/store";
 
+const isAuthenticated = () => $store.getters["auth/isAuthenticated"];
+
 const routes = [
   {
     path: "/",
     name: "login",
     component: () => import("@/views/Login.vue"),
     beforeEnter(to, from, next) {
-      $store.getters.isAuthenticated ? next({ name: "home" }) : next();
+      isAuthenticated() ? next({ name: "home" }) : next();
     },
   },
   {
@@ -15,6 +17,7 @@ const routes = [
     name: "home",
     component: () => import("@/layouts/MainLayout.vue"),
     redirect: { name: "overview" },
+    // redirect: { name: "profile", params: { id: "xep" } },
     children: [
       {
         path: "/overview",
@@ -49,14 +52,6 @@ const routes = [
         },
       },
       {
-        path: "/leaderboard",
-        name: "leaderboard",
-        component: () => import("@/views/Leaderboard.vue"),
-        meta: {
-          title: "Listeners Leaderboard",
-        },
-      },
-      {
         path: "/account",
         name: "account",
         component: () => import("@/views/Account.vue"),
@@ -70,6 +65,14 @@ const routes = [
         component: () => import("@/views/Friends.vue"),
         meta: {
           title: "Friends",
+        },
+      },
+      {
+        path: "/leaderboard",
+        name: "leaderboard",
+        component: () => import("@/views/Leaderboard.vue"),
+        meta: {
+          title: "Listeners Leaderboard",
         },
       },
       {
@@ -106,7 +109,7 @@ const routes = [
       },
     ],
     beforeEnter(to, from, next) {
-      $store.getters.isAuthenticated ? next() : next({ name: "login" });
+      isAuthenticated() ? next() : next({ name: "login" });
     },
   },
   {

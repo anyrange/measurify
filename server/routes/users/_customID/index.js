@@ -10,6 +10,7 @@ export default async function (fastify) {
       properties: {
         spotifyID: { type: "string" },
         userName: { type: "string" },
+        registrationDate: { type: "string", format: "date" },
         avatar: { type: "string" },
         lastlogin: { type: "string" },
         history: {
@@ -75,6 +76,7 @@ export default async function (fastify) {
           spotifyID: 1,
           lastSpotifyToken: 1,
           refreshToken: 1,
+          registrationDate: 1,
         }
       );
       const requestor = users.find((user) => user._id == _id);
@@ -203,6 +205,7 @@ export default async function (fastify) {
       const response = {
         spotifyID: user.spotifyID,
         userName: user.userName,
+        registrationDate: user.registrationDate,
         avatar: user.avatar,
         lastLogin: user.lastLogin,
         top,

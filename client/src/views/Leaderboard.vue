@@ -13,7 +13,7 @@
       class="flex flex-row p-2 items-center w-full bg-opacity-20 rounded-lg"
       :class="[
         privateProfile(item) ? 'opacity-30' : 'opacity-100',
-        item.userName === user.username
+        item.userName === user.displayName
           ? 'bg-gray-500-spotify'
           : 'bg-gray-600-spotify',
       ]"
@@ -65,7 +65,7 @@
 <script>
 import { getListenersTop } from "@/api";
 import { Lock } from "@/components/icons";
-import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 import BaseImg from "@/components/BaseImg.vue";
 
 export default {
@@ -78,7 +78,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ user: "getUser" }),
+    ...mapState({
+      user: (state) => state.auth.user,
+    }),
   },
   created() {
     getListenersTop().then((response) => {
@@ -88,7 +90,7 @@ export default {
   },
   methods: {
     privateProfile(item) {
-      if (!item.canSee & (item.userName != this.user.username)) return true;
+      if (!item.canSee & (item.userName != this.user.displayName)) return true;
       return false;
     },
   },

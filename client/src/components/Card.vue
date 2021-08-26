@@ -11,12 +11,12 @@
     "
   >
     <div class="flex flex-row items-center gap-3">
-      <span class="text-green-500-spotify text-lg font-bold">
+      <span class="text-green-500-spotify text-base font-bold">
         {{ formattedTitle }}
       </span>
       <slot name="title"></slot>
     </div>
-    <div class="text-white text-base font-normal lowercase">
+    <div class="text-white text-sm lowercase">
       <slot />
     </div>
   </div>

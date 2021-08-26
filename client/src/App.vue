@@ -7,7 +7,7 @@
 
 <script>
 import Notifications from "@/components/Notifications";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { notify } from "@/services/notify";
 
 export default {
@@ -22,8 +22,10 @@ export default {
   },
   computed: {
     ...mapGetters({
-      user: "getUser",
-      isAuthenticated: "isAuthenticated",
+      isAuthenticated: "auth/isAuthenticated",
+    }),
+    ...mapState({
+      user: (state) => state.auth.user,
     }),
   },
   async created() {
@@ -46,7 +48,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["updateUser", "logout"]),
+    ...mapActions({
+      logout: "auth/logout",
+      updateUser: "auth/updateUser",
+    }),
     showRefreshUI(e) {
       this.registration = e.detail;
       if (this.user.autoUpdate) {
