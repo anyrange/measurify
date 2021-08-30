@@ -17,6 +17,7 @@ export default async function (fastify) {
           "settings.privacy": 1,
           "settings.username": 1,
           avatar: 1,
+          country: 1,
           lastLogin: 1,
           registrationDate: 1,
           tokens: 1,

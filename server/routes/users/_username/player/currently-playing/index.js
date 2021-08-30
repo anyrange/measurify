@@ -3,6 +3,11 @@ export default async function (fastify) {
     "",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["username"],
+          properties: { username: { type: "string" } },
+        },
         response: {
           200: {
             type: "object",
@@ -19,17 +24,11 @@ export default async function (fastify) {
             },
           },
         },
-        tags: ["other"],
+        tags: ["user"],
       },
-      preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const id = req.session.get("id");
-
-      const user = await fastify.db.User.findById(
-        id,
-        "tokens.token country"
-      ).lean();
+      const { user } = req;
 
       const currentPlayer = await fastify.spotifyAPI({
         route: `me/player/currently-playing?market=${user.country}`,
