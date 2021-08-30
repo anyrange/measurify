@@ -55,7 +55,7 @@
           v-if="user.username === profile.user.username"
           :to="{ name: 'account' }"
         >
-          Edit profile
+          Settings
         </router-link>
       </div>
     </div>

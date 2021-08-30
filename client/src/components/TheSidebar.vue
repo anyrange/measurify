@@ -34,6 +34,7 @@
     </a>
     <aside class="mt-4 sidebar">
       <router-link
+        v-if="isAuthenticated"
         v-wave
         class="sidebar__item"
         :to="{ name: 'profile', params: { username: user.username } }"
@@ -54,7 +55,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import { AccountIcon, LeaderboardIcon, FriendsIcon } from "@/components/icons";
 
 export default {
@@ -66,6 +67,9 @@ export default {
   computed: {
     ...mapState({
       user: (state) => state.auth.user,
+    }),
+    ...mapGetters({
+      isAuthenticated: "auth/isAuthenticated",
     }),
   },
   methods: {

@@ -4,7 +4,7 @@
       flex-row flex flex-nowrap
       horizontal-scrollbar
       overflow-x-auto
-      gap-3
+      gap-2
       -mx-4
       sm:mx-0
       px-4

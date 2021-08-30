@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import $store from "@/store";
 
 const isAuthenticated = () => $store.getters["auth/isAuthenticated"];
-const username = () => $store.getters["auth/getUser"].username;
 
 const routes = [
   {
@@ -17,7 +16,17 @@ const routes = [
     path: "/dashboard",
     name: "home",
     component: () => import("@/layouts/MainLayout.vue"),
-    redirect: { name: "profile", params: { username: username() } },
+    beforeEnter(to, from, next) {
+      isAuthenticated() ? next() : next({ name: "login" });
+    },
+    redirect: () => {
+      return {
+        name: "profile",
+        params: {
+          username: $store.state.auth.user.username,
+        },
+      };
+    },
     children: [
       {
         path: "/:username",
@@ -96,9 +105,6 @@ const routes = [
         },
       },
     ],
-    beforeEnter(to, from, next) {
-      isAuthenticated() ? next() : next({ name: "login" });
-    },
   },
   {
     path: "/:pathMatch(.*)*",

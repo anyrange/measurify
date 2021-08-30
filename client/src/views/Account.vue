@@ -3,6 +3,7 @@
   <loading-spinner v-if="loading" />
   <div v-else class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
     <router-link
+      v-if="user.username"
       :to="{ name: 'profile', params: { username: user.username } }"
       class="
         flex flex-row
