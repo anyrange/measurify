@@ -30,9 +30,7 @@ export default async function (fastify) {
             required: ["message", "status"],
             properties: {
               message: { type: "string" },
-              status: {
-                type: "number",
-              },
+              status: { type: "number" },
             },
           },
         },

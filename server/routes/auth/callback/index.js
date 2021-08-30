@@ -42,7 +42,6 @@ export default async function (fastify) {
             token: access_token,
             refreshToken: refresh_token,
           },
-          display_name: user.display_name,
           country: user.country,
           avatar: user.images.length ? user.images[0].url : "",
           __v: 7,
@@ -66,10 +65,12 @@ export default async function (fastify) {
           requests.push(
             User.updateOne(filter, {
               "settings.username": user.display_name,
+              display_name: user.display_name,
             }).catch(async (e) => {
               if (e.code === 11000)
                 await User.updateOne(filter, {
                   "settings.username": user.id,
+                  display_name: user.display_name,
                 });
             })
           );
