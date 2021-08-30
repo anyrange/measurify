@@ -5,7 +5,7 @@
       <card :title="profile.overview.playtime">minutes listened</card>
       <card :title="formatDate(profile.user.registrationDate)">joined</card>
     </cards>
-    <container-item>
+    <container-item v-if="profile.genres.length">
       <container-item-label>
         <router-link to="/" class="link">Genres</router-link>
       </container-item-label>
@@ -13,7 +13,7 @@
         <badge v-for="genre in profile.genres" :key="genre">{{ genre }}</badge>
       </horizontal-scroll>
     </container-item>
-    <container-item>
+    <container-item v-if="profile.history.length">
       <container-item-label>
         <router-link to="/" class="link">Recent Tracks</router-link>
       </container-item-label>
@@ -25,7 +25,7 @@
         />
       </track-rows>
     </container-item>
-    <container-item>
+    <container-item v-if="profile.top.artists.length">
       <container-item-label>
         <router-link to="/" class="link">Favourite Artists</router-link>
       </container-item-label>
@@ -38,7 +38,7 @@
         />
       </horizontal-scroll>
     </container-item>
-    <container-item>
+    <container-item v-if="profile.top.albums.length">
       <container-item-label>
         <router-link to="/" class="link">Favourite Albums</router-link>
       </container-item-label>
@@ -51,7 +51,7 @@
         />
       </horizontal-scroll>
     </container-item>
-    <container-item>
+    <container-item v-if="profile.top.tracks.length">
       <container-item-label>
         <router-link to="/" class="link">Favourite Tracks</router-link>
       </container-item-label>
