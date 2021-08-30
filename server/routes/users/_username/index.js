@@ -42,7 +42,7 @@ export default async function (fastify) {
                   properties: {
                     ...fastify.getSchema("track").properties,
                     duration_ms: { type: "number" },
-                    played_at: { type: "string", format: "date" },
+                    played_at: { type: "string", format: "datetime" },
                   },
                 },
               },
