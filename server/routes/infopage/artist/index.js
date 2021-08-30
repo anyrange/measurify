@@ -58,6 +58,7 @@ export default async function (fastify) {
                   },
                 },
               },
+              albums: { $ref: "entities#" },
               status: { type: "number" },
             },
           },
@@ -112,6 +113,10 @@ export default async function (fastify) {
           token,
         }),
         fastify.favouriteTracks({ _id, filterID: artistID, type: "artist" }),
+        fastify.spotifyAPI({
+          route: `artists/${artistID}/albums?include_groups=album&market=${user.country}`,
+          token,
+        }),
       ];
 
       const [
@@ -126,6 +131,7 @@ export default async function (fastify) {
         [isLiked],
         { artists: relatedArtists },
         favouriteTracks,
+        albums,
       ] = await Promise.all(request);
 
       const rates = {
@@ -160,6 +166,15 @@ export default async function (fastify) {
         })),
         favouriteTracks,
         audioFeatures,
+        albums: albums.items
+          .map((album) => ({
+            name: album.name,
+            id: album.id,
+            image: album.images[1]?.url || album.images[0]?.url || "",
+          }))
+          .filter(
+            (album, index) => album.name !== albums.items[index - 1]?.name
+          ),
         rates,
       };
 
