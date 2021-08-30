@@ -173,7 +173,9 @@ export default async function (fastify) {
             image: album.images[1]?.url || album.images[0]?.url || "",
           }))
           .filter(
-            (album, index) => album.name !== albums.items[index - 1]?.name
+            (album, index) =>
+              album.name.toLowerCase() !==
+              albums.items[index - 1]?.name.toLowerCase()
           ),
         rates,
       };
