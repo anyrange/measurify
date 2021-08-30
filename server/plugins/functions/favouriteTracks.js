@@ -56,7 +56,7 @@ const plugin = fp(async function plugin(fastify) {
           duration_ms: { $first: "$tracks.duration_ms" },
           image: { $first: "$tracks.image" },
           album: { $first: "$albums" },
-          artists: "$albums",
+          artists: "$artists",
         },
       },
       { $sort: { plays: -1 } }
