@@ -59,6 +59,7 @@
 
 <script>
 export default {
+  name: "BaseButton",
   props: {
     color: {
       type: String,

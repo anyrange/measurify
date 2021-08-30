@@ -1,98 +1,102 @@
 <template>
   <loading-spinner v-if="loading" />
-  <div v-else class="flex flex-col gap-4">
+  <container v-else>
     <figure class="responsive-picture">
       <base-img
         parallax
         :src="album.image"
         :alt="album.name"
+        image-type="album"
         class="responsive-picture__image"
       />
       <figcaption class="responsive-picture__title">
-        <spotify-link :link="link">
+        <spotify-link :link="`https://open.spotify.com/album/${album.id}`">
           {{ album.name }}
         </spotify-link>
       </figcaption>
     </figure>
-    <div class="content">
-      <div class="content-cards">
-        <card :title="popularity / 10">popularity</card>
-        <card :title="total_tracks">tracks amount</card>
-      </div>
-      <div class="content__item">
-        <span class="content__item__label"> Audio features </span>
-        <audio-features
-          class="content-audio-features"
-          :audioFeatures="audioFeatures"
+    <cards>
+      <card v-if="isLiked" title="❤">liked</card>
+      <card :title="total_tracks">tracks amount</card>
+    </cards>
+    <container-item>
+      <container-item-label>Audio features</container-item-label>
+      <audio-features :audioFeatures="audioFeatures" />
+    </container-item>
+    <container-item v-if="genres.length">
+      <container-item-label>Genres</container-item-label>
+      <horizontal-scroll>
+        <badge v-for="(genre, index) in genres" :key="index">
+          {{ genre }}
+        </badge>
+      </horizontal-scroll>
+    </container-item>
+    <container-item>
+      <container-item-label>Artists</container-item-label>
+      <horizontal-scroll>
+        <spotify-card
+          v-for="item in album.artists"
+          :key="item.id"
+          :item="item"
+          type="artist"
         />
-      </div>
-      <div class="content__item">
-        <span class="content__item__label"> Artist </span>
-        <div class="content__item__boxes">
-          <router-link
-            class="link"
-            v-for="(item, index) in album.artists"
-            :key="index"
-            :to="{ name: 'artist', params: { id: item.id } }"
-          >
-            <div class="content__item__boxes__box">
-              <base-img
-                :src="item.image"
-                :alt="item.name"
-                class="content__item__boxes__box__image"
-              />
-              <div class="content__item__boxes__box__label">
-                {{ item.name }}
-              </div>
-            </div>
-          </router-link>
-        </div>
-      </div>
-      <div class="content__item" v-if="genres.length">
-        <span class="content__item__label"> Genres </span>
-        <div class="flex flex-wrap gap-2">
-          <badge v-for="(genre, index) in genres" :key="index">
-            {{ genre }}
-          </badge>
-        </div>
-      </div>
-      <div class="content__item" v-if="favouriteTracks.length">
-        <span class="content__item__label"> Favourite tracks </span>
-        <top-tracks :tracks="favouriteTracks" />
-      </div>
-    </div>
-  </div>
+      </horizontal-scroll>
+    </container-item>
+    <container-item v-if="favouriteTracks.length">
+      <container-item-label>Favourite tracks</container-item-label>
+      <track-rows>
+        <track-row
+          v-for="(item, index) in favouriteTracks"
+          :key="index"
+          :track="item"
+          :place="index + 1"
+        />
+      </track-rows>
+    </container-item>
+  </container>
 </template>
 
 <script>
 import { getAlbum } from "@/api";
-import SpotifyLink from "@/components/SpotifyLink.vue";
-import Card from "@/components/Card.vue";
-import BaseImg from "@/components/BaseImg.vue";
-import Badge from "@/components/Badge.vue";
-import AudioFeatures from "@/components/AudioFeatures.vue";
-import TopTracks from "@/components/TopTracks.vue";
+import Container from "@/components/Container";
+import ContainerItem from "@/components/ContainerItem";
+import ContainerItemLabel from "@/components/ContainerItemLabel";
+import HorizontalScroll from "@/components/HorizontalScroll";
+import AudioFeatures from "@/components/AudioFeatures";
+import SpotifyLink from "@/components/SpotifyLink";
+import SpotifyCard from "@/components/SpotifyCard";
+import TrackRows from "@/components/TrackRows";
+import TrackRow from "@/components/TrackRow";
+import BaseImg from "@/components/BaseImg";
+import Badge from "@/components/Badge";
+import Cards from "@/components/Cards";
+import Card from "@/components/Card";
 
 export default {
-  name: "Album",
   components: {
-    SpotifyLink,
-    Card,
-    Badge,
-    BaseImg,
+    Container,
+    ContainerItem,
+    ContainerItemLabel,
+    HorizontalScroll,
     AudioFeatures,
-    TopTracks,
+    SpotifyLink,
+    SpotifyCard,
+    TrackRows,
+    TrackRow,
+    BaseImg,
+    Badge,
+    Cards,
+    Card,
   },
   data() {
     return {
       loading: true,
       album: {},
-      popularity: null,
-      total_tracks: null,
-      link: null,
       genres: [],
       audioFeatures: {},
       favouriteTracks: [],
+      isLiked: false,
+      total_tracks: null,
     };
   },
   async created() {
@@ -101,9 +105,8 @@ export default {
       this.album = response.album;
       this.favouriteTracks = response.favouriteTracks;
       this.total_tracks = response.total_tracks;
-      this.link = response.link;
+      this.isLiked = response.isLiked;
       this.genres = response.genres;
-      this.popularity = response.popularity;
       this.audioFeatures = response.audioFeatures;
       document.title = `${this.album.name} - Spotiworm`;
     } catch (error) {

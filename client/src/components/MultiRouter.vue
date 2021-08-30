@@ -3,8 +3,8 @@
     <div class="truncate" v-for="(item, index) in routes" :key="index">
       <router-link
         class="truncate"
-        :class="[disabled ? '' : 'link']"
-        :to="{ name: name, params: { id: item.id } }"
+        :class="customClass"
+        :to="{ name: name, params: { id: item.id || '' } }"
       >
         {{ item.name }}
       </router-link>
@@ -15,6 +15,7 @@
 
 <script>
 export default {
+  name: "MultiRouter",
   props: {
     routes: {
       type: Array,
@@ -25,10 +26,10 @@ export default {
       required: false,
       default: "artist",
     },
-    disabled: {
-      type: Boolean,
+    customClass: {
+      type: String,
       required: false,
-      default: false,
+      default: "link",
     },
   },
 };

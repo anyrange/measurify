@@ -14,7 +14,9 @@ import AudioFeature from "@/components/AudioFeature";
 
 export default {
   name: "AudioFeatures",
-  components: { AudioFeature },
+  components: {
+    AudioFeature,
+  },
   props: {
     audioFeatures: {
       type: Object,

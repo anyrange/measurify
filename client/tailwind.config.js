@@ -4,6 +4,16 @@ module.exports = {
   },
   darkMode: "class",
   theme: {
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: "1rem",
+        sm: "2rem",
+        lg: "4rem",
+        xl: "5rem",
+        "2xl": "6rem",
+      },
+    },
     screens: {
       sm: "500px",
       md: "768px",
@@ -13,15 +23,12 @@ module.exports = {
     },
     extend: {
       colors: {
-        "green-400-spotify": "#09ad4b",
         "green-500-spotify": "#1ed760",
-        "green-600-spotify": "#1db954",
         "gray-900-spotify": "#121212",
         "gray-800-spotify": "#181818",
         "gray-700-spotify": "#282828",
         "gray-600-spotify": "#333333",
         "gray-500-spotify": "#ABABAB",
-        "gray-450-spotify": "#535353",
         "gray-400-spotify": "#bfbfbf",
       },
       spacing: {
@@ -45,6 +52,7 @@ module.exports = {
       },
       fontSize: {
         xxs: "0.5rem",
+        tiny: "0.825rem",
       },
     },
   },

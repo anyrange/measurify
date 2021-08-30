@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-col gap-3">
+  <div class="flex flex-col gap-1">
     <h1 class="h-title">Leaderboard</h1>
     <h2 class="h-subtitle">
       This rating is based on the number of played tracks
     </h2>
   </div>
   <loading-spinner v-if="loading" />
-  <div v-else class="flex flex-col gap-y-2 lg:w-1/3 xl:w-1/4">
+  <div v-else class="flex flex-col gap-y-2 2xl:w-1/4">
     <div
       v-for="(item, index) in leaderboard"
       :key="item.id"
       class="flex flex-row p-2 items-center w-full bg-opacity-20 rounded-lg"
       :class="[
         privateProfile(item) ? 'opacity-30' : 'opacity-100',
-        item.userName === user.displayName
+        item.display_name === user.displayName
           ? 'bg-gray-500-spotify'
           : 'bg-gray-600-spotify',
       ]"
@@ -27,14 +27,14 @@
         <div class="flex flex-col flex-none">
           <router-link
             :class="{ 'pointer-events-none': privateProfile(item) }"
-            :to="{ name: 'profile', params: { id: item.customID } }"
+            :to="{ name: 'profile', params: { username: item.username } }"
           >
             <div class="relative">
               <base-img
                 class="text-white object-cover w-11 h-11 rounded-full"
-                avatar
+                image-type="profile"
                 :src="item.avatar"
-                :alt="item.userName"
+                :alt="item.display_name"
               />
               <lock
                 v-if="privateProfile(item)"
@@ -49,9 +49,9 @@
             :class="[
               privateProfile(item) ? 'pointer-events-none' : 'hover:underline',
             ]"
-            :to="{ name: 'profile', params: { id: item.customID } }"
+            :to="{ name: 'profile', params: { username: item.username } }"
           >
-            {{ item.userName }}
+            {{ item.display_name }}
           </router-link>
           <span class="text-base font-semibold text-gray-500-spotify">
             {{ item.listened }}
@@ -64,13 +64,16 @@
 
 <script>
 import { getListenersTop } from "@/api";
-import { Lock } from "@/components/icons";
 import { mapState } from "vuex";
-import BaseImg from "@/components/BaseImg.vue";
+import { Lock } from "@/components/icons";
+import BaseImg from "@/components/BaseImg";
 
 export default {
   name: "Leaderboard",
-  components: { Lock, BaseImg },
+  components: {
+    Lock,
+    BaseImg,
+  },
   data() {
     return {
       loading: true,
@@ -90,7 +93,8 @@ export default {
   },
   methods: {
     privateProfile(item) {
-      if (!item.canSee & (item.userName != this.user.displayName)) return true;
+      if (!item.canSee & (item.display_name != this.user.displayName))
+        return true;
       return false;
     },
   },

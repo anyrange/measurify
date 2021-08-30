@@ -1,34 +1,33 @@
 <template>
   <h1 class="h-title">Friends</h1>
   <loading-spinner v-if="loading" />
-  <div v-else class="flex flex-col gap-4 sm:gap-3 lg:w-1/2 xl:w-1/4">
+  <div v-else class="flex flex-col gap-4 xl:w-1/2 2xl:w-1/4">
     <router-link
       class="
-        hover:bg-gray-700-spotify
-        sm:p-2
-        p-0
-        sm:rounded-lg
+        hover:bg-gray-700-spotify hover:bg-opacity-30
         rounded-full
         cursor-pointer
+        flex flex-row
+        gap-4
+        items-center
       "
       v-for="item in friendsSortedByLastLogin"
-      :key="item.customID"
-      :to="{ name: 'profile', params: { id: item.customID } }"
+      :key="item.username"
+      :to="{ name: 'profile', params: { username: item.username } }"
     >
-      <div class="flex flex-row gap-4 items-center">
-        <base-img
-          :src="item.avatar"
-          :alt="item.customID"
-          avatar
-          class="w-16 h-16 object-cover rounded-full flex-shrink-0"
-        />
-        <div class="flex flex-col">
-          <div class="text-white text-base font-medium">
-            {{ item.userName }}
-          </div>
-          <div class="text-gray-500-spotify text-sm font-normal">
-            last seen {{ getDateFromNow(item.lastLogin) }}
-          </div>
+      <base-img
+        :src="item.avatar"
+        :alt="item.username"
+        image-type="profile"
+        avatar
+        class="w-16 h-16 object-cover rounded-full flex-shrink-0"
+      />
+      <div class="flex flex-col">
+        <div class="text-white text-base font-medium">
+          {{ item.display_name }}
+        </div>
+        <div class="text-gray-500-spotify text-sm font-normal">
+          last seen {{ getDateFromNow(item.lastLogin) }}
         </div>
       </div>
     </router-link>
@@ -38,11 +37,13 @@
 <script>
 import { getFriends } from "@/api";
 import { getDateFromNow } from "@/utils/formatters";
-import BaseImg from "@/components/BaseImg.vue";
+import BaseImg from "@/components/BaseImg";
 
 export default {
   name: "Friends",
-  components: { BaseImg },
+  components: {
+    BaseImg,
+  },
   data() {
     return {
       loading: true,

@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col gap-1 sm:gap-2 md:w-36 w-auto text-white">
+  <div class="flex flex-col gap-2 w-auto text-white">
     <h6 class="text-sm sm:text-base font-normal truncate">
       {{ name }}
     </h6>
     <div class="bg-opacity-10 rounded-full bg-green-500-spotify">
-      <div class="h-1 rounded-l-full bg-green-600-spotify" :style="barStyle">
+      <div class="h-1 rounded-l-full bg-green-500-spotify" :style="barStyle">
         &nbsp;
       </div>
     </div>

@@ -1,26 +1,22 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col gap-2">
     <label
       v-if="label"
       :for="label"
-      class="text-gray-300 text-base font-normal mb-2"
+      class="text-gray-300 text-base font-normal"
     >
       {{ label }}
     </label>
     <div>
       <div class="relative">
-        <div
-          v-if="iconLeft || iconRight"
-          class="absolute flex top-0 h-10 w-10"
-          :class="{ 'left-0': iconLeft, 'right-0': iconRight }"
-        >
+        <div v-if="icon" class="absolute flex top-0 left-0 h-8 w-8">
           <div
             class="
               flex
               items-center
               justify-center
               z-10
-              text-gray-500 text-lg
+              text-gray-500-spotify text-lg
               h-full
               w-full
             "
@@ -32,7 +28,6 @@
           v-bind="$attrs"
           :id="label"
           :value="modelValue"
-          :class="{ 'pl-12': iconLeft, 'pr-12': iconRight }"
           class="
             relative
             w-full
@@ -56,7 +51,7 @@
 
 <script>
 export default {
-  name: "CustomInput",
+  name: "BaseInput",
   props: {
     modelValue: {
       type: String,
@@ -66,13 +61,10 @@ export default {
       type: String,
       required: false,
     },
-    iconRight: {
+    icon: {
       type: Boolean,
       required: false,
-    },
-    iconLeft: {
-      type: Boolean,
-      required: false,
+      default: false,
     },
   },
   emits: ["update:modelValue"],

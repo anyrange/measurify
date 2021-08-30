@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import $store from "@/store";
 
 const isAuthenticated = () => $store.getters["auth/isAuthenticated"];
+const username = () => $store.getters["auth/getUser"].username;
 
 const routes = [
   {
@@ -16,64 +17,35 @@ const routes = [
     path: "/dashboard",
     name: "home",
     component: () => import("@/layouts/MainLayout.vue"),
-    redirect: { name: "overview" },
-    // redirect: { name: "profile", params: { id: "xep" } },
+    redirect: { name: "profile", params: { username: username() } },
     children: [
       {
-        path: "/overview",
-        name: "overview",
-        component: () => import("@/views/Overview.vue"),
-        meta: {
-          title: "Overview",
-        },
-      },
-      {
-        path: "/history",
-        name: "history",
-        component: () => import("@/views/History.vue"),
-        meta: {
-          title: "Listening History",
-        },
-      },
-      {
-        path: "/about",
-        name: "about",
-        component: () => import("@/views/About.vue"),
-        meta: {
-          title: "About",
-        },
-      },
-      {
-        path: "/@:id",
+        path: "/:username",
         name: "profile",
-        component: () => import("@/views/Profile.vue"),
-        meta: {
-          title: "",
-        },
-      },
-      {
-        path: "/account",
-        name: "account",
-        component: () => import("@/views/Account.vue"),
-        meta: {
-          title: "Account",
-        },
-      },
-      {
-        path: "/friends",
-        name: "friends",
-        component: () => import("@/views/Friends.vue"),
-        meta: {
-          title: "Friends",
-        },
-      },
-      {
-        path: "/leaderboard",
-        name: "leaderboard",
-        component: () => import("@/views/Leaderboard.vue"),
-        meta: {
-          title: "Listeners Leaderboard",
-        },
+        component: () => import("@/views/Profile/Profile.vue"),
+        redirect: { name: "profile-overview" },
+        children: [
+          {
+            path: "",
+            name: "profile-overview",
+            component: () => import("@/views/Profile/ProfileOverview.vue"),
+          },
+          {
+            path: "history",
+            name: "profile-history",
+            component: () => import("@/views/Profile/ProfileHistory.vue"),
+          },
+          {
+            path: "reports",
+            name: "profile-reports",
+            component: () => import("@/views/Profile/ProfileReports.vue"),
+          },
+          {
+            path: "library",
+            name: "profile-library",
+            component: () => import("@/views/Profile/ProfileLibrary.vue"),
+          },
+        ],
       },
       {
         path: "/track/:id",
@@ -100,11 +72,27 @@ const routes = [
         },
       },
       {
-        path: "/playlist/:id",
-        name: "playlist",
-        component: () => import("@/views/Playlist.vue"),
+        path: "/account",
+        name: "account",
+        component: () => import("@/views/Account.vue"),
         meta: {
-          title: "",
+          title: "Account",
+        },
+      },
+      {
+        path: "/friends",
+        name: "friends",
+        component: () => import("@/views/Friends.vue"),
+        meta: {
+          title: "Friends",
+        },
+      },
+      {
+        path: "/leaderboard",
+        name: "leaderboard",
+        component: () => import("@/views/Leaderboard.vue"),
+        meta: {
+          title: "Listeners Leaderboard",
         },
       },
     ],

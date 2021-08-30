@@ -20,7 +20,9 @@ import { redirect } from "@/api";
 import BaseButton from "@/components/BaseButton";
 
 export default {
-  components: { BaseButton },
+  components: {
+    BaseButton,
+  },
   data() {
     return {
       loadingButton: false,

@@ -7,6 +7,7 @@ const getDefaultState = () => {
       token: "",
       avatar: "",
       displayName: "",
+      username: "",
       country: "",
       autoUpdate: false,
     },
@@ -18,16 +19,16 @@ export default {
   mutations: {
     SET_AUTH(
       state,
-      { lastSpotifyToken, avatar, userName, customID, autoUpdate, country }
+      { token, avatar, display_name, username, country, autoUpdate }
     ) {
       state.user = {
         ...state.user,
-        token: lastSpotifyToken,
+        token,
         avatar,
-        displayName: userName,
-        username: customID,
-        autoUpdate,
+        displayName: display_name,
+        username,
         country,
+        autoUpdate,
       };
     },
     PURGE_AUTH: (state) => {

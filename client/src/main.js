@@ -5,7 +5,6 @@ import store from "./store";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import "./registerServiceWorker";
 import "./assets/tailwind.css";
-import "./assets/font.css";
 import "./assets/styles.css";
 import ApexCharts from "apexcharts";
 import VWave from "v-wave";

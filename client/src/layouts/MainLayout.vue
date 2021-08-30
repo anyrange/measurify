@@ -4,11 +4,13 @@
     :class="{ 'custom-scrollbar': !isMobile }"
   >
     <div class="flex-1 flex overflow-y-hidden">
-      <sidebar />
-      <div class="flex-1 flex flex-col bg-gray-800-spotify">
+      <the-sidebar />
+      <div class="flex-1 flex flex-col bg-gray-900-spotify">
+        <!-- <the-app-bar /> -->
         <div class="content-window">
-          <!-- <navbar /> -->
-          <router-view />
+          <div class="container flex flex-col gap-4">
+            <router-view />
+          </div>
         </div>
       </div>
     </div>
@@ -16,15 +18,15 @@
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import TheSidebar from "@/components/TheSidebar";
+import TheAppBar from "@/components/TheAppBar";
 
 export default {
   name: "Layout",
   components: {
-    Sidebar,
+    TheSidebar,
     // eslint-disable-next-line vue/no-unused-components
-    Navbar,
+    TheAppBar,
   },
 };
 </script>

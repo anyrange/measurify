@@ -1,17 +1,8 @@
 <template>
   <div class="flex flex-row items-center gap-x-3 text-white">
-    <span
-      class="
-        text-3xl
-        sm:text-2xl
-        md:text-3xl
-        sm:font-medium
-        font-semibold
-        truncate-2
-      "
-    >
+    <h1 class="text-2xl md:text-3xl font-medium truncate-2">
       <slot />
-    </span>
+    </h1>
     <a
       :href="formattedLink"
       target="_blank"
@@ -19,7 +10,7 @@
       rel="icon"
     >
       <svg
-        class="w-8 hover:text-green-500-spotify cursor-pointer duration-200"
+        class="w-6 hover:text-green-500-spotify cursor-pointer duration-200"
         role="img"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 496 512"

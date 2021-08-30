@@ -1,5 +1,5 @@
 <template>
-  <loading-spinner v-if="loading" />
+  <div v-if="loading" class="bg-gray-700-spotify animate-pulse">&nbsp;</div>
   <div
     v-else-if="parallax"
     class="bg-no-repeat bg-fixed bg-top bg-contain"
@@ -33,6 +33,11 @@ export default {
       required: false,
       default: false,
     },
+    imageType: {
+      type: String,
+      required: false,
+      default: "profile",
+    },
     avatar: {
       type: Boolean,
       required: false,
@@ -45,15 +50,25 @@ export default {
       imageUrl: "",
     };
   },
-  async created() {
-    try {
-      this.imageUrl = await this.checkImage(this.src);
-    } catch (err) {
-      this.setFallbackImage();
-      console.log(`${err} for ${this.alt}`);
-    } finally {
-      this.loading = false;
-    }
+  watch: {
+    src: {
+      handler: async function () {
+        try {
+          this.imageUrl = await this.checkImage(this.src);
+        } catch (err) {
+          this.imageUrl = this.$options.FALLBACK_IMAGES[this.imageType];
+        } finally {
+          this.loading = false;
+        }
+      },
+      immediate: true,
+    },
+  },
+  FALLBACK_IMAGES: {
+    profile: "/img/fallback-profile.svg",
+    track: "/img/fallback-track.svg",
+    album: "/img/fallback-track.svg",
+    artist: "/img/fallback-artist.svg",
   },
   methods: {
     checkImage(url) {
@@ -63,9 +78,6 @@ export default {
         img.onload = () => resolve(url);
         img.onerror = () => reject("Failed to load image");
       });
-    },
-    setFallbackImage() {
-      this.imageUrl = this.avatar ? "/img/noavatar.svg" : "/img/noimage.svg";
     },
   },
 };

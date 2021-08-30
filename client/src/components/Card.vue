@@ -2,11 +2,10 @@
   <div
     class="
       bg-gray-700-spotify bg-opacity-50
-      flex flex-col
       break-inside
-      rounded-lg
+      rounded-md
       w-auto
-      mb-4
+      mb-2
       p-2
     "
   >
@@ -16,9 +15,9 @@
       </span>
       <slot name="title"></slot>
     </div>
-    <div class="text-white text-sm lowercase">
+    <span class="text-white text-sm lowercase">
       <slot />
-    </div>
+    </span>
   </div>
 </template>
 

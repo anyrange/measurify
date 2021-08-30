@@ -3,7 +3,7 @@
   <loading-spinner v-if="loading" />
   <div v-else class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
     <router-link
-      :to="{ name: 'profile', params: { id: user.username } }"
+      :to="{ name: 'profile', params: { username: user.username } }"
       class="
         flex flex-row
         items-center
@@ -14,12 +14,13 @@
         duration-150
         bg-gray-700-spotify
         hover:bg-gray-600-spotify
+        select-none
       "
     >
       <div class="flex flex-row items-center gap-3">
         <base-img
           class="object-cover w-12 h-12 rounded-full"
-          avatar
+          image-type="profile"
           :src="user.avatar"
           alt="profile avatar"
         />
@@ -45,8 +46,8 @@
         </svg>
       </div>
     </router-link>
-    <base-input v-model="user.displayName" label="Display Name" disabled />
-    <base-input v-model="account.customID" label="Username" />
+    <base-input v-model="account.display_name" label="Display Name" />
+    <base-input v-model="account.username" label="Username" />
     <div class="flex items-end justify-between w-full">
       <base-select
         class="w-2/4"
@@ -65,25 +66,31 @@
         Save
       </base-button>
     </div>
-    <toggle v-model="account.autoUpdate" label="Autoupdates" />
+    <base-toggle v-model="account.autoUpdate" label="Autoupdates" />
     <div>&nbsp;</div>
     <base-button color="negative" @click="logout()">Logout</base-button>
   </div>
 </template>
 
 <script>
-import BaseSelect from "@/components/BaseSelect";
-import Toggle from "@/components/Toggle";
-import BaseInput from "@/components/BaseInput";
-import BaseButton from "@/components/BaseButton";
-import BaseImg from "@/components/BaseImg";
 import { updateAccount, getAccount } from "@/api";
 import { mapState, mapActions } from "vuex";
 import { notify } from "@/services/notify";
 import { deepEqual } from "@/utils/objects";
+import BaseButton from "@/components/BaseButton";
+import BaseSelect from "@/components/BaseSelect";
+import BaseToggle from "@/components/BaseToggle";
+import BaseInput from "@/components/BaseInput";
+import BaseImg from "@/components/BaseImg";
 
 export default {
-  components: { BaseSelect, BaseInput, BaseButton, BaseImg, Toggle },
+  components: {
+    BaseButton,
+    BaseSelect,
+    BaseToggle,
+    BaseInput,
+    BaseImg,
+  },
   data() {
     return {
       loading: true,
@@ -104,7 +111,7 @@ export default {
     }),
     isDisabledSubmitButton() {
       return (
-        !!this.account.customID.match(this.$options.usernameRegex) &&
+        !!this.account.username.match(this.$options.usernameRegex) &&
         deepEqual(this.account, this.accountCopy)
       );
     },

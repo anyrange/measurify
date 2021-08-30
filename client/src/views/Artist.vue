@@ -1,73 +1,87 @@
 <template>
   <loading-spinner v-if="loading" />
-  <div v-else class="flex flex-col gap-4">
+  <container v-else>
     <figure class="responsive-picture">
       <base-img
         parallax
+        image-type="artist"
         :src="artist.image"
         :alt="artist.name"
         class="responsive-picture__image"
       />
       <figcaption class="responsive-picture__title">
-        <spotify-link :link="link">
+        <spotify-link :link="`https://open.spotify.com/artist/${artist.id}`">
           {{ artist.name }}
         </spotify-link>
       </figcaption>
     </figure>
-    <div class="content">
-      <div class="content-cards">
-        <card :title="followers">followers</card>
-        <card
-          v-for="(rate, index) in filteredArtistRates"
-          :title="'#' + rate[1]"
-          :key="index"
+    <cards>
+      <card v-if="isLiked" title="❤">following</card>
+      <card :title="followers">followers</card>
+      <card
+        v-for="(rate, index) in filteredArtistRates"
+        :title="'#' + rate[1]"
+        :key="index"
+      >
+        of your most streamed artists {{ $options.PERIODS[rate[0]] }}
+      </card>
+      <card
+        v-for="(rate, index) in filteredTracksRates"
+        :title="rate[1].length"
+        :key="index"
+      >
+        times
+        <a
+          class="text-green-500-spotify font-bold cursor-pointer"
+          @click="
+            currentItem = rate[0];
+            modalOpened = true;
+          "
         >
-          of your most streamed artists {{ $options.PERIODS[rate[0]] }}
-        </card>
-        <card
-          v-for="(rate, index) in filteredTracksRates"
-          :title="rate[1].length"
-          :key="index"
-        >
-          times
-          <span
-            class="text-green-500-spotify font-bold cursor-pointer"
-            @click="
-              currentItem = rate[0];
-              modalOpened = true;
-            "
-          >
-            {{ artist.name }}
-          </span>
-          appeared in top 50 tracks
-
-          {{
-            rate[0] === "LT"
-              ? $options.PERIODS[rate[0]]
-              : "from the " + $options.PERIODS[rate[0]]
-          }}
-        </card>
-      </div>
-      <div class="content__item">
-        <span class="content__item__label">Audio features</span>
-        <audio-features
-          class="content-audio-features"
-          :audioFeatures="audioFeatures"
+          {{ artist.name }}
+        </a>
+        appeared in top 50 tracks
+        {{
+          rate[0] === "LT"
+            ? $options.PERIODS[rate[0]]
+            : "from the " + $options.PERIODS[rate[0]]
+        }}
+      </card>
+    </cards>
+    <container-item>
+      <container-item-label>Audio features</container-item-label>
+      <audio-features :audioFeatures="audioFeatures" />
+    </container-item>
+    <container-item>
+      <container-item-label>Genres</container-item-label>
+      <horizontal-scroll>
+        <badge v-for="(genre, index) in genres" :key="index">
+          {{ genre }}
+        </badge>
+      </horizontal-scroll>
+    </container-item>
+    <container-item>
+      <container-item-label>Albums</container-item-label>
+      <horizontal-scroll>
+        <spotify-card
+          v-for="item in albums"
+          :key="item.id"
+          :item="item"
+          type="album"
         />
-      </div>
-      <div class="content__item" v-if="genres.length">
-        <span class="content__item__label"> Genres </span>
-        <div class="flex flex-wrap gap-2">
-          <badge v-for="(genre, index) in genres" :key="index">
-            {{ genre }}
-          </badge>
-        </div>
-      </div>
-      <div class="content__item" v-if="favouriteTracks.length">
-        <span class="content__item__label"> Favourite tracks </span>
-        <top-tracks :tracks="favouriteTracks" />
-      </div>
-    </div>
+      </horizontal-scroll>
+    </container-item>
+    <container-item v-if="favouriteTracks.length">
+      <container-item-label>Favourite tracks</container-item-label>
+      <track-rows>
+        <track-row
+          v-for="(item, index) in favouriteTracks"
+          :key="index"
+          :track="item"
+          :place="index + 1"
+        />
+      </track-rows>
+    </container-item>
     <modal :show="modalOpened" @close="modalOpened = false">
       <div class="flex flex-col gap-3 p-3">
         <div class="flex flex-col gap-1">
@@ -103,41 +117,56 @@
         </div>
       </div>
     </modal>
-  </div>
+  </container>
 </template>
 
 <script>
 import { getArtist } from "@/api";
-import SpotifyLink from "@/components/SpotifyLink.vue";
-import BaseImg from "@/components/BaseImg.vue";
-import Badge from "@/components/Badge.vue";
-import Card from "@/components/Card.vue";
-import Modal from "@/components/Modal.vue";
-import AudioFeatures from "@/components/AudioFeatures.vue";
-import TopTracks from "@/components/TopTracks.vue";
+import Container from "@/components/Container";
+import ContainerItem from "@/components/ContainerItem";
+import ContainerItemLabel from "@/components/ContainerItemLabel";
+import HorizontalScroll from "@/components/HorizontalScroll";
+import AudioFeatures from "@/components/AudioFeatures";
+import SpotifyCard from "@/components/SpotifyCard";
+import SpotifyLink from "@/components/SpotifyLink";
+import TrackRows from "@/components/TrackRows";
+import TrackRow from "@/components/TrackRow";
+import BaseImg from "@/components/BaseImg";
+import Modal from "@/components/Modal";
+import Badge from "@/components/Badge";
+import Cards from "@/components/Cards";
+import Card from "@/components/Card";
 
 export default {
   components: {
-    SpotifyLink,
-    BaseImg,
-    Badge,
-    Card,
-    Modal,
+    Container,
+    ContainerItem,
+    ContainerItemLabel,
+    HorizontalScroll,
     AudioFeatures,
-    TopTracks,
+    SpotifyCard,
+    SpotifyLink,
+    TrackRows,
+    TrackRow,
+    BaseImg,
+    Modal,
+    Badge,
+    Cards,
+    Card,
   },
   data() {
     return {
       loading: true,
       artist: {},
-      favouriteTracks: [],
       rates: {},
       genres: [],
-      link: "",
-      followers: null,
       audioFeatures: {},
+      favouriteTracks: [],
+      albums: [],
+      currentItem: {},
+      isLiked: false,
+      followers: 0,
       modalOpened: false,
-      currentItem: null,
     };
   },
   PERIODS: {
@@ -160,9 +189,11 @@ export default {
     try {
       const response = await getArtist(this.$route.params.id);
       this.artist = response.artist;
+      this.albums = response.albums;
       this.favouriteTracks = response.favouriteTracks;
       this.genres = response.genres;
       this.link = response.link;
+      this.isLiked = response.isLiked;
       this.rates = response.rates;
       this.followers = response.followers;
       this.audioFeatures = response.audioFeatures;

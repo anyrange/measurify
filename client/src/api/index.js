@@ -33,26 +33,6 @@ export function redirect() {
 export function getCurrentUser() {
   return api.get("/users/me");
 }
-export function getUsersQuantity() {
-  return api.get("/users");
-}
-export function getListenersTop() {
-  return api.get("/users/top");
-}
-export function getListeningHistory({ query, page }) {
-  return api.get("/listening-history", {
-    params: {
-      search: query,
-      page,
-    },
-  });
-}
-export function getOverview() {
-  return api.get("/overview");
-}
-export function getTop() {
-  return api.get("/top");
-}
 export function deauthorize() {
   return api.get("/auth/logout");
 }
@@ -62,9 +42,29 @@ export function getAccount() {
 export function updateAccount(settings) {
   return api.post("/settings", settings);
 }
-export function getProfile(id) {
-  return api.get(`/users/${id}`);
+
+export function getListenersTop() {
+  return api.get("/users/top");
 }
+
+export function getProfile({
+  id,
+  rangeTop = 25,
+  rangeGenres = 15,
+  rangeHistory = 5,
+}) {
+  return api.get(`/users/${id}`, {
+    params: {
+      rangeTop,
+      rangeGenres,
+      rangeHistory,
+    },
+  });
+}
+export function getProfileReports(id) {
+  return api.get(`/users/${id}/reports`);
+}
+
 export function getTrack(id) {
   return api.get(`/infopage/track/${id}`);
 }
@@ -74,9 +74,7 @@ export function getArtist(id) {
 export function getAlbum(id) {
   return api.get(`/infopage/album/${id}`);
 }
-export function getPlaylist(id) {
-  return api.get(`/infopage/playlist/${id}`);
-}
+
 export function getFriends() {
   return api.get("/friends");
 }

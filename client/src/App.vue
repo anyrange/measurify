@@ -6,9 +6,9 @@
 </template>
 
 <script>
-import Notifications from "@/components/Notifications";
 import { mapActions, mapGetters, mapState } from "vuex";
 import { notify } from "@/services/notify";
+import Notifications from "@/components/Notifications";
 
 export default {
   components: {
@@ -26,6 +26,7 @@ export default {
     }),
     ...mapState({
       user: (state) => state.auth.user,
+      profile: (state) => state.profile.profile,
     }),
   },
   async created() {
