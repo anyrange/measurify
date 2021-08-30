@@ -1,4 +1,3 @@
-import User from "../../models/User.js";
 import addImage from "../../utils/addImage.js";
 
 export default async function (fastify) {
@@ -31,19 +30,19 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
+      const id = req.session.get("id");
       const { search, limit, page } = req.query;
-      const { _id } = req;
 
-      const { lastSpotifyToken, country } = await User.findById(
-        _id,
-        " lastSpotifyToken country"
+      const user = await fastify.db.User.findById(
+        id,
+        "tokens.token country"
       ).lean();
 
       const res = await fastify.spotifyAPI({
-        route: `search?q=${search}&type=track,artist,album&market=${country}&limit=${limit}&offset=${
-          (page - 1) * limit
-        }`,
-        token: lastSpotifyToken,
+        route: `search?q=${search}&type=track,artist,album&market=${
+          user.country
+        }&limit=${limit}&offset=${(page - 1) * limit}`,
+        token: user.tokens.token,
       });
 
       reply.send({

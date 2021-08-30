@@ -3,12 +3,17 @@ export default async function (fastify) {
     "",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["username"],
+          properties: { username: { type: "string" } },
+        },
         querystring: {
           type: "object",
           properties: {
-            page: { type: "number", minimum: 1 },
-            range: { type: "number", minimum: 1 },
-            search: { type: "string" },
+            page: { type: "number", minimum: 1, default: 1 },
+            range: { type: "number", minimum: 1, default: 15 },
+            search: { type: "string", default: "" },
           },
         },
         response: {
@@ -25,37 +30,29 @@ export default async function (fastify) {
                   properties: {
                     ...fastify.getSchema("track").properties,
                     duration_ms: { type: "number" },
-                    played_at: { type: "string", format: "date" },
+                    played_at: { type: "string", format: "datetime" },
                   },
                 },
               },
             },
           },
         },
-        tags: ["pages"],
+        tags: ["user"],
       },
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { _id } = req;
-      const range = req.query.range || 50;
-      const page = req.query.page - 1 || 0;
-      const search = req.query.search || "";
+      const { user } = req;
+      const { search, range, page } = req.query;
 
-      const [history] = await fastify.userListeningHistory(
-        _id,
+      const history = await fastify.userListeningHistory({
+        _id: user._id,
         range,
         page,
-        search
-      );
-
-      if (!history || !history.tracksQuantity)
-        return reply.send({ pages: 0, history: [], status: 204 });
-
-      reply.send({
-        pages: Math.ceil(history.tracksQuantity / range),
-        history: history.recentlyPlayed,
+        search,
       });
+
+      reply.send(history);
     }
   );
 }

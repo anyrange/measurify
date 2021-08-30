@@ -1,5 +1,4 @@
-import User from "../../models/User.js";
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -17,8 +16,8 @@ export default async function(fastify) {
         tags: ["users"],
       },
     },
-    async function() {
-      const quantity = await User.estimatedDocumentCount();
+    async function () {
+      const quantity = await fastify.db.User.estimatedDocumentCount();
       return { quantity };
     }
   );

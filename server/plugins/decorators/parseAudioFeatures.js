@@ -18,7 +18,7 @@ const plugin = fp(async function plugin(fastify) {
 
     // features of several tracks
     const { audio_features } = await fastify.spotifyAPI({
-      route: `audio-features?ids=${tracks.map(({ id }) => id).join(",")}`,
+      route: `audio-features?ids=${tracks.join(",")}`,
       token,
     });
 

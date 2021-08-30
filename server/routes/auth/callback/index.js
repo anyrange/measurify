@@ -1,11 +1,8 @@
-import formatTrack from "../../../utils/format-track.js";
 import User from "../../../models/User.js";
 import fetch from "node-fetch";
-import jwt from "jsonwebtoken";
-import { addTrack } from "../../../includes/cron-workers/recently-played-parse.js";
-import api from "../../../includes/api.js";
+import { parseNewTracks } from "../../../includes/cron-workers/recently-played-parse.js";
 
-export default async function(fastify) {
+export default async function (fastify) {
   fastify.get(
     "",
     {
@@ -22,12 +19,11 @@ export default async function(fastify) {
       },
     },
     async (request, reply) => {
+      const code = request.query.code || null;
+      const { sw_redirect } = request.query;
       try {
-        const code = request.query.code || null;
-        const query_uri = request.query.sw_redirect;
-
         //get tokens
-        const tokens = await fetchTokens(code, query_uri);
+        const tokens = await fetchTokens(code, sw_redirect);
 
         if (tokens.error) throw new Error(tokens.error);
 
@@ -35,23 +31,27 @@ export default async function(fastify) {
         const refresh_token = tokens.refresh_token;
 
         //get user info
-        const user = await api({ route: "me", token: access_token });
+        const user = await fastify.spotifyAPI({
+          route: "me",
+          token: access_token,
+        });
 
-        console.log(user.display_name + " logined");
-
-        const filter = { spotifyID: user.id };
+        const filter = { _id: user.id };
         const upsert = {
-          lastSpotifyToken: access_token,
-          userName: user.display_name,
+          tokens: {
+            token: access_token,
+            refreshToken: refresh_token,
+          },
+          display_name: user.display_name,
           country: user.country,
-          refreshToken: refresh_token,
           avatar: user.images.length ? user.images[0].url : "",
-          __v: 6,
+          __v: 7,
         };
         const projection = {
-          recentlyPlayed: { $slice: ["$recentlyPlayed", 1] },
-          spotifyID: 1,
-          customID: 1,
+          "tokens.token": 1,
+          display_name: 1,
+          listeningHistory: { $slice: ["$listeningHistory", 1] },
+          "settings.username": 1,
         };
 
         const document = await User.findOneAndUpdate(filter, upsert, {
@@ -61,33 +61,40 @@ export default async function(fastify) {
           projection,
         });
 
-        // check if recentlyPlayed  is empty
-        if (!document.customID)
-          await User.updateOne(filter, { customID: user.id });
+        const requests = [];
+        if (!document.settings.username)
+          requests.push(
+            User.updateOne(filter, {
+              "settings.username": user.display_name,
+            }).catch(async (e) => {
+              if (e.code === 11000)
+                await User.updateOne(filter, {
+                  "settings.username": user.id,
+                });
+            })
+          );
 
-        if (!document.recentlyPlayed || !document.recentlyPlayed.length)
-          await fetchHistory(access_token, document._id);
+        if (!document.listeningHistory || !document.listeningHistory.length)
+          requests.push(parseNewTracks(document, 20));
 
-        const secret = process.env.SECRET_JWT;
-        const token = jwt.sign({ _id: document._id }, secret);
+        if (requests.length) await Promise.all(requests);
 
-        reply.setCookie("token", token, fastify.cookieOptions);
+        request.session.set("id", String(document._id));
 
-        reply.redirect(query_uri);
+        reply.redirect(sw_redirect);
       } catch (err) {
-        console.log(err);
-        reply.redirect(query_uri);
+        reply.redirect(sw_redirect);
       }
     }
   );
 }
 
-const fetchTokens = async (code, query_uri) => {
+const fetchTokens = async (code, sw_redirect) => {
   const redirect_uri =
     process.env.REDIRECT_URI || "http://localhost:8888/auth/callback";
   const params = new URLSearchParams();
   params.append("code", code);
-  params.append("redirect_uri", `${redirect_uri}?sw_redirect=${query_uri}`);
+  params.append("redirect_uri", `${redirect_uri}?sw_redirect=${sw_redirect}`);
   params.append("grant_type", "authorization_code");
 
   const res = await fetch(`https://accounts.spotify.com/api/token`, {
@@ -103,18 +110,4 @@ const fetchTokens = async (code, query_uri) => {
   });
 
   return res.json();
-};
-
-const fetchHistory = async (token, _id) => {
-  const history = await api({
-    route: `me/player/recently-played?limit=50`,
-    token,
-  });
-
-  if (!history.items.length) return;
-
-  for (let i = 0; i < history.items.length; i++) {
-    const track = formatTrack(history.items[i]);
-    await addTrack(_id, track);
-  }
 };

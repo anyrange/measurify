@@ -1,23 +1,6 @@
-export default async function(fastify) {
-  fastify.get(
-    "",
-    {
-      schema: {
-        response: {
-          200: {
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              status: { type: "number" },
-            },
-          },
-        },
-        tags: ["auth"],
-      },
-    },
-    (request, reply) => {
-      reply.clearCookie("token", fastify.cookieOptions);
-      reply.send({ message: "OK" });
-    }
-  );
+export default async function (fastify) {
+  fastify.get("", { schema: { tags: ["auth"] } }, (req, reply) => {
+    req.session.delete();
+    reply.code(204).send();
+  });
 }

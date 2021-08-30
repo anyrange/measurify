@@ -1,5 +1,3 @@
-import User from "../../../models/User.js";
-
 export default async function (fastify) {
   fastify.get(
     "/:id",
@@ -16,7 +14,6 @@ export default async function (fastify) {
             properties: {
               album: { $ref: "album#" },
               popularity: { type: "number" },
-              link: { type: "string" },
               release_date: { type: "string" },
               total_tracks: { type: "number" },
               label: { type: "string" },
@@ -27,9 +24,9 @@ export default async function (fastify) {
                 items: {
                   type: "object",
                   properties: {
-                    ...fastify.getSchema("entity").properties,
+                    ...fastify.getSchema("track").properties,
+                    duration_ms: { type: "number" },
                     lastPlayedAt: { type: "string" },
-                    playtime: { type: "number" },
                     plays: { type: "number" },
                   },
                 },
@@ -44,51 +41,71 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { _id } = req;
+      const id = req.session.get("id");
       const albumID = req.params.id;
 
-      const user = await User.findById(_id, "lastSpotifyToken").lean();
-      if (!user) throw new fastify.CustomError("User not found", 404);
-      const token = user.lastSpotifyToken;
+      const user = await fastify.db.User.findById(id, "tokens.token").lean();
 
-      const [album, favouriteTracks, audioFeatures, [isLiked]] =
-        await Promise.all([
-          fastify.spotifyAPI({
-            route: `albums/${albumID}`,
-            token,
-          }),
-          fastify.favouriteTracks(_id, albumID),
-          fastify
-            .spotifyAPI({ route: `albums/${albumID}/tracks`, token })
-            .then(({ items }) => fastify.parseAudioFeatures(items, token)),
-          fastify.spotifyAPI({
-            route: `me/albums/contains?ids=${albumID}`,
-            token,
-          }),
-        ]);
+      if (!user) throw fastify.error("User not found", 404);
+      const token = user.tokens.token;
 
-      const { artists } = await fastify.spotifyAPI({
-        route: `artists?ids=${album.artists.map(({ id }) => id).join(",")}`,
-        token: token,
-      });
-      audioFeatures.popularity = album.popularity / 100;
+      const requests = [
+        fastify
+          .spotifyAPI({ route: `albums/${albumID}`, token })
+          .then(async (album) => {
+            [album.audioFeatures, album.artists] = await Promise.all([
+              fastify.parseAudioFeatures(
+                album.tracks.items.map(({ id }) => id),
+                token
+              ),
+              fastify
+                .spotifyAPI({
+                  route: `artists?ids=${album.artists
+                    .map(({ id }) => id)
+                    .join(",")}`,
+                  token,
+                })
+                .then(({ artists }) =>
+                  artists.map((artist) => ({
+                    id: artist.id,
+                    image: artist.images[1].url || artist.images[0].url || "",
+                    name: artist.name,
+                  }))
+                ),
+            ]);
+            return album;
+          }),
+        fastify.spotifyAPI({
+          route: `me/albums/contains?ids=${albumID}`,
+          token,
+        }),
+        fastify.favouriteTracks({
+          _id: id,
+          filterID: albumID,
+          type: "album",
+        }),
+      ];
+
+      const [fullInfo, [isLiked], favouriteTracks] = await Promise.all(
+        requests
+      );
+      fullInfo.audioFeatures.popularity = fullInfo.popularity / 100;
+
       const response = {
         album: {
-          artists: artists.map(({ name, id, images }) => {
-            return { name, id, image: images.length ? images[0].url : "" };
-          }),
-          name: album.name,
-          image: album.images.length ? album.images[0].url : "",
+          artists: fullInfo.artists,
+          id: fullInfo.id,
+          name: fullInfo.name,
+          image: fullInfo.images[0]?.url || "",
         },
-        popularity: album.popularity,
-        release_date: album.release_date,
-        total_tracks: album.total_tracks,
-        link: album.external_urls.spotify,
-        genres: album.genres,
-        label: album.label || "",
+        popularity: fullInfo.popularity,
+        release_date: fullInfo.release_date,
+        total_tracks: fullInfo.total_tracks,
+        genres: fullInfo.genres,
+        label: fullInfo.label || "",
+        content: fullInfo.tracks.items,
+        audioFeatures: fullInfo.audioFeatures,
         isLiked,
-        content: album.tracks.items,
-        audioFeatures,
         favouriteTracks,
       };
 

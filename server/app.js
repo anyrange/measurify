@@ -17,12 +17,6 @@ app.register(import("fastify-cors"), {
   credentials: true,
 });
 
-const secret = process.env.SECRET_COOKIE;
-app.register(import("fastify-cookie"), {
-  secret,
-  parseOptions: {},
-});
-
 app.register(import("fastify-websocket"));
 
 if (process.env.NODE_ENV != "production") {

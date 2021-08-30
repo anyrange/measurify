@@ -6,11 +6,11 @@ const plugin = fp(async function plugin(fastify) {
     title: "user",
     type: "object",
     properties: {
-      userName: { type: "string" },
+      username: { type: "string" },
       avatar: { type: "string" },
-      customID: { type: "string" },
+      display_name: { type: "string" },
       canSee: { type: "boolean" },
-      lastLogin: { type: "string" },
+      lastLogin: { type: "string", format: "datetime" },
       listened: { type: "number" },
     },
   });

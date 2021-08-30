@@ -40,14 +40,3 @@ const plugin = fp(async (fastify) => {
 
 export default plugin;
 export { track, tracks };
-/*
-      playtime: { type: "number" },
-      plays: { type: "number" },
-      popularity: { type: "number" },
-      preview_url: { type: "string" },
-      release_date: { type: "string" },
-      played_at: { type: "string" },
-      link: { type: "string" },
-      lastPlayedAt: { type: "string" },
-      isLiked: { type: "boolean" },
-      */

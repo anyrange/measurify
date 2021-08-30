@@ -1,5 +1,3 @@
-import User from "../../../models/User.js";
-
 export default async function (fastify) {
   fastify.get(
     "",
@@ -10,10 +8,10 @@ export default async function (fastify) {
             type: "object",
             properties: {
               status: { type: "number" },
-              lastSpotifyToken: { type: "string" },
+              token: { type: "string" },
               avatar: { type: "string" },
-              userName: { type: "string" },
-              customID: { type: "string" },
+              username: { type: "string" },
+              display_name: { type: "string" },
               country: { type: "string" },
               autoUpdate: { type: "boolean" },
             },
@@ -24,11 +22,19 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { _id } = req;
+      const id = req.session.get("id");
 
-      const user = await User.findByIdAndUpdate(_id, { lastLogin: Date.now() })
-        .select("lastSpotifyToken autoUpdate userName customID country avatar")
+      const user = await fastify.db.User.findByIdAndUpdate(id, {
+        lastLogin: Date.now(),
+      })
+        .select("tokens.token settings display_name country avatar")
         .lean();
+
+      if (!user) throw fastify.error("User not found", 404);
+
+      user.autoUpdate = user.settings.autoUpdate;
+      user.username = user.settings.username;
+      user.token = user.tokens.token;
 
       reply.send(user);
     }

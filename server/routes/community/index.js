@@ -19,7 +19,6 @@ export default async function (fastify) {
         response: {
           200: {
             type: "object",
-            required: ["status", "activity"],
             properties: {
               status: { type: "number" },
               activity: {
@@ -44,80 +43,80 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { _id } = req;
+      // const { _id } = req;
 
-      const range = req.query.range || 10;
-      const page = req.query.page || 1;
+      // const range = req.query.range || 10;
+      // const page = req.query.page || 1;
 
-      let users = await User.find(
-        {},
-        {
-          customID: 1,
-          spotifyID: 1,
-          lastSpotifyToken: 1,
-          userName: 1,
-          avatar: 1,
-          lastLogin: 1,
-        }
-      );
+      // let users = await User.find(
+      //   {},
+      //   {
+      //     customID: 1,
+      //     spotifyID: 1,
+      //     lastSpotifyToken: 1,
+      //     userName: 1,
+      //     avatar: 1,
+      //     lastLogin: 1,
+      //   }
+      // );
 
-      // get user's info
-      const user = users.find((user) => user._id == _id);
+      // // get user's info
+      // const user = users.find((user) => user._id == _id);
 
-      if (!user) throw new this.CustonError("User not found", 404);
+      // if (!user) throw fastify.error("User not found", 404);
 
-      const access_token = user.lastSpotifyToken;
+      // const access_token = user.lastSpotifyToken;
 
-      // filter away user
-      users = users.filter((user) => user._id != _id);
+      // // filter away user
+      // users = users.filter((user) => user._id != _id);
 
-      const route =
-        "me/following/contains?type=user&ids=" +
-        users.map((user) => user.spotifyID).join();
+      // const route =
+      //   "me/following/contains?type=user&ids=" +
+      //   users.map((user) => user.spotifyID).join();
 
-      // check if users are followed
-      const friendList = await fastify.spotifyAPI({
-        route,
-        token: access_token,
-      });
+      // // check if users are followed
+      // const friendList = await fastify.spotifyAPI({
+      //   route,
+      //   token: access_token,
+      // });
 
-      if (friendList.error)
-        throw new this.CustonError(
-          friendList.error.message,
-          friendList.error.status || 500
-        );
+      // if (friendList.error)
+      //   throw fastify.error(
+      //     friendList.error.message,
+      //     friendList.error.status || 500
+      //   );
 
-      const friends = users.filter((user, key) => friendList[key]);
+      // const friends = users.filter((user, key) => friendList[key]);
 
-      if (!friends.length) return reply.send({ status: 204, activity: [] });
+      // if (!friends.length) return reply.send({ status: 204, activity: [] });
 
-      const trackActivity = await getTrackActivity(friends, page, range);
+      // const trackActivity = await getTrackActivity(friends, page, range);
 
-      const firstDate =
-        page - 1 === 0
-          ? new Date().toISOString()
-          : trackActivity[0].track.played_at;
+      // const firstDate =
+      //   page - 1 === 0
+      //     ? new Date().toISOString()
+      //     : trackActivity[0].track.played_at;
 
-      const lastDate = trackActivity[trackActivity.length - 1].track.played_at;
-      const requests = friends.map((friend) => {
-        {
-          const options = { friend, firstDate, lastDate };
-          return getLiked(options);
-        }
-      });
+      // const lastDate = trackActivity[trackActivity.length - 1].track.played_at;
+      // const requests = friends.map((friend) => {
+      //   {
+      //     const options = { friend, firstDate, lastDate };
+      //     return getLiked(options);
+      //   }
+      // });
 
-      const likeActivity = await Promise.all(requests);
+      // const likeActivity = await Promise.all(requests);
 
-      const activity = [...likeActivity.flat(1), ...trackActivity].sort(
-        (a, b) =>
-          a.track.played_at < b.track.played_at
-            ? 1
-            : a.track.played_at > b.track.played_at
-            ? -1
-            : 0
-      );
+      // const activity = [...likeActivity.flat(1), ...trackActivity].sort(
+      //   (a, b) =>
+      //     a.track.played_at < b.track.played_at
+      //       ? 1
+      //       : a.track.played_at > b.track.played_at
+      //       ? -1
+      //       : 0
+      // );
 
-      reply.send({ activity });
+      reply.send();
     }
   );
 }

@@ -1,5 +1,3 @@
-import User from "../../../models/User.js";
-
 export default async function (fastify) {
   fastify.get(
     "",
@@ -26,19 +24,23 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { _id } = req;
+      const id = req.session.get("id");
 
-      const { lastSpotifyToken, country } = await User.findById(
-        _id,
-        "lastSpotifyToken country"
+      const user = await fastify.db.User.findById(
+        id,
+        "tokens.token country"
       ).lean();
 
       const currentPlayer = await fastify.spotifyAPI({
-        route: `me/player/currently-playing?market=${country}`,
-        token: lastSpotifyToken,
+        route: `me/player/currently-playing?market=${user.country}`,
+        token: user.tokens.token,
       });
 
-      reply.send({ track: currentPlayer.item });
+      reply.send({
+        track: Object.assign(currentPlayer.item, {
+          image: currentPlayer.item.album.images[0].url || "",
+        }),
+      });
     }
   );
 }

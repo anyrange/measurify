@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import CustomError from "./CustomError.js";
 
 export default async function ({ route, token, body = {}, method = "GET" }) {
   let options = { method };
@@ -20,17 +19,30 @@ export default async function ({ route, token, body = {}, method = "GET" }) {
   // };
   // const res = await callApi();
 
-  if (res.status === 204) throw new CustomError("", 204);
+  if (res.status === 204) throw Object.assign(new Error(""), { code: 204 });
 
-  if (!res.ok) {
-    console.log("Error:", res.statusText, res.status);
-    throw new CustomError("Something went wrong", 500);
+  // if (!res.ok) {
+  //   console.log("API Error:", res.statusText, res.status);
+  //   console.log(`https://api.spotify.com/v1/${route}`);
+  //   console.log(options);
+  //   throw Object.assign(new Error("Something went wrong"), { code: 500 });
+  // }
+
+  const json = await res.json().catch(() => {
+    console.log("API Error:", res.statusText, res.status);
+    console.log(`https://api.spotify.com/v1/${route}`);
+    console.log(options);
+    throw Object.assign(new Error("Something went wrong"), { code: 500 });
+  });
+
+  if (json.error) {
+    console.log("API Error:", res.statusText, res.status);
+    const err = json.error;
+    console.log(err);
+    throw Object.assign(new Error(err.message), {
+      code: err.status || 500,
+    });
   }
-
-  const json = await res.json();
-
-  if (json.error)
-    throw new CustomError(json.error.message, json.error.status || 500);
 
   return json;
 }

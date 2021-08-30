@@ -1,30 +1,31 @@
+"use strict";
+
 import fp from "fastify-plugin";
 
 const plugin = fp(async function plugin(fastify) {
-  fastify.setErrorHandler((error, request, reply) => {
-    const { message, status, validation, name } = error;
-
-    if (error instanceof fastify.CustomError)
-      return reply.status(status).send({
-        message,
-        status,
-      });
+  fastify.setErrorHandler((error, req, reply) => {
+    const { message, code, validation, name } = error;
 
     if (validation) {
-      const { status, message } = validate(error);
-      return reply.code(status).send({ message, status });
+      const message = validate(error);
+      return reply.code(400).send({ message });
     }
+
+    if (code === "ETIMEDOUT")
+      return reply.code(503).send({ message: "Try again later" });
+
+    if (code && typeof code === "number" && code > 200 && code < 600)
+      return reply.code(code).send({ message });
 
     switch (name) {
       case "JsonWebTokenError":
         reply.code(400).send({ message, status: 400 });
         break;
       case "FetchError":
-        console.log(`${name}: ${message}`);
         reply.code(400).send({ message, status: 400 });
         break;
       case "MongooseError":
-        console.log(`${name}: ${message}`);
+        console.log(error);
         reply
           .code(503)
           .header("Retry-After", 3000)
@@ -40,31 +41,21 @@ const plugin = fp(async function plugin(fastify) {
   });
 });
 
-const validate = (validationError) => {
-  const context = validationError.validationContext;
+const validate = ({ validationContext, validation }) => {
+  const result = validation[0];
+  const errorVar = result.dataPath.substring(1);
+  const message = `${errorVar} ${result.message}`;
 
-  switch (context) {
-    case "querystring": {
-      const error = validationError.validation[0];
-      return {
-        status: 400,
-        message: `Invalid query parameters: ${error.dataPath.substring(1)} ${
-          error.message
-        }`,
-      };
-    }
-
+  switch (validationContext) {
+    case "querystring":
+      return `Invalid query parameters: ${message}`;
     case "params":
-      return { status: 400, message: "Invalid id" };
-
+      return `Invalid ${errorVar}`;
     case "body":
-      return {
-        status: 400,
-        message: `Invalid body: ${validationError.validation[0].message}`,
-      };
-
+      return `Invalid body: ${message}`;
     default:
-      return { status: 400, message: "Bad request" };
+      return "Bad request";
   }
 };
+
 export default plugin;

@@ -7,16 +7,16 @@ export default async function (fastify) {
       schema: {
         body: {
           type: "object",
-          required: ["privacy", "customID", "autoUpdate"],
+          required: ["privacy", "username", "autoUpdate"],
           properties: {
             privacy: {
               type: "string",
-              pattern: "^(public)$|^(private)$|^(friendsOnly)$",
+              pattern: "^(public|private|friendsOnly)$",
             },
-            customID: {
+            username: {
               type: "string",
-              maxLength: 16,
-              minLength: 3,
+              maxLength: 20,
+              minLength: 1,
               pattern:
                 "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
             },
@@ -37,28 +37,31 @@ export default async function (fastify) {
             },
           },
         },
-        tags: ["user settings"],
+        tags: ["settings"],
       },
     },
     async function (req, reply) {
-      const { _id } = req;
-      const { privacy, customID, autoUpdate } = req.body;
+      const _id = req.session.get("id");
 
-      const user = await User.findOne({ customID }, { _id: 1 });
+      const { privacy, username, autoUpdate } = req.body;
 
-      if (user && user._id != _id)
-        throw new this.CustomError("This id is already taken", 403);
+      const user = await User.findOne(
+        { "settings.username": username },
+        "_id"
+      ).lean();
+
+      if (user && user._id !== _id)
+        throw this.error("This username is already taken", 403);
 
       const updateResult = await User.updateOne(
         { _id },
-        { privacy, customID, autoUpdate }
+        { settings: { privacy, username, autoUpdate } }
       );
 
-      if (updateResult.n === 0)
-        throw new this.CustomError("User not found", 404);
+      if (updateResult.n === 0) throw this.error("User not found", 404);
 
       if (updateResult.nModified === 0)
-        throw new this.CustomError("Nothing to update", 400);
+        throw this.error("Nothing to update", 400);
 
       reply.send({ message: "Successfully updated" });
     }

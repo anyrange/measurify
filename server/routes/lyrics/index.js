@@ -26,8 +26,8 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const GENIUS_API_SECRET_KEY = process.env.GENIUS_API_SECRET_KEY;
       const { artist, title } = req.query;
+      const GENIUS_API_SECRET_KEY = process.env.GENIUS_API_SECRET_KEY;
 
       const lyrics = await getLyrics({
         apiKey: GENIUS_API_SECRET_KEY,

@@ -1,5 +1,3 @@
-import User from "../../models/User.js";
-
 export default async function (fastify) {
   fastify.get(
     "",
@@ -20,10 +18,11 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { _id } = req;
-      let users = await User.find(
+      const _id = req.session.get("id");
+
+      let users = await fastify.db.User.find(
         {},
-        "customID spotifyID lastSpotifyToken userName avatar lastLogin"
+        "settings.username tokens.token display_name avatar lastLogin"
       ).lean();
 
       // get requestor's info
@@ -35,14 +34,16 @@ export default async function (fastify) {
       // filter away requestor
       users = users.filter((user) => user._id != _id);
 
+      if (!users.length) return reply.send({ status: 204, friends: [] });
+
       const route =
         "me/following/contains?type=user&ids=" +
-        users.map((user) => user.spotifyID).join();
+        users.map(({ _id }) => _id).join();
 
       // check if requestor follows users
       const followedList = await fastify.spotifyAPI({
         route,
-        token: requestor.lastSpotifyToken,
+        token: requestor.tokens.token,
       });
 
       const followed = users.filter((user, key) => followedList[key]);
@@ -53,8 +54,8 @@ export default async function (fastify) {
         await Promise.all(
           followed.map((user) =>
             fastify.spotifyAPI({
-              route: `me/following/contains?type=user&ids=${requestor.spotifyID}`,
-              token: user.lastSpotifyToken,
+              route: `me/following/contains?type=user&ids=${requestor._id}`,
+              token: user.tokens.token,
             })
           )
         )
@@ -63,7 +64,14 @@ export default async function (fastify) {
       const friends = followed.filter((user, key) => mutualFollowedList[key]);
       if (!friends.length) return reply.send({ status: 204, friends: [] });
 
-      reply.send({ friends });
+      reply.send({
+        friends: friends.map((friend) => ({
+          username: friend.settings.username,
+          avatar: friend.avatar,
+          display_name: friend.display_name,
+          lastLogin: friend.lastLogin,
+        })),
+      });
     }
   );
 }

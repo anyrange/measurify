@@ -1,5 +1,3 @@
-import User from "../../../models/User.js";
-
 export default async function (fastify) {
   fastify.get(
     "/:id",
@@ -31,7 +29,6 @@ export default async function (fastify) {
               followers: { type: "number" },
               genres: { type: "array", items: { type: "string" } },
               popularity: { type: "number" },
-              link: { type: "string" },
               isLiked: { type: "boolean" },
               audioFeatures: { $ref: "audioFeatures#" },
               rates: {
@@ -54,9 +51,9 @@ export default async function (fastify) {
                 items: {
                   type: "object",
                   properties: {
-                    ...fastify.getSchema("entity").properties,
+                    ...fastify.getSchema("track").properties,
                     lastPlayedAt: { type: "string" },
-                    playtime: { type: "number" },
+                    duration_ms: { type: "number" },
                     plays: { type: "number" },
                   },
                 },
@@ -69,23 +66,31 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { _id } = req;
+      const _id = req.session.get("id");
       const artistID = req.params.id;
-      const { lastSpotifyToken: token, country } = await User.findById(
-        _id
-      ).select("lastSpotifyToken country");
+
+      const user = await fastify.db.User.findById(
+        _id,
+        "tokens.token country"
+      ).lean();
+      if (!user) throw fastify.error("User not found", 404);
 
       const time_range = ["long_term", "medium_term", "short_term"];
+      const token = user.tokens.token;
 
       const request = [
         fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
-        fastify.favouriteTracks(_id, artistID),
         fastify
           .spotifyAPI({
-            route: `artists/${artistID}/top-tracks?market=${country}`,
+            route: `artists/${artistID}/top-tracks?market=${user.country}`,
             token,
           })
-          .then(({ tracks }) => fastify.parseAudioFeatures(tracks, token)),
+          .then(({ tracks }) =>
+            fastify.parseAudioFeatures(
+              tracks.map((track) => track.id),
+              token
+            )
+          ),
         ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/artists?limit=30&time_range=${range}`,
@@ -106,11 +111,11 @@ export default async function (fastify) {
           route: `artists/${artistID}/related-artists`,
           token,
         }),
+        fastify.favouriteTracks({ _id, filterID: artistID, type: "artist" }),
       ];
 
       const [
         artist,
-        favouriteTracks,
         audioFeatures,
         artLT,
         artMT,
@@ -120,6 +125,7 @@ export default async function (fastify) {
         trcST,
         [isLiked],
         { artists: relatedArtists },
+        favouriteTracks,
       ] = await Promise.all(request);
 
       const rates = {
@@ -139,13 +145,13 @@ export default async function (fastify) {
       // response schema
       const response = {
         artist: {
+          id: artist.id,
           name: artist.name,
           image: artist.images.length ? artist.images[0].url : "",
         },
         followers: artist.followers.total,
         genres: artist.genres,
         popularity: artist.popularity,
-        link: artist.external_urls.spotify,
         isLiked,
         relatedArtists: relatedArtists.map(({ images, name, id }) => ({
           image: images.length ? images[0].url : "",

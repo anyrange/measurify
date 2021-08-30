@@ -10,26 +10,25 @@ export default async function (fastify) {
             type: "object",
             properties: {
               privacy: { type: "string" },
-              customID: { type: "string" },
-              spotifyID: { type: "string" },
+              username: { type: "string" },
+              id: { type: "string" },
+              display_name: { type: "string" },
               autoUpdate: { type: "boolean" },
               status: { type: "number" },
             },
           },
         },
-        tags: ["user settings"],
+        tags: ["settings"],
       },
     },
     async function (req, reply) {
-      const { _id } = req;
-      const user = await User.findById(
-        _id,
-        "privacy customID spotifyID autoUpdate -_id"
-      ).lean();
+      const id = req.session.get("id");
 
-      if (!user) throw new this.CustomError("User not found", 404);
+      const user = await User.findById(id, "display_name settings").lean();
+      if (!user) throw fastify.error("User not found", 404);
 
-      reply.send(user);
+      user.id = id;
+      reply.send(Object.assign(user, user.settings));
     }
   );
 }

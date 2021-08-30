@@ -1,4 +1,4 @@
-import User from "../../../models/User.js";
+import formatTrack from "../../../utils/format-track.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -17,14 +17,14 @@ export default async function (fastify) {
               playlist: { $ref: "entity#" },
               collaborative: { type: "boolean" },
               followers: { type: "number" },
-              link: { type: "string" },
               public: { type: "boolean" },
               totalTracks: { type: "number" },
               owner: {
                 type: "object",
                 properties: {
-                  ...fastify.getSchema("entity").properties,
-                  url: { type: "string" },
+                  id: { type: "string" },
+                  username: { type: "string" },
+                  display_name: { type: "string" },
                 },
               },
               isLiked: { type: "boolean" },
@@ -33,9 +33,9 @@ export default async function (fastify) {
                 items: {
                   type: "object",
                   properties: {
-                    ...fastify.getSchema("entity").properties,
+                    ...fastify.getSchema("track").properties,
                     lastPlayedAt: { type: "string" },
-                    playtime: { type: "number" },
+                    duration_ms: { type: "number" },
                     plays: { type: "number" },
                   },
                 },
@@ -50,68 +50,63 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { _id } = req;
+      const id = req.session.get("id");
       const playlistID = req.params.id;
 
-      const {
-        lastSpotifyToken: token,
-        customID,
-        spotifyID,
-      } = await User.findById(_id, "lastSpotifyToken customID spotifyID");
+      const user = await fastify.db.User.findById(id, "tokens.token");
 
-      const [playlist, favouriteTracks, [isLiked]] = await Promise.all([
+      if (!user) throw fastify.error("User not found", 404);
+      const token = user.tokens.token;
+
+      const [playlist, [isLiked], favouriteTracks] = await Promise.all([
         fastify.spotifyAPI({
-          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id,name,album(id,name,images(url)),artists(id,name))))`,
+          route: `playlists/${playlistID}?fields=collaborative,external_urls,followers(total),images,name,owner(display_name,id),public,tracks(total),tracks(items(track(id,name,duration_ms,album(id,name,images(url)),artists(id,name))))`,
           token,
         }),
-        fastify.favouriteTracks(_id, playlistID),
         fastify.spotifyAPI({
-          route: `playlists/${playlistID}/followers/contains?ids=${spotifyID}`,
+          route: `playlists/${playlistID}/followers/contains?ids=${id}`,
           token,
+        }),
+        fastify.favouriteTracks({
+          _id: id,
+          filterID: playlistID,
+          type: "playlist",
         }),
       ]);
 
-      const audioFeatures = await fastify.parseAudioFeatures(
-        playlist.tracks.items.map(({ track }) => track),
-        token
-      );
-
-      const owner = await User.findOne(
-        { spotifyID: playlist.owner.id },
-        "customID"
-      ).lean();
+      const [audioFeatures, owner] = await Promise.all([
+        fastify.parseAudioFeatures(
+          playlist.tracks.items.map(({ track }) => track.id),
+          token
+        ),
+        fastify.db.User.findById(
+          playlist.owner.id,
+          "_id settings.username"
+        ).lean(),
+      ]);
 
       const response = {
         playlist: {
           name: playlist.name,
+          id: playlist.id,
           image: playlist.images.length ? playlist.images[0].url : "",
         },
         collaborative: playlist.collaborative,
-        link: playlist.external_urls.spotify,
         followers: playlist.followers.total,
         owner: {
-          name: playlist.owner.display_name,
-          id: owner?.customID || "",
-          url: `https://open.spotify.com/user/${playlist.owner.id}`,
+          display_name: playlist.owner.display_name,
+          username: owner?.settings.username || "",
+          id: playlist.owner.id,
         },
         public: playlist.public,
         totalTracks: playlist.tracks.total,
         isLiked,
         audioFeatures,
-        content: playlist.tracks.items.map(({ track }) => formatTrack(track)),
         favouriteTracks,
+        content: playlist.tracks.items.map(({ track }) => formatTrack(track)),
       };
 
       reply.send(response);
     }
   );
 }
-
-const formatTrack = (track) => {
-  return Object.assign(track, {
-    image:
-      track.album.images && track.album.images.length
-        ? track.album.images[1].url
-        : "",
-  });
-};

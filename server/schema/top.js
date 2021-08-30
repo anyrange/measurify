@@ -1,5 +1,6 @@
 import fp from "fastify-plugin";
 import { entity } from "./entity.js";
+import { track } from "./track.js";
 
 const topItems = {
   type: "array",
@@ -16,11 +17,26 @@ const plugin = fp(async function plugin(fastify) {
     title: "top",
     type: "object",
     properties: {
-      tracks: topItems,
+      tracks: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            ...track.properties,
+            plays: { type: "number" },
+            duration_ms: { type: "number" },
+          },
+        },
+      },
       albums: topItems,
       artists: topItems,
       playlists: topItems,
     },
+  });
+  fastify.addSchema({
+    $id: "topItems",
+    title: "topItems",
+    ...topItems,
   });
 });
 
