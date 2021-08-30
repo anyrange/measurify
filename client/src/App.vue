@@ -30,9 +30,11 @@ export default {
     }),
   },
   async created() {
+    const isAuthenticated = this.isAuthenticated;
     try {
       await this.updateUser();
-      this.$router.push({ name: "home" });
+      if (!isAuthenticated) this.$router.push({ name: "home" });
+      // at least it works
     } catch {
       this.logout();
     }
