@@ -31,6 +31,7 @@ export default async function (fastify) {
 
     user.privacy = user.settings.privacy;
     user.username = user.settings.username;
+    user.spotifyID = user._id;
 
     if (user.privacy === "private" && id != user._id)
       throw fastify.error("Private profile", 403);

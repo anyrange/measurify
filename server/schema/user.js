@@ -11,6 +11,8 @@ const plugin = fp(async function plugin(fastify) {
       display_name: { type: "string" },
       canSee: { type: "boolean" },
       lastLogin: { type: "string", format: "datetime" },
+      registrationDate: { type: "string", format: "datetime" },
+      spotifyID: { type: "string" },
       listened: { type: "number" },
     },
   });
