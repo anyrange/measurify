@@ -48,12 +48,12 @@ export function getListenersTop() {
 }
 
 export function getProfile({
-  id,
+  username,
   rangeTop = 25,
   rangeGenres = 15,
   rangeHistory = 5,
 }) {
-  return api.get(`/users/${id}`, {
+  return api.get(`/users/${username}`, {
     params: {
       rangeTop,
       rangeGenres,
@@ -61,8 +61,22 @@ export function getProfile({
     },
   });
 }
-export function getProfileReports(id) {
-  return api.get(`/users/${id}/reports`);
+export function getProfileReports({ username }) {
+  return api.get(`/users/${username}/reports`);
+}
+export function getProfileListeningHistory({
+  username,
+  page = 1,
+  range = 25,
+  search = "",
+}) {
+  return api.get(`/users/${username}/listening-history`, {
+    params: {
+      page,
+      range,
+      search,
+    },
+  });
 }
 
 export function getTrack(id) {

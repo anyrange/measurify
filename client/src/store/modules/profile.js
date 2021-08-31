@@ -1,9 +1,14 @@
-import { getProfile, getProfileReports } from "@/api";
+import {
+  getProfile,
+  getProfileReports,
+  getProfileListeningHistory,
+} from "@/api";
 
 const getDefaultState = () => {
   return {
     profile: {},
     reports: {},
+    listeningHistory: {},
   };
 };
 
@@ -16,11 +21,14 @@ export default {
     SET_REPORTS(state, response) {
       Object.assign(state.reports, response);
     },
+    SET_HISTORY(state, response) {
+      Object.assign(state.listeningHistory, response);
+    },
   },
   actions: {
-    getProfile: async ({ commit }, id) => {
+    getProfile: async ({ commit }, username) => {
       try {
-        commit("SET_PROFILE", await getProfile({ id }));
+        commit("SET_PROFILE", await getProfile({ username }));
       } catch (error) {
         return Promise.reject(error);
       }
@@ -29,7 +37,22 @@ export default {
       try {
         commit(
           "SET_REPORTS",
-          await getProfileReports(state.profile.user.username)
+          await getProfileReports({ username: state.profile.user.username })
+        );
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    getHistory: async ({ commit, state }, { page, range, search }) => {
+      try {
+        commit(
+          "SET_HISTORY",
+          await getProfileListeningHistory({
+            username: state.profile.user.username,
+            page,
+            range,
+            search,
+          })
         );
       } catch (error) {
         return Promise.reject(error);
