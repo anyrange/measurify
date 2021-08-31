@@ -61,7 +61,7 @@ export default async function (fastify) {
         fastify.userTop({ _id: user._id, range: rangeTop }),
         fastify.userListeningHistory({ _id: user._id, range: rangeHistory }),
         fastify.userOverview({ _id: user._id }),
-        genresTop(user.tokens.token, rangeGenres),
+        fastify.userGenres({ token: user.tokens.token, range: rangeGenres }),
       ];
 
       const [top, { history }, overview, genres] = await Promise.all(requests);
@@ -78,32 +78,4 @@ export default async function (fastify) {
       reply.send(response);
     }
   );
-
-  const genresTop = async (token, range) => {
-    const artists = await fastify.spotifyAPI({
-      route: "me/top/artists?time_range=medium_term&limit=50",
-      token,
-    });
-
-    if (!artists.items.length) return [];
-    const genres = artists.items.map(({ genres }) => genres).flat(1);
-
-    let res = genres.reduce((data, curr) => {
-      data[curr] = data[curr] ? ++data[curr] : 1;
-      return data;
-    }, {});
-
-    const genresTop = [];
-
-    Object.entries(res).forEach(([val, numTimes]) => {
-      genresTop.push({ genre: val, times: numTimes });
-    });
-
-    return genresTop
-      .sort(function (a, b) {
-        return b.times - a.times;
-      })
-      .map(({ genre }) => genre)
-      .slice(0, range);
-  };
 }
