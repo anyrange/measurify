@@ -48,7 +48,7 @@ export default async function (fastify) {
         }),
         fastify.spotifyAPI({
           route: `me/following/contains?type=user&ids=${user._id}`,
-          token: requests.tokens.token,
+          token: requestor.tokens.token,
         }),
       ]);
 
