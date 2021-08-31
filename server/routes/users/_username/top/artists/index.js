@@ -45,7 +45,7 @@ export default async function (fastify) {
 
       reply.send({
         artists: top?.artists || [],
-        pages: Math.ceil((top?.items || 0) / range),
+        pages: Math.ceil((top?.items || 0) / range) || 1,
       });
     }
   );

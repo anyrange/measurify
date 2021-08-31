@@ -90,7 +90,7 @@ const plugin = fp(async function plugin(fastify) {
       const [listened] = await fastify.db.User.aggregate(agg);
 
       return {
-        pages: Math.ceil((listened?.items || 0) / range),
+        pages: Math.ceil((listened?.items || 0) / range) || 1,
         history: listened?.history || [],
       };
     }
