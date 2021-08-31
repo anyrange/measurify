@@ -2,7 +2,11 @@
   <container>
     <container-item>
       <div class="flex gap-2">
-        <base-input v-model="search" placeholder="Search" />
+        <base-input
+          v-model.lazy="search"
+          placeholder="Search"
+          :debounce="400"
+        />
         <base-select v-model="range" :options="$options.rangeOptions" />
       </div>
       <loading-spinner v-if="loading" />

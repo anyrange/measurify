@@ -40,11 +40,24 @@ export default {
       type: String,
       required: false,
     },
+    debounce: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   emits: ["update:modelValue"],
+  data() {
+    return {
+      timeout: null,
+    };
+  },
   methods: {
     handleInput(value) {
-      this.$emit("update:modelValue", value);
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.$emit("update:modelValue", value);
+      }, this.debounce);
     },
   },
 };
