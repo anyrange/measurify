@@ -39,7 +39,6 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
-      preValidation: [fastify.auth],
     },
     async function (req, reply) {
       const { user } = req;
