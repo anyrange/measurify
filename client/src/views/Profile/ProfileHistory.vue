@@ -7,6 +7,9 @@
       </div>
       <loading-spinner v-if="loading" />
       <template v-else>
+        <empty-message
+          v-if="!listeningHistory.history.length && search && !loading"
+        />
         <track-rows>
           <track-row
             v-for="(item, index) in listeningHistory.history"
@@ -31,6 +34,7 @@ import TrackRows from "@/components/TrackRows";
 import TrackRow from "@/components/TrackRow";
 import BaseInput from "@/components/BaseInput";
 import BaseSelect from "@/components/BaseSelect";
+import EmptyMessage from "@/components/EmptyMessage";
 
 export default {
   components: {
@@ -41,6 +45,7 @@ export default {
     TrackRow,
     BaseInput,
     BaseSelect,
+    EmptyMessage,
   },
   data() {
     return {
