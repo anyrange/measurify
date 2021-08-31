@@ -5,6 +5,8 @@ export default async function (fastify) {
   });
 
   fastify.decorateRequest("user", null);
+  fastify.decorateRequest("requestor", null);
+
   fastify.addHook("preHandler", async (req, reply) => {
     const id = req.session.get("id") || "";
     const { username } = req.params;
@@ -57,5 +59,6 @@ export default async function (fastify) {
     }
 
     req.user = user;
+    req.requestor = requestor;
   });
 }
