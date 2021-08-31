@@ -10,7 +10,20 @@ export default async function (fastify) {
             required: ["status", "top"],
             properties: {
               status: { type: "number" },
-              top: { type: "array", items: { $ref: "user#" } },
+              top: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    username: { type: "string" },
+                    avatar: { type: "string" },
+                    display_name: { type: "string" },
+                    canSee: { type: "boolean" },
+                    lastLogin: { type: "string", format: "datetime" },
+                    listened: { type: "number" },
+                  },
+                },
+              },
             },
           },
         },

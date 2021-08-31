@@ -21,7 +21,7 @@ export default async function (fastify) {
                 "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
             },
             autoUpdate: { type: "boolean" },
-            display_name: { type: "string", minLength: 1, maxLength: 20 },
+            display_name: { type: "string", minLength: 1, maxLength: 30 },
           },
         },
         response: {

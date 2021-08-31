@@ -9,7 +9,18 @@ export default async function (fastify) {
             required: ["status", "friends"],
             properties: {
               status: { type: "number" },
-              friends: { type: "array", items: fastify.getSchema("user") },
+              friends: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    username: { type: "string" },
+                    avatar: { type: "string" },
+                    display_name: { type: "string" },
+                    lastLogin: { type: "string", format: "datetime" },
+                  },
+                },
+              },
             },
           },
         },

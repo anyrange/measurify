@@ -9,11 +9,10 @@ const plugin = fp(async function plugin(fastify) {
       username: { type: "string" },
       avatar: { type: "string" },
       display_name: { type: "string" },
-      canSee: { type: "boolean" },
       lastLogin: { type: "string", format: "datetime" },
       registrationDate: { type: "string", format: "datetime" },
       spotifyID: { type: "string" },
-      listened: { type: "number" },
+      country: { type: "string" },
     },
   });
 });
