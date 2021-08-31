@@ -4,6 +4,7 @@
       <card :title="profile.overview.plays">tracks played</card>
       <card :title="profile.overview.playtime">minutes listened</card>
       <card :title="formatDate(profile.user.registrationDate)">joined</card>
+      <card :title="profile.user.country">country</card>
     </cards>
     <container-item v-if="profile.genres.length">
       <container-item-label>
