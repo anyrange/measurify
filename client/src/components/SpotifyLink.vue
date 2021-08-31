@@ -3,12 +3,7 @@
     <h1 class="text-2xl md:text-3xl font-medium truncate-2">
       <slot />
     </h1>
-    <a
-      :href="formattedLink"
-      target="_blank"
-      referrerpolicy="no-referrer"
-      rel="icon"
-    >
+    <a :href="formattedLink" target="_blank" rel="no-referrer">
       <svg
         class="w-6 hover:text-green-500-spotify cursor-pointer duration-200"
         role="img"

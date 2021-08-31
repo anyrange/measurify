@@ -37,7 +37,7 @@
             rounded
             border-gray-600-spotify
             bg-gray-700-spotify
-            placeholder-gray-400
+            placeholder-gray-500-spotify
             focus:ring-2 focus:ring-opacity-50
             focus:outline-none
             disabled:opacity-40

@@ -76,15 +76,15 @@
           </router-link>
           <router-link
             class="profile-nav-link"
-            :to="{ name: 'profile-reports' }"
-          >
-            Reports
-          </router-link>
-          <router-link
-            class="profile-nav-link"
             :to="{ name: 'profile-library' }"
           >
             Library
+          </router-link>
+          <router-link
+            class="profile-nav-link"
+            :to="{ name: 'profile-reports' }"
+          >
+            Reports
           </router-link>
         </nav>
       </horizontal-scroll>

@@ -4,7 +4,6 @@ import $router from "@/router";
 const getDefaultState = () => {
   return {
     user: {
-      token: "",
       avatar: "",
       displayName: "",
       username: "",
@@ -17,13 +16,9 @@ const getDefaultState = () => {
 export default {
   state: getDefaultState(),
   mutations: {
-    SET_AUTH(
-      state,
-      { token, avatar, display_name, username, country, autoUpdate }
-    ) {
+    SET_AUTH(state, { avatar, display_name, username, country, autoUpdate }) {
       state.user = {
         ...state.user,
-        token,
         avatar,
         displayName: display_name,
         username,
