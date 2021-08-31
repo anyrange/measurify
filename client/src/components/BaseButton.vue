@@ -16,18 +16,23 @@
       transition-all
       duration-150
       ease-linear
-      shadow
+      shadow-sm
       outline-none
       focus:outline-none
     "
     :disabled="disabled || loading"
     :class="[
-      color === 'positive'
-        ? 'bg-opacity-10 bg-green-500-spotify text-green-500-spotify'
-        : '',
-      color === 'negative' ? 'bg-opacity-10 bg-red-700 text-red-500' : '',
-      color === 'white' ? 'bg-white text-black' : '',
-      rounded ? 'rounded-full' : 'rounded-lg',
+      {
+        'bg-opacity-10 bg-green-500-spotify text-green-500-spotify':
+          color === 'positive',
+      },
+      {
+        'bg-opacity-10 bg-red-700 text-red-500': color === 'negative',
+      },
+      {
+        'bg-white text-black': color === 'white',
+      },
+      [rounded ? 'rounded-full' : 'rounded-lg'],
     ]"
   >
     <svg

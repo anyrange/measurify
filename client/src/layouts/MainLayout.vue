@@ -7,11 +7,9 @@
       <the-sidebar />
       <div class="flex-1 flex flex-col bg-gray-900-spotify">
         <!-- <the-app-bar /> -->
-        <div class="content-window">
-          <div class="container flex flex-col gap-4">
-            <router-view />
-          </div>
-        </div>
+        <main class="content-window">
+          <router-view />
+        </main>
       </div>
     </div>
   </div>

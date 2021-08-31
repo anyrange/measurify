@@ -11,17 +11,15 @@
       :id="label"
       v-model="value"
       class="
-        block
         h-9
-        w-full
         px-2
-        py-2
         rounded
-        shadow-sm
         font-medium
         border border-gray-600-spotify
-        focus:ring-2 focus:ring-opacity-50
+        hover:border-gray-500-spotify hover:border-opacity-20
+        focus:ring-2
         focus:outline-none
+        disabled:opacity-40
         bg-gray-700-spotify
       "
     >

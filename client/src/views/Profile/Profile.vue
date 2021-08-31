@@ -153,9 +153,9 @@ export default {
   @apply flex flex-row gap-2;
 }
 .profile-nav .profile-nav-link {
-  @apply py-2 px-3 flex flex-shrink-0 flex-none hover:text-green-500-spotify focus:outline-none;
+  @apply py-2 px-3 flex flex-shrink-0 flex-none hover:text-green-500-spotify;
 }
 .profile-nav .router-link-exact-active {
-  @apply text-green-500-spotify border-b-2 font-medium border-green-500-spotify;
+  @apply text-green-500-spotify border-b-2 border-green-500-spotify;
 }
 </style>

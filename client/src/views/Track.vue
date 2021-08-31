@@ -58,15 +58,21 @@
         @click="getLyrics()"
         class="
           text-white text-sm
-          bg-gray-700-spotify bg-opacity-50
+          bg-gray-700-spotify bg-opacity-20
+          hover:bg-gray-700-spotify hover:bg-opacity-30
+          duration-75
+          shadow-md
           p-2
-          rounded-lg
+          rounded
           w-full
           sm:w-auto
         "
-        :class="[lyrics.text ? 'pointer-events-none' : ' cursor-pointer']"
+        :class="[lyrics.text ? 'pointer-events-none' : 'cursor-pointer']"
       >
-        <template v-if="lyrics.status === 'idle'">Click to load</template>
+        <span v-if="lyrics.status === 'idle'" class="flex gap-2 items-center">
+          <lyrics-icon class="h-10 w-10" />
+          Click to load
+        </span>
         <template v-else-if="lyrics.status === 'loading'">
           Loading...
         </template>
@@ -75,7 +81,7 @@
         </template>
         <pre
           v-else
-          class="whitespace-pre-wrap"
+          class="whitespace-pre-wrap font-sans"
           v-html="lyrics.text || 'Lyrics not found'"
         />
       </div>
@@ -86,6 +92,7 @@
 <script>
 import { getTrack, getTrackLyrics } from "@/api";
 import { formatDate, getDuration } from "@/utils/formatters";
+import { LyricsIcon } from "@/components/icons";
 import Container from "@/components/Container";
 import ContainerItem from "@/components/ContainerItem";
 import ContainerItemLabel from "@/components/ContainerItemLabel";
@@ -99,6 +106,7 @@ import Card from "@/components/Card";
 
 export default {
   components: {
+    LyricsIcon,
     Container,
     ContainerItem,
     ContainerItemLabel,
