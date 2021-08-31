@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState, mapMutations } from "vuex";
 import { notify } from "@/services/notify";
 import Notifications from "@/components/Notifications";
 
@@ -30,6 +30,7 @@ export default {
     }),
   },
   async created() {
+    this.saveHistoryLength(window.history.length);
     const isAuthenticated = this.isAuthenticated;
     try {
       await this.updateUser();
@@ -54,6 +55,9 @@ export default {
     ...mapActions({
       logout: "auth/logout",
       updateUser: "auth/updateUser",
+    }),
+    ...mapMutations({
+      saveHistoryLength: "app/SET_HISTORY",
     }),
     showRefreshUI(e) {
       this.registration = e.detail;
