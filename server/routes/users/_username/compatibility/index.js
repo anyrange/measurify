@@ -12,28 +12,25 @@ export default async function (fastify) {
           200: {
             type: "object",
             definitions: {
-              mutualItem: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  name: { type: "string" },
-                  image: { type: "string" },
-                  yourPlace: { type: "number" },
-                  userPlace: { type: "number" },
+              mutualItems: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "string" },
+                    name: { type: "string" },
+                    image: { type: "string" },
+                    yourPlace: { type: "number" },
+                    userPlace: { type: "number" },
+                  },
                 },
               },
             },
             properties: {
               compatibility: { type: "number" },
               genres: { type: "array", items: { type: "string" } },
-              artists: {
-                type: "array",
-                items: { $ref: "#/definitions/mutualItem" },
-              },
-              tracks: {
-                type: "array",
-                items: { $ref: "#/definitions/mutualItem" },
-              },
+              artists: { $ref: "#/definitions/mutualItems" },
+              tracks: { $ref: "#/definitions/mutualItems" },
               status: { type: "number" },
             },
           },

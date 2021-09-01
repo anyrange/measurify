@@ -37,7 +37,7 @@ export default async function (fastify) {
       ).lean();
 
       // get requestor's info
-      const requestor = users.find((user) => user._id == _id);
+      const requestor = users.find((user) => user._id === _id);
 
       if (!requestor)
         return reply.code(404).send({ message: "User not found" });
@@ -47,32 +47,25 @@ export default async function (fastify) {
 
       if (!users.length) return reply.send({ status: 204, friends: [] });
 
-      const route =
-        "me/following/contains?type=user&ids=" +
-        users.map(({ _id }) => _id).join();
+      const [followedList, ...mutualFollowedList] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `me/following/contains?type=user&ids=${users
+            .map(({ _id }) => _id)
+            .join()}`,
+          token: requestor.tokens.token,
+        }),
+        ...users.map((user) =>
+          fastify.spotifyAPI({
+            route: `me/following/contains?type=user&ids=${requestor._id}`,
+            token: user.tokens.token,
+          })
+        ),
+      ]);
 
-      // check if requestor follows users
-      const followedList = await fastify.spotifyAPI({
-        route,
-        token: requestor.tokens.token,
-      });
+      const friends = users.filter(
+        (user, key) => mutualFollowedList[key] && followedList[key]
+      );
 
-      const followed = users.filter((user, key) => followedList[key]);
-      if (!followed.length) return reply.send({ status: 204, friends: [] });
-
-      // check if users follow requestor
-      const mutualFollowedList = (
-        await Promise.all(
-          followed.map((user) =>
-            fastify.spotifyAPI({
-              route: `me/following/contains?type=user&ids=${requestor._id}`,
-              token: user.tokens.token,
-            })
-          )
-        )
-      ).flat(1);
-
-      const friends = followed.filter((user, key) => mutualFollowedList[key]);
       if (!friends.length) return reply.send({ status: 204, friends: [] });
 
       reply.send({

@@ -50,23 +50,33 @@ export default async function (fastify) {
         })
         .sort("-listened");
 
-      const friendsOnly = top.filter((user) => user.privacy === "friendsOnly");
+      const requestor = top.find((user) => user._id === id);
 
-      const visibility = (
-        await Promise.all(
-          friendsOnly.map((user) =>
-            fastify.spotifyAPI({
-              route: `me/following/contains?type=user&ids=${id}`,
-              token: user.token,
-            })
-          )
-        )
-      ).flat(1);
+      const friendsOnly = top.filter(
+        (user) => user.privacy === "friendsOnly" && user._id !== requestor._id
+      );
 
-      const notFriendList = friendsOnly.filter((user, key) => !visibility[key]);
+      const [followedList, ...mutualFollowedList] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `me/following/contains?type=user&ids=${friendsOnly
+            .map(({ _id }) => _id)
+            .join()}`,
+          token: requestor.token,
+        }),
+        ...friendsOnly.map((user) =>
+          fastify.spotifyAPI({
+            route: `me/following/contains?type=user&ids=${requestor._id}`,
+            token: user.token,
+          })
+        ),
+      ]);
+
+      const notFriends = friendsOnly.filter(
+        (user, key) => !mutualFollowedList[key] || !followedList[key]
+      );
 
       top.forEach((user) => {
-        user.canSee = !notFriendList.find(
+        user.canSee = !notFriends.find(
           (notFriend) => user._id === notFriend._id
         );
       });
