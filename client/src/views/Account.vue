@@ -105,14 +105,14 @@ export default {
     { label: "Public", value: "public" },
     { label: "Friends only", value: "friendsOnly" },
   ],
-  usernameRegex: new RegExp(`[a-z0-9_-]{3,26}$`),
+  usernameRegex: new RegExp(`^[a-z0-9_-]{3,26}$`),
   computed: {
     ...mapState({
       user: (state) => state.auth.user,
     }),
     isDisabledSubmitButton() {
       return (
-        !!this.account.username.match(this.$options.usernameRegex) &&
+        !this.account.username.match(this.$options.usernameRegex) ||
         deepEqual(this.account, this.accountCopy)
       );
     },
