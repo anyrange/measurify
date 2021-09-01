@@ -89,6 +89,9 @@ export default {
     search() {
       this.page = 1;
     },
+    range() {
+      this.page = 1;
+    },
     async pageStateOptions(query) {
       this.$router.push({ path: this.$route.path, query });
       await this.getListeningHistory(query);
