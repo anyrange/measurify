@@ -1,4 +1,3 @@
-import User from "../../../models/User.js";
 export default async function (fastify) {
   fastify.get(
     "",
@@ -34,23 +33,24 @@ export default async function (fastify) {
     async function (req, reply) {
       const id = req.session.get("id");
 
-      const top = await User.aggregate()
-        .match({
-          "settings.privacy": { $ne: "private" },
-          listeningHistory: { $ne: [] },
-        })
-        .project({
-          display_name: 1,
-          avatar: 1,
-          username: "$settings.username",
-          token: "$tokens.token",
-          lastLogin: 1,
-          privacy: "$settings.privacy",
-          listened: { $size: "$listeningHistory" },
-        })
-        .sort("-listened");
-
-      const requestor = top.find((user) => user._id === id);
+      const [requestor, top] = await Promise.all([
+        fastify.db.User.findById(id, "tokens.token"),
+        fastify.db.User.aggregate()
+          .match({
+            "settings.privacy": { $ne: "private" },
+            listeningHistory: { $ne: [] },
+          })
+          .project({
+            display_name: 1,
+            avatar: 1,
+            username: "$settings.username",
+            token: "$tokens.token",
+            lastLogin: 1,
+            privacy: "$settings.privacy",
+            listened: { $size: "$listeningHistory" },
+          })
+          .sort("-listened"),
+      ]);
 
       const friendsOnly = top.filter(
         (user) => user.privacy === "friendsOnly" && user._id !== requestor._id
@@ -61,7 +61,7 @@ export default async function (fastify) {
           route: `me/following/contains?type=user&ids=${friendsOnly
             .map(({ _id }) => _id)
             .join()}`,
-          token: requestor.token,
+          token: requestor.tokens.token,
         }),
         ...friendsOnly.map((user) =>
           fastify.spotifyAPI({
