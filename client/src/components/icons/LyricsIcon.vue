@@ -1,12 +1,12 @@
 <template>
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
+    viewBox="0 0 16 16"
     fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
     <path
-      d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 5h-3v5.5c0 1.38-1.12 2.5-2.5 2.5S10 13.88 10 12.5s1.12-2.5 2.5-2.5c.57 0 1.08.19 1.5.51V5h4v2zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"
+      d="M14 0H2C0.9 0 0 0.9 0 2V14C0 15.1 0.9 16 2 16H14C15.1 16 16 15.1 16 14V2C16 0.9 15.1 0 14 0ZM12 5H9V10.5C9 11.88 7.88 13 6.5 13C5.12 13 4 11.88 4 10.5C4 9.12 5.12 8 6.5 8C7.07 8 7.58 8.19 8 8.51V3H12V5Z"
+      fill="currentColor"
     />
   </svg>
 </template>

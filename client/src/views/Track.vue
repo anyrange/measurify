@@ -69,8 +69,8 @@
         "
         :class="[lyrics.text ? 'pointer-events-none' : 'cursor-pointer']"
       >
-        <span v-if="lyrics.status === 'idle'" class="flex gap-2 items-center">
-          <lyrics-icon class="h-10 w-10" />
+        <span v-if="lyrics.status === 'idle'" class="flex gap-3 items-center">
+          <lyrics-icon class="h-8 w-8" />
           Click to load
         </span>
         <template v-else-if="lyrics.status === 'loading'">
