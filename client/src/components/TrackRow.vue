@@ -53,9 +53,12 @@
         {{ getDuration(track.duration_ms) }}
       </h4>
     </div>
-    <span class="w-1/4 ml-auto mr-1 text-right" v-if="track.played_at">
+    <div class="w-1/4 ml-auto mr-1 text-right" v-if="track.played_at">
       {{ getDateFromNow(track.played_at) }}
-    </span>
+    </div>
+    <div class="w-1/4 ml-auto mr-1 text-right" v-if="current">
+      <slot name="current-track" />
+    </div>
   </div>
 </template>
 
@@ -73,6 +76,11 @@ export default {
     },
     place: {
       type: [Number, Boolean],
+      required: false,
+      default: false,
+    },
+    current: {
+      type: Boolean,
       required: false,
       default: false,
     },

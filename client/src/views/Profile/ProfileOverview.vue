@@ -23,6 +23,7 @@
         </router-link>
       </container-item-label>
       <track-rows>
+        <current-track />
         <track-row
           v-for="(item, index) in profile.history.slice(0, 5)"
           :key="index + item.id"
@@ -91,6 +92,7 @@ import TrackRow from "@/components/TrackRow";
 import Badge from "@/components/Badge";
 import Cards from "@/components/Cards";
 import Card from "@/components/Card";
+import CurrentTrack from "@/components/CurrentTrack";
 
 export default {
   components: {
@@ -104,6 +106,7 @@ export default {
     Badge,
     Cards,
     Card,
+    CurrentTrack,
   },
   computed: {
     ...mapState({

@@ -64,6 +64,9 @@ export function getProfile({
 export function getProfileReports({ username }) {
   return api.get(`/users/${username}/reports`);
 }
+export function getProfileCurrentTrack({ username }) {
+  return api.get(`/users/${username}/player/currently-playing`);
+}
 export function getProfileListeningHistory({
   username,
   page = 1,
