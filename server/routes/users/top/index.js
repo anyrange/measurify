@@ -72,7 +72,7 @@ export default async function (fastify) {
       ]);
 
       const notFriends = friendsOnly.filter(
-        (user, key) => !mutualFollowedList[key] || !followedList[key]
+        (user, key) => !mutualFollowedList[key][0] || !followedList[key]
       );
 
       top.forEach((user) => {

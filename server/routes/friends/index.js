@@ -63,7 +63,7 @@ export default async function (fastify) {
       ]);
 
       const friends = users.filter(
-        (user, key) => mutualFollowedList[key] && followedList[key]
+        (user, key) => mutualFollowedList[key][0] && followedList[key]
       );
 
       if (!friends.length) return reply.send({ status: 204, friends: [] });
