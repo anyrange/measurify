@@ -2,7 +2,6 @@
   <div v-if="loading" class="bg-gray-700-spotify animate-pulse">&nbsp;</div>
   <div
     v-else-if="parallax"
-    class="bg-no-repeat bg-fixed bg-top bg-contain"
     :style="{ backgroundImage: `url('${imageUrl}')` }"
   />
   <img

@@ -62,17 +62,12 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.custom-scrollbar .content-window::-webkit-scrollbar {
-  @apply w-2;
+.custom-scrollbar .content-window::-webkit-scrollbar,
+.horizontal-scrollbar::-webkit-scrollbar {
+  @apply w-2 h-1;
 }
-.custom-scrollbar .content-window::-webkit-scrollbar-thumb {
-  @apply rounded-lg bg-gray-700-spotify;
-}
-
-.custom-scrollbar .horizontal-scrollbar::-webkit-scrollbar {
-  @apply h-1;
-}
-.custom-scrollbar .horizontal-scrollbar::-webkit-scrollbar-thumb {
+.custom-scrollbar .content-window::-webkit-scrollbar-thumb,
+.horizontal-scrollbar::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-gray-700-spotify;
 }
 
@@ -100,7 +95,7 @@
 .responsive-picture__image {
   @apply flex flex-none;
   @apply rounded-b-2xl sm:rounded-full md:rounded-lg w-full h-half sm:w-40 sm:h-40 md:w-48 md:h-48 duration-300;
-  @apply bg-fixed	sm:bg-local sm:bg-cover;
+  @apply sm:bg-local sm:bg-cover bg-no-repeat bg-top bg-fixed bg-contain;
 }
 @media only screen and (max-width: 500px) {
   .responsive-picture__image {
@@ -114,6 +109,7 @@
 .default-border {
   @apply border-gray-700-spotify;
 }
+
 hr {
   @apply default-border;
 }
