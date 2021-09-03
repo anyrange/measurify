@@ -30,10 +30,12 @@ export default async function (fastify) {
     async function (req, reply) {
       const { user } = req;
 
-      const currentPlayer = await fastify.spotifyAPI({
-        route: `me/player/currently-playing?market=${user.country}`,
-        token: user.tokens.token,
-      });
+      const currentPlayer = await fastify
+        .spotifyAPI({
+          route: `me/player/currently-playing?market=${user.country}`,
+          token: user.tokens.token,
+        })
+        .catch(() => reply.code(204).send());
 
       reply.send({
         track: Object.assign(currentPlayer.item, {
