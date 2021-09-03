@@ -19,15 +19,15 @@ export default async function (fastify) {
                     display_name: { type: "string" },
                     lastLogin: { type: "string", format: "datetime" },
                     lastTrack: { $ref: "track#" },
+                    lastPlayed: { string: "string", format: "datetime" },
                   },
                 },
               },
             },
           },
         },
-        tags: ["pages"],
+        tags: ["friends"],
       },
-      preValidation: [fastify.auth],
     },
     async function (req, reply) {
       const _id = req.session.get("id");
@@ -35,6 +35,7 @@ export default async function (fastify) {
       let users = await fastify.db.User.aggregate()
         .project({
           track: { $first: "$listeningHistory.track" },
+          lastPlayed: { $first: "$listeningHistory.played_at" },
           username: "$settings.username",
           "tokens.token": 1,
           display_name: 1,
