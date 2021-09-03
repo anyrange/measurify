@@ -18,6 +18,7 @@ export default async function (fastify) {
                     avatar: { type: "string" },
                     display_name: { type: "string" },
                     lastLogin: { type: "string", format: "datetime" },
+                    lastTrack: { $ref: "track#" },
                   },
                 },
               },
@@ -31,10 +32,35 @@ export default async function (fastify) {
     async function (req, reply) {
       const _id = req.session.get("id");
 
-      let users = await fastify.db.User.find(
-        {},
-        "settings.username tokens.token display_name avatar lastLogin"
-      ).lean();
+      let users = await fastify.db.User.aggregate()
+        .project({
+          track: { $first: "$listeningHistory.track" },
+          username: "$settings.username",
+          "tokens.token": 1,
+          display_name: 1,
+          avatar: 1,
+          lastLogin: 1,
+        })
+        .lookup({
+          from: "tracks",
+          localField: "track",
+          foreignField: "_id",
+          as: "lastTrack",
+        })
+        .addFields({ lastTrack: { $first: "$lastTrack" } })
+        .lookup({
+          from: "albums",
+          localField: "lastTrack.album",
+          foreignField: "_id",
+          as: "lastTrack.album",
+        })
+        .addFields({ "lastTrack.album": { $first: "$lastTrack.album" } })
+        .lookup({
+          from: "artists",
+          localField: "lastTrack.artists",
+          foreignField: "_id",
+          as: "lastTrack.artists",
+        });
 
       // get requestor's info
       const requestor = users.find((user) => user._id === _id);
@@ -68,14 +94,7 @@ export default async function (fastify) {
 
       if (!friends.length) return reply.send({ status: 204, friends: [] });
 
-      reply.send({
-        friends: friends.map((friend) => ({
-          username: friend.settings.username,
-          avatar: friend.avatar,
-          display_name: friend.display_name,
-          lastLogin: friend.lastLogin,
-        })),
-      });
+      reply.send({ friends });
     }
   );
 }

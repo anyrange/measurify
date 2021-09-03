@@ -39,7 +39,7 @@ export default async function (fastify) {
 
       reply.send({
         track: Object.assign(currentPlayer.item, {
-          image: currentPlayer.item.album.images[0].url || "",
+          image: currentPlayer.item.album.images[1].url || "",
         }),
       });
     }
