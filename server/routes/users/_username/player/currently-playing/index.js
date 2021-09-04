@@ -16,15 +16,9 @@ export default async function (fastify) {
           200: {
             type: "object",
             properties: {
-              track: {
-                type: "object",
-                properties: {
-                  ...fastify.getSchema("track").properties,
-                  duration_ms: { type: "number" },
-                  played_at: { type: "string", format: "date" },
-                },
-              },
-              status: { type: "number" },
+              ...fastify.getSchema("track").properties,
+              duration_ms: { type: "number" },
+              played_at: { type: "string", format: "date" },
             },
           },
         },
@@ -41,11 +35,11 @@ export default async function (fastify) {
         })
         .catch(() => reply.code(204).send());
 
-      reply.send({
-        track: Object.assign(currentPlayer.item, {
+      reply.send(
+        Object.assign(currentPlayer.item, {
           image: currentPlayer.item.album.images[1].url || "",
-        }),
-      });
+        })
+      );
     }
   );
 }
