@@ -20,7 +20,7 @@ export default async function (fastify) {
               popularity: { type: "number" },
               preview_url: { type: "string" },
               release_date: { type: "string" },
-              duration_ms: { type: "string" },
+              duration_ms: { type: "number" },
               lastPlayedAt: { type: "string", format: "datetime" },
               isPlaying: { type: "boolean" },
               isLiked: { type: "boolean" },
