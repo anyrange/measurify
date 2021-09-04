@@ -1,4 +1,8 @@
 export default async function (fastify) {
+  fastify.addHook("onSend", async (req, reply) => {
+    if (reply.statusCode === 200) reply.removeHeader("Cache-Control");
+  });
+
   fastify.get(
     "",
     {
