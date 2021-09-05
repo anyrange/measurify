@@ -6,25 +6,33 @@
     <div class="flex-1 flex overflow-y-hidden">
       <the-sidebar />
       <div class="flex-1 flex flex-col bg-gray-900-spotify">
-        <!-- <the-app-bar /> -->
-        <main class="content-window">
+        <main
+          class="
+            overflow-y-auto
+            sm:px-8
+            px-4
+            py-4
+            sm:mb-0
+            mb-12
+            flex flex-col
+            gap-4
+          "
+          id="content-window"
+        >
           <router-view />
         </main>
       </div>
+      <friends-list
+        v-if="breakpoints.is === 'xl' || breakpoints.is === '2xl'"
+      />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import TheSidebar from "@/components/TheSidebar";
-import TheAppBar from "@/components/TheAppBar";
+import FriendsList from "@/components/FriendsList";
+import useBreakpoints from "@/composable/useBreakpoints";
 
-export default {
-  name: "Layout",
-  components: {
-    TheSidebar,
-    // eslint-disable-next-line vue/no-unused-components
-    TheAppBar,
-  },
-};
+let breakpoints = useBreakpoints();
 </script>
