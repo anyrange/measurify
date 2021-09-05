@@ -37,10 +37,10 @@
 <script>
 import { getFriends } from "@/api";
 import { getDateFromNow } from "@/utils/formatters";
+import { orderByDate } from "@/utils/arrays";
 import BaseImg from "@/components/BaseImg";
 
 export default {
-  name: "Friends",
   components: {
     BaseImg,
   },
@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     friendsSortedByLastLogin() {
-      return this.orderByDate(this.friends, "lastLogin").reverse();
+      return this.orderByDate(this.friends, "lastLogin");
     },
   },
   async created() {
@@ -62,11 +62,7 @@ export default {
   },
   methods: {
     getDateFromNow,
-    orderByDate(array, key) {
-      return array.sort(
-        (a, b) => new Date(a[key]).getTime() - new Date(b[key]).getTime()
-      );
-    },
+    orderByDate,
   },
 };
 </script>
