@@ -4,6 +4,7 @@ import Artist from "../models/Artist.js";
 import Album from "../models/Album.js";
 import Track from "../models/Track.js";
 import Playlist from "../models/Playlist.js";
+import FriendRequest from "../models/FriendRequest.js";
 import mongoose from "mongoose";
 
 mongoose.connect(
@@ -21,7 +22,14 @@ mongoose.connect(
 );
 
 const plugin = fp(async function plugin(fastify) {
-  fastify.decorate("db", { User, Artist, Album, Track, Playlist });
+  fastify.decorate("db", {
+    User,
+    Artist,
+    Album,
+    Track,
+    Playlist,
+    FriendRequest,
+  });
 });
 
 export default plugin;

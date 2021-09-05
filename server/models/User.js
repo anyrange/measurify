@@ -23,6 +23,7 @@ const schema = new Schema({
     refreshToken: { type: String, required: true },
     token: { type: String, required: true },
   },
+  friends: [{ type: String, ref: "User" }],
   lastLogin: { type: Date, default: Date.now },
   registrationDate: { type: Date, default: Date.now },
 });
