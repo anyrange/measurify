@@ -2,7 +2,6 @@
   <div
     class="
       flex-row flex flex-nowrap
-      horizontal-scrollbar
       overflow-x-auto
       gap-2
       -mx-4
@@ -10,6 +9,7 @@
       px-4
       sm:px-0
     "
+    id="horizontal-scrollbar"
     style="-webkit-overflow-scrolling: touch"
   >
     <slot></slot>

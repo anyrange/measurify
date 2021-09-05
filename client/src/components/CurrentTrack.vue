@@ -1,7 +1,7 @@
 <template>
   <track-row v-if="currentTrack" :track="currentTrack" current>
     <template #current-track>
-      <div class="flex flex-row gap-1 items-center justify-end">
+      <div class="flex flex-row gap-1 items-center justify-end" title="now">
         <img src="/now_playing.gif" alt="Listening Now" />
         <span>Listening now</span>
       </div>
@@ -29,19 +29,10 @@ export default {
       profile: (state) => state.profile.profile,
     }),
   },
-  async mounted() {
-    await this.getCurrentTrack();
-    setInterval(async () => {
-      await this.getCurrentTrack();
-    }, 15000);
-  },
-  methods: {
-    async getCurrentTrack() {
-      const { track } = await getProfileCurrentTrack({
-        username: this.profile.user.username,
-      });
-      this.currentTrack = track;
-    },
+  async created() {
+    this.currentTrack = await getProfileCurrentTrack({
+      username: this.profile.user.username,
+    });
   },
 };
 </script>

@@ -97,22 +97,16 @@ export default {
 
 <style lang="postcss">
 .sidebar {
-  @apply flex sm:flex-col flex-row gap-2 flex-none z-50 sm:h-screen h-12 sm:px-4 p-0 sm:w-20 md:w-56 xl:w-72 w-full sm:relative fixed bottom-0 sm:inset-0 bg-gray-800-spotify;
+  @apply flex sm:flex-col flex-row gap-2 flex-none z-50 sm:h-screen h-12 sm:px-2 p-0 sm:w-20 md:w-60 xl:w-60 w-full sm:relative fixed bottom-0 sm:inset-0 bg-gray-800-spotify;
 }
 .sidebar__item {
-  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-4 p-2 items-center md:justify-start sm:justify-center justify-center w-full cursor-pointer sm:rounded-md rounded-none sm:hover:text-white duration-75;
+  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 items-center md:justify-start sm:justify-center justify-center w-full cursor-pointer sm:rounded rounded-none sm:hover:text-white duration-75;
 }
 .sidebar__item__title {
   @apply md:flex hidden font-medium text-sm select-none;
 }
-.sidebar__item__username {
-  @apply text-white text-base font-medium;
-}
 .sidebar__item__icon {
-  @apply h-7 w-7 sm:w-8 sm:h-8 fill-current;
-}
-.sidebar__item__avatar {
-  @apply h-7 w-7 sm:w-10 sm:h-10 rounded-full object-cover;
+  @apply md:h-6 md:w-6 w-8 h-8 fill-current;
 }
 .sidebar .router-link-active {
   @apply text-green-500-spotify sm:text-white bg-gray-800-spotify sm:bg-gray-700-spotify;

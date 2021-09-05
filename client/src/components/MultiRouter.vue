@@ -4,7 +4,7 @@
       <router-link
         class="truncate"
         :class="customClass"
-        :to="{ name: name, params: { id: item.id || '' } }"
+        :to="{ name: 'artist', params: { artistId: item.id || '' } }"
       >
         {{ item.name }}
       </router-link>
@@ -20,11 +20,6 @@ export default {
     routes: {
       type: Array,
       required: true,
-    },
-    name: {
-      type: String,
-      required: false,
-      default: "artist",
     },
     customClass: {
       type: String,

@@ -47,14 +47,15 @@ export default {
       return this.state.active();
     },
     isActive() {
-      if (this.name === this.active) return true;
-      return false;
+      return this.name === this.active;
     },
   },
   methods: {
     activateTab(name) {
-      // if (!this.disabled && name !== this.active)
-      if (!this.disabled) return this.selectTab(name);
+      if (this.disabled) {
+        return;
+      }
+      this.selectTab(name);
     },
   },
 };
