@@ -1,79 +1,82 @@
 <template>
   <loading-spinner v-if="loading" />
-  <div v-else class="w-full flex flex-col gap-4">
-    <div class="w-full flex flex-row items-center gap-4">
-      <base-img
-        :src="profile.user.avatar"
-        :alt="profile.user.username"
-        image-type="profile"
-        class="
-          flex flex-none
-          object-cover
-          rounded-full
-          w-20
-          h-20
-          sm:w-36
-          sm:h-36
-          duration-300
-        "
-      />
-      <div
-        class="
-          gap-2
-          w-full
-          flex flex-row flex-wrap
-          sm:flex-col
-          items-center
-          sm:items-start
-          justify-between
-          sm:justify-start
-        "
-      >
-        <div class="flex flex-col">
-          <spotify-link
-            :link="`https://open.spotify.com/user/${profile.user.spotifyID}`"
-          >
-            {{ profile.user.display_name }}
-          </spotify-link>
-          <h3 class="font-light">@{{ profile.user.username }}</h3>
-        </div>
-        <router-link
+  <template v-else>
+    <error-message v-if="error" />
+    <div v-else class="w-full flex flex-col gap-4">
+      <div class="w-full flex flex-row items-center gap-4">
+        <base-img
+          :src="profile.user.avatar"
+          :alt="profile.user.username"
+          image-type="profile"
           class="
-            hover:bg-gray-800-spotify
-            text-white
-            flex
-            items-center
-            justify-center
-            text-center
-            duration-75
-            border
-            default-border
-            rounded
-            px-2
-            py-1
+            flex flex-none
+            object-cover
+            rounded-full
+            w-20
+            h-20
+            sm:w-36
+            sm:h-36
+            duration-300
           "
-          v-if="user.username === profile.user.username"
-          :to="{ name: 'account' }"
+        />
+        <div
+          class="
+            gap-2
+            w-full
+            flex flex-row flex-wrap
+            sm:flex-col
+            items-center
+            sm:items-start
+            justify-between
+            sm:justify-start
+          "
         >
-          Settings
-        </router-link>
+          <div class="flex flex-col">
+            <spotify-link
+              :link="`https://open.spotify.com/user/${profile.user.spotifyID}`"
+            >
+              {{ profile.user.display_name }}
+            </spotify-link>
+            <h3 class="font-light">@{{ profile.user.username }}</h3>
+          </div>
+          <router-link
+            class="
+              hover:bg-gray-800-spotify
+              text-white
+              flex
+              items-center
+              justify-center
+              text-center
+              duration-75
+              border
+              default-border
+              rounded
+              px-2
+              py-1
+            "
+            v-if="user.username === profile.user.username"
+            :to="{ name: 'account' }"
+          >
+            Settings
+          </router-link>
+        </div>
       </div>
-    </div>
-    <div class="fullwidth">
-      <horizontal-scroll>
-        <nav class="profile-nav">
-          <router-link
-            class="profile-nav-link"
-            :to="{ name: 'profile-overview' }"
-          >
-            Overview
-          </router-link>
-          <router-link
-            class="profile-nav-link"
-            :to="{ name: 'profile-history' }"
-          >
-            History
-          </router-link>
+      <div class="fullwidth">
+        <horizontal-scroll>
+          <nav class="profile-nav">
+            <router-link
+              class="profile-nav-link"
+              :to="{ name: 'profile-overview' }"
+            >
+              Overview
+            </router-link>
+            <router-link
+              class="profile-nav-link"
+              :to="{ name: 'profile-history' }"
+            >
+              History
+            </router-link>
+            <!--
           <router-link
             class="profile-nav-link"
             :to="{ name: 'profile-library' }"
@@ -86,15 +89,16 @@
           >
             Reports
           </router-link>
-        </nav>
-      </horizontal-scroll>
+          --></nav>
+        </horizontal-scroll>
+      </div>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" />
-      </keep-alive>
-    </router-view>
-  </div>
+  </template>
 </template>
 
 <script>
@@ -103,16 +107,19 @@ import { formatDate } from "@/utils/formatters";
 import HorizontalScroll from "@/components/HorizontalScroll";
 import SpotifyLink from "@/components/SpotifyLink";
 import BaseImg from "@/components/BaseImg";
+import ErrorMessage from "@/components/ErrorMessage";
 
 export default {
   components: {
     HorizontalScroll,
     SpotifyLink,
     BaseImg,
+    ErrorMessage,
   },
   data() {
     return {
       loading: true,
+      error: false,
     };
   },
   computed: {
@@ -129,9 +136,13 @@ export default {
         }
         try {
           this.loading = true;
+          this.error = false;
           await this.getProfile(newValue);
+          this.$meta.setTitle(
+            `${this.profile.user.display_name} (@${this.profile.user.username})`
+          );
         } catch (error) {
-          // this.$router.push({ name: "home" });
+          this.error = true;
         } finally {
           this.loading = false;
         }

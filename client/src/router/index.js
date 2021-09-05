@@ -7,18 +7,18 @@ const routes = [
   {
     path: "/",
     name: "login",
-    component: () => import("@/views/Login.vue"),
-    beforeEnter(to, from, next) {
-      isAuthenticated() ? next({ name: "home" }) : next();
+    meta: {
+      authForbidden: true,
     },
+    component: () => import("@/views/Login.vue"),
   },
   {
-    path: "/dashboard",
+    path: "/",
     name: "home",
-    component: () => import("@/layouts/MainLayout.vue"),
-    beforeEnter(to, from, next) {
-      isAuthenticated() ? next() : next({ name: "login" });
+    meta: {
+      authRequired: true,
     },
+    component: () => import("@/layouts/MainLayout.vue"),
     redirect: () => {
       return {
         name: "profile",
@@ -32,7 +32,11 @@ const routes = [
         path: "/:username",
         name: "profile",
         component: () => import("@/views/Profile/Profile.vue"),
-        redirect: { name: "profile-overview" },
+        redirect: () => {
+          return {
+            name: "profile-overview",
+          };
+        },
         children: [
           {
             path: "",
@@ -57,58 +61,51 @@ const routes = [
         ],
       },
       {
-        path: "/track/:id",
+        path: "/track/:trackId",
         name: "track",
         component: () => import("@/views/Track.vue"),
-        meta: {
-          title: "",
-        },
       },
       {
-        path: "/artist/:id",
+        path: "/artist/:artistId",
         name: "artist",
         component: () => import("@/views/Artist.vue"),
-        meta: {
-          title: "",
-        },
       },
       {
-        path: "/album/:id",
+        path: "/album/:albumId",
         name: "album",
         component: () => import("@/views/Album.vue"),
-        meta: {
-          title: "",
-        },
       },
       {
         path: "/account",
         name: "account",
-        component: () => import("@/views/Account.vue"),
         meta: {
           title: "Account",
         },
+        component: () => import("@/views/Account.vue"),
       },
       {
         path: "/friends",
         name: "friends",
-        component: () => import("@/views/Friends.vue"),
         meta: {
           title: "Friends",
         },
+        component: () => import("@/views/Friends.vue"),
       },
       {
         path: "/leaderboard",
         name: "leaderboard",
-        component: () => import("@/views/Leaderboard.vue"),
         meta: {
           title: "Listeners Leaderboard",
         },
+        component: () => import("@/views/Leaderboard.vue"),
       },
     ],
   },
   {
     path: "/:pathMatch(.*)*",
-    redirect: { name: "home" },
+    redirect: {
+      name: "home",
+    },
   },
 ];
 
@@ -117,8 +114,17 @@ const router = createRouter({
   routes,
 });
 
-router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} - Spotiworm` : "Spotiworm";
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
+  if (to.meta.authForbidden) {
+    isAuthenticated() ? next({ name: "home" }) : next();
+  } else if (to.meta.authRequired) {
+    isAuthenticated() ? next() : next({ name: "login" });
+  } else {
+    next();
+  }
 });
 
 export default router;
