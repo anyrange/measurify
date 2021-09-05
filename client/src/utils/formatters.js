@@ -1,17 +1,28 @@
-import { formatDistanceToNowStrict, addSeconds, format } from "date-fns";
+import dayjs from "dayjs";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import durationPlugin from "dayjs/plugin/duration";
+
+require("./shortRelativeTime.js");
+
+dayjs.locale("en");
+
+dayjs.extend(durationPlugin);
+dayjs.extend(relativeTimePlugin);
 
 export const getDateFromNow = (date) => {
-  return formatDistanceToNowStrict(Date.parse(date), { addSuffix: true });
+  return dayjs(Date.parse(date)).fromNow();
 };
 
 export const getDateFromNowShort = (date) => {
-  return formatDistanceToNowStrict(Date.parse(date));
+  return dayjs(Date.parse(date))
+    .locale("s-en")
+    .fromNow(true);
 };
 
 export const formatDate = (date) => {
-  return format(new Date(date), "dd MMM yyyy");
+  return dayjs(date).format("MMM D, YYYY");
 };
 
 export const getDuration = (time) => {
-  return format(addSeconds(new Date(0), time / 1000), "mm:ss");
+  return dayjs.duration(time).format("mm:ss");
 };
