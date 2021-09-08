@@ -12,8 +12,7 @@ export default async function (fastify) {
       },
     },
     (request, reply) => {
-      const redirect_uri =
-        process.env.REDIRECT_URI || "http://localhost:8888/auth/callback";
+      const redirect_uri = `${process.env.VUE_APP_SERVER_URI}/auth/callback`;
 
       const query_uri = request.query.sw_redirect;
       const scopes = [

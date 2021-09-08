@@ -4,16 +4,18 @@ import fp from "fastify-plugin";
 
 export default fp(async function (fastify) {
   const YEAR = 60 * 60 * 24 * 365;
+  const domain = new URL(process.env.VUE_APP_SERVER_URI).hostname;
 
   fastify.register(import("fastify-secure-session"), {
     cookieName: "sw_session",
     key: Buffer.from(process.env.SECRET_COOKIE, "hex"),
     cookie: {
       path: "/",
-      sameSite: "none",
+      sameSite: "strict",
       httpOnly: true,
       secure: true,
       maxAge: YEAR,
+      domain,
     },
   });
 

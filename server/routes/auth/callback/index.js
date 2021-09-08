@@ -91,8 +91,7 @@ export default async function (fastify) {
 }
 
 const fetchTokens = async (code, sw_redirect) => {
-  const redirect_uri =
-    process.env.REDIRECT_URI || "http://localhost:8888/auth/callback";
+  const redirect_uri = `${process.env.VUE_APP_SERVER_URI}/auth/callback`;
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", `${redirect_uri}?sw_redirect=${sw_redirect}`);
