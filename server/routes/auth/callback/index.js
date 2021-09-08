@@ -9,21 +9,17 @@ export default async function (fastify) {
       schema: {
         querystring: {
           type: "object",
-          required: ["sw_redirect"],
-          properties: {
-            sw_redirect: { type: "string" },
-            code: { type: "string" },
-          },
+          properties: { code: { type: "string" } },
         },
         tags: ["auth"],
       },
     },
     async (request, reply) => {
       const code = request.query.code || null;
-      const { sw_redirect } = request.query;
+      const sw_redirect = process.env.CLIENT_URI;
       try {
         //get tokens
-        const tokens = await fetchTokens(code, sw_redirect);
+        const tokens = await fetchTokens(code);
 
         if (tokens.error) throw new Error(tokens.error);
 
@@ -90,11 +86,11 @@ export default async function (fastify) {
   );
 }
 
-const fetchTokens = async (code, sw_redirect) => {
+const fetchTokens = async (code) => {
   const redirect_uri = `${process.env.VUE_APP_SERVER_URI}/auth/callback`;
   const params = new URLSearchParams();
   params.append("code", code);
-  params.append("redirect_uri", `${redirect_uri}?sw_redirect=${sw_redirect}`);
+  params.append("redirect_uri", `${redirect_uri}`);
   params.append("grant_type", "authorization_code");
 
   const res = await fetch(`https://accounts.spotify.com/api/token`, {

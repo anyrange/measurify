@@ -27,8 +27,7 @@ api.interceptors.response.use(
 );
 
 export function redirect() {
-  const url = location.protocol + "//" + location.host + location.pathname;
-  window.location.href = `${SERVER_URI}/auth/login?sw_redirect=${url}`;
+  window.location.href = `${SERVER_URI}/auth/login`;
 }
 export function getCurrentUser() {
   return api.get("/users/me");

@@ -11,9 +11,9 @@ const __dirname = dirname(__filename);
 const app = fastify();
 
 // plugins
-const WHITE_LIST = process.env.URI_LIST.split(",");
+
 app.register(import("fastify-cors"), {
-  origin: WHITE_LIST,
+  origin: process.env.CLIENT_URI,
   credentials: true,
 });
 
