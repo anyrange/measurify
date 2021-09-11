@@ -3,7 +3,7 @@ export default async function (fastify) {
     "",
     {
       schema: {
-        description: "accept",
+        summary: "accept request",
         params: {
           type: "object",
           properties: { username: { type: "string" } },

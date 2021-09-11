@@ -3,6 +3,7 @@ export default async function (fastify) {
     "",
     {
       schema: {
+        summary: "check all requests",
         response: {
           200: {
             type: "array",
