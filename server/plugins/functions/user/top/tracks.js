@@ -67,7 +67,7 @@ export const tracks = ({
   }
 
   agg.push(
-    { $sort: { plays: -1, name: 1 } },
+    { $sort: { plays: -1 } },
     {
       $group: {
         _id: "",
@@ -90,7 +90,8 @@ export const tracks = ({
         items: 1,
         tracks: { $slice: ["$tracks", (page - 1) * range, range] },
       },
-    }
+    },
+    { $sort: { name: 1 } }
   );
   return User.aggregate(agg);
 };

@@ -59,7 +59,7 @@ const plugin = fp(async function plugin(fastify) {
           artists: "$artists",
         },
       },
-      { $sort: { plays: -1 } }
+      { $sort: { plays: -1, name: 1 } }
     );
 
     return fastify.db.User.aggregate(agg);
