@@ -58,14 +58,11 @@ export async function parseNewTracks(user, limit = 8) {
     const lastPlayedAt = user.listeningHistory[0].played_at;
 
     listenedTracks.items.forEach((item) => {
-      if (
-        Date.parse(lastPlayedAt) >= Date.parse(item.played_at) ||
-        lastPlayedAt.toISOString() === item.played_at
-      )
-        return;
-      newSongs.push(formatTrack(item));
+      if (Date.parse(lastPlayedAt.toISOString()) < Date.parse(item.played_at))
+        newSongs.push(formatTrack(item));
     });
   }
+
   if (!newSongs.length) return;
 
   await Promise.all([
