@@ -45,6 +45,11 @@ export default {
       this.updateSW = registerSW({
         immediate: true,
         onNeedRefresh() {
+          if (vm.user.autoUpdate) {
+            notify.show({ type: "success", message: "Updating..." });
+            vm.updateServiceWorker();
+            return;
+          }
           notify.show({
             type: "success",
             message: "Update available",
