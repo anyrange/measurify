@@ -97,6 +97,9 @@ export default {
       await this.getListeningHistory(query);
     },
   },
+  async mounted() {
+    await this.getListeningHistory(this.pageStateOptions);
+  },
   methods: {
     ...mapActions({
       getHistory: "profile/getHistory",
@@ -111,9 +114,6 @@ export default {
         this.loading = false;
       }
     },
-  },
-  async mounted() {
-    await this.getListeningHistory(this.pageStateOptions);
   },
 };
 </script>
