@@ -35,7 +35,7 @@ import Container from "@/components/Container.vue";
 import ContainerItem from "@/components/ContainerItem.vue";
 import Pagination from "@/components/Pagination.vue";
 import TrackRows from "@/components/TrackRows.vue";
-import TrackRow from "@/components/TrackRow.vye";
+import TrackRow from "@/components/TrackRow.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import BaseSelect from "@/components/BaseSelect.vue";
 import EmptyMessage from "@/components/EmptyMessage.vue";
