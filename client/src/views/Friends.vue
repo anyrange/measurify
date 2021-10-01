@@ -38,7 +38,7 @@
 import { getFriends } from "@/api";
 import { getDateFromNow } from "@/utils/formatters";
 import { orderByDate } from "@/utils/arrays";
-import BaseImg from "@/components/BaseImg";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   components: {

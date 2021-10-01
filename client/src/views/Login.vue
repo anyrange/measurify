@@ -1,7 +1,7 @@
 <template>
   <div
     class="min-h-screen flex justify-center items-center bg-cover bg-no-repeat"
-    :style="{ backgroundImage: `url('/img/bg.svg')` }"
+    :style="{ backgroundImage: `url('bg.svg')` }"
   >
     <div class="flex flex-col gap-2 items-center justify-center">
       <h1 class="sm:text-7xl text-6xl text-gray-100">Spotiworm</h1>
@@ -17,7 +17,7 @@
 
 <script>
 import { redirect } from "@/api";
-import BaseButton from "@/components/BaseButton";
+import BaseButton from "@/components/BaseButton.vue";
 
 export default {
   components: {

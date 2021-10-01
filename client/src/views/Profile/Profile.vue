@@ -14,8 +14,7 @@
             rounded-full
             w-20
             h-20
-            sm:w-36
-            sm:h-36
+            sm:w-36 sm:h-36
             duration-300
           "
         />
@@ -104,10 +103,10 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import { formatDate } from "@/utils/formatters";
-import HorizontalScroll from "@/components/HorizontalScroll";
-import SpotifyLink from "@/components/SpotifyLink";
-import BaseImg from "@/components/BaseImg";
-import ErrorMessage from "@/components/ErrorMessage";
+import HorizontalScroll from "@/components/HorizontalScroll.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
+import BaseImg from "@/components/BaseImg.vue";
+import ErrorMessage from "@/components/ErrorMessage.vue";
 
 export default {
   components: {

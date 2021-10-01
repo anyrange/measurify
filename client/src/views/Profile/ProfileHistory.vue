@@ -31,14 +31,14 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import Container from "@/components/Container";
-import ContainerItem from "@/components/ContainerItem";
-import Pagination from "@/components/Pagination";
-import TrackRows from "@/components/TrackRows";
-import TrackRow from "@/components/TrackRow";
-import BaseInput from "@/components/BaseInput";
-import BaseSelect from "@/components/BaseSelect";
-import EmptyMessage from "@/components/EmptyMessage";
+import Container from "@/components/Container.vue";
+import ContainerItem from "@/components/ContainerItem.vue";
+import Pagination from "@/components/Pagination.vue";
+import TrackRows from "@/components/TrackRows.vue";
+import TrackRow from "@/components/TrackRow.vye";
+import BaseInput from "@/components/BaseInput.vue";
+import BaseSelect from "@/components/BaseSelect.vue";
+import EmptyMessage from "@/components/EmptyMessage.vue";
 
 export default {
   components: {
@@ -117,4 +117,3 @@ export default {
   },
 };
 </script>
-

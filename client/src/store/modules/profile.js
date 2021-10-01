@@ -13,6 +13,7 @@ const getDefaultState = () => {
 };
 
 export default {
+  namespaced: true,
   state: getDefaultState(),
   mutations: {
     SET_PROFILE(state, response) {

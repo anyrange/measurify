@@ -21,8 +21,7 @@
           font-medium
           border border-gray-600-spotify
           hover:border-gray-500-spotify hover:border-opacity-20
-          focus:ring-2
-          focus:outline-none
+          focus:ring-2 focus:outline-none
           disabled:opacity-40
           bg-gray-700-spotify
         "

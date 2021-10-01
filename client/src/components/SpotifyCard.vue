@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import BaseImg from "@/components/BaseImg";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "SotifyCard",

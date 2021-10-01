@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import Notification from "@/components/Notification";
+import Notification from "@/components/Notification.vue";
 import { emitter } from "@/services/notify";
 
 export default {

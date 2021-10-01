@@ -1,7 +1,5 @@
 module.exports = {
-  purge: {
-    content: ["./public/**/*.html", "./src/**/*.vue"],
-  },
+  purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
     screens: {
@@ -22,10 +20,10 @@ module.exports = {
         "gray-400-spotify": "#bfbfbf",
       },
       spacing: {
-        "14": "3.5rem",
-        "22": "5.5rem",
-        "72": "18rem",
-        "200": "50rem",
+        14: "3.5rem",
+        22: "5.5rem",
+        72: "18rem",
+        200: "50rem",
         half: "50vh",
       },
       width: {

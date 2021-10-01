@@ -12,7 +12,7 @@
 <script>
 import { getProfileCurrentTrack } from "@/api";
 import { mapState } from "vuex";
-import TrackRow from "@/components/TrackRow";
+import TrackRow from "@/components/TrackRow.vue";
 
 export default {
   name: "CurrentTrack",

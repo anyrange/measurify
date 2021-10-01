@@ -78,11 +78,11 @@ import { updateAccount, getAccount } from "@/api";
 import { mapState, mapActions } from "vuex";
 import { notify } from "@/services/notify";
 import { deepEqual } from "@/utils/objects";
-import BaseButton from "@/components/BaseButton";
-import BaseSelect from "@/components/BaseSelect";
-import BaseToggle from "@/components/BaseToggle";
-import BaseInput from "@/components/BaseInput";
-import BaseImg from "@/components/BaseImg";
+import BaseButton from "@/components/BaseButton.vue";
+import BaseSelect from "@/components/BaseSelect.vue";
+import BaseToggle from "@/components/BaseToggle.vue";
+import BaseInput from "@/components/BaseInput.vue";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   components: {

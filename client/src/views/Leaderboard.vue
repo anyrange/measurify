@@ -66,7 +66,7 @@
 import { getListenersTop } from "@/api";
 import { mapState } from "vuex";
 import { Lock } from "@/components/icons";
-import BaseImg from "@/components/BaseImg";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "Leaderboard",

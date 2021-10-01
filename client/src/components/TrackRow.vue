@@ -70,8 +70,8 @@
 
 <script>
 import { getDateFromNow, getDuration, formatDate } from "@/utils/formatters";
-import MultiRouter from "@/components/MultiRouter";
-import BaseImg from "@/components/BaseImg";
+import MultiRouter from "@/components/MultiRouter.vue";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "TracksRow",

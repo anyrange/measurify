@@ -98,17 +98,17 @@
 import { getTrack, getTrackLyrics } from "@/api";
 import { formatDate, getDuration } from "@/utils/formatters";
 import { LyricsIcon } from "@/components/icons";
-import Container from "@/components/Container";
-import ContainerItem from "@/components/ContainerItem";
-import ContainerItemLabel from "@/components/ContainerItemLabel";
-import HorizontalScroll from "@/components/HorizontalScroll";
-import AudioFeatures from "@/components/AudioFeatures";
-import SpotifyCard from "@/components/SpotifyCard";
-import SpotifyLink from "@/components/SpotifyLink";
-import BaseImg from "@/components/BaseImg";
-import Cards from "@/components/Cards";
-import Card from "@/components/Card";
-import ErrorMessage from "@/components/ErrorMessage";
+import Container from "@/components/Container.vue";
+import ContainerItem from "@/components/ContainerItem.vue";
+import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
+import HorizontalScroll from "@/components/HorizontalScroll.vue";
+import AudioFeatures from "@/components/AudioFeatures.vue";
+import SpotifyCard from "@/components/SpotifyCard.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
+import BaseImg from "@/components/BaseImg.vue";
+import Cards from "@/components/Cards.vue";
+import Card from "@/components/Card.vue";
+import ErrorMessage from "@/components/ErrorMessage.vue";
 
 export default {
   components: {

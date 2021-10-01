@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row w-full">
-    <div class="truncate" v-for="(item, index) in routes" :key="index">
+    <div v-for="(item, index) in routes" :key="index" class="truncate">
       <router-link
         class="truncate"
         :class="customClass"

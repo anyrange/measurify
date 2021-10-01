@@ -64,7 +64,7 @@
 <script>
 import { getProfileCurrentTrack } from "@/api";
 import { getDateFromNowShort, getDateFromNow } from "@/utils/formatters";
-import BaseImg from "@/components/BaseImg";
+import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "FriendItem",
@@ -77,6 +77,7 @@ export default {
       required: true,
     },
   },
+  emits: { "listening-now": null },
   data() {
     return {
       currentTrack: null,
@@ -101,7 +102,7 @@ export default {
         if (!this.currentTrack) {
           clearInterval(this.interval);
         }
-      }, 120_000);
+      }, 120000);
     }
   },
   methods: {

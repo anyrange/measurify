@@ -1,5 +1,6 @@
 <template>
   <aside
+    id="friends-list"
     class="
       hidden
       xl:flex
@@ -10,7 +11,6 @@
       bg-gray-900-spotify bg-opacity-50
       overflow-y-auto
     "
-    id="friends-list"
   >
     <div class="flex flex-col gap-4 w-full px-3">
       <div
@@ -47,7 +47,7 @@
 <script>
 import { getFriends } from "@/api";
 import { orderByDate } from "@/utils/arrays";
-import FriendItem from "@/components/FriendItem";
+import FriendItem from "@/components/FriendItem.vue";
 
 export default {
   name: "FriendsList",

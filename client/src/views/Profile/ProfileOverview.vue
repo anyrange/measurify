@@ -82,17 +82,17 @@
 <script>
 import { mapState } from "vuex";
 import { formatDate } from "@/utils/formatters";
-import Container from "@/components/Container";
-import ContainerItem from "@/components/ContainerItem";
-import ContainerItemLabel from "@/components/ContainerItemLabel";
-import HorizontalScroll from "@/components/HorizontalScroll";
-import SpotifyCard from "@/components/SpotifyCard";
-import TrackRows from "@/components/TrackRows";
-import TrackRow from "@/components/TrackRow";
-import Badge from "@/components/Badge";
-import Cards from "@/components/Cards";
-import Card from "@/components/Card";
-import CurrentTrack from "@/components/CurrentTrack";
+import Container from "@/components/Container.vue";
+import ContainerItem from "@/components/ContainerItem.vue";
+import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
+import HorizontalScroll from "@/components/HorizontalScroll.vue";
+import SpotifyCard from "@/components/SpotifyCard.vue";
+import TrackRows from "@/components/TrackRows.vue";
+import TrackRow from "@/components/TrackRow.vue";
+import Badge from "@/components/Badge.vue";
+import Cards from "@/components/Cards.vue";
+import Card from "@/components/Card.vue";
+import CurrentTrack from "@/components/CurrentTrack.vue";
 
 export default {
   components: {
