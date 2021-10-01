@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
 import durationPlugin from "dayjs/plugin/duration";
 
-require("./shortRelativeTime.js");
+import("./shortRelativeTime.js");
 
 dayjs.locale("en");
 
@@ -14,9 +14,7 @@ export const getDateFromNow = (date) => {
 };
 
 export const getDateFromNowShort = (date) => {
-  return dayjs(Date.parse(date))
-    .locale("s-en")
-    .fromNow(true);
+  return dayjs(Date.parse(date)).locale("s-en").fromNow(true);
 };
 
 export const formatDate = (date) => {
