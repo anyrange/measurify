@@ -1,5 +1,6 @@
 <template>
   <div
+    id="horizontal-scrollbar"
     class="
       flex-row flex flex-nowrap
       overflow-x-auto
@@ -9,7 +10,6 @@
       px-4
       sm:px-0
     "
-    id="horizontal-scrollbar"
     style="-webkit-overflow-scrolling: touch"
   >
     <slot></slot>

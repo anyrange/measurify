@@ -2,64 +2,34 @@
   "name": "spotiworm-client",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vue-cli-service serve --port 3000",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "apexcharts": "^3.27.1",
     "axios": "^0.21.1",
-    "core-js": "^3.6.5",
     "dayjs": "^1.10.6",
-    "dotenv": "^10.0.0",
-    "nanoevents": "^6.0.0",
-    "nanoid": "^3.1.23",
-    "register-service-worker": "^1.7.1",
-    "v-wave": "^1.2.8",
-    "vue": "^3.2.2",
-    "vue-router": "^4.0.0-0",
+    "nanoevents": "^6.0.1",
+    "nanoid": "^3.1.25",
+    "v-wave": "^1.3.1",
+    "vue": "^3.2.6",
+    "vue-router": "^4.0.11",
     "vue3-apexcharts": "^1.2.1",
-    "vuex": "^4.0.0-0",
-    "vuex-persistedstate": "^4.0.0-beta.3"
+    "vuex": "^4.0.2",
+    "vuex-persistedstate": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/eslint-parser": "^7.12.16",
-    "@vue/cli-plugin-babel": "~5.0.0-beta.2",
-    "@vue/cli-plugin-eslint": "~5.0.0-beta.2",
-    "@vue/cli-plugin-pwa": "~5.0.0-beta.2",
-    "@vue/cli-plugin-router": "~5.0.0-beta.2",
-    "@vue/cli-plugin-vuex": "~5.0.0-beta.2",
-    "@vue/cli-service": "~5.0.0-beta.2",
-    "@vue/compiler-sfc": "^3.0.4",
-    "autoprefixer": "^10.2.6",
-    "axios-mock-adapter": "^1.19.0",
-    "concurrently": "^6.2.0",
-    "eslint": "^7.20.0",
-    "eslint-plugin-vue": "^7.2.0",
-    "nodemon": "^2.0.7",
-    "postcss": "^8.3.5",
-    "tailwindcss": "^2.2.4"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser",
-      "requireConfigFile": false
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+    "@vitejs/plugin-vue": "^1.6.1",
+    "@vue/compiler-sfc": "^3.2.6",
+    "autoprefixer": "^10.3.4",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-vue": "^7.17.0",
+    "postcss": "^8.3.6",
+    "prettier": "2.4.0",
+    "tailwindcss": "^2.2.13",
+    "vite": "^2.5.4",
+    "vite-plugin-pwa": "^0.11.2"
+  }
 }

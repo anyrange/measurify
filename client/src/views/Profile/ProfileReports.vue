@@ -20,8 +20,8 @@
         "
       >
         <div
-          class="flex-shrink-0"
           v-if="!isMobile || (isMobile && timePeriod === 'am')"
+          class="flex-shrink-0"
         >
           <span v-show="!isMobile">AM</span>
           <apexchart
@@ -31,8 +31,8 @@
           ></apexchart>
         </div>
         <div
-          class="flex-shrink-0"
           v-if="!isMobile || (isMobile && timePeriod === 'pm')"
+          class="flex-shrink-0"
         >
           <span v-show="!isMobile">PM</span>
           <apexchart
@@ -49,12 +49,12 @@
 <script>
 import activityHoursChart from "@/mixins/activityHoursChart";
 import { mapState, mapActions } from "vuex";
-import Container from "@/components/Container";
-import ContainerItem from "@/components/ContainerItem";
-import ContainerItemLabel from "@/components/ContainerItemLabel";
+import Container from "@/components/Container.vue";
+import ContainerItem from "@/components/ContainerItem.vue";
+import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
 import VueApexCharts from "vue3-apexcharts";
-import Tabs from "@/components/Tabs";
-import Tab from "@/components/Tab";
+import Tabs from "@/components/Tabs.vue";
+import Tab from "@/components/Tab.vue";
 
 export default {
   components: {

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import AudioFeature from "@/components/AudioFeature";
+import AudioFeature from "@/components/AudioFeature.vue";
 
 export default {
   name: "AudioFeatures",

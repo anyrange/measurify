@@ -14,6 +14,7 @@ const getDefaultState = () => {
 };
 
 export default {
+  namespaced: true,
   state: getDefaultState(),
   mutations: {
     SET_AUTH(state, { avatar, display_name, username, country, autoUpdate }) {

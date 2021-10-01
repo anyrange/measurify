@@ -1,8 +1,8 @@
 <template>
   <div class="fullwidth">
     <ul
-      class="horizontal-scroll-wrapper sm:mx-0 -mx-4 px-4 sm:px-0"
       id="horizontal-scrollbar"
+      class="horizontal-scroll-wrapper sm:mx-0 -mx-4 px-4 sm:px-0"
     >
       <slot />
     </ul>

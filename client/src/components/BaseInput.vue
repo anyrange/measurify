@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
     <label
-      v-if="label"
+      v-if="label.length"
       :for="label"
       class="text-gray-300 text-base font-normal"
     >
@@ -18,8 +18,7 @@
         border border-gray-600-spotify
         hover:border-gray-500-spotify hover:border-opacity-20
         placeholder-gray-500-spotify
-        focus:ring-2
-        focus:outline-none
+        focus:ring-2 focus:outline-none
         disabled:opacity-40
         bg-gray-700-spotify
       "
@@ -39,6 +38,7 @@ export default {
     label: {
       type: String,
       required: false,
+      default: "",
     },
     debounce: {
       type: Number,

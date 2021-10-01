@@ -7,6 +7,7 @@
       <the-sidebar />
       <div class="flex-1 flex flex-col bg-gray-900-spotify">
         <main
+          id="content-window"
           class="
             overflow-y-auto
             sm:px-8
@@ -17,22 +18,20 @@
             flex flex-col
             gap-4
           "
-          id="content-window"
         >
           <router-view />
         </main>
       </div>
-      <friends-list
-        v-if="breakpoints.is === 'xl' || breakpoints.is === '2xl'"
-      />
+      <!-- v-if="breakpoints.is === 'xl' || breakpoints.is === '2xl'" -->
+      <friends-list />
     </div>
   </div>
 </template>
 
 <script setup>
-import TheSidebar from "@/components/TheSidebar";
-import FriendsList from "@/components/FriendsList";
-import useBreakpoints from "@/composable/useBreakpoints";
+import TheSidebar from "@/components/TheSidebar.vue";
+import FriendsList from "@/components/FriendsList.vue";
+// import useBreakpoints from "@/composable/useBreakpoints";
 
-let breakpoints = useBreakpoints();
+// let breakpoints = useBreakpoints();
 </script>

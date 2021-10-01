@@ -61,20 +61,20 @@
 
 <script>
 import { getAlbum } from "@/api";
-import Container from "@/components/Container";
-import ContainerItem from "@/components/ContainerItem";
-import ContainerItemLabel from "@/components/ContainerItemLabel";
-import HorizontalScroll from "@/components/HorizontalScroll";
-import AudioFeatures from "@/components/AudioFeatures";
-import SpotifyLink from "@/components/SpotifyLink";
-import SpotifyCard from "@/components/SpotifyCard";
-import TrackRows from "@/components/TrackRows";
-import TrackRow from "@/components/TrackRow";
-import BaseImg from "@/components/BaseImg";
-import Badge from "@/components/Badge";
-import Cards from "@/components/Cards";
-import Card from "@/components/Card";
-import ErrorMessage from "@/components/ErrorMessage";
+import Container from "@/components/Container.vue";
+import ContainerItem from "@/components/ContainerItem.vue";
+import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
+import HorizontalScroll from "@/components/HorizontalScroll.vue";
+import AudioFeatures from "@/components/AudioFeatures.vue";
+import SpotifyLink from "@/components/SpotifyLink.vue";
+import SpotifyCard from "@/components/SpotifyCard.vue";
+import TrackRows from "@/components/TrackRows.vue";
+import TrackRow from "@/components/TrackRow.vue";
+import BaseImg from "@/components/BaseImg.vue";
+import Badge from "@/components/Badge.vue";
+import Cards from "@/components/Cards.vue";
+import Card from "@/components/Card.vue";
+import ErrorMessage from "@/components/ErrorMessage.vue";
 
 export default {
   components: {

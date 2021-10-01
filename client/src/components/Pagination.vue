@@ -131,6 +131,7 @@ export default {
       required: true,
     },
   },
+  emits: { "update:modelValue": null },
   computed: {
     startPage() {
       if (this.modelValue === 1) {
@@ -188,7 +189,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="postcss">
 .pagination {

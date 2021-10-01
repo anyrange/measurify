@@ -3,7 +3,7 @@ import $store from "@/store";
 import $router from "@/router";
 import { notify } from "@/services/notify";
 
-const SERVER_URI = process.env.VUE_APP_SERVER_URI || "http://localhost:8888";
+const SERVER_URI = import.meta.env.VITE_SERVER_URI || "http://localhost:8888";
 
 const api = axios.create({
   baseURL: SERVER_URI,

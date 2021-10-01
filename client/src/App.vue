@@ -7,8 +7,8 @@
 
 <script>
 import { mapActions, mapGetters, mapState, mapMutations } from "vuex";
-import { notify } from "@/services/notify";
-import Notifications from "@/components/Notifications";
+import { notify } from "@/services/notify.js";
+import Notifications from "@/components/Notifications.vue";
 
 export default {
   components: {
@@ -16,8 +16,7 @@ export default {
   },
   data() {
     return {
-      refreshing: false,
-      registration: null,
+      updateSW: undefined,
     };
   },
   computed: {
@@ -35,20 +34,46 @@ export default {
     try {
       await this.updateUser();
       if (!isAuthenticated) this.$router.push({ name: "home" });
-      // at least it works
     } catch {
       this.logout();
     }
   },
-  mounted() {
-    document.addEventListener("swUpdated", this.showRefreshUI, { once: true });
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (this.refreshing) return;
-        this.refreshing = true;
-        window.localStorage.clear();
-        window.location.reload();
+  async mounted() {
+    try {
+      const { registerSW } = await import("virtual:pwa-register");
+      const vm = this;
+      this.updateSW = registerSW({
+        immediate: true,
+        onNeedRefresh() {
+          if (vm.user.autoUpdate) {
+            notify.show({ type: "success", message: "Updating..." });
+            vm.updateServiceWorker();
+            return;
+          }
+          notify.show({
+            type: "success",
+            message: "Update available",
+            progress: false,
+            closable: false,
+            actions: [
+              {
+                title: "Update",
+                handler: () => {
+                  vm.updateServiceWorker();
+                },
+              },
+            ],
+          });
+        },
+        onRegistered(swRegistration) {
+          swRegistration && vm.handleSWManualUpdates(swRegistration);
+        },
+        onRegisterError(e) {
+          vm.handleSWRegisterError(e);
+        },
       });
+    } catch {
+      console.log("PWA disabled.");
     }
   },
   methods: {
@@ -59,34 +84,14 @@ export default {
     ...mapMutations({
       saveHistoryLength: "app/SET_HISTORY",
     }),
-    showRefreshUI(e) {
-      this.registration = e.detail;
-      if (this.user.autoUpdate) {
-        this.refreshApp();
-        notify.show({ type: "success", message: "Updating..." });
-        return;
-      } else {
-        notify.show({
-          type: "success",
-          message: "Update available",
-          progress: false,
-          closable: false,
-          actions: [
-            {
-              title: "Update",
-              handler: () => {
-                this.refreshApp();
-              },
-            },
-          ],
-        });
-      }
+    updateServiceWorker() {
+      this.updateSW && this.updateSW(true);
     },
-    refreshApp() {
-      if (!this.registration || !this.registration.waiting) {
-        return;
-      }
-      this.registration.waiting.postMessage("skipWaiting");
+    handleSWManualUpdates(swRegistration) {
+      console.log(swRegistration);
+    },
+    handleSWRegisterError(error) {
+      console.error(error);
     },
   },
 };
