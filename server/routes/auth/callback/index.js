@@ -87,7 +87,7 @@ export default async function (fastify) {
 }
 
 const fetchTokens = async (code) => {
-  const redirect_uri = `${process.env.VUE_APP_SERVER_URI}/auth/callback`;
+  const redirect_uri = `${process.env.VITE_SERVER_URI}/auth/callback`;
   const params = new URLSearchParams();
   params.append("code", code);
   params.append("redirect_uri", `${redirect_uri}`);

@@ -1,6 +1,6 @@
 export default async function (fastify) {
   fastify.get("", { schema: { tags: ["auth"] } }, (req, reply) => {
-    const redirect_uri = `${process.env.VUE_APP_SERVER_URI}/auth/callback`;
+    const redirect_uri = `${process.env.VITE_SERVER_URI}/auth/callback`;
     const scopes = [
       "playlist-read-collaborative",
       "user-read-currently-playing",
