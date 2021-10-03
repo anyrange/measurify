@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import "./assets/tailwind.css";
+import "virtual:windi.css";
 import "./assets/styles.css";
 import ApexCharts from "apexcharts";
 import VWave from "v-wave";

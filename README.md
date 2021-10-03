@@ -9,13 +9,9 @@ Yet another app using Spotify Web API
 
 ### Setup environment
 
-Install dev-dependencies to run client and server concurrently
+Install dependencies
 
 `npm install`
-
-Then, install client and server dependencies
-
-`npm run install-all`
 
 Run client and server concurrently
 

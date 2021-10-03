@@ -1,6 +1,6 @@
 import { onMounted, reactive } from "vue";
 
-const { default: tailwindConfig } = import("../../tailwind.config.js");
+import tailwindConfig from "../../tailwind.config.js";
 
 const getPxBreakpoint = (val) => {
   return parseFloat(val);
