@@ -93,11 +93,6 @@ export default {
       };
     },
   },
-  methods: {
-    ...mapActions({
-      getReports: "profile/getReports",
-    }),
-  },
   async mounted() {
     try {
       this.loading = true;
@@ -108,6 +103,11 @@ export default {
     } finally {
       this.loading = false;
     }
+  },
+  methods: {
+    ...mapActions({
+      getReports: "profile/getReports",
+    }),
   },
 };
 </script>

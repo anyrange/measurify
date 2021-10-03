@@ -23,7 +23,7 @@
       </cards>
       <container-item>
         <container-item-label>Audio features</container-item-label>
-        <audio-features :audioFeatures="audioFeatures" />
+        <audio-features :audio-features="audioFeatures" />
       </container-item>
       <container-item v-if="genres.length">
         <container-item-label>Genres</container-item-label>

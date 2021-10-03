@@ -39,6 +39,7 @@
             <h3 class="font-light">@{{ profile.user.username }}</h3>
           </div>
           <router-link
+            v-if="user.username === profile.user.username"
             class="
               hover:bg-gray-800-spotify
               text-white
@@ -53,7 +54,6 @@
               px-2
               py-1
             "
-            v-if="user.username === profile.user.username"
             :to="{ name: 'account' }"
           >
             Settings

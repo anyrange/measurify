@@ -2,6 +2,12 @@ import User from "../../models/User.js";
 import api from "../api.js";
 import timeDiff from "../../utils/timeDiff.js";
 
+async function refreshAvatar({ tokens: { token }, display_name }) {
+  const user = await api({ route: `me`, token });
+  const avatar = user.images.length ? user.images[0].url : "";
+  await User.updateOne({ display_name }, { avatar });
+}
+
 async function refresh_tokens() {
   try {
     const start = new Date();
@@ -23,12 +29,6 @@ async function refresh_tokens() {
     console.log(
       `avatars [${requests.length}]: updated in ${timeDiff(start, end)} sec`
     );
-
-    async function refreshAvatar({ tokens: { token }, display_name }) {
-      const user = await api({ route: `me`, token });
-      const avatar = user.images.length ? user.images[0].url : "";
-      await User.updateOne({ display_name }, { avatar });
-    }
   } catch (err) {
     console.error("!avatars [all]:" + err.message);
   }

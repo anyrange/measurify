@@ -51,8 +51,8 @@
     <base-input v-model="account.username" label="Username" />
     <div class="flex items-end justify-between w-full">
       <base-select
-        class="w-2/4"
         v-model="account.privacy"
+        class="w-2/4"
         :options="$options.privacyOptions"
         label="Profile visibility"
       />
@@ -60,9 +60,9 @@
         class="w-1/3"
         color="white"
         rounded
-        @click="updateSettings()"
         :disabled="isDisabledSubmitButton"
         :loading="loadingButton"
+        @click="updateSettings()"
       >
         Save
       </base-button>

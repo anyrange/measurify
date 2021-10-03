@@ -3,6 +3,8 @@
   <loading-spinner v-if="loading" />
   <div v-else class="flex flex-col gap-4 xl:w-1/2 2xl:w-1/4">
     <router-link
+      v-for="item in friendsSortedByLastLogin"
+      :key="item.username"
       class="
         hover:bg-gray-700-spotify hover:bg-opacity-30
         rounded-full
@@ -11,8 +13,6 @@
         gap-4
         items-center
       "
-      v-for="item in friendsSortedByLastLogin"
-      :key="item.username"
       :to="{ name: 'profile', params: { username: item.username } }"
     >
       <base-img

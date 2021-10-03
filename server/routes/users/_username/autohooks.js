@@ -7,7 +7,7 @@ export default async function (fastify) {
   fastify.decorateRequest("user", null);
   fastify.decorateRequest("requestor", null);
 
-  fastify.addHook("preHandler", async (req, reply) => {
+  fastify.addHook("preHandler", async (req) => {
     const id = req.session.get("id") || "";
     const { username } = req.params;
 

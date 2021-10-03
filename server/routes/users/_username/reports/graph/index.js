@@ -17,8 +17,6 @@ export default async function (fastify) {
         },
         response: {
           200: {
-            type: "object",
-
             type: "array",
             items: {
               type: "object",

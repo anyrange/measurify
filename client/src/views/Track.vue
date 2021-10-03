@@ -29,15 +29,15 @@
         </card>
         <card
           v-for="(rate, index) in filteredTrackRates"
-          :title="'#' + rate[1]"
           :key="index"
+          :title="'#' + rate[1]"
         >
           of your most streamed tracks {{ $options.PERIODS[rate[0]] }}
         </card>
       </cards>
       <container-item>
         <container-item-label>Audio features</container-item-label>
-        <audio-features :audioFeatures="audioFeatures" />
+        <audio-features :audio-features="audioFeatures" />
       </container-item>
       <container-item>
         <container-item-label>Album</container-item-label>
@@ -59,7 +59,6 @@
       <container-item>
         <container-item-label>Lyrics</container-item-label>
         <div
-          @click="getLyrics()"
           class="
             text-white text-sm
             bg-gray-700-spotify bg-opacity-20
@@ -72,6 +71,7 @@
             sm:w-auto
           "
           :class="[lyrics.text ? 'pointer-events-none' : 'cursor-pointer']"
+          @click="getLyrics()"
         >
           <span v-if="lyrics.status === 'idle'" class="flex gap-3 items-center">
             <lyrics-icon class="h-8 w-8" />

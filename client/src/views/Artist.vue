@@ -22,15 +22,15 @@
         <card :title="followers">followers</card>
         <card
           v-for="(rate, index) in filteredArtistRates"
-          :title="'#' + rate[1]"
           :key="index"
+          :title="'#' + rate[1]"
         >
           of your most streamed artists {{ $options.PERIODS[rate[0]] }}
         </card>
         <card
           v-for="(rate, index) in filteredTracksRates"
-          :title="rate[1].length"
           :key="index"
+          :title="rate[1].length"
         >
           times
           <a
@@ -52,7 +52,7 @@
       </cards>
       <container-item>
         <container-item-label>Audio features</container-item-label>
-        <audio-features :audioFeatures="audioFeatures" />
+        <audio-features :audio-features="audioFeatures" />
       </container-item>
       <container-item>
         <container-item-label>Genres</container-item-label>
@@ -105,9 +105,9 @@
           <hr />
           <div class="flex flex-col gap-y-2">
             <div
-              class="flex flex-row items-end gap-x-2 text-base"
               v-for="(track, index) in tracksOfSelectedTerm"
               :key="index"
+              class="flex flex-row items-end gap-x-2 text-base"
             >
               <span class="text-gray-500-spotify">#{{ track.place }}</span>
               <router-link

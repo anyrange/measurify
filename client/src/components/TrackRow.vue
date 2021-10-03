@@ -38,7 +38,7 @@
         </router-link>
         <multi-router
           class="text-sm leading-4"
-          customClass="hover:no-underline sm:hover:underline pointer-events-none sm:pointer-events-auto"
+          custom-class="hover:no-underline sm:hover:underline pointer-events-none sm:pointer-events-auto"
           :routes="track.artists"
         />
       </div>
@@ -75,6 +75,10 @@ import BaseImg from "@/components/BaseImg.vue";
 
 export default {
   name: "TracksRow",
+  components: {
+    BaseImg,
+    MultiRouter,
+  },
   props: {
     track: {
       type: Object,
@@ -90,10 +94,6 @@ export default {
       required: false,
       default: false,
     },
-  },
-  components: {
-    BaseImg,
-    MultiRouter,
   },
   methods: {
     getDateFromNow,

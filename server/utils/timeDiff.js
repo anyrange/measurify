@@ -5,6 +5,6 @@
  * @returns {string}
  */
 
-export default function(start, end) {
+export default function (start, end) {
   return ((end.getTime() - start.getTime()) / 1000).toFixed(2);
 }

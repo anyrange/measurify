@@ -48,7 +48,7 @@
         },
         tooltip: {
           trigger: "axis",
-          formatter: function(params) {
+          formatter: function (params) {
             const data = params[0].data;
             var date = new Date(data[0]);
             return (
@@ -120,7 +120,7 @@
         });
       };
 
-      socket.onclose = function() {
+      socket.onclose = function () {
         setTimeout(connect(), 1000);
       };
     };

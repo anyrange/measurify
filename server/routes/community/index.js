@@ -121,6 +121,7 @@ export default async function (fastify) {
   );
 }
 
+// eslint-disable-next-line no-unused-vars
 const getTrackActivity = async (friends, page, range) => {
   const agg = [
     {
@@ -194,6 +195,7 @@ const getTrackActivity = async (friends, page, range) => {
   return await User.aggregate(agg);
 };
 
+// eslint-disable-next-line no-unused-vars
 const getLiked = async ({ friend, firstDate, lastDate }) => {
   let likedTracks = await getLikedTracks(friend.lastSpotifyToken);
 
