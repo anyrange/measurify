@@ -2,21 +2,20 @@
 
 #app {
   font-family: "Inter", sans-serif;
-  @apply bg-gray-800-spotify no-tap-highlight;
+  @apply bg-gray-800-spotify;
 }
 
 @media only screen and (max-width: 1024px) {
-  .no-tap-highlight {
+  #app {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   }
 }
 
-.image-shadow-bottom {
-  mask-image: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.9) 30%
-  );
+.inset-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .truncate-2 {
@@ -93,7 +92,16 @@
 }
 @media only screen and (max-width: 500px) {
   .responsive-picture__image {
-    @apply image-shadow-bottom;
+    -webkit-mask-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.9) 30%
+    );
+    mask-image: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.9) 30%
+    );
   }
 }
 .responsive-picture__title {
@@ -105,5 +113,5 @@
 }
 
 hr {
-  @apply default-border;
+  @apply border-gray-700-spotify;
 }
