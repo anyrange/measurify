@@ -32,7 +32,7 @@
           <span class="flex flex-none justify-end truncate">
             <template v-if="currentTrack">
               <img
-                src="/src/assets/now_playing.gif"
+                :src="$options.nowPlaingGif"
                 class="w-3 h-3"
                 alt="Listening Now"
                 title="now"
@@ -65,6 +65,7 @@
 import { getProfileCurrentTrack } from "@/api";
 import { getDateFromNowShort, getDateFromNow } from "@/utils/formatters";
 import BaseImg from "@/components/BaseImg.vue";
+import nowPlaingGif from "@/assets/now_playing.gif";
 
 export default {
   name: "FriendItem",
@@ -84,6 +85,7 @@ export default {
       interval: null,
     };
   },
+  nowPlaingGif,
   computed: {
     track() {
       return this.currentTrack ? this.currentTrack : this.friend.lastTrack;

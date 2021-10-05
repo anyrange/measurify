@@ -7,7 +7,7 @@
   >
     <template #current-track>
       <div class="flex flex-row gap-1 items-center justify-end" title="now">
-        <img src="/src/assets/now_playing.gif" alt="Listening Now" />
+        <img :src="$options.nowPlaingGif" alt="Listening Now" />
         <span>Listening now</span>
       </div>
     </template>
@@ -18,6 +18,7 @@
 import { getProfileCurrentTrack } from "@/api";
 import { mapState } from "vuex";
 import TrackRow from "@/components/TrackRow.vue";
+import nowPlaingGif from "@/assets/now_playing.gif";
 
 export default {
   name: "CurrentTrack",
@@ -29,6 +30,7 @@ export default {
       currentTrack: null,
     };
   },
+  nowPlaingGif,
   computed: {
     ...mapState({
       profile: (state) => state.profile.profile,

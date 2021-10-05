@@ -16,6 +16,10 @@
 </template>
 
 <script>
+import fallbackProfileImage from "@/assets/fallback-profile.svg";
+import fallbackTrackImage from "@/assets/fallback-track.svg";
+import fallbackArtistImage from "@/assets/fallback-artist.svg";
+
 export default {
   name: "BaseImg",
   props: {
@@ -64,10 +68,10 @@ export default {
     },
   },
   FALLBACK_IMAGES: {
-    profile: "/src/assets/fallback-profile.svg",
-    track: "/src/assets/fallback-track.svg",
-    album: "/src/assets/fallback-track.svg",
-    artist: "/src/assets/fallback-artist.svg",
+    profile: fallbackProfileImage,
+    track: fallbackTrackImage,
+    album: fallbackTrackImage,
+    artist: fallbackArtistImage,
   },
   methods: {
     checkImage(url) {
