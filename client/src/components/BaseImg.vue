@@ -64,10 +64,10 @@ export default {
     },
   },
   FALLBACK_IMAGES: {
-    profile: "fallback-profile.svg",
-    track: "fallback-track.svg",
-    album: "fallback-track.svg",
-    artist: "fallback-artist.svg",
+    profile: "/src/assets/fallback-profile.svg",
+    track: "/src/assets/fallback-track.svg",
+    album: "/src/assets/fallback-track.svg",
+    artist: "/src/assets/fallback-artist.svg",
   },
   methods: {
     checkImage(url) {

@@ -1,8 +1,13 @@
 <template>
-  <track-row v-if="currentTrack" :track="currentTrack" current>
+  <track-row
+    v-if="currentTrack"
+    :track="currentTrack"
+    current
+    plays-or-date="date"
+  >
     <template #current-track>
       <div class="flex flex-row gap-1 items-center justify-end" title="now">
-        <img src="/now_playing.gif" alt="Listening Now" />
+        <img src="/src/assets/now_playing.gif" alt="Listening Now" />
         <span>Listening now</span>
       </div>
     </template>

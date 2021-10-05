@@ -32,7 +32,7 @@
           <span class="flex flex-none justify-end truncate">
             <template v-if="currentTrack">
               <img
-                src="/now_playing.gif"
+                src="/src/assets/now_playing.gif"
                 class="w-3 h-3"
                 alt="Listening Now"
                 title="now"
