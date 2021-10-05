@@ -19,6 +19,7 @@
             v-for="(item, index) in listeningHistory.history"
             :key="index"
             :track="item"
+            plays-or-date="date"
           />
         </track-rows>
         <div class="flex justify-center">
@@ -67,6 +68,7 @@ export default {
   ],
   computed: {
     ...mapState({
+      profile: (state) => state.profile.profile,
       listeningHistory: (state) => state.profile.listeningHistory,
     }),
     pageStateOptions() {
@@ -99,6 +101,11 @@ export default {
   },
   async mounted() {
     await this.getListeningHistory(this.pageStateOptions);
+  },
+  activated() {
+    this.$meta.setTitle(
+      `${this.profile.user.display_name}'s listening history`
+    );
   },
   methods: {
     ...mapActions({

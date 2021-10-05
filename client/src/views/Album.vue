@@ -44,14 +44,17 @@
           />
         </horizontal-scroll>
       </container-item>
-      <container-item v-if="favouriteTracks.length">
-        <container-item-label>Favourite tracks</container-item-label>
+      <container-item v-if="tracksList.length">
+        <container-item-label>Album content</container-item-label>
         <track-rows>
           <track-row
-            v-for="(item, index) in favouriteTracks"
+            v-for="(item, index) in tracksList"
             :key="index"
-            :track="item"
-            :place="index + 1"
+            plays-or-date="plays"
+            :track="{
+              ...item,
+              album: false,
+            }"
           />
         </track-rows>
       </container-item>
@@ -98,12 +101,27 @@ export default {
       loading: true,
       error: false,
       album: {},
+      album_content: [],
       genres: [],
       audioFeatures: {},
       favouriteTracks: [],
       isLiked: false,
       total_tracks: null,
     };
+  },
+  computed: {
+    tracksList() {
+      const combinedTracks = [...this.album_content, ...this.favouriteTracks];
+      let formattedTracks = [
+        ...new Map(combinedTracks.map((item) => [item["id"], item])).values(),
+      ];
+      formattedTracks.map((track) => {
+        if (!track.plays) track.plays = 0;
+        if (!track.image) track.image = this.album.image;
+      });
+      formattedTracks.sort((a, b) => b.plays - a.plays);
+      return formattedTracks;
+    },
   },
   watch: {
     "$route.params.albumId": {
@@ -114,6 +132,7 @@ export default {
           this.error = false;
           const response = await getAlbum(newValue);
           this.album = response.album;
+          this.album_content = response.content;
           this.favouriteTracks = response.favouriteTracks;
           this.total_tracks = response.total_tracks;
           this.isLiked = response.isLiked;

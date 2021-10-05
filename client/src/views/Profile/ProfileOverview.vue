@@ -28,6 +28,7 @@
           v-for="(item, index) in profile.history.slice(0, 5)"
           :key="index + item.id"
           :track="item"
+          plays-or-date="date"
         />
       </track-rows>
     </container-item>
@@ -73,6 +74,7 @@
           :key="index"
           :track="item"
           :place="index + 1"
+          plays-or-date="plays"
         />
       </track-rows>
     </container-item>
@@ -112,6 +114,11 @@ export default {
     ...mapState({
       profile: (state) => state.profile.profile,
     }),
+  },
+  activated() {
+    this.$meta.setTitle(
+      `${this.profile.user.display_name} (@${this.profile.user.username})`
+    );
   },
   methods: {
     formatDate,

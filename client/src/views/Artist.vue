@@ -80,47 +80,58 @@
             v-for="(item, index) in favouriteTracks"
             :key="index"
             :track="item"
+            plays-or-date="plays"
             :place="index + 1"
           />
         </track-rows>
       </container-item>
-      <modal :show="modalOpened" @close="modalOpened = false">
-        <div class="flex flex-col gap-3 p-3">
-          <div class="flex flex-col gap-1">
-            <h3 class="sm:text-2xl text-xl font-semibold">
-              Most streamed tracks
-            </h3>
-            <span class="text-gray-500-spotify">
-              The amount of times a track by {{ artist.name }} appears in your
-              top
-              <strong>
-                {{
-                  currentItem === "LT"
-                    ? $options.PERIODS[currentItem]
-                    : "in the " + $options.PERIODS[currentItem]
-                }}
-              </strong>
-            </span>
-          </div>
-          <hr />
-          <div class="flex flex-col gap-y-2">
-            <div
-              v-for="(track, index) in tracksOfSelectedTerm"
-              :key="index"
-              class="flex flex-row items-end gap-x-2 text-base"
+      <container-item v-if="relatedArtists.length">
+        <container-item-label>Related Artists</container-item-label>
+        <horizontal-scroll>
+          <spotify-card
+            v-for="item in relatedArtists"
+            :key="item.id"
+            :item="item"
+            type="artist"
+          />
+        </horizontal-scroll>
+      </container-item>
+    </container>
+    <modal :show="modalOpened" @close="modalOpened = false">
+      <div class="flex flex-col gap-3 p-3">
+        <div class="flex flex-col gap-1">
+          <h3 class="sm:text-2xl text-xl font-semibold">
+            Most streamed tracks
+          </h3>
+          <span class="text-gray-500-spotify">
+            The amount of times a track by {{ artist.name }} appears in your top
+            <strong>
+              {{
+                currentItem === "LT"
+                  ? $options.PERIODS[currentItem]
+                  : "in the " + $options.PERIODS[currentItem]
+              }}
+            </strong>
+          </span>
+        </div>
+        <hr />
+        <div class="flex flex-col gap-y-2">
+          <div
+            v-for="(track, index) in tracksOfSelectedTerm"
+            :key="index"
+            class="flex flex-row items-end gap-x-2 text-base"
+          >
+            <span class="text-gray-500-spotify">#{{ track.place }}</span>
+            <router-link
+              class="link"
+              :to="{ name: 'track', params: { trackId: track.id } }"
             >
-              <span class="text-gray-500-spotify">#{{ track.place }}</span>
-              <router-link
-                class="link"
-                :to="{ name: 'track', params: { trackId: track.id } }"
-              >
-                {{ track.name }}
-              </router-link>
-            </div>
+              {{ track.name }}
+            </router-link>
           </div>
         </div>
-      </modal>
-    </container>
+      </div>
+    </modal>
   </template>
 </template>
 
@@ -170,6 +181,7 @@ export default {
       genres: [],
       audioFeatures: {},
       favouriteTracks: [],
+      relatedArtists: [],
       albums: [],
       currentItem: {},
       isLiked: false,
@@ -201,6 +213,7 @@ export default {
           this.loading = true;
           this.error = false;
           const response = await getArtist(newValue);
+          this.relatedArtists = response.relatedArtists;
           this.artist = response.artist;
           this.albums = response.albums;
           this.favouriteTracks = response.favouriteTracks;

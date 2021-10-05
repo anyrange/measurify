@@ -73,22 +73,40 @@
           :class="[lyrics.text ? 'pointer-events-none' : 'cursor-pointer']"
           @click="getLyrics()"
         >
-          <span v-if="lyrics.status === 'idle'" class="flex gap-3 items-center">
-            <lyrics-icon class="h-8 w-8" />
-            Click to load
-          </span>
-          <template v-else-if="lyrics.status === 'loading'">
-            Loading...
-          </template>
-          <template v-else-if="lyrics.status === 'failure'">
-            Failed to load
-          </template>
+          <span v-if="lyrics.status === 'idle'">Click to load</span>
+          <span v-else-if="lyrics.status === 'loading'">Loading...</span>
+          <span v-else-if="lyrics.status === 'failure'">Failed to load</span>
+          <!-- eslint-disable vue/no-v-html -->
           <pre
             v-else
             class="whitespace-pre-wrap font-sans"
             v-html="lyrics.text || 'Lyrics not found'"
           />
         </div>
+      </container-item>
+      <container-item>
+        <container-item-label>
+          More tracks by
+          <router-link
+            class="link"
+            :to="{
+              name: 'artist',
+              params: {
+                artistId: track.artists[0].id,
+              },
+            }"
+          >
+            {{ track.artists[0].name }}
+          </router-link>
+        </container-item-label>
+        <track-rows>
+          <track-row
+            v-for="(item, index) in moreTracks"
+            :key="index"
+            :track="item"
+            :plays-or-date="false"
+          />
+        </track-rows>
       </container-item>
     </container>
   </template>
@@ -97,7 +115,6 @@
 <script>
 import { getTrack, getTrackLyrics } from "@/api";
 import { formatDate, getDuration } from "@/utils/formatters";
-import { LyricsIcon } from "@/components/icons";
 import Container from "@/components/Container.vue";
 import ContainerItem from "@/components/ContainerItem.vue";
 import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
@@ -105,6 +122,8 @@ import HorizontalScroll from "@/components/HorizontalScroll.vue";
 import AudioFeatures from "@/components/AudioFeatures.vue";
 import SpotifyCard from "@/components/SpotifyCard.vue";
 import SpotifyLink from "@/components/SpotifyLink.vue";
+import TrackRows from "@/components/TrackRows.vue";
+import TrackRow from "@/components/TrackRow.vue";
 import BaseImg from "@/components/BaseImg.vue";
 import Cards from "@/components/Cards.vue";
 import Card from "@/components/Card.vue";
@@ -112,7 +131,6 @@ import ErrorMessage from "@/components/ErrorMessage.vue";
 
 export default {
   components: {
-    LyricsIcon,
     Container,
     ContainerItem,
     ContainerItemLabel,
@@ -120,6 +138,8 @@ export default {
     AudioFeatures,
     SpotifyCard,
     SpotifyLink,
+    TrackRows,
+    TrackRow,
     BaseImg,
     Cards,
     Card,
@@ -132,6 +152,7 @@ export default {
       track: {},
       rates: {},
       overview: {},
+      moreTracks: [],
       audioFeatures: {},
       release_date: null,
       duration_ms: 0,
@@ -153,10 +174,15 @@ export default {
     "$route.params.trackId": {
       handler: async function (newValue, oldValue) {
         if (!newValue || newValue === oldValue) return;
+        this.lyrics = {
+          text: "",
+          status: "idle",
+        };
         try {
           this.loading = true;
           this.error = false;
           const response = await getTrack(newValue);
+          this.moreTracks = response.moreTracks;
           this.track = response.track;
           this.release_date = response.release_date;
           this.duration_ms = response.duration_ms;

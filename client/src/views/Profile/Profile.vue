@@ -137,9 +137,6 @@ export default {
           this.loading = true;
           this.error = false;
           await this.getProfile(newValue);
-          this.$meta.setTitle(
-            `${this.profile.user.display_name} (@${this.profile.user.username})`
-          );
         } catch (error) {
           this.error = true;
         } finally {
