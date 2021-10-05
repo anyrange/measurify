@@ -35,6 +35,8 @@ export default async function (fastify) {
         })
         .catch(() => reply.code(204).send());
 
+      if (!currentPlayer.item) return reply.code(204).send();
+
       reply.send(
         Object.assign(currentPlayer.item, {
           image: currentPlayer.item.album.images[1].url || "",

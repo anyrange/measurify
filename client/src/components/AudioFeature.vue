@@ -4,9 +4,7 @@
       {{ name }}
     </h6>
     <div class="bg-opacity-10 rounded-full bg-green-500-spotify">
-      <div class="h-1 rounded-l-full bg-green-500-spotify" :style="barStyle">
-        &nbsp;
-      </div>
+      <div class="h-1 rounded-l-full bg-green-500-spotify" :style="barStyle" />
     </div>
   </div>
 </template>
@@ -36,7 +34,7 @@ export default {
     },
     barStyle() {
       return {
-        width: this.score + "%",
+        width: Math.round(this.score) + "%",
       };
     },
   },
