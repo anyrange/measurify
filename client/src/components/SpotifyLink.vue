@@ -3,7 +3,7 @@
     <h1 class="text-2xl md:text-3xl font-medium truncate-2">
       <slot />
     </h1>
-    <a :href="formattedLink" target="_blank" rel="no-referrer">
+    <a :href="link" target="_blank" rel="no-referrer">
       <svg
         class="w-6 hover:text-green-500-spotify cursor-pointer duration-200"
         role="img"
@@ -29,18 +29,5 @@ export default {
     },
   },
   types: ["artist", "track", "album", "user", "playlist"],
-  computed: {
-    linkType() {
-      return this.$options.types.find((v) => this.link.includes(v));
-    },
-    linkURI() {
-      return this.link.slice(-22);
-    },
-    formattedLink() {
-      return this.isMobile
-        ? `spotify:${this.linkType}:${this.linkURI}`
-        : this.link;
-    },
-  },
 };
 </script>

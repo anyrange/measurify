@@ -19,6 +19,7 @@
     </div>
     <div class="flex flex-row flex-1 truncate items-center gap-3">
       <router-link
+        v-if="track.image !== false"
         class="flex-shrink-0 flex-none"
         :to="{ name: 'track', params: { trackId: track.id } }"
       >
@@ -43,7 +44,10 @@
         />
       </div>
     </div>
-    <div class="flex-1 md:flex hidden link truncate">
+    <div
+      v-if="track.album !== false"
+      class="flex-1 md:flex hidden link truncate"
+    >
       <router-link :to="{ name: 'album', params: { albumId: track.album.id } }">
         {{ track.album.name }}
       </router-link>
@@ -53,16 +57,18 @@
         {{ getDuration(track.duration_ms) }}
       </span>
     </div>
-    <div class="w-1/4 ml-auto mr-1 text-right">
-      <template v-if="track.played_at || current">
+    <div v-if="playsOrDate !== false" class="w-1/4 ml-auto mr-1 text-right">
+      <template v-if="playsOrDate === 'date'">
         <slot name="current-track">
           <span :title="formatDate(track.played_at)">
             {{ getDateFromNow(track.played_at) }}
           </span>
         </slot>
       </template>
-      <template v-else>
-        <span>{{ track.plays }} plays</span>
+      <template v-if="playsOrDate === 'plays'">
+        <span>
+          {{ track.plays ? track.plays + " plays" : "not played" }}
+        </span>
       </template>
     </div>
   </div>
@@ -93,6 +99,10 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    playsOrDate: {
+      type: [String, Boolean],
+      required: true,
     },
   },
   methods: {
