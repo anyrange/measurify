@@ -39,14 +39,14 @@
     "vuex-persistedstate": "^4.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.6.1",
+    "@vitejs/plugin-vue": "^1.9.3",
     "concurrently": "^4.1.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^7.17.0",
     "nodemon": "^2.0.12",
     "prettier": "2.4.0",
-    "vite": "^2.5.4",
+    "vite": "^2.6.3",
     "vite-plugin-pwa": "^0.11.2",
     "vite-plugin-windicss": "^1.4.9",
     "windicss": "^3.1.8"
