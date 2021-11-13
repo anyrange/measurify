@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",
-    "concurrently": "^4.1.0",
+    "concurrently": "^6.4.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^7.17.0",
