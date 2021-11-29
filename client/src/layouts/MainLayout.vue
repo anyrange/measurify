@@ -10,6 +10,7 @@
           id="content-window"
           class="
             overflow-y-auto
+            h-full
             sm:px-8
             px-4
             py-4

@@ -10,36 +10,36 @@
       h-screen
       bg-gray-900-spotify bg-opacity-50
       overflow-y-auto
+      gap-4
+      px-3
     "
   >
-    <div class="flex flex-col gap-4 w-full px-3">
-      <div
-        class="
-          h-12
-          md:flex
-          flex-row
-          hidden
-          w-full
-          items-center
-          border-b
-          default-border
-          text-white
-          select-none
-        "
-      >
-        <span class="text-lg font-medium">Friend Activity</span>
-      </div>
-      <div v-if="loading">
-        <loading-spinner />
-      </div>
-      <template v-else>
+    <div
+      class="
+        h-12
+        md:flex
+        flex-row
+        hidden
+        w-full
+        items-center
+        border-b
+        default-border
+        text-white
+        select-none
+      "
+    >
+      <span class="text-lg font-medium">Friend Activity</span>
+    </div>
+    <div class="h-full">
+      <loading-spinner v-if="loading" />
+      <div v-else class="flex flex-col gap-4 items-center">
         <friend-item
           v-for="friend in friendsSortedByLastListened"
           :key="friend.username"
           :friend="friend"
           @listening-now="handleListener"
         />
-      </template>
+      </div>
     </div>
   </aside>
 </template>
