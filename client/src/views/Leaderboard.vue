@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-1">
     <h1 class="h-title">Leaderboard</h1>
     <h2 class="h-subtitle">
-      This rating is based on the number of played tracks
+      This rating is based on the number of minutes you listen to music
     </h2>
   </div>
   <loading-spinner v-if="loading" />

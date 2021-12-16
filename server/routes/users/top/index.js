@@ -40,6 +40,12 @@ export default async function (fastify) {
             "settings.privacy": { $ne: "private" },
             listeningHistory: { $ne: [] },
           })
+          .lookup({
+            from: "tracks",
+            localField: "listeningHistory.track",
+            foreignField: "_id",
+            as: "listeningHistory",
+          })
           .project({
             display_name: 1,
             avatar: 1,
@@ -47,7 +53,11 @@ export default async function (fastify) {
             token: "$tokens.token",
             lastLogin: 1,
             privacy: "$settings.privacy",
-            listened: { $size: "$listeningHistory" },
+            listened: {
+              $round: {
+                $divide: [{ $sum: "$listeningHistory.duration_ms" }, 60000],
+              },
+            },
           })
           .sort("-listened"),
       ]);
