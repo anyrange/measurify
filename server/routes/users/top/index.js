@@ -40,12 +40,6 @@ export default async function (fastify) {
             "settings.privacy": { $ne: "private" },
             listeningHistory: { $ne: [] },
           })
-          .lookup({
-            from: "tracks",
-            localField: "listeningHistory.track",
-            foreignField: "_id",
-            as: "listeningHistory",
-          })
           .project({
             display_name: 1,
             avatar: 1,
@@ -53,11 +47,39 @@ export default async function (fastify) {
             token: "$tokens.token",
             lastLogin: 1,
             privacy: "$settings.privacy",
-            listened: {
-              $round: {
-                $divide: [{ $sum: "$listeningHistory.duration_ms" }, 60000],
-              },
+            listeningHistory: 1,
+          })
+          .unwind("$listeningHistory")
+          .lookup({
+            from: "tracks",
+            localField: "listeningHistory.track",
+            foreignField: "_id",
+            as: "listeningHistory",
+          })
+          .group({
+            _id: {
+              _id: "$_id",
+              username: "$username",
+              display_name: "$display_name",
+              avatar: "$avatar",
+              token: "$token",
+              privacy: "$privacy",
+              lastLogin: "$lastLogin",
             },
+            plays: { $sum: 1 },
+            listened: {
+              $sum: { $first: "$listeningHistory.duration_ms" },
+            },
+          })
+          .project({
+            _id: "$_id._id",
+            display_name: "$_id.display_name",
+            avatar: "$_id.avatar",
+            username: "$_id.username",
+            token: "$_id.token",
+            lastLogin: "$_id.lastLogin",
+            privacy: "$_id.privacy",
+            listened: { $round: { $divide: ["$listened", 60000] } },
           })
           .sort("-listened"),
       ]);
