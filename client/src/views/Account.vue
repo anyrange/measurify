@@ -27,7 +27,7 @@
         />
         <div class="flex flex-col">
           <p class="text-lg font-medium text-gray-400-spotify">
-            {{ user.displayName }}
+            {{ user.display_name }}
           </p>
           <p class="text-sm text-gray-500-spotify">Open profile</p>
         </div>
@@ -53,7 +53,7 @@
       <base-select
         v-model="account.privacy"
         class="w-2/4"
-        :options="$options.privacyOptions"
+        :options="privacyOptions"
         label="Profile visibility"
       />
       <base-button
@@ -67,86 +67,56 @@
         Save
       </base-button>
     </div>
-    <base-toggle v-model="account.autoUpdate" label="Autoupdates" />
     <div>&nbsp;</div>
-    <base-button color="negative" @click="logout()">Logout</base-button>
+    <base-button color="negative" @click="userStore.logout()">
+      Logout
+    </base-button>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from "vue";
+import { useFetch } from "@/composable/useFetch";
 import { updateAccount, getAccount } from "@/api";
-import { mapState, mapActions } from "vuex";
+import { useUserStore } from "@/stores/user";
+import { deepEqual } from "@/utils";
 import { notify } from "@/services/notify";
-import { deepEqual } from "@/utils/objects";
-import BaseButton from "@/components/BaseButton.vue";
-import BaseSelect from "@/components/BaseSelect.vue";
-import BaseToggle from "@/components/BaseToggle.vue";
-import BaseInput from "@/components/BaseInput.vue";
-import BaseImg from "@/components/BaseImg.vue";
+import privacyOptions from "@/assets/configs/privacyOptions.json";
 
-export default {
-  components: {
-    BaseButton,
-    BaseSelect,
-    BaseToggle,
-    BaseInput,
-    BaseImg,
-  },
-  data() {
-    return {
-      loading: true,
-      loadingButton: false,
-      account: {},
-      accountCopy: {},
-    };
-  },
-  privacyOptions: [
-    { label: "Private", value: "private" },
-    { label: "Public", value: "public" },
-    { label: "Friends only", value: "friendsOnly" },
-  ],
-  usernameRegex: new RegExp(`^[a-z0-9_-]{3,26}$`),
-  computed: {
-    ...mapState({
-      user: (state) => state.auth.user,
-    }),
-    isDisabledSubmitButton() {
-      return (
-        !this.account.username.match(this.$options.usernameRegex) ||
-        deepEqual(this.account, this.accountCopy)
-      );
-    },
-  },
-  async mounted() {
-    try {
-      this.account = await getAccount();
-      this.copyAccount();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.loading = false;
-    }
-  },
-  methods: {
-    deepEqual,
-    ...mapActions({
-      logout: "auth/logout",
-      updateUser: "auth/updateUser",
-    }),
-    async updateSettings() {
-      try {
-        this.loadingButton = true;
-        const response = await updateAccount(this.account);
-        this.copyAccount();
-        this.updateUser();
-        notify.show({ type: "success", message: response.message });
-      } finally {
-        this.loadingButton = false;
-      }
-    },
-    async copyAccount() {
-      this.accountCopy = Object.assign({}, this.account);
-    },
-  },
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
+
+const { fetchData, loading } = useFetch();
+const { fetchData: updateData, loading: loadingButton } = useFetch();
+
+const usernameRegex = new RegExp(`^[a-z0-9_-]{3,26}$`);
+const account = ref(null);
+const accountCopy = ref(null);
+
+const isDisabledSubmitButton = computed(
+  () =>
+    !account.value.username.match(usernameRegex) ||
+    deepEqual(account.value, accountCopy.value)
+);
+
+const copyAccount = () => {
+  const tempAcc = JSON.parse(JSON.stringify(account.value));
+  accountCopy.value = tempAcc;
+};
+
+(async () => {
+  await fetchData(async () => {
+    account.value = await getAccount();
+    copyAccount();
+  });
+})();
+
+const updateSettings = async () => {
+  await updateData(async () => {
+    const response = await updateAccount(account.value);
+    copyAccount();
+    await userStore.updateUser();
+    notify.show({ type: "success", message: response.message });
+  });
 };
 </script>

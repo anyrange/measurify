@@ -1,0 +1,10 @@
+{
+    "danceability": "Danceable",
+    "popularity": "Popularity",
+    "acousticness": "Acoustic",
+    "liveness": "Lively",
+    "energy": "Energetic",
+    "speechiness": "Speechful",
+    "instrumentalness": "Instrumental",
+    "valence": "Valence"
+}

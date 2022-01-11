@@ -44,46 +44,29 @@
   </aside>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
+import { useFetch } from "@/composable/useFetch";
 import { getFriends } from "@/api";
-import { orderByDate } from "@/utils/arrays";
-import FriendItem from "@/components/FriendItem.vue";
+import { orderByDate } from "@/utils";
 
-export default {
-  name: "FriendsList",
-  components: {
-    FriendItem,
-  },
-  data() {
-    return {
-      loading: true,
-      error: false,
-      friends: [],
-    };
-  },
-  computed: {
-    friendsSortedByLastListened() {
-      return this.orderByDate(this.friends, "lastPlayed").sort(
-        (a, b) => (b.isListening || false) - (a.isListening || false)
-      );
-    },
-  },
-  async created() {
-    try {
-      const { friends } = await getFriends();
-      this.friends = friends;
-    } catch (error) {
-      this.error = true;
-    } finally {
-      this.loading = false;
-    }
-  },
-  methods: {
-    orderByDate,
-    handleListener(user) {
-      const friend = this.friends.find((friend) => friend.username === user);
-      friend.isListening = true;
-    },
-  },
+const { fetchData, loading } = useFetch();
+
+const friends = ref(null);
+
+fetchData(async () => {
+  const { friends: friendsData } = await getFriends();
+  friends.value = friendsData;
+});
+
+const friendsSortedByLastListened = computed(() =>
+  orderByDate(friends.value, "lastPlayed").sort(
+    (a, b) => (b.isListening || false) - (a.isListening || false)
+  )
+);
+
+const handleListener = (user) => {
+  const friend = friends.value.find((friend) => friend.username === user);
+  friend.isListening = true;
 };
 </script>

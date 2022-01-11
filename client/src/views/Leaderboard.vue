@@ -12,8 +12,8 @@
       :key="item.id"
       class="flex flex-row p-2 items-center w-full bg-opacity-20 rounded-lg"
       :class="[
-        privateProfile(item) ? 'opacity-30' : 'opacity-100',
-        item.display_name === user.displayName
+        isPrivateProfile(item) ? 'opacity-30' : 'opacity-100',
+        item.display_name === user.display_name
           ? 'bg-gray-500-spotify'
           : 'bg-gray-600-spotify',
       ]"
@@ -26,7 +26,7 @@
       <div class="flex flex-row items-center">
         <div class="flex flex-col flex-none">
           <router-link
-            :class="{ 'pointer-events-none': privateProfile(item) }"
+            :class="{ 'pointer-events-none': isPrivateProfile(item) }"
             :to="{ name: 'profile', params: { username: item.username } }"
           >
             <div class="relative">
@@ -36,8 +36,8 @@
                 :src="item.avatar"
                 :alt="item.display_name"
               />
-              <lock
-                v-if="privateProfile(item)"
+              <lock-icon
+                v-if="isPrivateProfile(item)"
                 class="cursor-not-allowed inset-center"
               />
             </div>
@@ -47,7 +47,9 @@
           <router-link
             class="text-base text-white truncate"
             :class="[
-              privateProfile(item) ? 'pointer-events-none' : 'hover:underline',
+              isPrivateProfile(item)
+                ? 'pointer-events-none'
+                : 'hover:underline',
             ]"
             :to="{ name: 'profile', params: { username: item.username } }"
           >
@@ -62,41 +64,24 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
+import { useFetch } from "@/composable/useFetch";
 import { getListenersTop } from "@/api";
-import { mapState } from "vuex";
-import { Lock } from "@/components/icons";
-import BaseImg from "@/components/BaseImg.vue";
+import { useUserStore } from "@/stores/user";
 
-export default {
-  name: "Leaderboard",
-  components: {
-    Lock,
-    BaseImg,
-  },
-  data() {
-    return {
-      loading: true,
-      leaderboard: {},
-    };
-  },
-  computed: {
-    ...mapState({
-      user: (state) => state.auth.user,
-    }),
-  },
-  created() {
-    getListenersTop().then((response) => {
-      this.leaderboard = response.top;
-      this.loading = false;
-    });
-  },
-  methods: {
-    privateProfile(item) {
-      if (!item.canSee & (item.display_name != this.user.displayName))
-        return true;
-      return false;
-    },
-  },
+const userStore = useUserStore();
+const user = computed(() => userStore.user);
+
+const leaderboard = ref([]);
+const { fetchData, loading } = useFetch();
+
+fetchData(async () => {
+  const { top } = await getListenersTop();
+  leaderboard.value = top;
+});
+
+const isPrivateProfile = (item) => {
+  return !item.canSee & (item.display_name != user.value.displayName);
 };
 </script>

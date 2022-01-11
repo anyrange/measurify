@@ -1,15 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
-import $store from "@/store";
-
-const isAuthenticated = () => $store.getters["auth/isAuthenticated"];
+import { useUserStore } from "@/stores/user";
+import { useTitle } from "@vueuse/core";
 
 const routes = [
   {
     path: "/",
     name: "login",
-    meta: {
-      authForbidden: true,
-    },
+    meta: { authForbidden: true },
     component: () => import("@/views/Login.vue"),
   },
   {
@@ -20,10 +17,11 @@ const routes = [
     },
     component: () => import("@/layouts/MainLayout.vue"),
     redirect: () => {
+      const userStore = useUserStore();
       return {
         name: "profile",
         params: {
-          username: $store.state.auth.user.username,
+          username: userStore.user.username,
         },
       };
     },
@@ -47,16 +45,6 @@ const routes = [
             path: "history",
             name: "profile-history",
             component: () => import("@/views/Profile/ProfileHistory.vue"),
-          },
-          {
-            path: "reports",
-            name: "profile-reports",
-            component: () => import("@/views/Profile/ProfileReports.vue"),
-          },
-          {
-            path: "library",
-            name: "profile-library",
-            component: () => import("@/views/Profile/ProfileLibrary.vue"),
           },
         ],
       },
@@ -115,16 +103,16 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const user = useUserStore();
+  const title = useTitle();
   if (to.meta.title) {
-    document.title = to.meta.title;
+    title.value = to.meta.title;
   }
-  if (to.meta.authForbidden) {
-    isAuthenticated() ? next({ name: "home" }) : next();
-  } else if (to.meta.authRequired) {
-    isAuthenticated() ? next() : next({ name: "login" });
-  } else {
-    next();
-  }
+  if (to.meta.authRequired && !user.isAuthenticated)
+    return next({ name: "login" });
+  if (to.meta.authForbidden && user.isAuthenticated)
+    return next({ name: "home" });
+  next();
 });
 
 export default router;

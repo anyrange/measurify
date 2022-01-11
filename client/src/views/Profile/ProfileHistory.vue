@@ -1,126 +1,77 @@
 <template>
   <container>
     <container-item>
-      <div class="flex gap-2">
+      <div class="flex gap-x-2">
         <base-input
           v-model.lazy="search"
           placeholder="Search"
           :debounce="400"
         />
-        <base-select v-model="range" :options="$options.rangeOptions" />
+        <base-select v-model="range" :options="rangeOptions" />
       </div>
-      <loading-spinner v-if="loading" />
-      <template v-else>
-        <empty-message
-          v-if="!listeningHistory.history.length && search && !loading"
-        />
-        <track-rows>
-          <track-row
-            v-for="(item, index) in listeningHistory.history"
-            :key="index"
-            :track="item"
-            plays-or-date="date"
-          />
-        </track-rows>
-        <div class="flex justify-center">
-          <pagination v-model="page" :total-pages="listeningHistory.pages" />
+      <track-rows>
+        <div
+          v-for="(item, index) in loading ? range : listeningHistory.history"
+          :key="index"
+        >
+          <template v-if="loading">
+            <div
+              class="
+                flex flex-row
+                items-center
+                duration-100
+                rounded
+                gap-3
+                px-1
+                py-1
+                animate-pulse
+              "
+            >
+              <div class="flex flex-row flex-1 truncate items-center gap-3">
+                <div class="w-11 h-11 object-cover bg-gray-700-spotify" />
+                <div class="flex flex-col gap-2">
+                  <span class="bg-gray-600-spotify w-20 h-1.5 rounded">
+                    &nbsp;
+                  </span>
+                  <span class="bg-gray-700-spotify w-12 h-1.5 rounded">
+                    &nbsp;
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <track-row :track="item" plays-or-date="date" />
+          </template>
         </div>
-      </template>
+      </track-rows>
+      <info-message
+        v-if="!loading && !listeningHistory?.history?.length && search"
+        type="empty"
+      />
+      <div class="flex justify-center">
+        <pagination v-model="page" :total-pages="listeningHistory.pages" />
+      </div>
     </container-item>
   </container>
 </template>
 
-<script>
-import { mapState, mapActions } from "vuex";
-import Container from "@/components/Container.vue";
-import ContainerItem from "@/components/ContainerItem.vue";
-import Pagination from "@/components/Pagination.vue";
-import TrackRows from "@/components/TrackRows.vue";
-import TrackRow from "@/components/TrackRow.vue";
-import BaseInput from "@/components/BaseInput.vue";
-import BaseSelect from "@/components/BaseSelect.vue";
-import EmptyMessage from "@/components/EmptyMessage.vue";
+<script setup>
+import { onMounted, computed } from "vue";
+import { useTitle } from "@vueuse/core";
+import { useHistory } from "@/composable/useProfile";
+import { useProfileStore } from "@/stores/profile";
+import rangeOptions from "@/assets/configs/rangeOptions.json";
 
-export default {
-  components: {
-    Container,
-    ContainerItem,
-    Pagination,
-    TrackRows,
-    TrackRow,
-    BaseInput,
-    BaseSelect,
-    EmptyMessage,
-  },
-  data() {
-    return {
-      timePeriod: "am",
-      loading: true,
-      page: 1,
-      range: 50,
-      search: "",
-    };
-  },
-  rangeOptions: [
-    { label: "10", value: 10 },
-    { label: "25", value: 25 },
-    { label: "50", value: 50 },
-  ],
-  computed: {
-    ...mapState({
-      profile: (state) => state.profile.profile,
-      listeningHistory: (state) => state.profile.listeningHistory,
-    }),
-    pageStateOptions() {
-      return {
-        search: this.search,
-        page: this.page,
-        range: this.range,
-      };
-    },
-  },
-  watch: {
-    $route: {
-      handler({ query: { page, search, range } }) {
-        this.page = parseInt(page) || this.page;
-        this.range = parseInt(range) || this.range;
-        this.search = search || this.search;
-      },
-      immediate: true,
-    },
-    search() {
-      this.page = 1;
-    },
-    range() {
-      this.page = 1;
-    },
-    async pageStateOptions(query) {
-      this.$router.push({ path: this.$route.path, query });
-      await this.getListeningHistory(query);
-    },
-  },
-  async mounted() {
-    await this.getListeningHistory(this.pageStateOptions);
-  },
-  activated() {
-    this.$meta.setTitle(
-      `${this.profile.user.display_name}'s listening history`
-    );
-  },
-  methods: {
-    ...mapActions({
-      getHistory: "profile/getHistory",
-    }),
-    async getListeningHistory(params) {
-      try {
-        this.loading = true;
-        await this.getHistory(params);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+const { listeningHistory, loading, range, page, search } = useHistory();
+const profileStore = useProfileStore();
+const title = useTitle();
+
+const profile = computed(() => profileStore.profile);
+
+onMounted(() => {
+  title.value = profile.value
+    ? `${profile.value.user.display_name}'s listening history`
+    : null;
+});
 </script>

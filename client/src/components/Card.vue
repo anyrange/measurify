@@ -21,21 +21,19 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Card",
-  props: {
-    title: {
-      type: [String, Number],
-      required: true,
-    },
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  title: {
+    type: [String, Number],
+    required: true,
   },
-  computed: {
-    formattedTitle() {
-      if (typeof this.title === "number")
-        return this.title.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return this.title;
-    },
-  },
-};
+});
+
+const formattedTitle = computed(() =>
+  typeof props.title === "number"
+    ? props.title.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    : props.title
+);
 </script>

@@ -8,7 +8,7 @@
     </cards>
     <container-item v-if="profile.genres.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-reports' }" class="link">
+        <router-link :to="{ name: 'profile-history' }" class="link">
           Genres
         </router-link>
       </container-item-label>
@@ -34,7 +34,7 @@
     </container-item>
     <container-item v-if="profile.top.artists.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-library' }" class="link">
+        <router-link :to="{ name: 'profile-history' }" class="link">
           Favourite Artists
         </router-link>
       </container-item-label>
@@ -49,7 +49,7 @@
     </container-item>
     <container-item v-if="profile.top.albums.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-library' }" class="link">
+        <router-link :to="{ name: 'profile-history' }" class="link">
           Favourite Albums
         </router-link>
       </container-item-label>
@@ -64,7 +64,7 @@
     </container-item>
     <container-item v-if="profile.top.tracks.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-library' }" class="link">
+        <router-link :to="{ name: 'profile-history' }" class="link">
           Favourite Tracks
         </router-link>
       </container-item-label>
@@ -81,47 +81,20 @@
   </container>
 </template>
 
-<script>
-import { mapState } from "vuex";
-import { formatDate } from "@/utils/formatters";
-import Container from "@/components/Container.vue";
-import ContainerItem from "@/components/ContainerItem.vue";
-import ContainerItemLabel from "@/components/ContainerItemLabel.vue";
-import HorizontalScroll from "@/components/HorizontalScroll.vue";
-import SpotifyCard from "@/components/SpotifyCard.vue";
-import TrackRows from "@/components/TrackRows.vue";
-import TrackRow from "@/components/TrackRow.vue";
-import Badge from "@/components/Badge.vue";
-import Cards from "@/components/Cards.vue";
-import Card from "@/components/Card.vue";
-import CurrentTrack from "@/components/CurrentTrack.vue";
+<script setup>
+import { computed, onMounted } from "vue";
+import { useTitle } from "@vueuse/core";
+import { useProfileStore } from "@/stores/profile";
+import { formatDate } from "@/utils";
 
-export default {
-  components: {
-    Container,
-    ContainerItem,
-    ContainerItemLabel,
-    HorizontalScroll,
-    SpotifyCard,
-    TrackRows,
-    TrackRow,
-    Badge,
-    Cards,
-    Card,
-    CurrentTrack,
-  },
-  computed: {
-    ...mapState({
-      profile: (state) => state.profile.profile,
-    }),
-  },
-  activated() {
-    this.$meta.setTitle(
-      `${this.profile.user.display_name} (@${this.profile.user.username})`
-    );
-  },
-  methods: {
-    formatDate,
-  },
-};
+const profileStore = useProfileStore();
+const title = useTitle();
+
+const profile = computed(() => profileStore.profile);
+
+onMounted(() => {
+  title.value = profile.value
+    ? `${profile.value.user.display_name} (@${profile.value.user.username})`
+    : null;
+});
 </script>

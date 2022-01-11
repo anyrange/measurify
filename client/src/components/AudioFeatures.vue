@@ -3,42 +3,27 @@
     <audio-feature
       v-for="(feature, index) in formatedFeatures"
       :key="index"
-      :name="$options.FEATURE_NAMES[feature[0]]"
+      :name="FEATURE_NAMES[feature[0]]"
       :score="feature[1] * 100"
     />
   </div>
 </template>
 
-<script>
-import AudioFeature from "@/components/AudioFeature.vue";
+<script setup>
+import { computed } from "vue";
+import AudioFeature from "./AudioFeature.vue";
+import FEATURE_NAMES from "@/assets/configs/featureNames.json";
 
-export default {
-  name: "AudioFeatures",
-  components: {
-    AudioFeature,
+const props = defineProps({
+  audioFeatures: {
+    type: Object,
+    required: true,
   },
-  props: {
-    audioFeatures: {
-      type: Object,
-      required: true,
-    },
-  },
-  FEATURE_NAMES: {
-    danceability: "Danceable",
-    popularity: "Popularity",
-    acousticness: "Acoustic",
-    liveness: "Lively",
-    energy: "Energetic",
-    speechiness: "Speechful",
-    instrumentalness: "Instrumental",
-    valence: "Valence",
-  },
-  computed: {
-    formatedFeatures() {
-      const regex = new RegExp("^(key|tempo|loudness|mode)$", "g");
-      const features = Object.entries(this.audioFeatures);
-      return features.filter((feature) => feature[0].search(regex) === -1);
-    },
-  },
-};
+});
+
+const formatedFeatures = computed(() => {
+  const regex = new RegExp("^(key|tempo|loudness|mode)$", "g");
+  const features = Object.entries(props.audioFeatures);
+  return features.filter((feature) => feature[0].search(regex) === -1);
+});
 </script>

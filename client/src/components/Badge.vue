@@ -13,9 +13,3 @@
     <slot />
   </span>
 </template>
-
-<script>
-export default {
-  name: "Badge",
-};
-</script>

@@ -21,7 +21,7 @@
           font-medium
           border border-gray-600-spotify
           hover:border-gray-500-spotify hover:border-opacity-20
-          focus:ring-2 focus:outline-none
+          default-focus
           disabled:opacity-40
           bg-gray-700-spotify
         "
@@ -57,34 +57,31 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "BaseSelect",
-  props: {
-    modelValue: {
-      type: [String, Number],
-      required: true,
-    },
-    label: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    options: {
-      type: Array,
-      required: true,
-    },
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: [String, Number],
+    required: true,
   },
-  emits: ["update:modelValue"],
-  computed: {
-    value: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.$emit("update:modelValue", value);
-      },
-    },
+  label: {
+    type: String,
+    required: false,
+    default: "",
   },
-};
+  options: {
+    type: Array,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const value = computed({
+  get: () => props.modelValue,
+  set: (value) => {
+    emit("update:modelValue", value);
+  },
+});
 </script>

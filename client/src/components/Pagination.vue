@@ -1,7 +1,7 @@
 <template>
   <div class="pagination">
     <button
-      class="pagination-item"
+      class="pagination-item default-focus"
       type="button"
       :disabled="isInFirstPage"
       aria-label="Go to first page"
@@ -31,7 +31,7 @@
       </svg>
     </button>
     <button
-      class="pagination-item"
+      class="pagination-item default-focus"
       type="button"
       :disabled="isInFirstPage"
       aria-label="Go to previous page"
@@ -52,7 +52,7 @@
     <button
       v-for="(page, index) in pages"
       :key="index"
-      class="pagination-item"
+      class="pagination-item default-focus"
       type="button"
       :disabled="page.isDisabled"
       :class="{ active: isPageActive(page.name) }"
@@ -62,7 +62,7 @@
       {{ page.name }}
     </button>
     <button
-      class="pagination-item"
+      class="pagination-item default-focus"
       type="button"
       :disabled="isInLastPage"
       aria-label="Go to next page"
@@ -81,7 +81,7 @@
       </svg>
     </button>
     <button
-      class="pagination-item"
+      class="pagination-item default-focus"
       type="button"
       :disabled="isInLastPage"
       aria-label="Go to last page"
@@ -113,89 +113,87 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Pagination",
-  props: {
-    modelValue: {
-      type: Number,
-      required: true,
-    },
-    maxVisibleButtons: {
-      type: Number,
-      required: false,
-      default: 3,
-    },
-    totalPages: {
-      type: Number,
-      required: true,
-    },
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: Number,
+    required: true,
   },
-  emits: { "update:modelValue": null },
-  computed: {
-    startPage() {
-      if (this.modelValue === 1) {
-        return 1;
-      }
-      if (this.modelValue === this.totalPages) {
-        return this.totalPages - this.maxVisibleButtons + 1;
-      }
-      return this.modelValue - 1;
-    },
-    endPage() {
-      return Math.min(
-        this.startPage + this.maxVisibleButtons - 1,
-        this.totalPages
-      );
-    },
-    pages() {
-      const range = [];
-      for (let i = this.startPage; i <= this.endPage; i += 1) {
-        if (i > 0) {
-          range.push({
-            name: i,
-            isDisabled: i === this.modelValue,
-          });
-        }
-      }
-      return range;
-    },
-    isInFirstPage() {
-      return this.modelValue === 1;
-    },
-    isInLastPage() {
-      return this.modelValue === this.totalPages;
-    },
+  maxVisibleButtons: {
+    type: Number,
+    required: false,
+    default: 3,
   },
-  methods: {
-    onClickFirstPage() {
-      this.$emit("update:modelValue", 1);
-    },
-    onClickPreviousPage() {
-      this.$emit("update:modelValue", this.modelValue - 1);
-    },
-    onClickPage(page) {
-      this.$emit("update:modelValue", page);
-    },
-    onClickNextPage() {
-      this.$emit("update:modelValue", this.modelValue + 1);
-    },
-    onClickLastPage() {
-      this.$emit("update:modelValue", this.totalPages);
-    },
-    isPageActive(page) {
-      return this.modelValue === page;
-    },
+  totalPages: {
+    type: Number,
+    required: true,
   },
-};
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const startPage = computed(() => {
+  if (props.modelValue === 1) {
+    return 1;
+  }
+  if (props.modelValue === props.totalPages) {
+    return props.totalPages - props.maxVisibleButtons + 1;
+  }
+  return props.modelValue - 1;
+});
+
+const endPage = computed(() => {
+  return Math.min(
+    startPage.value + props.maxVisibleButtons - 1,
+    props.totalPages
+  );
+});
+
+const pages = computed(() => {
+  const range = [];
+  for (let i = startPage.value; i <= endPage.value; i += 1) {
+    if (i > 0) {
+      range.push({
+        name: i,
+        isDisabled: i === props.modelValue,
+      });
+    }
+  }
+  return range;
+});
+
+const isInFirstPage = computed(() => props.modelValue === 1);
+
+const isInLastPage = computed(() => props.modelValue === props.totalPages);
+
+function onClickFirstPage() {
+  emit("update:modelValue", 1);
+}
+function onClickPreviousPage() {
+  emit("update:modelValue", props.modelValue - 1);
+}
+function onClickPage(page) {
+  emit("update:modelValue", page);
+}
+function onClickNextPage() {
+  emit("update:modelValue", props.modelValue + 1);
+}
+function onClickLastPage() {
+  emit("update:modelValue", props.totalPages);
+}
+function isPageActive(page) {
+  return props.modelValue === page;
+}
 </script>
 
-<style lang="postcss">
+<style scoped>
 .pagination {
   @apply flex items-center;
 }
 .pagination-item {
-  @apply h-9 w-10 rounded flex items-center justify-center text-center hover:bg-gray-600-spotify;
+  @apply h-9 w-10 rounded flex items-center justify-center text-center hover:bg-gray-600-spotify appearance-none;
 }
 .active {
   @apply bg-gray-700-spotify;

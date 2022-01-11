@@ -12,13 +12,13 @@
       disabled:opacity-20
       cursor-pointer
       text-center text-base
-      font-medium
+      font-normal
       transition-all
       duration-150
       ease-linear
       shadow-sm
       outline-none
-      focus:outline-none
+      default-focus
     "
     :disabled="disabled || loading"
     :class="[
@@ -32,7 +32,10 @@
       {
         'bg-white text-black': color === 'white',
       },
-      [rounded ? 'rounded-full' : 'rounded-lg'],
+      {
+        'bg-gray-800-spotify text-gray-400-spotify': color === 'dark',
+      },
+      [rounded ? 'rounded-full' : 'rounded'],
     ]"
   >
     <svg
@@ -62,28 +65,25 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: "BaseButton",
-  props: {
-    color: {
-      type: String,
-      required: false,
-      default: "positive",
-    },
-    loading: {
-      type: Boolean,
-      required: false,
-    },
-    disabled: {
-      type: Boolean,
-      required: false,
-    },
-    rounded: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
+<script setup>
+defineProps({
+  color: {
+    type: String,
+    required: false,
+    default: "positive",
   },
-};
+  loading: {
+    type: Boolean,
+    required: false,
+  },
+  disabled: {
+    type: Boolean,
+    required: false,
+  },
+  rounded: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
 </script>

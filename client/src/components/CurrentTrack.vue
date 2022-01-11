@@ -6,40 +6,28 @@
     plays-or-date="date"
   >
     <template #current-track>
-      <div class="flex flex-row gap-1 items-center justify-end" title="now">
-        <img :src="$options.nowPlaingGif" alt="Listening Now" />
-        <span>Listening now</span>
-      </div>
+      <figure class="flex flex-row gap-1 items-center justify-end" title="now">
+        <img :src="nowPlaying" alt="Listening Now" />
+        <figcaption>Listening now</figcaption>
+      </figure>
     </template>
   </track-row>
 </template>
 
-<script>
+<script setup>
 import { getProfileCurrentTrack } from "@/api";
-import { mapState } from "vuex";
+import nowPlaying from "@/assets/media/now_playing.gif";
 import TrackRow from "@/components/TrackRow.vue";
-import nowPlaingGif from "@/assets/now_playing.gif";
+import { ref } from "vue";
+import { useProfileStore } from "@/stores/profile";
 
-export default {
-  name: "CurrentTrack",
-  components: {
-    TrackRow,
-  },
-  data() {
-    return {
-      currentTrack: null,
-    };
-  },
-  nowPlaingGif,
-  computed: {
-    ...mapState({
-      profile: (state) => state.profile.profile,
-    }),
-  },
-  async created() {
-    this.currentTrack = await getProfileCurrentTrack({
-      username: this.profile.user.username,
-    });
-  },
-};
+const profileStore = useProfileStore();
+
+const currentTrack = ref(null);
+
+(async () => {
+  currentTrack.value = await getProfileCurrentTrack({
+    username: profileStore.profile.user.username,
+  });
+})();
 </script>

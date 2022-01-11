@@ -23,7 +23,7 @@
           <router-view />
         </main>
       </div>
-      <friends-list
+      <the-friends-list
         v-if="breakpoints.is === 'xl' || breakpoints.is === '2xl'"
       />
     </div>
@@ -31,9 +31,13 @@
 </template>
 
 <script setup>
-import TheSidebar from "@/components/TheSidebar.vue";
-import FriendsList from "@/components/FriendsList.vue";
-import useBreakpoints from "@/composable/useBreakpoints";
+import { useBreakpoints } from "@/composable/useBreakpoints";
+import { useNavigator } from "@/composable/useNavigator";
+
+import TheSidebar from "./TheSidebar.vue";
+import TheFriendsList from "./TheFriendsList.vue";
+
+const { isMobile } = useNavigator();
 
 let breakpoints = useBreakpoints();
 </script>

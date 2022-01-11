@@ -47,29 +47,26 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Toggle",
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: false,
-    },
-    label: {
-      type: String,
-      required: true,
-    },
+<script setup>
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: false,
   },
-  emits: ["update:modelValue"],
-  methods: {
-    handleInput(value) {
-      this.$emit("update:modelValue", value);
-    },
+  label: {
+    type: String,
+    required: true,
   },
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const handleInput = (value) => {
+  emit("update:modelValue", value);
 };
 </script>
 
-<style lang="postcss" scoped>
+<style scoped>
 .toggle:checked {
   @apply right-0 border-green-500-spotify;
 }

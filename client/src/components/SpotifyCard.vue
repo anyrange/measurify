@@ -52,23 +52,17 @@
   </router-link>
 </template>
 
-<script>
-import BaseImg from "@/components/BaseImg.vue";
+<script setup>
+import BaseImg from "./BaseImg.vue";
 
-export default {
-  name: "SotifyCard",
-  components: {
-    BaseImg,
+defineProps({
+  type: {
+    type: String,
+    required: true,
   },
-  props: {
-    type: {
-      type: String,
-      required: true,
-    },
-    item: {
-      type: Object,
-      required: true,
-    },
+  item: {
+    type: Object,
+    required: true,
   },
-};
+});
 </script>

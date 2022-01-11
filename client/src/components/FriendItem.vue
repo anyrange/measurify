@@ -21,18 +21,16 @@
     <div class="flex flex-col">
       <div class="fullwidth">
         <div class="flex flex-row gap-2 items-center justify-between w-full">
-          <div class="truncate">
-            <router-link
-              :to="{ name: 'profile', params: { username: friend.username } }"
-              class="link truncate"
-            >
-              {{ friend.display_name }}
-            </router-link>
-          </div>
+          <router-link
+            :to="{ name: 'profile', params: { username: friend.username } }"
+            class="link truncate"
+          >
+            {{ friend.display_name }}
+          </router-link>
           <span class="flex flex-none justify-end truncate">
             <template v-if="currentTrack">
               <img
-                :src="$options.nowPlaingGif"
+                :src="nowPlaying"
                 class="w-3 h-3"
                 alt="Listening Now"
                 title="now"
@@ -61,55 +59,37 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
 import { getProfileCurrentTrack } from "@/api";
-import { getDateFromNowShort, getDateFromNow } from "@/utils/formatters";
+import { getDateFromNowShort, getDateFromNow } from "@/utils";
+import nowPlaying from "@/assets/media/now_playing.gif";
 import BaseImg from "@/components/BaseImg.vue";
-import nowPlaingGif from "@/assets/now_playing.gif";
 
-export default {
-  name: "FriendItem",
-  components: {
-    BaseImg,
+const props = defineProps({
+  friend: {
+    type: Object,
+    required: true,
   },
-  props: {
-    friend: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: { "listening-now": null },
-  data() {
-    return {
-      currentTrack: null,
-      interval: null,
-    };
-  },
-  nowPlaingGif,
-  computed: {
-    track() {
-      return this.currentTrack ? this.currentTrack : this.friend.lastTrack;
-    },
-  },
-  async created() {
-    this.currentTrack = await getProfileCurrentTrack({
-      username: this.friend.username,
-    });
-    if (this.currentTrack) {
-      this.$emit("listening-now", this.friend.username);
-      this.interval = setInterval(async () => {
-        this.currentTrack = await getProfileCurrentTrack({
-          username: this.friend.username,
-        });
-        if (!this.currentTrack) {
-          clearInterval(this.interval);
-        }
-      }, 120000);
-    }
-  },
-  methods: {
-    getDateFromNowShort,
-    getDateFromNow,
-  },
-};
+});
+
+const emit = defineEmits(["listening-now"]);
+
+const currentTrack = ref(null);
+const interval = ref(null);
+
+const track = computed(() =>
+  currentTrack.value ? currentTrack.value : props.friend.lastTrack
+);
+
+interval.value = setInterval(async () => {
+  const track = await getProfileCurrentTrack({
+    username: props.friend.username,
+  });
+  const setTrack = () => {
+    emit("listening-now", props.friend.username);
+    currentTrack.value = track;
+  };
+  track ? setTrack() : clearInterval(interval.value);
+}, 120000);
 </script>

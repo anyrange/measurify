@@ -9,34 +9,23 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "AudioFeature",
-  props: {
-    name: {
-      type: String,
-      required: true,
-    },
-    score: {
-      type: Number,
-      required: true,
-    },
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
   },
-  computed: {
-    beforeDecimal() {
-      return (this.valueRounded + "").split(".")[0];
-    },
-    afterDecimal() {
-      return (this.valueRounded + "").split(".")[1];
-    },
-    valueRounded() {
-      return this.score.toFixed(2);
-    },
-    barStyle() {
-      return {
-        width: Math.round(this.score) + "%",
-      };
-    },
+  score: {
+    type: Number,
+    required: true,
   },
-};
+});
+
+const barStyle = computed(() => {
+  return {
+    width: Math.round(props.score) + "%",
+  };
+});
 </script>

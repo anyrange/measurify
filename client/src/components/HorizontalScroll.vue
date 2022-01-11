@@ -8,16 +8,11 @@
       -mx-4
       sm:mx-0
       px-4
-      sm:px-0
+      py-0.5
+      sm:px-0.5
     "
     style="-webkit-overflow-scrolling: touch"
   >
     <slot></slot>
   </div>
 </template>
-
-<script>
-export default {
-  name: "HorizontalScroll",
-};
-</script>

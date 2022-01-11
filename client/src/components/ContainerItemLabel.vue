@@ -3,9 +3,3 @@
     <slot></slot>
   </h2>
 </template>
-
-<script>
-export default {
-  name: "ContainerItemLabel",
-};
-</script>

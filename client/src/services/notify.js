@@ -1,11 +1,11 @@
 import { nanoid } from "nanoid";
-import emitter from "./eventBus";
+import emitter from "./emitter.js";
 
 /**
  * @param {('info'|'success'|'warning'|'danger')} type
  */
 
-const notify = {
+export const notify = {
   show: ({
     id = nanoid(),
     message,
@@ -32,5 +32,3 @@ const notify = {
     emitter.emit("clearNotifications");
   },
 };
-
-export { notify, emitter };

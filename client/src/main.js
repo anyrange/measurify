@@ -1,20 +1,20 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
+import { createPersistedState } from "./piniaPersisted.js";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
-import LoadingSpinner from "@/components/LoadingSpinner.vue";
-import "virtual:windi.css";
-import "./assets/styles.css";
-import ApexCharts from "apexcharts";
 import VWave from "v-wave";
-import isMobile from "./mixins/isMobile";
-import meta from "./meta.js";
+import ApexCharts from "apexcharts";
+import "virtual:windi.css";
+import "./assets/styles/index.css";
+import { registerSW } from "virtual:pwa-register";
+
+registerSW({ immediate: true });
 
 const app = createApp(App);
-
 app.config.globalProperties.$apexcharts = ApexCharts;
 
-app.use(router).use(store).use(VWave).use(meta).mount("#app");
+const pinia = createPinia();
+pinia.use(createPersistedState({ modules: ["user", "settings"] }));
 
-app.component("LoadingSpinner", LoadingSpinner);
-app.mixin(isMobile);
+app.use(router).use(VWave).use(pinia).mount("#app");

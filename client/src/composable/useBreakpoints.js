@@ -37,7 +37,7 @@ const setBreakpoint = () => {
   breakpoints.is = getBreakpoint(window.innerWidth);
 };
 
-const useBreakpoint = () => {
+export const useBreakpoints = () => {
   onMounted(() => {
     setBreakpoint();
     window.addEventListener("resize", () => {
@@ -47,5 +47,3 @@ const useBreakpoint = () => {
 
   return breakpoints;
 };
-
-export default useBreakpoint;

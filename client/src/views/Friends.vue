@@ -34,35 +34,21 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue";
+import { useFetch } from "@/composable/useFetch";
 import { getFriends } from "@/api";
-import { getDateFromNow } from "@/utils/formatters";
-import { orderByDate } from "@/utils/arrays";
-import BaseImg from "@/components/BaseImg.vue";
+import { getDateFromNow, orderByDate } from "@/utils";
 
-export default {
-  components: {
-    BaseImg,
-  },
-  data() {
-    return {
-      loading: true,
-      friends: [],
-    };
-  },
-  computed: {
-    friendsSortedByLastLogin() {
-      return this.orderByDate(this.friends, "lastLogin");
-    },
-  },
-  async created() {
-    const { friends } = await getFriends();
-    this.friends = friends;
-    this.loading = false;
-  },
-  methods: {
-    getDateFromNow,
-    orderByDate,
-  },
-};
+const friends = ref([]);
+const { fetchData, loading } = useFetch();
+
+fetchData(async () => {
+  const { friends: friendsData } = await getFriends();
+  friends.value = friendsData;
+});
+
+const friendsSortedByLastLogin = computed(() =>
+  orderByDate(friends.value, "lastLogin")
+);
 </script>

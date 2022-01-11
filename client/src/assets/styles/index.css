@@ -2,6 +2,7 @@
 
 #app {
   font-family: "Inter", sans-serif;
+  overflow: overlay;
   @apply bg-gray-800-spotify;
 }
 
@@ -110,6 +111,14 @@
 
 .default-border {
   @apply border-gray-700-spotify;
+}
+
+.default-focus {
+  @apply outline-none focus:outline-none focus-visible:ring-2;
+}
+
+a {
+  @apply outline-none focus:outline-none focus-visible:ring-2;
 }
 
 hr {

@@ -1,11 +1,18 @@
 <template>
-  <div class="flex flex-row items-center gap-x-3 text-white">
-    <h1 class="text-2xl md:text-3xl font-medium truncate-2">
+  <div class="flex flex-row items-center gap-x-2 flex-1">
+    <h1 class="text-xl sm:text-2xl font-medium text-white truncate">
       <slot />
     </h1>
-    <a :href="link" target="_blank" rel="no-referrer">
+    <a :href="link" class="appearance-none" target="_blank" rel="no-referrer">
       <svg
-        class="w-6 hover:text-green-500-spotify cursor-pointer duration-200"
+        class="
+          w-4.7
+          sm:w-6
+          text-white
+          hover:text-green-500-spotify
+          cursor-pointer
+          duration-200
+        "
         role="img"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 496 512"
@@ -19,15 +26,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "SpotifyLink",
-  props: {
-    link: {
-      type: String,
-      required: true,
-    },
+<script setup>
+defineProps({
+  link: {
+    type: String,
+    required: true,
   },
-  types: ["artist", "track", "album", "user", "playlist"],
-};
+});
 </script>

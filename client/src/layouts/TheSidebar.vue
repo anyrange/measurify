@@ -17,11 +17,11 @@
       :class="{
         'duration-75 hover:bg-gray-700-spotify cursor-pointer': showBackButton,
       }"
-      @click="goBack()"
+      @click="goBack"
     >
       <div class="flex gap-3 items-center">
         <component
-          :is="showBackButton ? 'arrow-left-icon' : 'home-icon'"
+          :is="showBackButton ? ArrowLeftIcon : HomeIcon"
           class="w-6 h-6"
         />
         <span class="text-lg font-medium">
@@ -31,13 +31,17 @@
     </div>
     <aside class="mt-4 sidebar">
       <router-link
-        v-if="isAuthenticated"
+        v-if="userStore.isAuthenticated"
         v-wave
         class="sidebar__item"
-        :to="{ name: 'profile', params: { username: user.username } }"
+        :to="{ name: 'profile', params: { username: userStore.user.username } }"
       >
         <account-icon class="sidebar__item__icon" />
         <span class="sidebar__item__title">Profile</span>
+      </router-link>
+      <router-link v-wave class="sidebar__item" :to="{ name: 'account' }">
+        <settings-icon class="sidebar__item__icon" />
+        <span class="sidebar__item__title">Account</span>
       </router-link>
       <router-link v-wave class="sidebar__item" :to="{ name: 'leaderboard' }">
         <leaderboard-icon class="sidebar__item__icon" />
@@ -51,8 +55,7 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapGetters } from "vuex";
+<script setup>
 import {
   AccountIcon,
   LeaderboardIcon,
@@ -60,42 +63,33 @@ import {
   HomeIcon,
   ArrowLeftIcon,
 } from "@/components/icons";
+import { inject, computed } from "vue";
+import { useUserStore } from "@/stores/user";
+import { useRoute, useRouter } from "vue-router";
 
-export default {
-  components: {
-    AccountIcon,
-    LeaderboardIcon,
-    FriendsIcon,
-    HomeIcon,
-    ArrowLeftIcon,
-  },
-  computed: {
-    ...mapState({
-      user: (state) => state.auth.user,
-      historyLength: (state) => state.app.historyLength,
-    }),
-    ...mapGetters({
-      isAuthenticated: "auth/isAuthenticated",
-    }),
-    showBackButton() {
-      return !(
-        this.$route.name === "profile-overview" &&
-        this.$route.params.username === this.user.username
-      );
-    },
-  },
-  methods: {
-    goBack() {
-      if (!this.showBackButton) return;
-      window.history.length - this.historyLength !== 0
-        ? this.$router.go(-1)
-        : this.$router.push({ name: "home" });
-    },
-  },
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+
+const historyLength = inject("historyLength");
+
+const showBackButton = computed(
+  () =>
+    !(
+      route.name === "profile-overview" &&
+      route.params.username === userStore.user.username
+    )
+);
+
+const goBack = () => {
+  if (!showBackButton.value) return;
+  window.history.length - historyLength !== 0
+    ? router.go(-1)
+    : router.push({ name: "home" });
 };
 </script>
 
-<style lang="postcss">
+<style>
 .sidebar {
   @apply flex sm:flex-col flex-row gap-2 flex-none z-50 sm:h-screen h-12 sm:px-2 p-0 sm:w-20 md:w-60 xl:w-60 w-full sm:relative fixed bottom-0 sm:inset-0 bg-gray-800-spotify;
 }

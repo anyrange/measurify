@@ -79,33 +79,29 @@
   </teleport>
 </template>
 
-<script>
-export default {
-  name: "Modal",
-  props: {
-    show: {
-      type: Boolean,
-      required: true,
-    },
+<script setup>
+import { onMounted, onBeforeUnmount } from "vue";
+
+const props = defineProps({
+  show: {
+    type: Boolean,
+    required: true,
   },
-  emits: {
-    close: null,
-  },
-  mounted() {
-    document.addEventListener("keydown", this.handleKeydown);
-  },
-  beforeUnmount() {
-    document.removeEventListener("keydown", this.handleKeydown);
-  },
-  methods: {
-    handleKeydown(e) {
-      if (this.show && e.key === "Escape") {
-        this.close();
-      }
-    },
-    close() {
-      this.$emit("close");
-    },
-  },
+});
+
+const emit = defineEmits(["close"]);
+
+const close = () => {
+  emit("close");
 };
+
+const handleKeydown = (e) => {
+  if (props.show && e.key === "Escape") {
+    close();
+  }
+};
+
+onMounted(() => document.addEventListener("keydown", handleKeydown));
+
+onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 </script>

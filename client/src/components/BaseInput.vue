@@ -18,7 +18,7 @@
         border border-gray-600-spotify
         hover:border-gray-500-spotify hover:border-opacity-20
         placeholder-gray-500-spotify
-        focus:ring-2 focus:outline-none
+        default-focus
         disabled:opacity-40
         bg-gray-700-spotify
       "
@@ -27,38 +27,34 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "BaseInput",
-  props: {
-    modelValue: {
-      type: String,
-      required: true,
-    },
-    label: {
-      type: String,
-      required: false,
-      default: "",
-    },
-    debounce: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
+<script setup>
+import { ref } from "vue";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    required: true,
   },
-  emits: ["update:modelValue"],
-  data() {
-    return {
-      timeout: null,
-    };
+  label: {
+    type: String,
+    required: false,
+    default: "",
   },
-  methods: {
-    handleInput(value) {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.$emit("update:modelValue", value);
-      }, this.debounce);
-    },
+  debounce: {
+    type: Number,
+    required: false,
+    default: 0,
   },
+});
+
+const emit = defineEmits(["update:modelValue"]);
+
+const timeout = ref(null);
+
+const handleInput = (value) => {
+  clearTimeout(timeout.value);
+  timeout.value = setTimeout(() => {
+    emit("update:modelValue", value);
+  }, props.debounce);
 };
 </script>
