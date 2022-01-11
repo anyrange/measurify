@@ -1,19 +1,20 @@
-import User from "../../models/User.js";
-import fetch from "node-fetch";
-import mongodb from "mongodb";
-const { ObjectId } = mongodb;
+const sortByDates = (arr) => {
+  return arr.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+};
 
 export default async function (fastify) {
   fastify.get(
     "",
     {
       schema: {
-        description: "do not work properly yet",
+        description: "experimental feat: news feed",
         querystring: {
           type: "object",
           properties: {
-            page: { type: "number", minimum: 1 },
-            range: { type: "number", minimum: 2 },
+            range: { type: "number", minimum: 1, default: 25 },
+            page: { type: "number", minimum: 1, default: 1 },
+            offsetListened: { type: "number", minimum: 0, default: 0 },
+            offsetLiked: { type: "number", minimum: 0, default: 0 },
           },
         },
         response: {
@@ -21,225 +22,126 @@ export default async function (fastify) {
             type: "object",
             properties: {
               status: { type: "number" },
+              next: { type: "string" },
               activity: {
                 type: "array",
                 items: {
                   type: "object",
-                  required: ["userName", "avatar", "customID", "track", "type"],
                   properties: {
-                    userName: { type: "string" },
+                    display_name: { type: "string" },
                     avatar: { type: "string" },
-                    customID: { type: "string" },
+                    username: { type: "string" },
                     track: { $ref: "track#" },
-                    type: { type: "string" },
+                    date: { type: "string", format: "datetime" },
+                    type: { type: "string", enum: ["liked", "listened"] },
                   },
                 },
               },
             },
           },
         },
-        tags: ["pages"],
+        tags: ["other"],
       },
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      // const { _id } = req;
+      const id = req.session.get("id");
 
-      // const range = req.query.range || 10;
-      // const page = req.query.page || 1;
+      const { page, offsetListened, offsetLiked, range } = req.query;
 
-      // let users = await User.find(
-      //   {},
-      //   {
-      //     customID: 1,
-      //     spotifyID: 1,
-      //     lastSpotifyToken: 1,
-      //     userName: 1,
-      //     avatar: 1,
-      //     lastLogin: 1,
-      //   }
-      // );
+      const friends = await fastify.userFriends(id);
 
-      // // get user's info
-      // const user = users.find((user) => user._id == _id);
+      const [trackActivity, ...likeActivity] = await Promise.all([
+        fastify.db.User.aggregate([
+          { $match: { $or: friends.map(({ _id }) => ({ _id })) } },
+          { $unwind: { path: "$listeningHistory" } },
+          { $sort: { "listeningHistory.played_at": -1 } },
+          { $skip: offsetListened },
+          { $limit: range },
+          {
+            $lookup: {
+              from: "tracks",
+              localField: "listeningHistory.track",
+              foreignField: "_id",
+              as: "tracks",
+            },
+          },
+          {
+            $lookup: {
+              from: "albums",
+              localField: "tracks.album",
+              foreignField: "_id",
+              as: "album",
+            },
+          },
+          {
+            $lookup: {
+              from: "artists",
+              localField: "tracks.artists",
+              foreignField: "_id",
+              as: "artists",
+            },
+          },
+          {
+            $addFields: {
+              username: "$settings.username",
+              date: "$listeningHistory.played_at",
+              track: {
+                album: { $first: "$album" },
+                artists: "$artists",
+                id: "$listeningHistory.track",
+                name: { $first: "$tracks.name" },
+                duration_ms: { $first: "$tracks.duration_ms" },
+                image: { $arrayElemAt: [{ $first: "$album.images" }, -1] },
+              },
+              type: "listened",
+            },
+          },
+        ]),
+        ...friends.map((friend) =>
+          fastify.spotifyAPI({
+            route: `me/tracks?limit=${range}&offset=${(page - 1) * range}`,
+            token: friend.tokens.token,
+          })
+        ),
+      ]);
 
-      // if (!user) throw fastify.error("User not found", 404);
+      const formatedLikeActivity = sortByDates(
+        likeActivity
+          .map(({ items }, key) =>
+            items.map((item) => ({
+              display_name: friends[key].display_name,
+              avatar: friends[key].avatar,
+              username: friends[key].username,
+              type: "liked",
+              date: new Date(item.added_at),
+              track: Object.assign(item.track, {
+                image: item.track.album.images[1]?.url || "",
+              }),
+            }))
+          )
+          .flat(1)
+      );
 
-      // const access_token = user.lastSpotifyToken;
+      const activity = sortByDates([
+        ...trackActivity,
+        ...formatedLikeActivity.slice(offsetLiked),
+      ]).slice(0, range);
 
-      // // filter away user
-      // users = users.filter((user) => user._id != _id);
+      const newOffsetListened =
+        offsetListened + activity.filter((a) => a.type === "listened").length;
+      const newOffsetLiked =
+        offsetLiked + activity.filter((a) => a.type === "liked").length;
+      const nextPage = newOffsetLiked >= formatedLikeActivity.length;
 
-      // const route =
-      //   "me/following/contains?type=user&ids=" +
-      //   users.map((user) => user.spotifyID).join();
-
-      // // check if users are followed
-      // const friendList = await fastify.spotifyAPI({
-      //   route,
-      //   token: access_token,
-      // });
-
-      // if (friendList.error)
-      //   throw fastify.error(
-      //     friendList.error.message,
-      //     friendList.error.status || 500
-      //   );
-
-      // const friends = users.filter((user, key) => friendList[key]);
-
-      // if (!friends.length) return reply.send({ status: 204, activity: [] });
-
-      // const trackActivity = await getTrackActivity(friends, page, range);
-
-      // const firstDate =
-      //   page - 1 === 0
-      //     ? new Date().toISOString()
-      //     : trackActivity[0].track.played_at;
-
-      // const lastDate = trackActivity[trackActivity.length - 1].track.played_at;
-      // const requests = friends.map((friend) => {
-      //   {
-      //     const options = { friend, firstDate, lastDate };
-      //     return getLiked(options);
-      //   }
-      // });
-
-      // const likeActivity = await Promise.all(requests);
-
-      // const activity = [...likeActivity.flat(1), ...trackActivity].sort(
-      //   (a, b) =>
-      //     a.track.played_at < b.track.played_at
-      //       ? 1
-      //       : a.track.played_at > b.track.played_at
-      //       ? -1
-      //       : 0
-      // );
-
-      reply.send();
+      reply.send({
+        activity,
+        next: `${process.env.VITE_SERVER_URI}/community?page=${
+          page + nextPage
+        }&range=${range}&offsetLiked=${
+          nextPage ? 0 : newOffsetLiked
+        }&offsetListened=${newOffsetListened}`,
+      });
     }
   );
 }
-
-// eslint-disable-next-line no-unused-vars
-const getTrackActivity = async (friends, page, range) => {
-  const agg = [
-    {
-      $match: {
-        $or: friends.map((friend) => {
-          return { _id: new ObjectId(friend._id) };
-        }),
-      },
-    },
-    {
-      $project: {
-        track: {
-          $slice: [
-            "$recentlyPlayed",
-            Math.floor(page / friends.length) * range,
-            range,
-          ],
-        },
-        userName: 1,
-        customID: 1,
-        _id: 0,
-        avatar: 1,
-      },
-    },
-    {
-      $project: {
-        track: {
-          id: 1,
-          plays: {
-            played_at: 1,
-          },
-          name: 1,
-          artists: {
-            id: 1,
-            name: 1,
-          },
-        },
-        userName: 1,
-        customID: 1,
-        lastSpotifyToken: 1,
-        avatar: 1,
-      },
-    },
-    { $unwind: { path: "$track" } },
-    { $unwind: { path: "$track.plays" } },
-    {
-      $project: {
-        track: {
-          id: 1,
-          played_at: "$track.plays.played_at",
-          name: 1,
-          artists: {
-            id: 1,
-            name: 1,
-          },
-        },
-        userName: 1,
-        customID: 1,
-        lastSpotifyToken: 1,
-        avatar: 1,
-      },
-    },
-    { $sort: { "track.played_at": -1 } },
-    {
-      $skip:
-        page - 1 - Math.floor(page / (friends.length + 1)) * friends.length,
-    },
-    { $limit: range },
-    { $addFields: { type: "listened" } },
-  ];
-  return await User.aggregate(agg);
-};
-
-// eslint-disable-next-line no-unused-vars
-const getLiked = async ({ friend, firstDate, lastDate }) => {
-  let likedTracks = await getLikedTracks(friend.lastSpotifyToken);
-
-  if (!likedTracks.items.length) return [];
-
-  const liked = [];
-  while (likedTracks.items.length && likedTracks.next != null) {
-    const likedTrack = likedTracks.items.shift();
-
-    if (likedTrack.added_at < lastDate) break;
-
-    if (!likedTracks.items.length)
-      likedTracks = await getLikedTracks(
-        friend.lastSpotifyToken,
-        likedTracks.next
-      );
-
-    if (likedTrack.added_at > firstDate) continue;
-
-    liked.push({
-      userName: friend.userName,
-      avatar: friend.avatar,
-      customID: friend.customID,
-      track: {
-        id: likedTrack.track.id,
-        name: likedTrack.track.name,
-        played_at: likedTrack.added_at,
-        artists: likedTrack.track.artists.map(({ name, id }) => {
-          return { name, id };
-        }),
-      },
-      type: "liked",
-    });
-  }
-  return liked;
-};
-
-const getLikedTracks = async (
-  token,
-  url = "https://api.spotify.com/v1/me/tracks?limit=30"
-) => {
-  return await fetch(url, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  }).then((res) => res.json());
-};
