@@ -124,3 +124,17 @@ a {
 hr {
   @apply border-gray-700-spotify;
 }
+
+.profile-nav {
+  @apply flex w-full flex-row gap-x-3  border-b-1 border-gray-800-spotify;
+}
+.profile-nav .profile-nav-link {
+  @apply flex flex-shrink-0 flex-none hover:text-green-500-spotify;
+}
+.profile-nav .profile-nav-link a {
+  @apply py-2 px-1;
+}
+.profile-nav .router-link-exact-active {
+  @apply text-green-500-spotify;
+  box-shadow: 0px 1px 0px #22c55e;
+}

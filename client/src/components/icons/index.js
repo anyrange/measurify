@@ -8,4 +8,5 @@ export { default as LockIcon } from "./LockIcon.vue";
 export { default as LyricsIcon } from "./LyricsIcon.vue";
 export { default as HomeIcon } from "./HomeIcon.vue";
 export { default as ArrowLeftIcon } from "./ArrowLeftIcon.vue";
+export { default as AccountSettingsIcon } from "./AccountSettingsIcon.vue";
 export { default as SettingsIcon } from "./SettingsIcon.vue";

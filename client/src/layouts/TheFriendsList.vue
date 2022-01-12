@@ -31,15 +31,16 @@
       <span class="text-lg font-medium">Friend Activity</span>
     </div>
     <div class="h-full">
-      <loading-spinner v-if="loading" />
-      <div v-else class="flex flex-col gap-4 items-center">
-        <friend-item
-          v-for="friend in friendsSortedByLastListened"
-          :key="friend.username"
-          :friend="friend"
-          @listening-now="handleListener"
-        />
-      </div>
+      <suspense-wrapper :loading="loading" :error="error">
+        <div class="flex flex-col gap-4 items-center">
+          <friend-item
+            v-for="friend in friendsSortedByLastListened"
+            :key="friend.username"
+            :friend="friend"
+            @listening-now="handleListener"
+          />
+        </div>
+      </suspense-wrapper>
     </div>
   </aside>
 </template>
@@ -50,7 +51,7 @@ import { useFetch } from "@/composable/useFetch";
 import { getFriends } from "@/api";
 import { orderByDate } from "@/utils";
 
-const { fetchData, loading } = useFetch();
+const { fetchData, loading, error } = useFetch();
 
 const friends = ref(null);
 

@@ -1,8 +1,6 @@
 <template>
-  <loading-spinner v-if="loading" />
-  <template v-else>
-    <info-message v-if="error" type="error" />
-    <container v-else>
+  <suspense-wrapper :loading="loading" :error="error">
+    <container>
       <figure class="responsive-picture">
         <base-img
           parallax
@@ -133,7 +131,7 @@
         </div>
       </div>
     </modal>
-  </template>
+  </suspense-wrapper>
 </template>
 
 <script setup>

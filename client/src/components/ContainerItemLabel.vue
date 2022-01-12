@@ -1,5 +1,10 @@
 <template>
-  <h2 class="text-xl text-white font-medium">
-    <slot></slot>
-  </h2>
+  <div class="flex justify-between">
+    <div class="text-xl text-white font-medium">
+      <slot></slot>
+    </div>
+    <div>
+      <slot name="options"></slot>
+    </div>
+  </div>
 </template>

@@ -40,7 +40,7 @@
         <span class="sidebar__item__title">Profile</span>
       </router-link>
       <router-link v-wave class="sidebar__item" :to="{ name: 'account' }">
-        <settings-icon class="sidebar__item__icon" />
+        <account-settings-icon class="sidebar__item__icon" />
         <span class="sidebar__item__title">Account</span>
       </router-link>
       <router-link v-wave class="sidebar__item" :to="{ name: 'leaderboard' }">
@@ -62,6 +62,7 @@ import {
   FriendsIcon,
   HomeIcon,
   ArrowLeftIcon,
+  AccountSettingsIcon,
 } from "@/components/icons";
 import { inject, computed } from "vue";
 import { useUserStore } from "@/stores/user";

@@ -2,7 +2,7 @@
   <div class="flex flex-row gap-2 items-center w-full">
     <router-link
       :to="{ name: 'profile', params: { username: friend.username } }"
-      class="flex-none"
+      class="flex-none rounded-full"
     >
       <base-img
         class="

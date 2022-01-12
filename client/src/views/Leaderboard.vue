@@ -5,8 +5,7 @@
       This rating is based on the number of minutes you listen to music
     </h2>
   </div>
-  <loading-spinner v-if="loading" />
-  <div v-else class="flex flex-col gap-y-2 2xl:w-1/4">
+  <suspense-wrapper :loading="loading" :error="error">
     <div
       v-for="(item, index) in leaderboard"
       :key="item.id"
@@ -61,7 +60,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </suspense-wrapper>
 </template>
 
 <script setup>
@@ -74,7 +73,7 @@ const userStore = useUserStore();
 const user = computed(() => userStore.user);
 
 const leaderboard = ref([]);
-const { fetchData, loading } = useFetch();
+const { fetchData, loading, error } = useFetch();
 
 fetchData(async () => {
   const { top } = await getListenersTop();

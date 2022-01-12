@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 const messages = {
-  error: "Something went wrong",
+  error: "An error occurred",
   empty: "Nothing found",
 };
 
