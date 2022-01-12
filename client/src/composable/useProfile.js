@@ -3,10 +3,12 @@ import { useFetch } from "./useFetch.js";
 import {
   getProfile,
   getProfileListeningHistory,
-  // getProfileReports,
+  getProfileReports,
+  getProfileCompatibility,
 } from "@/api";
 import { useProfileStore } from "@/stores/profile.js";
 import { useSettingsStore } from "@/stores/settings.js";
+import { useUserStore } from "@/stores/user.js";
 import { useRoute, useRouter } from "vue-router";
 
 export function useProfile() {
@@ -16,6 +18,7 @@ export function useProfile() {
   const username = computed(() => route.params.username);
 
   const profileStore = useProfileStore();
+  const userStore = useUserStore();
 
   function updateProfile(data) {
     profileStore.profile = data;
@@ -33,6 +36,10 @@ export function useProfile() {
 
   return {
     profile: computed(() => profileStore.profile),
+    isOverviewPage: computed(() => route.name === "profile-overview"),
+    isUserProfile: computed(
+      () => profileStore.profile.user.username === userStore.user.username
+    ),
     loading,
     error,
   };
@@ -89,7 +96,6 @@ export function useHistory() {
       if ((oRange && nRange !== oRange) || (oSearch && nSearch !== oSearch)) {
         page.value = 1;
       }
-
       const query = { search: nSearch, range: nRange, page: nPage };
       await fetchHistory(query).then(() => {
         router.push({ path: route.path, query });
@@ -108,30 +114,58 @@ export function useHistory() {
   };
 }
 
-// export function useReports() {
-//   const { fetchData, loading, error } = useFetch();
-//   const profileStore = useProfileStore();
+export function useReports() {
+  const { fetchData, loading, error } = useFetch();
+  const profileStore = useProfileStore();
 
-//   const reports = ref(null);
+  const reportsData = ref(null);
 
-//   function updateReports(data) {
-//     reports.value = data;
-//   }
+  function updateReports(data) {
+    reportsData.value = data;
+  }
 
-//   (async () => {
-//     updateReports(null);
-//     await fetchData(async () => {
-//       updateReports(
-//         await getProfileReports({
-//           username: profileStore.profile.user.username,
-//         })
-//       );
-//     });
-//   })();
+  (async () => {
+    updateReports(null);
+    await fetchData(async () => {
+      updateReports(
+        await getProfileReports({
+          username: profileStore.profile.user.username,
+        })
+      );
+    });
+  })();
 
-//   return {
-//     reports,
-//     loading,
-//     error,
-//   };
-// }
+  return {
+    reportsData,
+    loading,
+    error,
+  };
+}
+
+export function useCompatibility() {
+  const { fetchData, loading, error } = useFetch();
+  const profileStore = useProfileStore();
+
+  const compatibilityData = ref(null);
+
+  function updateCompatibility(data) {
+    compatibilityData.value = data;
+  }
+
+  (async () => {
+    updateCompatibility(null);
+    await fetchData(async () => {
+      updateCompatibility(
+        await getProfileCompatibility({
+          username: profileStore.profile.user.username,
+        })
+      );
+    });
+  })();
+
+  return {
+    compatibilityData,
+    loading,
+    error,
+  };
+}

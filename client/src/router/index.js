@@ -39,12 +39,17 @@ const routes = [
           {
             path: "",
             name: "profile-overview",
-            component: () => import("@/views/Profile/ProfileOverview.vue"),
+            component: () => import("@/views/Profile/Overview.vue"),
           },
           {
             path: "history",
             name: "profile-history",
-            component: () => import("@/views/Profile/ProfileHistory.vue"),
+            component: () => import("@/views/Profile/History.vue"),
+          },
+          {
+            path: "compatibility",
+            name: "profile-compatibility",
+            component: () => import("@/views/Profile/Compatibility.vue"),
           },
         ],
       },

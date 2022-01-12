@@ -79,6 +79,9 @@ export function getProfileListeningHistory({ username, page, range, search }) {
     },
   });
 }
+export function getProfileCompatibility({ username }) {
+  return api.get(`/users/${username}/compatibility`);
+}
 
 export function getTrack(id) {
   return api.get(`/infopage/track/${id}`);
