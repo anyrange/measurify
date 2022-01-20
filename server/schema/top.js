@@ -30,7 +30,6 @@ const plugin = fp(async function plugin(fastify) {
       },
       albums: topItems,
       artists: topItems,
-      playlists: topItems,
     },
   });
   fastify.addSchema({

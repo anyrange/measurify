@@ -10,7 +10,6 @@ const schema = new Schema({
     {
       _id: false,
       track: { type: String, ref: "Track" },
-      context: { type: String, ref: "Playlist" },
       played_at: { type: Date },
     },
   ],

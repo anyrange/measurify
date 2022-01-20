@@ -2,7 +2,6 @@ import User from "../../models/User.js";
 import Artist from "../../models/Artist.js";
 import Album from "../../models/Album.js";
 import Track from "../../models/Track.js";
-import Playlist from "../../models/Playlist.js";
 import timeDiff from "../../utils/timeDiff.js";
 import api from "../api.js";
 
@@ -69,7 +68,6 @@ export async function parseNewTracks(user, limit = 8) {
     addArtists(newSongs, user.tokens.token),
     addAlbums(newSongs, user.tokens.token),
     addTracks(newSongs, user.tokens.token),
-    addPlaylists(newSongs, user.tokens.token),
     updateHistory(newSongs, user._id),
   ]);
 }
@@ -165,40 +163,6 @@ const addTracks = async (tracks, token) => {
   await Track.insertMany(fullInfo);
 };
 
-const addPlaylists = async (tracks, token) => {
-  const uniquePlaylists = [...new Set(tracks.map((song) => song.context))];
-
-  const existingPlaylists = await Playlist.find(
-    { _id: { $in: uniquePlaylists } },
-    "_id"
-  ).lean();
-
-  const newPlaylists = uniquePlaylists.filter(
-    (id) =>
-      !existingPlaylists.find(
-        (existingPlaylist) => id === existingPlaylist._id
-      ) && id !== null
-  );
-
-  if (!newPlaylists.length) return;
-
-  const fullInfo = await Promise.all(
-    newPlaylists.map((playlist) =>
-      api({
-        route: `playlists/${playlist}?fields=collaborative,followers(total),id,images,name,owner(display_name,id),public,tracks(total)`,
-        token,
-      }).then((res) => ({
-        _id: res.id,
-        name: res.name,
-        owner: { id: res.owner.id, name: res.owner.display_name },
-        image: res.images.length ? res.images[0].url : "",
-      }))
-    )
-  );
-
-  await Playlist.insertMany(fullInfo);
-};
-
 const updateHistory = async (tracks, _id) => {
   await User.updateOne(
     { _id },
@@ -207,7 +171,6 @@ const updateHistory = async (tracks, _id) => {
         listeningHistory: {
           $each: tracks.map((track) => ({
             track: track.id,
-            context: track.context,
             played_at: track.played_at,
           })),
           $position: 0,
@@ -222,11 +185,6 @@ const formatTrack = (item) => {
 
   const track = item.track;
 
-  let context = null;
-  if (item.context && item.context.type === "playlist") {
-    context = item.context.uri.split(":")[2];
-  }
-
   const formatedTrack = {
     album: {
       id: track.album.id,
@@ -235,7 +193,6 @@ const formatTrack = (item) => {
     artists: track.artists.map(({ id }) => id),
     id: track.id,
     played_at: item.played_at,
-    context,
   };
 
   return formatedTrack;
