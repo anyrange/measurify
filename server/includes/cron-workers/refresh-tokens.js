@@ -52,7 +52,10 @@ async function rewriteTokens({ tokens: { refreshToken }, _id }) {
 
   if (body.error) {
     if (body.error === "invalid_grant") {
-      await User.deleteOne(filter);
+      await User.updateOne(filter, {
+        "tokens.refreshToken": "",
+        "settings.privacy": "private",
+      });
     }
     throw new Error(body.error.message || body.error);
   }

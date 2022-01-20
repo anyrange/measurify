@@ -6,12 +6,6 @@ const plugin = fp(async function plugin(fastify) {
       { $match: { _id } },
       { $project: { listeningHistory: 1 } },
       { $unwind: { path: "$listeningHistory" } },
-    ];
-
-    if (type === "playlist")
-      agg.push({ $match: { "listeningHistory.context": filterID } });
-
-    agg.push(
       {
         $group: {
           _id: "$listeningHistory.track",
@@ -26,8 +20,8 @@ const plugin = fp(async function plugin(fastify) {
           foreignField: "_id",
           as: "tracks",
         },
-      }
-    );
+      },
+    ];
 
     if (type === "album") agg.push({ $match: { "tracks.album": filterID } });
     if (type === "artist") agg.push({ $match: { "tracks.artists": filterID } });

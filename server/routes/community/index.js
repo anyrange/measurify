@@ -53,7 +53,12 @@ export default async function (fastify) {
 
       const [trackActivity, ...likeActivity] = await Promise.all([
         fastify.db.User.aggregate([
-          { $match: { $or: friends.map(({ _id }) => ({ _id })) } },
+          {
+            $match: {
+              "tokens.refreshToken": { $ne: "" },
+              $or: friends.map(({ _id }) => ({ _id })),
+            },
+          },
           { $unwind: { path: "$listeningHistory" } },
           { $sort: { "listeningHistory.played_at": -1 } },
           { $skip: offsetListened },

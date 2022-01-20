@@ -37,6 +37,7 @@ export default async function (fastify) {
         fastify.db.User.findById(id, "tokens.token"),
         fastify.db.User.aggregate()
           .match({
+            "tokens.refreshToken": { $ne: "" },
             "settings.privacy": { $ne: "private" },
             listeningHistory: { $ne: [] },
           })

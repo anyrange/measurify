@@ -3,6 +3,7 @@ import fp from "fastify-plugin";
 const plugin = fp(async function plugin(fastify) {
   fastify.decorate("userFriends", async (_id) => {
     let users = await fastify.db.User.aggregate()
+      .match({ "tokens.refreshToken": { $ne: "" } })
       .project({
         track: { $first: "$listeningHistory.track" },
         lastPlayed: { $first: "$listeningHistory.played_at" },
@@ -36,11 +37,7 @@ const plugin = fp(async function plugin(fastify) {
     // get requestor's info
     const requestor = users.find((user) => user._id === _id);
 
-    if (!requestor) {
-      const e = new Error("User not found");
-      e.code = 404;
-      throw e;
-    }
+    if (!requestor) return [];
 
     // filter away requestor
     users = users.filter((user) => user._id != _id);
