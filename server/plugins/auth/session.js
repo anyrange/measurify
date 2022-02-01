@@ -11,7 +11,7 @@ export default fp(async function (fastify) {
     key: Buffer.from(process.env.SECRET_COOKIE, "hex"),
     cookie: {
       path: "/",
-      sameSite: "strict",
+      sameSite: "none",
       httpOnly: true,
       secure: true,
       maxAge: YEAR,
