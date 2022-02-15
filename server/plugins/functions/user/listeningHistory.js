@@ -34,6 +34,7 @@ const plugin = fp(async function plugin(fastify) {
         },
         {
           $addFields: {
+            _id: "$listeningHistory.track",
             album: { $first: "$album" },
             played_at: "$listeningHistory.played_at",
             id: "$listeningHistory.track",
@@ -62,6 +63,8 @@ const plugin = fp(async function plugin(fastify) {
 
       agg.push(
         { $sort: { played_at: -1 } },
+        { $skip: (page - 1) * range },
+        { $limit: range },
         {
           $group: {
             _id: "",
@@ -78,16 +81,12 @@ const plugin = fp(async function plugin(fastify) {
             },
             items: { $sum: 1 },
           },
-        },
-        {
-          $project: {
-            items: 1,
-            history: { $slice: ["$history", (page - 1) * range, range] },
-          },
         }
       );
 
-      const [listened] = await fastify.db.User.aggregate(agg);
+      const [listened] = await fastify.db.User.aggregate(agg).allowDiskUse(
+        true
+      );
 
       return {
         pages: Math.ceil((listened?.items || 0) / range) || 1,
