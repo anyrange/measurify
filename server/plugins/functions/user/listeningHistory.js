@@ -16,34 +16,25 @@ const plugin = fp(async function plugin(fastify) {
             as: "tracks",
           },
         },
-        {
-          $lookup: {
-            from: "albums",
-            localField: "tracks.album",
-            foreignField: "_id",
-            as: "album",
-          },
-        },
-        {
-          $lookup: {
-            from: "artists",
-            localField: "tracks.artists",
-            foreignField: "_id",
-            as: "artists",
-          },
-        },
-        {
-          $addFields: {
-            _id: "$listeningHistory.track",
-            album: { $first: "$album" },
-            played_at: "$listeningHistory.played_at",
-            id: "$listeningHistory.track",
-            name: { $first: "$tracks.name" },
-            duration_ms: { $first: "$tracks.duration_ms" },
-            image: { $arrayElemAt: [{ $first: "$album.images" }, -1] },
-          },
-        },
       ];
+
+      agg.push({
+        $lookup: {
+          from: "albums",
+          localField: "tracks.album",
+          foreignField: "_id",
+          as: "album",
+        },
+      });
+
+      agg.push({
+        $lookup: {
+          from: "artists",
+          localField: "tracks.artists",
+          foreignField: "_id",
+          as: "artists",
+        },
+      });
 
       if (search) {
         const query = new RegExp(
@@ -60,6 +51,20 @@ const plugin = fp(async function plugin(fastify) {
           },
         });
       }
+
+      agg.push({
+        $addFields: {
+          _id: "$listeningHistory.track",
+          album: { $first: "$album" },
+          played_at: "$listeningHistory.played_at",
+          id: "$listeningHistory.track",
+          name: { $first: "$tracks.name" },
+          duration_ms: { $first: "$tracks.duration_ms" },
+          image: { $arrayElemAt: [{ $first: "$album.images" }, -1] },
+        },
+      });
+
+      const counter = [...agg, { $count: "count" }];
 
       agg.push(
         { $sort: { played_at: -1 } },
@@ -79,17 +84,17 @@ const plugin = fp(async function plugin(fastify) {
                 artists: "$artists",
               },
             },
-            items: { $sum: 1 },
           },
         }
       );
 
-      const [listened] = await fastify.db.User.aggregate(agg).allowDiskUse(
-        true
-      );
+      const [[listened], [items]] = await Promise.all([
+        fastify.db.User.aggregate(agg).allowDiskUse(true),
+        fastify.db.User.aggregate(counter).allowDiskUse(true),
+      ]);
 
       return {
-        pages: Math.ceil((listened?.items || 0) / range) || 1,
+        pages: Math.ceil((items?.count || 0) / range) || 1,
         history: listened?.history || [],
       };
     }
