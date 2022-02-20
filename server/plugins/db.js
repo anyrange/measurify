@@ -3,7 +3,6 @@ import User from "#server/models/User.js";
 import Artist from "#server/models/Artist.js";
 import Album from "#server/models/Album.js";
 import Track from "#server/models/Track.js";
-import FriendRequest from "#server/models/FriendRequest.js";
 import mongoose from "mongoose";
 
 mongoose.connect(
@@ -26,7 +25,6 @@ const plugin = fp(async function plugin(fastify) {
     Artist,
     Album,
     Track,
-    FriendRequest,
   });
 });
 
