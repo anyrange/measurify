@@ -1,8 +1,8 @@
-import User from "../../models/User.js";
-import fetch from "node-fetch";
 import { URLSearchParams } from "url";
-import timeDiff from "../../utils/timeDiff.js";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
+import User from "#server/models/User.js";
+import timeDiff from "#server/utils/timeDiff.js";
 dotenv.config();
 
 async function refresh_tokens() {

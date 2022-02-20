@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import api from "../../includes/api.js";
+import api from "#server/includes/api.js";
 
 const plugin = fp(async (fastify) => fastify.decorate("spotifyAPI", api));
 

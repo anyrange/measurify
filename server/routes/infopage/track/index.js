@@ -1,4 +1,4 @@
-import formatTrack from "../../../utils/format-track.js";
+import formatTrack from "#server/utils/format-track.js";
 
 export default async function (fastify) {
   fastify.get(

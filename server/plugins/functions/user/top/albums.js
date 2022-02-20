@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import User from "../../../../models/User.js";
+import User from "#server/models/User.js";
 
 export const albums = ({
   _id,

@@ -1,9 +1,9 @@
-import User from "../../models/User.js";
-import Artist from "../../models/Artist.js";
-import Album from "../../models/Album.js";
-import Track from "../../models/Track.js";
-import timeDiff from "../../utils/timeDiff.js";
-import api from "../api.js";
+import User from "#server/models/User.js";
+import Artist from "#server/models/Artist.js";
+import Album from "#server/models/Album.js";
+import Track from "#server/models/Track.js";
+import timeDiff from "#server/utils/timeDiff.js";
+import api from "#server/includes/api.js";
 
 export default async function () {
   try {
