@@ -8,15 +8,12 @@ export default async function (fastify) {
             type: "object",
             properties: {
               message: { type: "string" },
-              status: { type: "number" },
             },
           },
         },
         tags: ["server"],
       },
     },
-    () => {
-      return { message: "I'm alive" };
-    }
+    () => ({ message: "I'm alive" })
   );
 }

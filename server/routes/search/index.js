@@ -1,4 +1,4 @@
-import addImage from "../../utils/addImage.js";
+import addImage from "#server/utils/addImage.js";
 
 export default async function (fastify) {
   fastify.get(

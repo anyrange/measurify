@@ -17,7 +17,6 @@ specifiers:
   fastify-plugin: ^3.0.0
   fastify-secure-session: ^2.3.1
   fastify-swagger: ^4.8.2
-  fastify-websocket: ^3.2.0
   genius-lyrics-api: ^3.0.6
   mongoose: ^5.12.7
   nanoevents: ^6.0.1
@@ -51,7 +50,6 @@ dependencies:
   fastify-plugin: 3.0.1
   fastify-secure-session: 2.3.1
   fastify-swagger: 4.13.1
-  fastify-websocket: 3.2.2
   genius-lyrics-api: 3.2.0
   mongoose: 5.13.14
   nanoevents: 6.0.2
@@ -2889,16 +2887,6 @@ packages:
     resolution: {integrity: sha512-s1EQguBw/9qtc1p/WTY4eq9WMRIACkj+HTcOIK1in4MV5aFaQC9ZCIt0dJ7pr5bIf4lPpHvAtP2ywpTNgs7hqw==}
     dev: false
 
-  /fastify-websocket/3.2.2:
-    resolution: {integrity: sha512-imwyoYpZTmbcB1uGe4Yy/iaIuJgl76z+h4u8VdZTEG1PEgo22x8fQs9CnkKjx9DRbW2DpcIbezvZLDZtZjWObg==}
-    dependencies:
-      fastify-plugin: 3.0.1
-      ws: 7.5.6
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
   /fastify/3.27.0:
     resolution: {integrity: sha512-p99Fd7xt4DFew39U5Wnp/Soy7jkpxpaqToekwQ3XWv+ECUPXd6bSF9l79EiwkutWALtEU/JiRlzS9qjP2gLHFg==}
     dependencies:
@@ -5655,19 +5643,6 @@ packages:
       signal-exit: 3.0.6
       typedarray-to-buffer: 3.1.5
     dev: true
-
-  /ws/7.5.6:
-    resolution: {integrity: sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: false
 
   /xdg-basedir/4.0.0:
     resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}

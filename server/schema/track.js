@@ -3,39 +3,37 @@ import { entity, entities } from "./entity.js";
 
 const track = {
   type: "object",
-  properties: Object.assign(
-    { album: entity, artists: entities },
-    entity.properties
-  ),
+  properties: {
+    ...entity.properties,
+    album: entity,
+    artists: entities,
+  },
 };
 
 const tracks = { type: "array", items: track };
 
 const withDuration = {
   type: "object",
-  properties: Object.assign(
-    { duration_ms: { type: "number" } },
-    track.properties
-  ),
+  properties: {
+    ...track.properties,
+    duration_ms: { type: "number" },
+  },
 };
 
 const plugin = fp(async (fastify) => {
-  fastify.addSchema(
-    Object.assign(
-      { $id: "track", title: "track", definitions: { withDuration } },
-      track
-    )
-  );
-  fastify.addSchema(
-    Object.assign(
-      {
-        $id: "tracks",
-        title: "tracks",
-        definitions: { withDuration: { type: "array", items: withDuration } },
-      },
-      tracks
-    )
-  );
+  fastify.addSchema({
+    ...track,
+    $id: "track",
+    title: "track",
+    definitions: { withDuration },
+  });
+
+  fastify.addSchema({
+    ...tracks,
+    $id: "tracks",
+    title: "tracks",
+    definitions: { withDuration: { type: "array", items: withDuration } },
+  });
 });
 
 export default plugin;

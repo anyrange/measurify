@@ -26,7 +26,6 @@
     "fastify-plugin": "^3.0.0",
     "fastify-secure-session": "^2.3.1",
     "fastify-swagger": "^4.8.2",
-    "fastify-websocket": "^3.2.0",
     "genius-lyrics-api": "^3.0.6",
     "mongoose": "^5.12.7",
     "nanoevents": "^6.0.1",
@@ -54,5 +53,9 @@
     "vite-plugin-pwa": "^0.11.12",
     "vite-plugin-windicss": "^1.4.9",
     "windicss": "^3.1.8"
+  },
+  "imports": {
+    "#root/*": "./*",
+    "#server/*": "./server/*"
   }
 }
