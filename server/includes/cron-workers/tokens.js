@@ -1,11 +1,9 @@
 import { URLSearchParams } from "url";
 import fetch from "node-fetch";
-import dotenv from "dotenv";
 import User from "#server/models/User.js";
-import timeDiff from "#server/utils/timeDiff.js";
-dotenv.config();
+import { timeDiff } from "#server/utils/index.js";
 
-async function refresh_tokens() {
+export async function refreshTokens() {
   try {
     const start = new Date();
 
@@ -36,15 +34,16 @@ async function rewriteTokens({ tokens: { refreshToken }, _id }) {
   params.append("grant_type", "refresh_token");
   params.append("refresh_token", refreshToken);
 
+  const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+  const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+
   const body = await fetch(`https://accounts.spotify.com/api/token`, {
     method: "POST",
     body: params,
     headers: {
       Authorization:
         "Basic " +
-        Buffer.from(
-          `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-        ).toString("base64"),
+        Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
     },
   }).then((res) => res.json());
 
@@ -63,5 +62,3 @@ async function rewriteTokens({ tokens: { refreshToken }, _id }) {
   const update = { "tokens.token": body.access_token };
   await User.updateOne(filter, update);
 }
-
-export default refresh_tokens;

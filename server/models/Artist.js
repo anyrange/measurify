@@ -16,7 +16,10 @@ const schema = new Schema({
       return this.images[1] || this.images[0] || "";
     },
   },
-  images: [String],
+  images: {
+    highQuality: { type: String, default: "" },
+    lowQuality: { type: String, default: "" },
+  },
 });
 
 export default model("Artist", schema);

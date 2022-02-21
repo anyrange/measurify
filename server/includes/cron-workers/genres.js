@@ -1,6 +1,6 @@
 import User from "#server/models/User.js";
 import api from "#server/includes/api.js";
-import timeDiff from "#server/utils/timeDiff.js";
+import { timeDiff } from "#server/utils/index.js";
 
 const GENRES_LIMIT = 10;
 
@@ -41,7 +41,7 @@ async function refreshGenres({ tokens: { token }, display_name }) {
   );
 }
 
-export default async function () {
+export async function parseGenres() {
   try {
     const start = new Date();
 

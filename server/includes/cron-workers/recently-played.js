@@ -2,10 +2,10 @@ import User from "#server/models/User.js";
 import Artist from "#server/models/Artist.js";
 import Album from "#server/models/Album.js";
 import Track from "#server/models/Track.js";
-import timeDiff from "#server/utils/timeDiff.js";
+import { timeDiff } from "#server/utils/index.js";
 import api from "#server/includes/api.js";
 
-export default async function () {
+export async function parseHistory() {
   try {
     const start = new Date();
 
@@ -96,7 +96,10 @@ const addArtists = async (tracks, token) => {
   }).then((res) =>
     res.artists.map((artist) => ({
       _id: artist.id,
-      images: artist.images.map((image) => image.url),
+      images: {
+        highQuality: artist.images[artist.images.length - 1].url,
+        lowQuality: artist.images[0].url,
+      },
       name: artist.name,
     }))
   );
@@ -125,7 +128,10 @@ const addAlbums = async (tracks, token) => {
     res.albums.map((album) => ({
       _id: album.id,
       name: album.name,
-      images: album.images.map((image) => image.url),
+      images: {
+        highQuality: album.images[album.images.length - 1].url,
+        lowQuality: album.images[0].url,
+      },
     }))
   );
 
@@ -135,19 +141,10 @@ const addAlbums = async (tracks, token) => {
 const addTracks = async (tracks, token) => {
   const uniqueTracks = [...new Set(tracks.map((song) => song.id))];
 
-  const existingTracks = await Track.find(
-    { _id: { $in: uniqueTracks } },
-    "_id"
-  ).lean();
-
-  const newTracks = uniqueTracks.filter(
-    (id) => !existingTracks.find((existingTrack) => id === existingTrack._id)
-  );
-
-  if (!newTracks.length) return;
+  if (!uniqueTracks.length) return;
 
   const fullInfo = await api({
-    route: `tracks?ids=${newTracks.join(",")}`,
+    route: `tracks?ids=${uniqueTracks.join(",")}`,
     token,
   }).then((res) =>
     res.tracks.map((track) => ({

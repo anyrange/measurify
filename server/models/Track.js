@@ -11,7 +11,7 @@ const schema = new Schema({
   },
   name: { type: String },
   duration_ms: { type: Number },
-  image: { type: String },
+  image: { type: String, default: "" },
   album: { type: String, ref: "Album" },
   artists: [{ type: String, ref: "Artist" }],
 });

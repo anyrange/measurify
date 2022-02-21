@@ -1,6 +1,6 @@
 import User from "#server/models/User.js";
 import api from "#server/includes/api.js";
-import timeDiff from "#server/utils/timeDiff.js";
+import { timeDiff } from "#server/utils/index.js";
 
 async function refreshAvatar({ tokens: { token }, display_name }) {
   const user = await api({ route: `me`, token });
@@ -8,7 +8,7 @@ async function refreshAvatar({ tokens: { token }, display_name }) {
   await User.updateOne({ display_name }, { avatar });
 }
 
-async function refreshAvatars() {
+export async function refreshAvatars() {
   try {
     const start = new Date();
 
@@ -33,5 +33,3 @@ async function refreshAvatars() {
     console.error("!avatars [all]:" + err.message);
   }
 }
-
-export default refreshAvatars;
