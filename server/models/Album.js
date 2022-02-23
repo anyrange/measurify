@@ -3,19 +3,23 @@ const { Schema, model } = mongoose;
 
 const schema = new Schema({
   _id: { type: String },
-  id: {
-    type: String,
-    default: function () {
-      return this._id;
-    },
-  },
   name: { type: String },
-  image: {
-    type: String,
-    default: function () {
-      return this.images[1] || this.images[0] || "";
-    },
+  audioFeatures: {
+    tempo: { type: Number },
+    energy: { type: Number },
+    loudness: { type: Number },
+    danceability: { type: Number },
+    instrumentalness: { type: Number },
+    acousticness: { type: Number },
+    speechiness: { type: Number },
+    popularity: { type: Number },
+    liveness: { type: Number },
+    valence: { type: Number },
   },
+  release_date: { type: String },
+  total_tracks: { type: Number },
+  genres: { type: [String] },
+  label: { type: String },
   images: {
     highQuality: { type: String, default: "" },
     lowQuality: { type: String, default: "" },

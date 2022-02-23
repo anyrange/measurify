@@ -106,6 +106,7 @@ export default async function (fastify) {
           ...artist,
         });
       }
+
       const request = [
         ...time_range.map((range) =>
           fastify.spotifyAPI({
@@ -153,7 +154,7 @@ export default async function (fastify) {
       // response schema
       const response = {
         artist: {
-          id: artist._id,
+          id: artistID,
           name: artist.name,
           image: artist.images.highQuality,
         },

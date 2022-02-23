@@ -66,13 +66,13 @@ const createArtistBulk = async (artist, token) => {
     updateOne: {
       filter: { _id: artist.id },
       update: {
+        name: artist.name,
+        genres: artist.genres,
         images: {
           highQuality: artist.images[0].url,
           lowQuality: arrLastEl(artist.images).url,
         },
-        name: artist.name,
         audioFeatures,
-        genres: artist.genres,
         followers: artist.followers.total,
       },
       upsert: true,

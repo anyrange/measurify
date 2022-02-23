@@ -4,7 +4,7 @@ import forAllUsers from "#server/includes/forAllUsers.js";
 
 import {
   addArtists,
-  // addAlbums,
+  addAlbums,
   // addTracks,
 } from "#server/includes/cron-workers/historyParser/index.js";
 
@@ -39,12 +39,12 @@ export async function parseNewTracks(user, limit = 8) {
   const artists = newSongs
     .map((song) => [...song.artists, ...song.album.artists])
     .flat(1);
-  // const albums = newSongs.map((song) => song.album.id);
+  const albums = newSongs.map((song) => song.album.id);
   // const tracks = newSongs.map((song) => song.id);
 
   await Promise.all([
     addArtists(artists, user.tokens.token),
-    // addAlbums(albums, user.tokens.token),
+    addAlbums(albums, user.tokens.token),
     // addTracks(tracks, user.tokens.token),
     updateHistory(newSongs, user._id),
   ]);
