@@ -11,10 +11,7 @@ export default async function (fastify) {
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: {
-          200: {
-            type: "array",
-            items: { $ref: "entities#" },
-          },
+          200: { $ref: "entities#" },
         },
         tags: ["infopages"],
       },

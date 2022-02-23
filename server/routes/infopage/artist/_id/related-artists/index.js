@@ -11,10 +11,7 @@ export default async function (fastify) {
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: {
-          200: {
-            type: "array",
-            items: { $ref: "entities#" },
-          },
+          200: { $ref: "entities#" },
         },
         tags: ["infopages"],
       },
@@ -24,12 +21,12 @@ export default async function (fastify) {
 
       const token = await fastify.getRandomToken();
 
-      const artists = await fastify.spotifyAPI({
+      const relatedArtists = await fastify.spotifyAPI({
         route: `artists/${artistID}/related-artists`,
         token,
       });
 
-      reply.send(artists.relatedArtists.map((artist) => addImage(artist, 1)));
+      reply.send(relatedArtists.artists.map((artist) => addImage(artist, 1)));
     }
   );
 }
