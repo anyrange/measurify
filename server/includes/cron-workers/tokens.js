@@ -1,32 +1,10 @@
 import { URLSearchParams } from "url";
 import fetch from "node-fetch";
 import User from "#server/models/User.js";
-import { timeDiff } from "#server/utils/index.js";
+import forAllUsers from "#server/includes/forAllUsers.js";
 
 export async function refreshTokens() {
-  try {
-    const start = new Date();
-
-    const users = await User.find(
-      { "tokens.refreshToken": { $ne: "" } },
-      { "tokens.refreshToken": 1, display_name: 1 }
-    );
-
-    const requests = users.map((user) =>
-      rewriteTokens(user).catch((err) =>
-        console.log(`!tokens [${user.display_name}]: ${err.message}`)
-      )
-    );
-
-    await Promise.all(requests);
-
-    const end = new Date();
-    console.log(
-      `tokens [${requests.length}]: updated in ${timeDiff(start, end)} sec`
-    );
-  } catch (err) {
-    console.error("!tokens [all]:" + err.message);
-  }
+  await forAllUsers({ operation: "tokens" }, rewriteTokens);
 }
 
 async function rewriteTokens({ tokens: { refreshToken }, _id }) {

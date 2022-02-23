@@ -1,8 +1,12 @@
 import User from "#server/models/User.js";
 import api from "#server/includes/api.js";
-import { timeDiff } from "#server/utils/index.js";
+import forAllUsers from "#server/includes/forAllUsers.js";
 
 const GENRES_LIMIT = 10;
+
+export async function parseGenres() {
+  await forAllUsers({ operation: "genres" }, refreshGenres);
+}
 
 async function refreshGenres({ tokens: { token }, display_name }) {
   const artists = await api({
@@ -39,30 +43,4 @@ async function refreshGenres({ tokens: { token }, display_name }) {
       },
     }
   );
-}
-
-export async function parseGenres() {
-  try {
-    const start = new Date();
-
-    const users = await User.find(
-      { "tokens.refreshToken": { $ne: "" } },
-      { _id: 0, "tokens.token": 1, display_name: 1 }
-    );
-
-    const requests = users.map((user) =>
-      refreshGenres(user).catch((err) =>
-        console.log(`!genres [${user.display_name}]: ${err.message}`)
-      )
-    );
-
-    await Promise.all(requests);
-
-    const end = new Date();
-    console.log(
-      `genres [${requests.length}]: updated in ${timeDiff(start, end)} sec`
-    );
-  } catch (err) {
-    console.error("!genres [all]:" + err.message);
-  }
 }

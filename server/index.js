@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import app from "./app.js";
 
 const PORT = process.env.PORT || 8888;
@@ -15,7 +12,7 @@ if (process.env.NODE_ENV == "production") startScheduledJobs();
 async function startScheduledJobs() {
   const { default: cron } = await import("node-cron");
 
-  const cronPath = "./includes/cron-workers/";
+  const cronPath = "#server/includes/cron-workers/";
 
   const { refreshTokens } = await import(cronPath + "tokens.js");
   const { parseHistory } = await import(cronPath + "recently-played.js");
