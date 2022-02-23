@@ -1,43 +1,15 @@
 import User from "#server/models/User.js";
-import Artist from "#server/models/Artist.js";
-import Album from "#server/models/Album.js";
-import Track from "#server/models/Track.js";
-import { timeDiff } from "#server/utils/index.js";
 import api from "#server/includes/api.js";
+import forAllUsers from "#server/includes/forAllUsers.js";
+
+import {
+  addArtists,
+  // addAlbums,
+  // addTracks,
+} from "#server/includes/cron-workers/historyParser/index.js";
 
 export async function parseHistory() {
-  try {
-    const start = new Date();
-
-    const users = await User.find(
-      { "tokens.refreshToken": { $ne: "" } },
-      {
-        "tokens.token": 1,
-        listeningHistory: { $slice: ["$listeningHistory", 1] },
-        display_name: 1,
-      }
-    ).lean();
-
-    const requests = users.map((user) =>
-      parseNewTracks(user).catch((err) => {
-        console.log(
-          `!listening-histories [${user.display_name}]: ${err.message}`
-        );
-      })
-    );
-
-    await Promise.all(requests);
-
-    const end = new Date();
-    console.log(
-      `listening-histories [${requests.length}]: updated in ${timeDiff(
-        start,
-        end
-      )} sec`
-    );
-  } catch (err) {
-    console.error("!listening-histories [all]:" + err.message);
-  }
+  await forAllUsers({ operation: "history" }, parseNewTracks);
 }
 
 export async function parseNewTracks(user, limit = 8) {
@@ -64,106 +36,25 @@ export async function parseNewTracks(user, limit = 8) {
 
   if (!newSongs.length) return;
 
+  const artists = newSongs
+    .map((song) => [...song.artists, ...song.album.artists])
+    .flat(1);
+  // const albums = newSongs.map((song) => song.album.id);
+  // const tracks = newSongs.map((song) => song.id);
+
   await Promise.all([
-    addArtists(newSongs, user.tokens.token),
-    addAlbums(newSongs, user.tokens.token),
-    addTracks(newSongs, user.tokens.token),
+    addArtists(artists, user.tokens.token),
+    // addAlbums(albums, user.tokens.token),
+    // addTracks(tracks, user.tokens.token),
     updateHistory(newSongs, user._id),
   ]);
 }
-
-const addArtists = async (tracks, token) => {
-  const uniqueArtists = [
-    ...new Set(
-      tracks.map((song) => [...song.artists, ...song.album.artists]).flat(1)
-    ),
-  ];
-
-  const existingArtists = await Artist.find(
-    { _id: { $in: uniqueArtists } },
-    "_id"
-  ).lean();
-
-  const newArtists = uniqueArtists.filter(
-    (id) => !existingArtists.find((existingArtist) => id === existingArtist._id)
-  );
-
-  if (!newArtists.length) return;
-
-  const fullInfo = await api({
-    route: `artists?ids=${newArtists.join(",")}`,
-    token,
-  }).then((res) =>
-    res.artists.map((artist) => ({
-      _id: artist.id,
-      images: {
-        highQuality: artist.images[artist.images.length - 1].url,
-        lowQuality: artist.images[0].url,
-      },
-      name: artist.name,
-    }))
-  );
-
-  await Artist.insertMany(fullInfo);
-};
-
-const addAlbums = async (tracks, token) => {
-  const uniqueAlbums = [...new Set(tracks.map((song) => song.album.id))];
-
-  const existingAlbums = await Album.find(
-    { _id: { $in: uniqueAlbums } },
-    "_id"
-  ).lean();
-
-  const newAlbums = uniqueAlbums.filter(
-    (id) => !existingAlbums.find((existingAlbum) => id === existingAlbum._id)
-  );
-
-  if (!newAlbums.length) return;
-
-  const fullInfo = await api({
-    route: `albums?ids=${newAlbums.join(",")}`,
-    token,
-  }).then((res) =>
-    res.albums.map((album) => ({
-      _id: album.id,
-      name: album.name,
-      images: {
-        highQuality: album.images[album.images.length - 1].url,
-        lowQuality: album.images[0].url,
-      },
-    }))
-  );
-
-  await Album.insertMany(fullInfo);
-};
-
-const addTracks = async (tracks, token) => {
-  const uniqueTracks = [...new Set(tracks.map((song) => song.id))];
-
-  if (!uniqueTracks.length) return;
-
-  const fullInfo = await api({
-    route: `tracks?ids=${uniqueTracks.join(",")}`,
-    token,
-  }).then((res) =>
-    res.tracks.map((track) => ({
-      _id: track.id,
-      name: track.name,
-      album: track.album.id,
-      image: track.album.images[1]?.url || track.album.images[0]?.url || "",
-      artists: track.artists.map(({ id }) => id),
-      duration_ms: track.duration_ms,
-    }))
-  );
-
-  await Track.insertMany(fullInfo);
-};
 
 const updateHistory = async (tracks, _id) => {
   await User.updateOne(
     { _id },
     {
+      $inc: { overallListened: tracks.length },
       $push: {
         listeningHistory: {
           $each: tracks.map((track) => ({

@@ -1,9 +1,3 @@
-export function addImage(item) {
-  return Object.assign(item, {
-    image: item.images.length ? item.images[0].url : "",
-  });
-}
-
 /**
  *
  * @param {Date} start
@@ -16,6 +10,7 @@ export function timeDiff(start, end) {
 }
 
 export function arrLastEl(arr) {
+  if (!arr.length) return null;
   return arr.slice(-1)[0];
 }
 
@@ -23,4 +18,24 @@ export function formatTrack(track) {
   const images = track.album.images;
   track.image = arrLastEl(images) || "";
   return track;
+}
+
+export function addImage(item, quality = 0) {
+  item.image = item.images[quality]?.url || item.images[0]?.url || "";
+  return item;
+}
+
+const CHUNK_SIZE = 50;
+
+export async function multipleRequests(ids, cb) {
+  const chunks = [];
+
+  for (let i = 0; i < Math.ceil(ids.length / CHUNK_SIZE); i++) {
+    const sliceStart = i * CHUNK_SIZE;
+    chunks.push(ids.slice(sliceStart, sliceStart + CHUNK_SIZE).join(","));
+  }
+
+  const responses = await Promise.all(chunks.map((chunk) => cb(chunk)));
+
+  return responses;
 }

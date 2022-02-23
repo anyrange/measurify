@@ -1,6 +1,6 @@
 export default async function (fastify) {
   fastify.get(
-    "/:id",
+    "",
     {
       schema: {
         params: {
@@ -24,11 +24,11 @@ export default async function (fastify) {
                 },
               },
             },
+            required: ["artist", "followers", "genres", "audioFeatures"],
             properties: {
               artist: { $ref: "entity#" },
               followers: { type: "number" },
               genres: { type: "array", items: { type: "string" } },
-              popularity: { type: "number" },
               isLiked: { type: "boolean" },
               audioFeatures: { $ref: "audioFeatures#" },
               rates: {
@@ -45,7 +45,6 @@ export default async function (fastify) {
                   },
                 },
               },
-              relatedArtists: { $ref: "entities#" },
               favouriteTracks: {
                 type: "array",
                 items: {
@@ -58,7 +57,6 @@ export default async function (fastify) {
                   },
                 },
               },
-              albums: { $ref: "entities#" },
               status: { type: "number" },
             },
           },
@@ -70,28 +68,45 @@ export default async function (fastify) {
       const _id = req.session.get("id");
       const artistID = req.params.id;
 
-      const user = await fastify.db.User.findById(
-        _id,
-        "tokens.token country"
-      ).lean();
-      if (!user) throw fastify.error("User not found", 404);
+      const mainInfo = [fastify.db.Artist.findById(artistID).lean()];
+
+      if (_id)
+        mainInfo.push(
+          fastify.db.User.findById(_id, "tokens.token country").lean()
+        );
+
+      let [artist, user] = await Promise.all(mainInfo);
 
       const time_range = ["long_term", "medium_term", "short_term"];
-      const token = user.tokens.token;
+      const token = user?.tokens?.token;
 
+      if (!artist) {
+        const { addArtist } = await import(
+          "#server/includes/cron-workers/historyParser/artists.js"
+        );
+
+        artist = await addArtist(artistID, token);
+        artist.justAdded = true;
+      }
+
+      // for unauthenticated users
+      if (!token) {
+        if (!artist.justAdded) {
+          import("#server/includes/cron-workers/historyParser/artists.js").then(
+            ({ addArtist }) => addArtist(artistID)
+          );
+        }
+
+        return reply.send({
+          artist: {
+            id: artist._id,
+            name: artist.name,
+            image: artist.images.highQuality,
+          },
+          ...artist,
+        });
+      }
       const request = [
-        fastify.spotifyAPI({ route: `artists/${artistID}`, token }),
-        fastify
-          .spotifyAPI({
-            route: `artists/${artistID}/top-tracks?market=${user.country}`,
-            token,
-          })
-          .then(({ tracks }) =>
-            fastify.parseAudioFeatures(
-              tracks.map((track) => track.id),
-              token
-            )
-          ),
         ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/artists?limit=30&time_range=${range}`,
@@ -108,20 +123,10 @@ export default async function (fastify) {
           route: `me/following/contains?type=artist&ids=${artistID}`,
           token,
         }),
-        fastify.spotifyAPI({
-          route: `artists/${artistID}/related-artists`,
-          token,
-        }),
         fastify.favouriteTracks({ _id, filterID: artistID, type: "artist" }),
-        fastify.spotifyAPI({
-          route: `artists/${artistID}/albums?include_groups=album&market=${user.country}`,
-          token,
-        }),
       ];
 
       const [
-        artist,
-        audioFeatures,
         artLT,
         artMT,
         artST,
@@ -129,9 +134,7 @@ export default async function (fastify) {
         trcMT,
         trcST,
         [isLiked],
-        { artists: relatedArtists },
         favouriteTracks,
-        albums,
       ] = await Promise.all(request);
 
       const rates = {
@@ -146,37 +149,17 @@ export default async function (fastify) {
           ST: findTracks(artist.name, trcST),
         },
       };
-      audioFeatures.popularity = artist.popularity / 100;
 
       // response schema
       const response = {
         artist: {
-          id: artist.id,
+          id: artist._id,
           name: artist.name,
-          image: artist.images.length ? artist.images[0].url : "",
+          image: artist.images.highQuality,
         },
-        followers: artist.followers.total,
-        genres: artist.genres,
-        popularity: artist.popularity,
+        ...artist,
         isLiked,
-        relatedArtists: relatedArtists.map(({ images, name, id }) => ({
-          image: images.length ? images[0].url : "",
-          name,
-          id,
-        })),
         favouriteTracks,
-        audioFeatures,
-        albums: albums.items
-          .map((album) => ({
-            name: album.name,
-            id: album.id,
-            image: album.images[1]?.url || album.images[0]?.url || "",
-          }))
-          .filter(
-            (album, index) =>
-              album.name.toLowerCase() !==
-              albums.items[index - 1]?.name.toLowerCase()
-          ),
         rates,
       };
 
