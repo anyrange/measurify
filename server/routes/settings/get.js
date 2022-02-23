@@ -13,7 +13,6 @@ export default async function (fastify) {
               username: { type: "string" },
               id: { type: "string" },
               display_name: { type: "string" },
-              autoUpdate: { type: "boolean" },
               status: { type: "number" },
             },
           },

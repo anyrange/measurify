@@ -16,7 +16,6 @@ const schema = new Schema({
   ],
   settings: {
     username: { type: String, unique: true, required: true },
-    autoUpdate: { type: Boolean, default: false, required: true },
     privacy: { type: String, default: "public", required: true },
   },
   genresTimeline: [
