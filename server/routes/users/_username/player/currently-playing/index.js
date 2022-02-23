@@ -26,7 +26,9 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user } = req;
+      const _id = req.session.get("id");
+
+      const user = await fastify.db.User.findById(_id, "tokens.token country");
 
       const currentPlayer = await fastify
         .spotifyAPI({

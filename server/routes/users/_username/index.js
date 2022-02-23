@@ -31,7 +31,6 @@ export default async function (fastify) {
             type: "object",
             properties: {
               user: { $ref: "user#" },
-              friendship: { type: "string" },
               overview: { $ref: "overview#" },
               top: { $ref: "top#" },
               genres: { type: "array", items: { type: "string" } },
@@ -55,34 +54,18 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user, requestor } = req;
+      const _id = req.session.get("id");
+      const user = await fastify.user.findById(_id, "tokens.token");
       const { rangeTop, rangeHistory, rangeGenres } = req.query;
 
       const requests = [
-        fastify.userTop({ _id: user._id, range: rangeTop }),
-        fastify.userListeningHistory({ _id: user._id, range: rangeHistory }),
-        fastify.userOverview({ _id: user._id }),
+        fastify.userTop({ _id, range: rangeTop }),
+        fastify.userListeningHistory({ _id, range: rangeHistory }),
+        fastify.userOverview({ _id }),
         fastify.userGenres({ token: user.tokens.token, range: rangeGenres }),
       ];
 
-      if (requestor)
-        requests.push(
-          fastify.db.User.findOne(
-            { _id: user._id, friends: requestor._id },
-            { "friends.$": 1 }
-          ),
-          fastify.db.FriendRequest.findOne({
-            from: requestor._id,
-            to: user._id,
-          }),
-          fastify.db.FriendRequest.findOne({
-            from: user._id,
-            to: requestor._id,
-          })
-        );
-
-      const [top, { history }, overview, genres, ...friendship] =
-        await Promise.all(requests);
+      const [top, { history }, overview, genres] = await Promise.all(requests);
 
       const response = {
         user,
@@ -90,13 +73,6 @@ export default async function (fastify) {
         history,
         overview,
         genres,
-        friendship: friendship[0]?.friends.length
-          ? "friend"
-          : friendship[1]
-          ? "following"
-          : friendship[2]
-          ? "follow"
-          : "none",
         leaved: user.tokens.refreshToken === "",
       };
 

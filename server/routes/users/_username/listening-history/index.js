@@ -41,11 +41,12 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user } = req;
+      const _id = req.session.get("id");
+
       const { search, range, page } = req.query;
 
       const history = await fastify.userListeningHistory({
-        _id: user._id,
+        _id,
         range,
         page,
         search,

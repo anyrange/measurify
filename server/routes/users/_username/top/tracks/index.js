@@ -44,8 +44,7 @@ export default async function (fastify) {
     async function (req, reply) {
       const { search, range, page, firstDate, lastDate } = req.query;
 
-      const { user } = req;
-      const _id = user._id;
+      const _id = req.session.get("id");
 
       if (new Date(firstDate) > new Date())
         throw fastify.error("Invalid firstDate", 400);

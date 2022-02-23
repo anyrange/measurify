@@ -22,10 +22,11 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user } = req;
+      const _id = req.session.get("id");
+
       const { firstDate, lastDate } = req.query;
 
-      const options = { _id: user._id, firstDate, lastDate };
+      const options = { _id, firstDate, lastDate };
       const overview = await fastify.userOverview(options);
 
       reply.send(overview);

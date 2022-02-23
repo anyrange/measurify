@@ -26,7 +26,8 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user } = req;
+      const _id = req.session.get("id");
+      const user = fastify.db.User.findById(_id, "tokens.token");
       const { range, period } = req.query;
 
       const artists = await fastify.spotifyAPI({
