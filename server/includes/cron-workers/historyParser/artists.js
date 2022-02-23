@@ -18,9 +18,10 @@ export default async (artists, token) => {
 
   if (!newArtists.length) return;
 
-  const responses = await multipleRequests(uniqueArtists, (chunk) =>
+  const responses = await multipleRequests(newArtists, (chunk) =>
     api({ route: `artists?ids=${chunk}`, token })
   );
+
   const fullInfo = responses.map((res) => res.artists).flat(1);
 
   const bulk = [];
