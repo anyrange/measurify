@@ -90,7 +90,7 @@ export default async function (fastify) {
 
       const response = {
         album: {
-          id: albumID,
+          id: album.id,
           name: album.name,
           image: album.images.highQuality,
         },

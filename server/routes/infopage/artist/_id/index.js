@@ -148,7 +148,7 @@ export default async function (fastify) {
       // response schema
       const response = {
         artist: {
-          id: artistID,
+          id: artist.id,
           name: artist.name,
           image: artist.images.highQuality,
         },

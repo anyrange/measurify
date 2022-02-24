@@ -5,7 +5,7 @@ import forAllUsers from "#server/includes/forAllUsers.js";
 import {
   addArtists,
   addAlbums,
-  // addTracks,
+  addTracks,
 } from "#server/includes/cron-workers/historyParser/index.js";
 
 export async function parseHistory() {
@@ -13,7 +13,7 @@ export async function parseHistory() {
 }
 
 export async function parseNewTracks(user, limit = 8) {
-  const newSongs = [];
+  const newListened = [];
 
   const listenedTracks = await api({
     route: `me/player/recently-played?limit=${limit}`,
@@ -24,70 +24,56 @@ export async function parseNewTracks(user, limit = 8) {
   if (!listenedTracks.items.length) return;
 
   if (!user.listeningHistory || !user.listeningHistory.length) {
-    newSongs.push(...listenedTracks.items.map((item) => formatTrack(item)));
+    newListened.push(...listenedTracks.items);
   } else {
     const lastPlayedAt = user.listeningHistory[0].played_at;
 
     listenedTracks.items.forEach((item) => {
       if (Date.parse(lastPlayedAt.toISOString()) < Date.parse(item.played_at))
-        newSongs.push(formatTrack(item));
+        newListened.push(item);
     });
   }
 
-  if (!newSongs.length) return;
+  if (!newListened.length) return;
 
-  const artists = newSongs
-    .map((song) => [...song.artists, ...song.album.artists])
+  const artistIds = newListened
+    .map(({ track }) => [
+      ...track.artists.map((artist) => artist.id),
+      ...track.album.artists.map((artist) => artist.id),
+    ])
     .flat(1);
-  const albums = newSongs.map((song) => song.album.id);
-  // const tracks = newSongs.map((song) => song.id);
+
+  const albumIds = newListened.map(({ track }) => track.album.id);
+  const tracks = newListened.map(({ track }) => track);
 
   await Promise.all([
-    addArtists(artists, user.tokens.token),
-    addAlbums(albums, user.tokens.token),
-    // addTracks(tracks, user.tokens.token),
-    updateHistory(newSongs, user._id),
+    addArtists(artistIds, user.tokens.token),
+    addAlbums(albumIds, user.tokens.token),
+    addTracks(tracks, user.tokens.token),
+    updateHistory(newListened, user._id),
   ]);
 }
 
-const updateHistory = async (tracks, _id) => {
+const updateHistory = async (newItems, _id) => {
   await User.updateOne(
     { _id },
     {
       $inc: {
-        "overallListened.count": tracks.length,
+        "overallListened.count": newItems.length,
         "overallListened.time":
-          tracks.reduce((acc, curr) => acc + curr.duration_ms, 0) / 1000,
+          newItems.reduce((acc, curr) => acc + curr.track.duration_ms, 0) /
+          1000,
       },
 
       $push: {
         listeningHistory: {
-          $each: tracks.map((track) => ({
-            track: track.id,
-            played_at: track.played_at,
+          $each: newItems.map((item) => ({
+            track: item.track.id,
+            played_at: item.played_at,
           })),
           $position: 0,
         },
       },
     }
   );
-};
-
-const formatTrack = (item) => {
-  if (!item || !item.track) return;
-
-  const track = item.track;
-
-  const formatedTrack = {
-    album: {
-      id: track.album.id,
-      artists: track.album.artists.map(({ id }) => id),
-    },
-    artists: track.artists.map(({ id }) => id),
-    id: track.id,
-    duration_ms: track.duration_ms,
-    played_at: item.played_at,
-  };
-
-  return formatedTrack;
 };

@@ -16,7 +16,8 @@ export function arrLastEl(arr) {
 
 export function formatTrack(track) {
   const images = track.album.images;
-  track.image = arrLastEl(images) || "";
+  track.image = arrLastEl(images)?.url || "";
+  console.log(track);
   return track;
 }
 
@@ -25,7 +26,7 @@ export function addImage(item, quality = 0) {
   return item;
 }
 
-const CHUNK_SIZE = 50;
+const CHUNK_SIZE = 20;
 
 export async function multipleRequests(ids, cb) {
   const chunks = [];

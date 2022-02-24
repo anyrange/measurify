@@ -46,7 +46,10 @@ export const addAlbum = async (albumID, token) => {
   const bulk = [await createAlbumBulk(album, usableToken)];
   await Album.bulkWrite(bulk);
 
-  return bulk[0].updateOne.update["$set"];
+  const addedAlbum = bulk[0].updateOne.update["$set"];
+  addedAlbum.id = albumID;
+
+  return addedAlbum;
 };
 
 const createAlbumBulk = async (album, token) => {
@@ -62,8 +65,8 @@ const createAlbumBulk = async (album, token) => {
       filter: { _id: album.id },
       update: {
         images: {
-          highQuality: album.images[0].url || "",
-          lowQuality: arrLastEl(album.images).url,
+          highQuality: album.images[0]?.url,
+          lowQuality: arrLastEl(album.images)?.url,
         },
         name: album.name,
         audioFeatures,

@@ -46,7 +46,10 @@ export const addArtist = async (artistID, token) => {
   const bulk = [await createArtistBulk(artist, usableToken)];
   await Artist.bulkWrite(bulk);
 
-  return bulk[0].updateOne.update;
+  const addedArtist = bulk[0].updateOne.update["$set"];
+  addedArtist.id = artistID;
+
+  return addedArtist;
 };
 
 const createArtistBulk = async (artist, token) => {
@@ -69,8 +72,8 @@ const createArtistBulk = async (artist, token) => {
         name: artist.name,
         genres: artist.genres,
         images: {
-          highQuality: artist.images[0].url,
-          lowQuality: arrLastEl(artist.images).url,
+          highQuality: artist.images[0]?.url,
+          lowQuality: arrLastEl(artist.images)?.url,
         },
         audioFeatures,
         followers: artist.followers.total,

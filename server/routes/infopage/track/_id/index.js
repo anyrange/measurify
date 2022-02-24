@@ -1,8 +1,8 @@
-import { formatTrack } from "#server/utils/index.js";
+import { addTrack } from "#server/includes/cron-workers/historyParser/tracks.js";
 
 export default async function (fastify) {
   fastify.get(
-    "/:id",
+    "",
     {
       schema: {
         params: {
@@ -17,16 +17,12 @@ export default async function (fastify) {
               track: { $ref: "track" },
               overview: { $ref: "overview#" },
               audioFeatures: { $ref: "audioFeatures#" },
-              popularity: { type: "number" },
-              preview_url: { type: "string" },
               release_date: { type: "string" },
               duration_ms: { type: "number" },
               lastPlayedAt: { type: "string", format: "datetime" },
               isPlaying: { type: "boolean" },
               isLiked: { type: "boolean" },
               rates: { $ref: "rates#" },
-              moreTracks: { $ref: "tracks#/definitions/withDuration" },
-              status: { type: "number" },
             },
           },
         },
@@ -37,19 +33,53 @@ export default async function (fastify) {
       const _id = req.session.get("id");
       const trackID = req.params.id;
 
-      const user = await fastify.db.User.findById(
-        _id,
-        "tokens.token country"
-      ).lean();
+      const mainInfo = [
+        fastify.db.Track.findById(trackID)
+          .populate("album")
+          .populate("artists")
+          .lean(),
+      ];
 
-      if (!user) throw fastify.error("User not found", 404);
+      if (_id)
+        mainInfo.push(
+          fastify.db.User.findById(_id, "tokens.token country").lean()
+        );
 
-      const token = user.tokens.token;
+      let [track, user] = await Promise.all(mainInfo);
+
       const time_range = ["long_term", "medium_term", "short_term"];
+      const token = user?.tokens?.token;
+
+      if (!track) {
+        track = await addTrack(trackID, token);
+        track.justAdded = true;
+      }
+
+      if (!track.justAdded) addTrack(trackID, token);
+
+      // for unauthenticated users
+      if (!token) {
+        return reply.send({
+          track: {
+            id: track._id,
+            name: track.name,
+            album: {
+              id: track.album._id,
+              name: track.album.name,
+              image: track.album.images.highQuality,
+            },
+            artists: track.artists.map((artist) => ({
+              id: artist._id,
+              name: artist.name,
+              image: artist.images.highQuality,
+            })),
+            image: track.images.highQuality,
+          },
+          ...track,
+        });
+      }
 
       const request = [
-        fastify.spotifyAPI({ route: `tracks/${trackID}`, token }),
-        fastify.spotifyAPI({ route: `audio-features/${trackID}`, token }),
         ...time_range.map((range) =>
           fastify.spotifyAPI({
             route: `me/top/tracks?limit=50&time_range=${range}`,
@@ -85,27 +115,8 @@ export default async function (fastify) {
           }),
       ];
 
-      const [
-        track,
-        audioFeatures,
-        trcLT,
-        trcMT,
-        trcST,
-        [isLiked],
-        currentPlayer,
-        [overview],
-      ] = await Promise.all(request);
-
-      const [{ artists }, { tracks: moreTracks }] = await Promise.all([
-        fastify.spotifyAPI({
-          route: `artists?ids=${track.artists.map(({ id }) => id).join(",")}`,
-          token,
-        }),
-        fastify.spotifyAPI({
-          route: `artists/${track.artists[0].id}/top-tracks?market=${user.country}`,
-          token,
-        }),
-      ]);
+      const [trcLT, trcMT, trcST, [isLiked], currentPlayer, [overview]] =
+        await Promise.all(request);
 
       const rates = {
         LT: findPlace(track.name, trcLT),
@@ -113,28 +124,23 @@ export default async function (fastify) {
         ST: findPlace(track.name, trcST),
       };
 
-      audioFeatures.popularity = track.popularity / 100;
-
       const response = {
         track: {
-          id: track.id,
+          id: track._id,
           name: track.name,
-          image: track.album.images[0]?.url || "",
           album: {
+            id: track.album._id,
             name: track.album.name,
-            image: track.album.images[0]?.url || "",
-            id: track.album.id,
+            image: track.album.images.highQuality,
           },
-          artists: artists.map(({ name, id, images }) => ({
-            name,
-            id,
-            image: images[0]?.url || "",
+          artists: track.artists.map((artist) => ({
+            id: artist._id,
+            name: artist.name,
+            image: artist.images.highQuality,
           })),
+          image: track.images.highQuality,
         },
-        duration_ms: track.duration_ms,
-        preview_url: track.preview_url,
-        popularity: track.popularity,
-        release_date: track.album.release_date,
+        ...track,
         lastPlayedAt: overview?.lastPlayedAt || "",
         isLiked,
         overview: {
@@ -142,9 +148,7 @@ export default async function (fastify) {
           playtime: Math.round((overview?.playtime || 0) / 60 / 1000),
         },
         rates,
-        audioFeatures,
         isPlaying: currentPlayer.item?.id === trackID,
-        moreTracks: moreTracks.map((track) => formatTrack(track)),
       };
 
       reply.send(response);
