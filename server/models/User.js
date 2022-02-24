@@ -6,7 +6,10 @@ const schema = new Schema({
   display_name: { type: String, required: true },
   avatar: { type: String },
   country: { type: String, default: "US" },
-  overallListened: { type: Number, default: 0 },
+  overallListened: {
+    count: { type: Number, default: 0 },
+    time: { type: Number, default: 0 },
+  },
   listeningHistory: [
     {
       _id: false,

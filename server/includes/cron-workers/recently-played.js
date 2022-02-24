@@ -54,7 +54,12 @@ const updateHistory = async (tracks, _id) => {
   await User.updateOne(
     { _id },
     {
-      $inc: { overallListened: tracks.length },
+      $inc: {
+        "overallListened.count": tracks.length,
+        "overallListened.time":
+          tracks.reduce((acc, curr) => acc + curr.duration_ms, 0) / 1000,
+      },
+
       $push: {
         listeningHistory: {
           $each: tracks.map((track) => ({
@@ -80,6 +85,7 @@ const formatTrack = (item) => {
     },
     artists: track.artists.map(({ id }) => id),
     id: track.id,
+    duration_ms: track.duration_ms,
     played_at: item.played_at,
   };
 
