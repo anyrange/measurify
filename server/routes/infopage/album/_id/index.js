@@ -1,3 +1,5 @@
+import { addAlbum } from "#server/includes/cron-workers/historyParser/albums.js";
+
 export default async function (fastify) {
   fastify.get(
     "",
@@ -54,22 +56,14 @@ export default async function (fastify) {
       const token = user?.tokens?.token;
 
       if (!album) {
-        const { addAlbum } = await import(
-          "#server/includes/cron-workers/historyParser/albums.js"
-        );
-
         album = await addAlbum(albumID, token);
         album.justAdded = true;
       }
 
+      if (!album.justAdded) addAlbum(albumID, token);
+
       // for unauthenticated users
       if (!token) {
-        if (!album.justAdded) {
-          import("#server/includes/cron-workers/historyParser/albums.js").then(
-            ({ addAlbum }) => addAlbum(albumID)
-          );
-        }
-
         return reply.send({
           album: {
             id: album._id,

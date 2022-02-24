@@ -1,3 +1,5 @@
+import { addArtist } from "#server/includes/cron-workers/historyParser/artists.js";
+
 export default async function (fastify) {
   fastify.get(
     "",
@@ -81,22 +83,14 @@ export default async function (fastify) {
       const token = user?.tokens?.token;
 
       if (!artist) {
-        const { addArtist } = await import(
-          "#server/includes/cron-workers/historyParser/artists.js"
-        );
-
         artist = await addArtist(artistID, token);
         artist.justAdded = true;
       }
 
+      if (!artist.justAdded) addArtist(artistID, token);
+
       // for unauthenticated users
       if (!token) {
-        if (!artist.justAdded) {
-          import("#server/includes/cron-workers/historyParser/artists.js").then(
-            ({ addArtist }) => addArtist(artistID)
-          );
-        }
-
         return reply.send({
           artist: {
             id: artist._id,
