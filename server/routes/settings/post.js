@@ -11,7 +11,7 @@ export default async function (fastify) {
           properties: {
             privacy: {
               type: "string",
-              pattern: "^(public|private|friendsOnly)$",
+              pattern: "^(public|private)$",
             },
             username: {
               type: "string",
@@ -59,7 +59,7 @@ export default async function (fastify) {
       if (updateResult.nModified === 0)
         throw this.error("Nothing to update", 400);
 
-      reply.send({ message: "Successfully updated" });
+      reply.code(204).send();
     }
   );
 }
