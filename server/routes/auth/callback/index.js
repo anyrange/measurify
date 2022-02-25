@@ -1,6 +1,6 @@
 import User from "#server/models/User.js";
 import fetch from "node-fetch";
-import { parseNewTracks } from "#server/includes/cron-workers/recently-played.js";
+import { parseNewTracks } from "#server/includes/cron-workers/recentlyPlayed.js";
 
 export default async function (fastify) {
   fastify.get(

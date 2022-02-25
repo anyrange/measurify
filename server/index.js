@@ -15,7 +15,7 @@ async function startScheduledJobs() {
   const cronPath = "#server/includes/cron-workers/";
 
   const { refreshTokens } = await import(cronPath + "tokens.js");
-  const { parseHistory } = await import(cronPath + "recently-played.js");
+  const { parseHistory } = await import(cronPath + "recentlyPlayed.js");
   const { refreshAvatars } = await import(cronPath + "avatars.js");
   const { parseGenres } = await import(cronPath + "genres.js");
 

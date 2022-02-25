@@ -6,7 +6,7 @@ const schema = new Schema({
   display_name: { type: String, required: true },
   avatar: { type: String },
   country: { type: String, default: "US" },
-  overallListened: {
+  listened: {
     count: { type: Number, default: 0 },
     time: { type: Number, default: 0 },
   },
@@ -32,6 +32,8 @@ const schema = new Schema({
     refreshToken: { type: String, required: true },
     token: { type: String, required: true },
   },
+  followers: [{ type: String, ref: "User" }],
+  follows: [{ type: String, ref: "User" }],
   lastLogin: { type: Date, default: Date.now },
   registrationDate: { type: Date, default: Date.now },
 });

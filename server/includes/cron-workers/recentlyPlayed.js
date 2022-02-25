@@ -59,8 +59,8 @@ const updateHistory = async (newItems, _id) => {
     { _id },
     {
       $inc: {
-        "overallListened.count": newItems.length,
-        "overallListened.time":
+        "listened.count": newItems.length,
+        "listened.time":
           newItems.reduce((acc, curr) => acc + curr.track.duration_ms, 0) /
           1000,
       },
