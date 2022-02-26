@@ -31,13 +31,14 @@ export default async function (fastify) {
         },
         tags: ["reports"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const user = req.user;
 
       const { firstDate, lastDate } = req.query;
 
-      const options = { _id, firstDate, lastDate };
+      const options = { _id: user._id, firstDate, lastDate };
       reply.send(await fastify.userGraph(options));
     }
   );

@@ -8,7 +8,7 @@ app.listen(PORT, "0.0.0.0", (err) => {
 });
 
 if (process.env.NODE_ENV == "production") startScheduledJobs();
-
+startScheduledJobs();
 async function startScheduledJobs() {
   const { default: cron } = await import("node-cron");
 

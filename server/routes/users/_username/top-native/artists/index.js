@@ -39,7 +39,7 @@ export default async function (fastify) {
         artists.items.map((artist) => ({
           id: artist.id,
           name: artist.name,
-          image: artist.images[0]?.url || "",
+          image: artist.images[1]?.url || artist.images[0]?.url || "",
         }))
       );
     }

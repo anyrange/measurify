@@ -30,16 +30,14 @@ export default async function (fastify) {
         },
         tags: ["top"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { search, range, page, firstDate, lastDate } = req.query;
+      const { range, page } = req.query;
 
       const _id = req.session.get("id");
 
-      if (new Date(firstDate) > new Date())
-        throw fastify.error("Invalid firstDate", 400);
-
-      const options = { _id, range, firstDate, lastDate, page, search };
+      const options = { _id, range, page };
       const [top] = await fastify.userTopAlbums(options);
 
       reply.send({

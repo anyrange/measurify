@@ -1,31 +1,11 @@
 import fp from "fastify-plugin";
 import User from "#server/models/User.js";
 
-export const albums = ({
-  _id,
-  firstDate,
-  lastDate,
-  range,
-  page = 1,
-  search,
-}) => {
+export const albums = ({ _id, range, page = 1 }) => {
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
     { $unwind: { path: "$listeningHistory" } },
-  ];
-
-  if (firstDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $gte: new Date(firstDate) } },
-    });
-
-  if (lastDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $lte: new Date(lastDate) } },
-    });
-
-  agg.push(
     {
       $lookup: {
         from: "tracks",
@@ -46,20 +26,9 @@ export const albums = ({
       $addFields: {
         id: { $first: "$albums._id" },
         name: { $first: "$albums.name" },
-        image: { $first: "$albums.image" },
+        image: { $first: "$albums.images.mediumQuality" },
       },
-    }
-  );
-
-  if (search) {
-    const query = new RegExp(
-      `.*${search.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")}.*`,
-      "i"
-    );
-    agg.push({ $match: { name: { $regex: query } } });
-  }
-
-  agg.push(
+    },
     {
       $group: {
         _id: { id: "$id", name: "$name", image: "$image" },
@@ -88,8 +57,9 @@ export const albums = ({
         items: 1,
         albums: { $slice: ["$albums", (page - 1) * range, range] },
       },
-    }
-  );
+    },
+  ];
+
   return User.aggregate(agg);
 };
 

@@ -37,6 +37,7 @@ export default async function ({ route, token, body = {}, method = "GET" }) {
 
   if (json.error) {
     console.log("API Error:", res.statusText, res.status);
+    console.log(`https://api.spotify.com/v1/${route}`);
     const err = json.error;
     console.log(err);
     throw Object.assign(new Error(err.message), {

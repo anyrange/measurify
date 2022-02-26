@@ -12,7 +12,7 @@ export default fp(async function plugin(fastify) {
     ]);
 
     return {
-      tracks: res[0][0]?.tracks || [],
+      tracks: res[0]?.tracks || [],
       albums: res[1][0]?.albums || [],
       artists: res[2][0]?.artists || [],
     };

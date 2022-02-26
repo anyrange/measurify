@@ -24,26 +24,26 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
-
-      const user = await fastify.db.User.findById(_id, "tokens.token country");
+      const user = req.user;
 
       const currentPlayer = await fastify
         .spotifyAPI({
           route: `me/player/currently-playing?market=${user.country}`,
-          token: user.tokens.token,
+          token: user.token,
         })
         .catch(() => reply.code(204).send());
 
       if (!currentPlayer.item) return reply.code(204).send();
 
-      reply.send(
-        Object.assign(currentPlayer.item, {
-          image: currentPlayer.item.album.images[1].url || "",
-        })
-      );
+      const images = currentPlayer.item.album.images;
+
+      reply.send({
+        ...currentPlayer.item,
+        image: images[1].url || images[0].url || "",
+      });
     }
   );
 }

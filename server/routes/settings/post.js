@@ -59,7 +59,7 @@ export default async function (fastify) {
       if (updateResult.nModified === 0)
         throw this.error("Nothing to update", 400);
 
-      reply.code(204).send();
+      reply.send({ message: "Successfully updated" });
     }
   );
 }

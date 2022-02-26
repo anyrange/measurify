@@ -39,12 +39,24 @@ export default async function (fastify) {
       },
       preValidation: [fastify.auth],
     },
-    async function (request, reply) {
-      const { user, requestor: req } = request;
+    async function (req, reply) {
+      const _id = req.session.get("id");
+      const { username } = req.params;
 
-      if (user._id === req._id) return reply.send({ compatibility: 100 });
+      const [requestor, user] = await Promise.all([
+        fastify.db.User.findById(_id, "tokens.token").lean(),
+        fastify.db.User.findOne(
+          { "settings.username": username },
+          "tokens.token"
+        ).lean(),
+      ]);
+
+      if (!requestor) throw fastify.error("User not found", 404);
+      if (user._id === requestor._id) return reply.send({ compatibility: 100 });
 
       const time_range = "long_term";
+
+      const DATA_LIMIT = 50;
 
       const [
         { items: userArtists },
@@ -53,20 +65,20 @@ export default async function (fastify) {
         { items: reqTracks },
       ] = await Promise.all([
         fastify.spotifyAPI({
-          route: `me/top/artists?limit=${50}&time_range=${time_range}`,
+          route: `me/top/artists?limit=${DATA_LIMIT}&time_range=${time_range}`,
           token: user.tokens.token,
         }),
         fastify.spotifyAPI({
-          route: `me/top/artists?limit=${50}&time_range=${time_range}`,
-          token: req.tokens.token,
+          route: `me/top/artists?limit=${DATA_LIMIT}&time_range=${time_range}`,
+          token: requestor.tokens.token,
         }),
         fastify.spotifyAPI({
-          route: `me/top/tracks?limit=${50}&time_range=${time_range}`,
+          route: `me/top/tracks?limit=${DATA_LIMIT}&time_range=${time_range}`,
           token: user.tokens.token,
         }),
         fastify.spotifyAPI({
-          route: `me/top/tracks?limit=${50}&time_range=${time_range}`,
-          token: req.tokens.token,
+          route: `me/top/tracks?limit=${DATA_LIMIT}&time_range=${time_range}`,
+          token: requestor.tokens.token,
         }),
       ]);
 

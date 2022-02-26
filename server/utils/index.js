@@ -17,7 +17,6 @@ export function arrLastEl(arr) {
 export function formatTrack(track) {
   const images = track.album.images;
   track.image = arrLastEl(images)?.url || "";
-  console.log(track);
   return track;
 }
 
