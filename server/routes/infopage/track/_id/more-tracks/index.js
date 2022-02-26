@@ -11,7 +11,7 @@ export default async function (fastify) {
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: {
-          200: { $ref: "tracks#/definitions/withDuration" },
+          200: fastify.getSchema("tracks").definitions.withDuration,
         },
         tags: ["infopages"],
       },

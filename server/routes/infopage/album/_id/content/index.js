@@ -1,3 +1,5 @@
+import { arrLastEl } from "#server/utils/index.js";
+
 export default async function (fastify) {
   fastify.get(
     "",
@@ -9,7 +11,7 @@ export default async function (fastify) {
           properties: { id: { type: "string", minLength: 22, maxLength: 22 } },
         },
         response: {
-          200: { $ref: "tracks#/definitions/withDuration" },
+          200: fastify.getSchema("tracks").definitions.withDuration,
         },
         tags: ["infopages"],
       },
@@ -24,7 +26,12 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(album.tracks.items);
+      reply.send(
+        album.tracks.items.map((track) => ({
+          ...track,
+          image: arrLastEl(album.images).url || "",
+        }))
+      );
     }
   );
 }
