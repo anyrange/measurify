@@ -74,6 +74,8 @@ const createTrackBulk = async (track, token) => {
         artists: track.artists.map(({ id }) => id),
         images: {
           highQuality: track.album.images[0]?.url,
+          mediumQuality:
+            track.album.images[1]?.url || track.album.images[0]?.url,
           lowQuality: arrLastEl(track.album.images)?.url,
         },
         audioFeatures,

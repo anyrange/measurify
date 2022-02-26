@@ -2,13 +2,27 @@ import User from "#server/models/User.js";
 import api from "#server/includes/api.js";
 import forAllUsers from "#server/includes/forAllUsers.js";
 
-const GENRES_LIMIT = 10;
-
 export async function parseGenres() {
   await forAllUsers({ operation: "genres" }, refreshGenres);
 }
 
 async function refreshGenres({ tokens: { token }, display_name }) {
+  const genres = await getUserGenres(token);
+
+  await User.updateOne(
+    { display_name },
+    {
+      $push: {
+        genresTimeline: {
+          $each: [{ genres }],
+          $position: 0,
+        },
+      },
+    }
+  );
+}
+
+export const getUserGenres = async (token) => {
   const artists = await api({
     route: `me/top/artists?time_range=short_term&limit=50`,
     token,
@@ -27,20 +41,12 @@ async function refreshGenres({ tokens: { token }, display_name }) {
     times: numTimes,
   }));
 
+  const GENRES_LIMIT = 10;
+
   const formattedGenres = genresTop
     .sort((a, b) => b.times - a.times)
     .map(({ genre }) => genre)
     .slice(0, GENRES_LIMIT);
 
-  await User.updateOne(
-    { display_name },
-    {
-      $push: {
-        genresTimeline: {
-          $each: [{ genres: formattedGenres }],
-          $position: 0,
-        },
-      },
-    }
-  );
-}
+  return formattedGenres;
+};

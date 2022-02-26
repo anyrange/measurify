@@ -66,6 +66,7 @@ const createAlbumBulk = async (album, token) => {
       update: {
         images: {
           highQuality: album.images[0]?.url,
+          mediumQuality: album.images[1]?.url || album.images[0]?.url,
           lowQuality: arrLastEl(album.images)?.url,
         },
         name: album.name,

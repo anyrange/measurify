@@ -40,3 +40,11 @@ export async function multipleRequests(ids, cb) {
 
   return responses;
 }
+
+export function getMonday() {
+  let d = new Date();
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day == 0 ? -6 : 1);
+
+  return new Date(d.setDate(diff));
+}

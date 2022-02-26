@@ -1,6 +1,6 @@
 import User from "#server/models/User.js";
 import fetch from "node-fetch";
-import { parseNewTracks } from "#server/includes/cron-workers/recentlyPlayed.js";
+import { getMonday } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -45,8 +45,9 @@ export default async function (fastify) {
         const projection = {
           "tokens.token": 1,
           display_name: 1,
-          listeningHistory: { $slice: ["$listeningHistory", 1] },
           "settings.username": 1,
+          listeningHistory: { $slice: ["$listeningHistory", 1] },
+          genresTimeline: { $slice: ["$genresTimeline", 1] },
         };
 
         const document = await User.findOneAndUpdate(filter, upsert, {
@@ -57,6 +58,8 @@ export default async function (fastify) {
         });
 
         const requests = [];
+
+        // update username if there is none
         if (!document.settings.username)
           requests.push(
             User.updateOne(filter, {
@@ -71,8 +74,33 @@ export default async function (fastify) {
             })
           );
 
-        if (!document.listeningHistory || !document.listeningHistory.length)
+        // update listening history if there is none
+        if (!document.listeningHistory || !document.listeningHistory.length) {
+          const { parseNewTracks } = await import(
+            "#server/includes/cron-workers/recentlyPlayed.js"
+          );
           requests.push(parseNewTracks(document, 20));
+        }
+
+        // update genres timeline if there is none
+        if (!document.genresTimeline || !document.genresTimeline.length) {
+          const { getUserGenres } = await import(
+            "#server/includes/cron-workers/genres.js"
+          );
+
+          requests.push(
+            getUserGenres(access_token).then(async (genres) => {
+              await User.updateOne(filter, {
+                $push: {
+                  genresTimeline: {
+                    $each: [{ genres, date: getMonday() }],
+                    $position: 0,
+                  },
+                },
+              });
+            })
+          );
+        }
 
         if (requests.length) await Promise.all(requests);
 

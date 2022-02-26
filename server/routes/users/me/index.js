@@ -25,7 +25,7 @@ export default async function (fastify) {
       const user = await fastify.db.User.findByIdAndUpdate(id, {
         lastLogin: Date.now(),
       })
-        .select("settings display_name country avatar")
+        .select("settings.username display_name country avatar")
         .lean();
 
       if (!user) throw fastify.error("User not found", 404);

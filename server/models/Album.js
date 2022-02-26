@@ -22,6 +22,7 @@ const schema = new Schema({
   label: { type: String },
   images: {
     highQuality: { type: String, default: "" },
+    mediumQuality: { type: String, default: "" },
     lowQuality: { type: String, default: "" },
   },
 });

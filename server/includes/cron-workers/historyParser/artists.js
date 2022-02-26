@@ -73,6 +73,7 @@ const createArtistBulk = async (artist, token) => {
         genres: artist.genres,
         images: {
           highQuality: artist.images[0]?.url,
+          mediumQuality: artist.images[1]?.url || artist.images[0]?.url,
           lowQuality: arrLastEl(artist.images)?.url,
         },
         audioFeatures,
