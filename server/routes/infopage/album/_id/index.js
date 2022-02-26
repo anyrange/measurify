@@ -66,7 +66,7 @@ export default async function (fastify) {
       if (!token) {
         return reply.send({
           album: {
-            id: album._id,
+            id: albumID,
             name: album.name,
             image: album.images.highQuality,
           },
@@ -90,7 +90,7 @@ export default async function (fastify) {
 
       const response = {
         album: {
-          id: album.id,
+          id: albumID,
           name: album.name,
           image: album.images.highQuality,
         },

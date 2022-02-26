@@ -55,7 +55,10 @@ export default async function (fastify) {
       const { username } = req.params;
 
       const user = await fastify.db.User.findOne(
-        { "settings.username": username },
+        {
+          "settings.username": username,
+          "settings.privacy": { $ne: "private" },
+        },
         {
           "tokens.refreshToken": 1,
           listened: 1,

@@ -34,14 +34,13 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
-      const user = await fastify.db.User.findById(_id, "tokens.token");
-
+      const user = req.users;
       const { range, period } = req.query;
 
-      const token = user.tokens.token;
+      const token = user.token;
       const options = { token, range, period };
 
       const [tracks, artists] = await Promise.all([

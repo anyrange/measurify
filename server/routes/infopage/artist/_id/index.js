@@ -93,7 +93,7 @@ export default async function (fastify) {
       if (!token) {
         return reply.send({
           artist: {
-            id: artist._id,
+            id: artistID,
             name: artist.name,
             image: artist.images.highQuality,
           },
@@ -148,7 +148,7 @@ export default async function (fastify) {
       // response schema
       const response = {
         artist: {
-          id: artist.id,
+          id: artistID,
           name: artist.name,
           image: artist.images.highQuality,
         },

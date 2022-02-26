@@ -26,16 +26,15 @@ export default async function (fastify) {
         },
         tags: ["top"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
-      const user = await fastify.db.User.findById(_id, "tokens.token");
-
+      const user = req.user;
       const { range, period } = req.query;
 
       const tracks = await fastify.spotifyAPI({
         route: `me/top/tracks?limit=${range}&time_range=${period}`,
-        token: user.tokens.token,
+        token: user.token,
       });
 
       reply.send(tracks.items.map((track) => formatTrack(track)));

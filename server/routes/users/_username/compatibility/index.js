@@ -46,12 +46,15 @@ export default async function (fastify) {
       const [requestor, user] = await Promise.all([
         fastify.db.User.findById(_id, "tokens.token").lean(),
         fastify.db.User.findOne(
-          { "settings.username": username },
+          {
+            "settings.username": username,
+            "settings.privacy": { $ne: "private" },
+          },
           "tokens.token"
         ).lean(),
       ]);
 
-      if (!requestor) throw fastify.error("User not found", 404);
+      if (!user) throw fastify.error("User not found", 404);
       if (user._id === requestor._id) return reply.send({ compatibility: 100 });
 
       const time_range = "long_term";

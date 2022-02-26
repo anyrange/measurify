@@ -6,7 +6,10 @@ const plugin = fp(async function plugin(fastify) {
     const { username } = req.params;
 
     const user = await fastify.db.User.findOne(
-      { "settings.username": username },
+      {
+        "settings.username": username,
+        "settings.privacy": { $ne: "private" },
+      },
       { token: "$tokens.token", country: 1 }
     ).lean();
 

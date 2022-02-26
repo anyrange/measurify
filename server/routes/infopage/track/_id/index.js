@@ -61,7 +61,7 @@ export default async function (fastify) {
       if (!token) {
         return reply.send({
           track: {
-            id: track._id,
+            id: trackID,
             name: track.name,
             album: {
               id: track.album._id,
@@ -126,7 +126,7 @@ export default async function (fastify) {
 
       const response = {
         track: {
-          id: track._id,
+          id: trackID,
           name: track.name,
           album: {
             id: track.album._id,
