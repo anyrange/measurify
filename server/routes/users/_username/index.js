@@ -70,7 +70,7 @@ export default async function (fastify) {
           registrationDate: 1,
           country: 1,
           spotifyID: "$_id",
-          followed: { $elemMatch: { $eq: requestorID } },
+          followed: "$followers",
           followers: { $size: "$followers" },
           follows: { $size: "$follows" },
         }
@@ -99,7 +99,7 @@ export default async function (fastify) {
         followers: user.followers,
         follows: user.follows,
         leaved: user.tokens.refreshToken === "",
-        followed: !!user.followed?.length,
+        followed: user.followed?.includes(requestorID) || false,
       };
 
       reply.send(response);
