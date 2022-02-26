@@ -49,7 +49,6 @@ const plugin = fp(async function plugin(fastify) {
           name: { $first: "$tracks.name" },
           duration_ms: { $first: "$tracks.duration_ms" },
           image: { $first: "$tracks.images.mediumQuality" },
-          plays: "$listeningHistory.plays",
           album: {
             id: { $first: "$albums._id" },
             name: { $first: "$albums.name" },
