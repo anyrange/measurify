@@ -52,7 +52,7 @@ export const addTrack = async (trackID, token) => {
   ]);
 
   const addedTrack = bulk[0].updateOne.update["$set"];
-  addedTrack.id = trackID;
+  addedTrack._id = trackID;
   addedTrack.album = album;
   addedTrack.artists = artists;
 

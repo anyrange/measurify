@@ -47,7 +47,7 @@ export const addAlbum = async (albumID, token) => {
   await Album.bulkWrite(bulk);
 
   const addedAlbum = bulk[0].updateOne.update["$set"];
-  addedAlbum.id = albumID;
+  addedAlbum._id = albumID;
 
   return addedAlbum;
 };
