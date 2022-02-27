@@ -42,6 +42,7 @@ export default async function (fastify) {
             lastPlayed: { $first: "$listeningHistory.played_at" },
             avatar: 1,
             display_name: 1,
+            refreshToken: "$tokens.refreshToken",
             lastLogin: "$lastLogin",
             username: "$settings.username",
             privacy: "$settings.privacy",
@@ -64,11 +65,12 @@ export default async function (fastify) {
         return reply.code(403).send({ message: "Private profile" });
 
       reply.send(
-        user.followers.map((user) => ({
+        user.followers?.map((user) => ({
           ...user,
+          inactive: user.refreshToken === "",
           private: user.privacy === "private",
           lastTrack: user.listeningHistory?.track,
-        }))
+        })) || []
       );
     }
   );
