@@ -28,7 +28,7 @@ export default async function (fastify) {
               overview: { $ref: "overview#" },
               top: { $ref: "top#" },
               genres: { type: "array", items: { type: "string" } },
-              leaved: { type: "boolean" },
+              inactive: { type: "boolean" },
               followed: { type: "boolean" },
               follows: { type: "number" },
               followers: { type: "number" },
@@ -70,9 +70,8 @@ export default async function (fastify) {
           registrationDate: 1,
           country: 1,
           spotifyID: "$_id",
-          followed: "$followers",
-          followers: { $size: "$followers" },
-          follows: { $size: "$follows" },
+          followers: "$followers",
+          follows: "$follows",
         }
       ).lean();
 
@@ -99,11 +98,11 @@ export default async function (fastify) {
           plays: user.listened.count,
           playtime: Math.round(user.listened.time / 60),
         },
-        genres: user.genres,
-        followers: user.followers,
-        follows: user.follows,
-        leaved: user.tokens.refreshToken === "",
-        followed: user.followed?.includes(requestorID) || false,
+        genres: user.genres || [],
+        followers: user.followers?.length || 0,
+        follows: user.follows?.length || 0,
+        inactive: user.tokens.refreshToken === "",
+        followed: user.followers?.includes(requestorID) || false,
       };
 
       reply.send(response);

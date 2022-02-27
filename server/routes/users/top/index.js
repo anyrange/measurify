@@ -30,9 +30,8 @@ export default async function (fastify) {
     async function (req, reply) {
       const top = await fastify.db.User.find(
         {
-          "tokens.refreshToken": { $ne: "" },
           "settings.privacy": { $ne: "private" },
-          listeningHistory: { $ne: [] },
+          listeningHistory: { $exists: true, $type: "array", $ne: [] },
         },
         {
           "listened.count": 1,

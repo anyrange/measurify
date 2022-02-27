@@ -19,10 +19,8 @@ async function startScheduledJobs() {
   const { refreshAvatars } = await import(cronPath + "avatars.js");
   const { parseGenres } = await import(cronPath + "genres.js");
 
-  refreshTokens().then(() => {
-    parseHistory();
-    refreshAvatars();
-  });
+  await refreshTokens();
+  await parseHistory();
 
   cron.schedule("*/30 * * * *", refreshTokens); // every 30 min
   cron.schedule("*/5 * * * *", parseHistory); // every 5 min

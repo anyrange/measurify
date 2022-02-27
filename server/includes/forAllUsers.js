@@ -10,6 +10,7 @@ export default async function ({ operation = "unknown operation" }, cb) {
       {
         tokens: 1,
         listeningHistory: { $slice: ["$listeningHistory", 1] },
+        lastLogin: 1,
         display_name: 1,
       }
     ).lean();

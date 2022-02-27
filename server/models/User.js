@@ -32,8 +32,8 @@ const schema = new Schema({
     refreshToken: { type: String, required: true },
     token: { type: String, required: true },
   },
-  followers: [{ type: String, ref: "User" }],
-  follows: [{ type: String, ref: "User" }],
+  followers: { type: [String], ref: "User", default: [] },
+  follows: { type: [String], ref: "User", default: [] },
   lastLogin: { type: Date, default: Date.now },
   registrationDate: { type: Date, default: Date.now },
 });
