@@ -17,6 +17,7 @@ export default async function (fastify) {
                 username: { type: "string" },
                 avatar: { type: "string" },
                 display_name: { type: "string" },
+                private: { type: "boolean" },
                 lastTrack: { $ref: "entity#" },
                 lastPlayed: { type: "string", format: "datetime" },
                 lastLogin: { type: "string", format: "datetime" },
@@ -43,6 +44,7 @@ export default async function (fastify) {
             display_name: 1,
             lastLogin: "$lastLogin",
             username: "$settings.username",
+            privacy: "$settings.privacy",
           },
           populate: {
             path: "listeningHistory.track",
@@ -64,6 +66,7 @@ export default async function (fastify) {
       reply.send(
         user.follows.map((user) => ({
           ...user,
+          private: user.privacy === "private",
           lastTrack: user.listeningHistory?.track,
         }))
       );
