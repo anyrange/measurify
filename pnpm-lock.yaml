@@ -40,6 +40,7 @@ specifiers:
   vuex: ^4.0.2
   vuex-persistedstate: ^4.1.0
   windicss: ^3.5.0
+  workbox-window: ^6.5.0
 
 dependencies:
   '@vueuse/core': 7.7.0_vue@3.2.31
@@ -66,6 +67,7 @@ dependencies:
   vue3-apexcharts: 1.4.1_apexcharts@3.33.1+vue@3.2.31
   vuex: 4.0.2_vue@3.2.31
   vuex-persistedstate: 4.1.0_vuex@4.0.2
+  workbox-window: 6.5.0
 
 devDependencies:
   '@iconify/vue': 3.1.3_vue@3.2.31
@@ -1421,7 +1423,6 @@ packages:
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
-    dev: true
 
   /@vitejs/plugin-vue/1.10.2_vite@2.8.4:
     resolution: {integrity: sha512-/QJ0Z9qfhAFtKRY+r57ziY4BSbGUTGsPRMpB/Ron3QPwBZM4OZAZHdTa4a8PafCwU5DTatXG8TMDoP8z+oDqJw==}
@@ -5307,7 +5308,7 @@ packages:
       rollup: 2.66.1
       vite: 2.8.4
       workbox-build: 6.4.2
-      workbox-window: 6.4.2
+      workbox-window: 6.5.0
     transitivePeerDependencies:
       - '@types/babel__core'
       - acorn
@@ -5583,6 +5584,9 @@ packages:
     resolution: {integrity: sha512-1U6cdEYPcajRXiboSlpJx6U7TvhIKbxRRerfepAJu2hniKwJ3DHILjpU/zx3yvzSBCWcNJDoFalf7Vgd7ey/rw==}
     dev: true
 
+  /workbox-core/6.5.0:
+    resolution: {integrity: sha512-5SPwNipUzYBhrneLVT02JFA0fw3LG82jFAN/G2NzxkIW10t4MVZuML2nU94bbkgjq25u0fkY8+4JXzMfHgxEWQ==}
+
   /workbox-expiration/6.4.2:
     resolution: {integrity: sha512-0hbpBj0tDnW+DZOUmwZqntB/8xrXOgO34i7s00Si/VlFJvvpRKg1leXdHHU8ykoSBd6+F2KDcMP3swoCi5guLw==}
     dependencies:
@@ -5659,6 +5663,12 @@ packages:
       '@types/trusted-types': 2.0.2
       workbox-core: 6.4.2
     dev: true
+
+  /workbox-window/6.5.0:
+    resolution: {integrity: sha512-DOrhiTnWup/CsNstO2uvfdKM4kdStgHd31xGGvBcoCE3Are3DRcy5s3zz3PedcAR1AKskQj3BXz0UhzQiOq8nA==}
+    dependencies:
+      '@types/trusted-types': 2.0.2
+      workbox-core: 6.5.0
 
   /wrap-ansi/7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
