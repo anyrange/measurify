@@ -8,9 +8,9 @@
     </cards>
     <container-item v-if="profile.genres.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-history' }" class="link">
           Genres
-        </router-link>
+        </base-link>
       </container-item-label>
       <horizontal-scroll>
         <badge v-for="genre in profile.genres" :key="genre">{{ genre }}</badge>
@@ -18,12 +18,14 @@
     </container-item>
     <container-item v-if="profile.history.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-history' }" class="link">
           Recent Tracks
-        </router-link>
+        </base-link>
       </container-item-label>
       <track-rows>
-        <current-track />
+        <suspense>
+          <current-track :username="profile.user.username" />
+        </suspense>
         <track-row
           v-for="(item, index) in profile.history.slice(0, 5)"
           :key="index + item.id"
@@ -34,9 +36,9 @@
     </container-item>
     <container-item v-if="profile.top.artists.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-history' }" class="link">
           Favourite Artists
-        </router-link>
+        </base-link>
       </container-item-label>
       <horizontal-scroll>
         <spotify-card
@@ -49,9 +51,9 @@
     </container-item>
     <container-item v-if="profile.top.albums.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-history' }" class="link">
           Favourite Albums
-        </router-link>
+        </base-link>
       </container-item-label>
       <horizontal-scroll>
         <spotify-card
@@ -64,9 +66,9 @@
     </container-item>
     <container-item v-if="profile.top.tracks.length">
       <container-item-label>
-        <router-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-history' }" class="link">
           Favourite Tracks
-        </router-link>
+        </base-link>
       </container-item-label>
       <track-rows>
         <track-row
@@ -82,7 +84,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useProfileStore } from "@/stores/profile";
 import { formatDate } from "@/utils";
@@ -92,9 +94,5 @@ const title = useTitle();
 
 const profile = computed(() => profileStore.profile);
 
-onMounted(() => {
-  title.value = profile.value
-    ? `${profile.value.user.display_name} (@${profile.value.user.username})`
-    : null;
-});
+title.value = `${profile.value.user.display_name} (@${profile.value.user.username})`;
 </script>

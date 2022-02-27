@@ -1,5 +1,5 @@
 <template>
-  <suspense-wrapper :loading="loading" :error="error">
+  <template v-if="!loading">
     <container>
       <figure class="responsive-picture">
         <base-img
@@ -33,7 +33,7 @@
           :title="rate[1].length"
         >
           times
-          <a
+          <span
             class="text-green-500-spotify font-bold cursor-pointer"
             @click="
               currentItem = rate[0];
@@ -41,7 +41,7 @@
             "
           >
             {{ artistData.artist.name }}
-          </a>
+          </span>
           appeared in top 50 tracks
           {{
             rate[0] === "LT" ? PERIODS[rate[0]] : "from the " + PERIODS[rate[0]]
@@ -83,7 +83,7 @@
           />
         </track-rows>
       </container-item>
-      <container-item v-if="artistData.relatedArtists.length">
+      <!-- <container-item v-if="artistData.relatedArtists.length">
         <container-item-label>Related Artists</container-item-label>
         <horizontal-scroll>
           <spotify-card
@@ -93,7 +93,7 @@
             type="artist"
           />
         </horizontal-scroll>
-      </container-item>
+      </container-item> -->
     </container>
     <modal :show="modalOpened" @close="modalOpened = false">
       <div class="flex flex-col gap-3 p-3">
@@ -121,28 +121,56 @@
             class="flex flex-row items-end gap-x-2 text-base"
           >
             <span class="text-gray-500-spotify">#{{ track.place }}</span>
-            <router-link
+            <base-link
               class="link"
               :to="{ name: 'track', params: { trackId: track.id } }"
             >
               {{ track.name }}
-            </router-link>
+            </base-link>
           </div>
         </div>
       </div>
     </modal>
-  </suspense-wrapper>
+  </template>
+  <template v-else>
+    <loading-spinner />
+  </template>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import { useArtist } from "@/composable/useArtist.js";
-import PERIODS from "@/assets/configs/periods.json";
+import { computed, watch, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useTitle } from "@vueuse/core";
+import { createAsyncProcess } from "@/composable/useAsync";
+import { getArtist } from "@/api";
+import { PERIODS } from "@/config";
 
-const { loading, error, artistData } = useArtist();
+const route = useRoute();
+const title = useTitle();
+
+const artistId = computed(() => route.params.artistId);
 
 const modalOpened = ref(false);
 const currentItem = ref("");
+
+const artistData = ref(null);
+
+function updateArtist(data) {
+  artistData.value = data;
+}
+
+async function fetchArtist() {
+  updateArtist(null);
+  if (!artistId.value) return;
+  const artist = await getArtist(artistId.value);
+  updateArtist(artist);
+
+  title.value = artistData.value ? artistData.value.artist.name : null;
+}
+
+const { loading, run } = createAsyncProcess(fetchArtist);
+
+watch(artistId, run, { immediate: true });
 
 const filteredArtistRates = computed(() =>
   Object.entries(artistData.value.rates.art).filter((item) => item[1])
