@@ -1,13 +1,9 @@
+import { BREAKPOINTS } from "./src/config";
+
 export default {
   darkMode: "class",
   theme: {
-    screens: {
-      sm: "500px",
-      md: "768px",
-      lg: "1024px",
-      xl: "1280px",
-      "2xl": "1536px",
-    },
+    screens: BREAKPOINTS,
     extend: {
       colors: {
         "green-500-spotify": "#1ed760",
