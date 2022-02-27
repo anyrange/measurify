@@ -4,15 +4,16 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "client": "vite --host",
     "build": "vite build",
-    "dev": "concurrently \"npm run client\" \"npm run server\" ",
-    "format": "prettier --write .",
-    "heroku-postbuild": "echo Skip builds on Heroku",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix .",
-    "preview": "vite preview --port 3000",
-    "client": "vite",
+    "preview": "vite preview --port 3000 --host",
     "server": "nodemon server/index.js",
-    "test": "npm run build && npm run preview"
+    "server:with-cron": "cross-env NODE_ENV=production nodemon server/index.js",
+    "dev": "concurrently \"npm run client\" \"npm run server\" ",
+    "dev:with-cron": "concurrently \"npm run client\" \"npm run server:with-cron\" ",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix .",
+    "format": "prettier --write .",
+    "heroku-postbuild": "echo Skip builds on Heroku"
   },
   "dependencies": {
     "@vueuse/core": "^7.7.0",
@@ -46,6 +47,7 @@
     "@vitejs/plugin-vue": "^1.10.2",
     "@vue/eslint-config-prettier": "^7.0.0",
     "concurrently": "^6.5.1",
+    "cross-env": "^7.0.3",
     "eslint": "8.9.0",
     "eslint-plugin-vue": "^8.5.0",
     "nodemon": "^2.0.15",

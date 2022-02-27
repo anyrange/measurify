@@ -9,6 +9,7 @@ specifiers:
   apexcharts: ^3.33.1
   axios: ^0.21.4
   concurrently: ^6.5.1
+  cross-env: ^7.0.3
   dayjs: ^1.10.7
   dotenv: ^8.6.0
   eslint: 8.9.0
@@ -72,6 +73,7 @@ devDependencies:
   '@vitejs/plugin-vue': 1.10.2_vite@2.8.4
   '@vue/eslint-config-prettier': 7.0.0_eslint@8.9.0+prettier@2.4.0
   concurrently: 6.5.1
+  cross-env: 7.0.3
   eslint: 8.9.0
   eslint-plugin-vue: 8.5.0_eslint@8.9.0
   nodemon: 2.0.15
@@ -2091,6 +2093,14 @@ packages:
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: false
+
+  /cross-env/7.0.3:
+    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
+    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
+    dev: true
 
   /cross-fetch/3.1.5:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
