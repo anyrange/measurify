@@ -40,6 +40,11 @@ export default async function (fastify) {
       const user = req.users;
       const { range, period } = req.query;
 
+      if (user.leaved)
+        return reply
+          .code(403)
+          .send({ message: `Currently not available for ${user.username}` });
+
       const token = user.token;
       const options = { token, range, period };
 

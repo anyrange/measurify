@@ -30,6 +30,11 @@ export default async function (fastify) {
       const user = req.user;
       const { range, period } = req.query;
 
+      if (user.leaved)
+        return reply
+          .code(403)
+          .send({ message: `Currently not available for ${user.username}` });
+
       const artists = await fastify.spotifyAPI({
         route: `me/top/artists?limit=${range}&time_range=${period}`,
         token: user.token,

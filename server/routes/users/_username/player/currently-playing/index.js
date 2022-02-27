@@ -29,6 +29,11 @@ export default async function (fastify) {
     async function (req, reply) {
       const user = req.user;
 
+      if (user.leaved)
+        return reply
+          .code(403)
+          .send({ message: `Currently not available for ${user.username}` });
+
       const currentPlayer = await fastify
         .spotifyAPI({
           route: `me/player/currently-playing?market=${user.country}`,

@@ -31,11 +31,8 @@ export default async function (fastify) {
       const { username } = req.params;
 
       const user = await fastify.db.User.findOne(
-        {
-          "settings.username": username,
-          "settings.privacy": { $ne: "private" },
-        },
-        "followers"
+        { "settings.username": username },
+        "followers settings.privacy"
       )
         .populate({
           path: "followers",
@@ -58,6 +55,11 @@ export default async function (fastify) {
         .lean();
 
       if (!user) return reply.code(404).send({ message: "User not found" });
+
+      const isPrivate = user.settings.privacy === "private";
+      const requestorID = req.session.get("id");
+      if (isPrivate && user._id !== requestorID)
+        return reply.code(403).send({ message: "Private profile" });
 
       reply.send(
         user.followers.map((user) => ({

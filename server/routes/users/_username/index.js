@@ -57,10 +57,10 @@ export default async function (fastify) {
       const user = await fastify.db.User.findOne(
         {
           "settings.username": username,
-          "settings.privacy": { $ne: "private" },
         },
         {
           "tokens.refreshToken": 1,
+          "settings.privacy": 1,
           listened: 1,
           genres: { $first: "$genresTimeline.genres" },
           avatar: 1,
@@ -77,6 +77,10 @@ export default async function (fastify) {
       ).lean();
 
       if (!user) return reply.code(404).send({ message: "User not found" });
+
+      const isPrivate = user.settings.privacy === "private";
+      if (isPrivate && user._id !== requestorID)
+        return reply.code(403).send({ message: "Private profile" });
 
       const { rangeTop, rangeHistory } = req.query;
 
