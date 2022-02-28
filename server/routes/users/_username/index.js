@@ -97,6 +97,7 @@ export default async function (fastify) {
         overview: {
           plays: user.listened.count,
           playtime: Math.round(user.listened.time / 60),
+          meantime: (user.listened.time / 60 / user.listened.count).toFixed(2),
         },
         genres: user.genres || [],
         followers: user.followers?.length || 0,

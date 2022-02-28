@@ -5,10 +5,11 @@ const plugin = fp(async function plugin(fastify) {
     $id: "overview",
     title: "overview",
     type: "object",
-    required: ["plays", "playtime"],
+    required: ["plays", "playtime", "meantime"],
     properties: {
       plays: { type: "number" },
       playtime: { type: "number" },
+      meantime: { type: "number" },
     },
   });
 });
