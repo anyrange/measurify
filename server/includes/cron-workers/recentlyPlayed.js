@@ -12,7 +12,7 @@ export async function parseHistory() {
   await forAllUsers({ operation: "history" }, parseNewTracks);
 }
 
-export async function parseNewTracks(user, limit = 8) {
+export async function parseNewTracks(user, limit = 10) {
   const newListened = [];
 
   const listenedTracks = await api({
@@ -49,7 +49,7 @@ export async function parseNewTracks(user, limit = 8) {
   await Promise.all([
     addArtists(artistIds, user.tokens.token),
     addAlbums(albumIds, user.tokens.token),
-    addTracks(tracks, user.tokens.token),
+    addTracks(tracks),
     updateHistory(newListened, user._id),
   ]);
 }

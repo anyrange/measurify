@@ -24,16 +24,29 @@ export default async (albums, token) => {
 
   const fullInfo = responses.map((res) => res.albums).flat(1);
 
-  const bulk = [];
-
-  await Promise.allSettled(
-    fullInfo.map(async (album) => {
-      bulk.push(await createAlbumBulk(album, token));
-    })
-  );
+  const bulk = fullInfo.map((album) => createAlbumBulk(album));
 
   await Album.bulkWrite(bulk);
 };
+
+const createAlbumBulk = (album) => ({
+  updateOne: {
+    filter: { _id: album.id },
+    update: {
+      images: {
+        highQuality: album.images[0]?.url,
+        mediumQuality: album.images[1]?.url || album.images[0]?.url,
+        lowQuality: arrLastEl(album.images)?.url,
+      },
+      name: album.name,
+      genres: album.genres,
+      release_date: album.release_date,
+      total_tracks: album.total_tracks,
+      label: album.label,
+    },
+    upsert: true,
+  },
+});
 
 export const addAlbum = async (albumID, token) => {
   const usableToken = token || (await getRandomToken());
@@ -43,40 +56,29 @@ export const addAlbum = async (albumID, token) => {
     token: usableToken,
   });
 
-  const bulk = [await createAlbumBulk(album, usableToken)];
-  await Album.bulkWrite(bulk);
-
-  const addedAlbum = bulk[0].updateOne.update["$set"];
-  addedAlbum._id = albumID;
-
-  return addedAlbum;
-};
-
-const createAlbumBulk = async (album, token) => {
   const audioFeatures = await parseFeatures(
     album.tracks.items.map(({ id }) => id),
-    token
+    usableToken
   );
 
   audioFeatures.popularity = album.popularity / 100;
 
-  return {
-    updateOne: {
-      filter: { _id: album.id },
-      update: {
-        images: {
-          highQuality: album.images[0]?.url,
-          mediumQuality: album.images[1]?.url || album.images[0]?.url,
-          lowQuality: arrLastEl(album.images)?.url,
-        },
-        name: album.name,
-        audioFeatures,
-        genres: album.genres,
-        release_date: album.release_date,
-        total_tracks: album.total_tracks,
-        label: album.label,
-      },
-      upsert: true,
+  const images = album.images;
+  const newItem = {
+    images: {
+      highQuality: images[0]?.url,
+      mediumQuality: images[1]?.url || images[0]?.url,
+      lowQuality: arrLastEl(album.images)?.url,
     },
+    name: album.name,
+    audioFeatures,
+    genres: album.genres,
+    release_date: album.release_date,
+    total_tracks: album.total_tracks,
+    label: album.label,
   };
+
+  Album.updateOne({ _id: albumID }, newItem, { upsert: true }).then();
+  newItem._id = albumID;
+  return newItem;
 };

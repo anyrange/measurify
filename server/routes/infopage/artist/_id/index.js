@@ -1,4 +1,5 @@
 import { addArtist } from "#server/includes/cron-workers/historyParser/artists.js";
+import { timeDiff } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -82,12 +83,16 @@ export default async function (fastify) {
       const time_range = ["long_term", "medium_term", "short_term"];
       const token = user?.tokens?.token;
 
-      if (!artist) {
+      if (!artist || !artist.audioFeatures || !artist.followers) {
         artist = await addArtist(artistID, token);
         artist.justAdded = true;
       }
 
-      if (!artist.justAdded) addArtist(artistID, token);
+      const DAY = 1000 * 60 * 60 * 24;
+      const notUpdated =
+        !artist.updated_at || timeDiff(artist.updated_at, new Date()) > DAY;
+
+      if (!artist.justAdded && notUpdated) addArtist(artistID, token);
 
       // for unauthenticated users
       if (!token) {

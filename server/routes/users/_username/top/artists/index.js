@@ -34,12 +34,9 @@ export default async function (fastify) {
 
       const _id = req.session.get("id");
 
-      const [top] = await fastify.userTopArtists({ _id, range, page });
+      const top = await fastify.userTopArtists({ _id, range, page });
 
-      reply.send({
-        artists: top?.artists || [],
-        pages: Math.ceil((top?.items || 0) / range) || 1,
-      });
+      reply.send(top);
     }
   );
 }

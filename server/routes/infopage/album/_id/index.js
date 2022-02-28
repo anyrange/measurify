@@ -1,4 +1,5 @@
 import { addAlbum } from "#server/includes/cron-workers/historyParser/albums.js";
+import { timeDiff } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -55,12 +56,16 @@ export default async function (fastify) {
 
       const token = user?.tokens?.token;
 
-      if (!album) {
+      if (!album || !album.audioFeatures || !album.release_date) {
         album = await addAlbum(albumID, token);
         album.justAdded = true;
       }
 
-      if (!album.justAdded) addAlbum(albumID, token);
+      const DAY = 1000 * 60 * 60 * 24;
+      const notUpdated =
+        !album.updated_at || timeDiff(album.updated_at, new Date()) > DAY;
+
+      if (!album.justAdded && notUpdated) addAlbum(albumID, token);
 
       // for unauthenticated users
       if (!token) {

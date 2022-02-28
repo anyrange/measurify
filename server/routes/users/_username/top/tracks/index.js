@@ -45,10 +45,7 @@ export default async function (fastify) {
 
       const top = await fastify.userTopTracks({ _id: user._id, range, page });
 
-      reply.send({
-        pages: top?.pages,
-        tracks: top?.tracks || [],
-      });
+      reply.send(top);
     }
   );
 }

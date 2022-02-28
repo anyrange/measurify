@@ -1,12 +1,11 @@
 import fp from "fastify-plugin";
 import User from "#server/models/User.js";
 
-export const artists = ({ _id, range, page = 1 }) => {
+export const artists = async ({ _id, range, page = 1 }) => {
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
     { $unwind: { path: "$listeningHistory" } },
-
     {
       $lookup: {
         from: "tracks",
@@ -44,22 +43,23 @@ export const artists = ({ _id, range, page = 1 }) => {
     { $sort: { plays: -1, name: 1 } },
     {
       $group: {
-        _id: "",
+        _id: null,
         artists: {
           $push: { id: "$id", name: "$name", image: "$image", plays: "$plays" },
         },
-        items: { $sum: 1 },
+        count: { $sum: 1 },
       },
     },
     {
       $project: {
-        items: 1,
+        count: { $ceil: { $divide: ["$count", range] } },
         artists: { $slice: ["$artists", (page - 1) * range, range] },
       },
     },
   ];
+  const [res] = await User.aggregate(agg);
 
-  return User.aggregate(agg);
+  return { artists: res?.artists || [], pages: res?.count || 1 };
 };
 
 export default fp(async (fastify) =>

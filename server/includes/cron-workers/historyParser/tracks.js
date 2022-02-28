@@ -6,7 +6,7 @@ import { arrLastEl } from "#server/utils/index.js";
 import { addArtist } from "#server/includes/cron-workers/historyParser/artists.js";
 import { addAlbum } from "#server/includes/cron-workers/historyParser/albums.js";
 
-export default async (tracks, token) => {
+export default async (tracks) => {
   const trackIds = tracks.map((track) => track.id);
 
   const uniqueTracks = [...new Set(trackIds)];
@@ -25,62 +25,66 @@ export default async (tracks, token) => {
 
   if (!newTracks.length) return;
 
-  const bulk = [];
-
-  await Promise.allSettled(
-    newTracks.map(async (track) => {
-      bulk.push(await createTrackBulk(track, token));
-    })
-  );
+  const bulk = newTracks.map((track) => createTrackBulk(track));
 
   await Track.bulkWrite(bulk);
 };
 
+const createTrackBulk = (track) => ({
+  updateOne: {
+    filter: { _id: track.id },
+    update: {
+      name: track.name,
+      duration_ms: track.duration_ms,
+      album: track.album.id,
+      release_date: track.album.release_date,
+      artists: track.artists.map(({ id }) => id),
+      images: {
+        highQuality: track.album.images[0]?.url,
+        mediumQuality: track.album.images[1]?.url || track.album.images[0]?.url,
+        lowQuality: arrLastEl(track.album.images)?.url,
+      },
+    },
+    upsert: true,
+  },
+});
+
 export const addTrack = async (trackID, token) => {
   const usableToken = token || (await getRandomToken());
 
-  const track = await api({
-    route: `tracks/${trackID}`,
-    token: usableToken,
-  });
-
-  const bulk = [await createTrackBulk(track, usableToken)];
-  const [, album, ...artists] = await Promise.all([
-    Track.bulkWrite(bulk),
-    addAlbum(track.album.id),
-    ...track.artists.map((artist) => addArtist(artist.id)),
+  const [track, audioFeatures] = await Promise.all([
+    api({
+      route: `tracks/${trackID}`,
+      token: usableToken,
+    }),
+    parseFeatures([trackID], token),
   ]);
-
-  const addedTrack = bulk[0].updateOne.update["$set"];
-  addedTrack._id = trackID;
-  addedTrack.album = album;
-  addedTrack.artists = artists;
-
-  return addedTrack;
-};
-
-const createTrackBulk = async (track, token) => {
-  const audioFeatures = await parseFeatures([track.id], token);
 
   audioFeatures.popularity = track.popularity / 100;
 
-  return {
-    updateOne: {
-      filter: { _id: track.id },
-      update: {
-        name: track.name,
-        duration_ms: track.duration_ms,
-        album: track.album.id,
-        artists: track.artists.map(({ id }) => id),
-        images: {
-          highQuality: track.album.images[0]?.url,
-          mediumQuality:
-            track.album.images[1]?.url || track.album.images[0]?.url,
-          lowQuality: arrLastEl(track.album.images)?.url,
-        },
-        audioFeatures,
-      },
-      upsert: true,
+  const images = track.album.images;
+  const newItem = {
+    name: track.name,
+    duration_ms: track.duration_ms,
+    album: track.album.id,
+    artists: track.artists.map(({ id }) => id),
+    images: {
+      highQuality: images[0]?.url,
+      mediumQuality: images[1]?.url || images[0]?.url,
+      lowQuality: arrLastEl(images)?.url,
     },
+    audioFeatures,
+    release_date: track.album.release_date,
   };
+
+  const [, album, ...artists] = await Promise.all([
+    Track.updateOne({ _id: trackID }, newItem, { upsert: true }),
+    addAlbum(track.album.id),
+    ...track.artists.map((artist) => addArtist(artist.id)),
+  ]);
+  newItem.album = album;
+  newItem.artists = artists;
+  newItem._id = trackID;
+
+  return newItem;
 };

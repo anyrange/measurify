@@ -24,62 +24,65 @@ export default async (artists, token) => {
 
   const fullInfo = responses.map((res) => res.artists).flat(1);
 
-  const bulk = [];
-
-  await Promise.allSettled(
-    fullInfo.map(async (artist) => {
-      bulk.push(await createArtistBulk(artist, token));
-    })
-  );
+  const bulk = fullInfo.map((artist) => createArtistBulk(artist));
 
   await Artist.bulkWrite(bulk);
 };
+
+const createArtistBulk = (artist) => ({
+  updateOne: {
+    filter: { _id: artist.id },
+    update: {
+      name: artist.name,
+      genres: artist.genres,
+      images: {
+        highQuality: artist.images[0]?.url,
+        mediumQuality: artist.images[1]?.url || artist.images[0]?.url,
+        lowQuality: arrLastEl(artist.images)?.url,
+      },
+      followers: artist.followers.total,
+    },
+    upsert: true,
+  },
+});
 
 export const addArtist = async (artistID, token) => {
   const usableToken = token || (await getRandomToken());
 
-  const artist = await api({
-    route: `artists/${artistID}`,
-    token: usableToken,
-  });
-
-  const bulk = [await createArtistBulk(artist, usableToken)];
-  await Artist.bulkWrite(bulk);
-
-  const addedArtist = bulk[0].updateOne.update["$set"];
-  addedArtist._id = artistID;
-
-  return addedArtist;
-};
-
-const createArtistBulk = async (artist, token) => {
-  const audioFeatures = await api({
-    route: `artists/${artist.id}/top-tracks?market=US`,
-    token,
-  }).then(({ tracks }) =>
-    parseFeatures(
-      tracks.map((track) => track.id),
-      token
-    )
-  );
+  const [artist, audioFeatures] = await Promise.all([
+    api({
+      route: `artists/${artistID}`,
+      token: usableToken,
+    }),
+    api({
+      route: `artists/${artistID}/top-tracks?market=US`,
+      token: usableToken,
+    }).then(({ tracks }) =>
+      parseFeatures(
+        tracks.map((track) => track.id),
+        usableToken
+      )
+    ),
+  ]);
 
   audioFeatures.popularity = artist.popularity / 100;
 
-  return {
-    updateOne: {
-      filter: { _id: artist.id },
-      update: {
-        name: artist.name,
-        genres: artist.genres,
-        images: {
-          highQuality: artist.images[0]?.url,
-          mediumQuality: artist.images[1]?.url || artist.images[0]?.url,
-          lowQuality: arrLastEl(artist.images)?.url,
-        },
-        audioFeatures,
-        followers: artist.followers.total,
-      },
-      upsert: true,
+  const images = artist.images;
+
+  const newItem = {
+    name: artist.name,
+    genres: artist.genres,
+    images: {
+      highQuality: images[0]?.url,
+      mediumQuality: images[1]?.url || images[0]?.url,
+      lowQuality: arrLastEl(images)?.url,
     },
+    audioFeatures,
+    followers: artist.followers.total,
   };
+
+  Artist.updateOne({ _id: artistID }, newItem, { upsert: true }).then();
+
+  newItem._id = artistID;
+  return newItem;
 };

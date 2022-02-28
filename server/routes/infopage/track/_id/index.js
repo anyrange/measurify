@@ -1,4 +1,5 @@
 import { addTrack } from "#server/includes/cron-workers/historyParser/tracks.js";
+import { timeDiff } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -35,8 +36,14 @@ export default async function (fastify) {
 
       const mainInfo = [
         fastify.db.Track.findById(trackID)
-          .populate("album")
-          .populate("artists")
+          .populate("album", {
+            name: 1,
+            images: 1,
+          })
+          .populate("artists", {
+            name: 1,
+            images: 1,
+          })
           .lean(),
       ];
 
@@ -50,12 +57,16 @@ export default async function (fastify) {
       const time_range = ["long_term", "medium_term", "short_term"];
       const token = user?.tokens?.token;
 
-      if (!track) {
+      if (!track || !track.audioFeatures || !track.release_date) {
         track = await addTrack(trackID, token);
         track.justAdded = true;
       }
 
-      if (!track.justAdded) addTrack(trackID, token);
+      const DAY = 1000 * 60 * 60 * 24;
+      const notUpdated =
+        !track.updated_at || timeDiff(track.updated_at, new Date()) > DAY;
+
+      if (!track.justAdded && notUpdated) addTrack(trackID, token);
 
       // for unauthenticated users
       if (!token) {
@@ -63,17 +74,17 @@ export default async function (fastify) {
           track: {
             id: trackID,
             name: track.name,
+            image: track.images.highQuality,
             album: {
               id: track.album._id,
               name: track.album.name,
-              image: track.album.images.highQuality,
+              image: track.album.images.mediumQuality,
             },
             artists: track.artists.map((artist) => ({
               id: artist._id,
               name: artist.name,
-              image: artist.images.highQuality,
+              image: artist.images.mediumQuality,
             })),
-            image: track.images.highQuality,
           },
           ...track,
         });
@@ -128,17 +139,17 @@ export default async function (fastify) {
         track: {
           id: trackID,
           name: track.name,
+          image: track.images.highQuality,
           album: {
             id: track.album._id,
             name: track.album.name,
-            image: track.album.images.highQuality,
+            image: track.album.images.mediumQuality,
           },
           artists: track.artists.map((artist) => ({
             id: artist._id,
             name: artist.name,
-            image: artist.images.highQuality,
+            image: artist.images.mediumQuality,
           })),
-          image: track.images.highQuality,
         },
         ...track,
         lastPlayedAt: overview?.lastPlayedAt || "",

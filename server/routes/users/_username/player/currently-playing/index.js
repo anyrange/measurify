@@ -1,3 +1,5 @@
+import { formatTrack } from "#server/utils/index.js";
+
 export default async function (fastify) {
   fastify.addHook("onSend", async (req, reply) => {
     if (reply.statusCode === 200) reply.removeHeader("Cache-Control");
@@ -43,12 +45,7 @@ export default async function (fastify) {
 
       if (!currentPlayer.item) return reply.code(204).send();
 
-      const images = currentPlayer.item.album.images;
-
-      reply.send({
-        ...currentPlayer.item,
-        image: images[1].url || images[0].url || "",
-      });
+      reply.send(formatTrack(currentPlayer.item));
     }
   );
 }
