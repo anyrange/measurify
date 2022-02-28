@@ -98,14 +98,17 @@ export default async function (fastify) {
 
       const [top, { history }] = await Promise.all(requests);
 
+      const plays = user.listened?.count || 0;
+      const playtime = user.listened?.time || 0 / 60;
+
       const response = {
         user,
         top,
         history,
         overview: {
-          plays: user.listened.count,
-          playtime: Math.round(user.listened.time / 60),
-          meantime: (user.listened.time / 60 / user.listened.count).toFixed(2),
+          plays,
+          playtime: Math.round(playtime),
+          meantime: (playtime / plays || 1).toFixed(2),
         },
         genres: user.genres || [],
         followers: user.followers?.length || 0,

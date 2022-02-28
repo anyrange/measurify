@@ -64,30 +64,6 @@ export const albums = async ({ _id, range, page = 1 }) => {
   ];
   const [res] = await User.aggregate(agg);
 
-  const undefinedAlbums = res.albums.filter((album) => !album._id.id);
-
-  if (undefinedAlbums.length > 0) {
-    const { addAlbum } = await import(
-      "#server/includes/cron-workers/historyParser/albums.js"
-    );
-
-    const albumsToParse = undefinedAlbums.map((album) => album._id.album);
-    const newAlbums = await Promise.all(
-      albumsToParse.map((albumID) => addAlbum(albumID))
-    );
-
-    newAlbums.forEach((album) => {
-      album.image = album.images.mediumQuality;
-      album.plays = undefinedAlbums.find(
-        (al) => al._id.album === album._id
-      ).plays;
-      album.id = album._id;
-    });
-
-    res.albums = res.albums.filter((album) => album._id.id);
-    res.albums = [...res.albums, ...newAlbums];
-  }
-
   return { albums: res?.albums || [], pages: res?.count || 1 };
 };
 

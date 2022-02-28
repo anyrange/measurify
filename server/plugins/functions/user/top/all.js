@@ -11,14 +11,6 @@ export default fp(async function plugin(fastify) {
       artists(options),
     ]);
 
-    t.tracks.forEach((item) => {
-      if (!item.album.id) {
-        item.album = al?.albums?.find(
-          (album) => album.id === item.tracks[0].album
-        );
-      }
-    });
-
     return {
       tracks: t.tracks,
       albums: al.albums,

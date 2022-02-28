@@ -112,11 +112,12 @@ const plugin = fp(async function plugin(fastify) {
       .lean();
 
     return {
-      history: listeningHistory.map((item) => ({
-        ...item.track,
-        played_at: item.played_at,
-      })),
-      pages: Math.ceil(listened.count / range) || 1,
+      history:
+        listeningHistory?.map((item) => ({
+          ...item.track,
+          played_at: item.played_at,
+        })) || [],
+      pages: Math.ceil(listened?.count || 0 / range) || 1,
     };
   };
 
