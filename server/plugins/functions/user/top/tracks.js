@@ -57,6 +57,7 @@ export const tracks = async ({ _id, range, page = 1 }) => {
         id: { $first: "$tracks._id" },
         name: { $first: "$tracks.name" },
         image: { $first: "$tracks.images.lowQuality" },
+        duration_ms: { $first: "$tracks.duration_ms" },
         plays: "$listeningHistory.plays",
         album: {
           id: { $first: "$albums._id" },
