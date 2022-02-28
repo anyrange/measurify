@@ -25,7 +25,15 @@ export default async function (fastify) {
             type: "object",
             properties: {
               user: { $ref: "user#" },
-              overview: { $ref: "overview#" },
+              overview: {
+                type: "object",
+                required: ["plays", "playtime", "meantime"],
+                properties: {
+                  plays: { type: "number" },
+                  playtime: { type: "number" },
+                  meantime: { type: "number" },
+                },
+              },
               top: { $ref: "top#" },
               genres: { type: "array", items: { type: "string" } },
               inactive: { type: "boolean" },
