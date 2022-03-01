@@ -2,6 +2,7 @@
   <div>
     <div
       class="
+        h-52
         bg-gray-700-spotify bg-opacity-20
         hover:bg-opacity-60
         flex flex-shrink-0 flex-none flex-col

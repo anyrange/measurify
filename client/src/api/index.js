@@ -29,7 +29,7 @@ api.interceptors.response.use(
 );
 
 export function redirect() {
-  return new Promise((window.location.href = `${SERVER_URI}/auth/login`));
+  window.location.href = `${SERVER_URI}/auth/login`;
 }
 
 export function checkAuthorization() {

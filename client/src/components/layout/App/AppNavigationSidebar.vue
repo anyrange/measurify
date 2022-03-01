@@ -6,17 +6,20 @@
       </div>
     </div>
     <nav class="sidebar mt-2" :class="[{ 'items-center': smallerThanMd }]">
-      <template v-if="!userStore.isAuthenticated">
+      <template v-if="!isAuthenticated">
         <div class="sidebar__item">
           <base-button
-            color="white"
-            :fullwidth="!smallerThanMd"
+            :color="smallerThanMd ? 'transparent' : 'white'"
             :shape="smallerThanMd ? 'circle' : 'round'"
+            :fullwidth="!smallerThanMd"
             :loading="loading"
-            @click="login"
+            @click="redirect"
           >
             <template v-if="smallerThanMd">
-              <icon class="h-6 w-6" icon="fa6-brands:spotify" />
+              <icon
+                class="block h-6 w-6 text-white"
+                icon="fa6-brands:spotify"
+              />
             </template>
             <template v-else> Log in with Spotify </template>
           </base-button>
@@ -38,15 +41,6 @@
           <icon class="sidebar__item__icon" icon="ic:baseline-person" />
           <span class="sidebar__item__title">Profile</span>
         </base-link>
-        <!-- 
-        <base-link v-wave class="sidebar__item" :to="{ name: 'account' }">
-          <icon
-            class="sidebar__item__icon"
-            icon="ic:baseline-manage-accounts"
-          />
-          <span class="sidebar__item__title">Account</span>
-        </base-link>
-        -->
       </template>
       <base-link v-wave class="sidebar__item" :to="{ name: 'leaderboard' }">
         <icon class="sidebar__item__icon" icon="ic:round-leaderboard" />
@@ -62,24 +56,28 @@
 
 <script setup>
 import { useBreakpoints } from "@/composable/useBreakpoints";
-import { createAsyncProcess } from "@/composable/useAsync";
 import { useAuth } from "@/composable/useAuth";
 import { useUserStore } from "@/stores/user";
 import { redirect } from "@/api";
 
-const userStore = useUserStore();
 const { isAuthenticated } = useAuth();
 const { smallerThanMd } = useBreakpoints();
-
-const { loading, run: login } = createAsyncProcess(redirect);
+const userStore = useUserStore();
 </script>
 
 <style>
 .sidebar {
-  @apply flex sm:flex-col flex-row gap-2 flex-none z-50 sm:h-screen h-12 sm:px-2 p-0 sm:w-20 md:w-60 xl:w-60 w-full sm:relative fixed bottom-0 sm:inset-0 border-t sm:border-none border-gray-700-spotify;
+  @apply sm:bg-gray-800-spotify bg-gray-900-spotify z-50;
+  @apply flex flex-row sm:flex-col gap-2 flex-none;
+  @apply sm:h-screen h-12 sm:px-2 p-0;
+  @apply sm:w-20 md:w-60 xl:w-60 w-full;
+  @apply sm:relative fixed bottom-0 sm:inset-0;
+  @apply border-t sm:border-none border-gray-700-spotify;
 }
 .sidebar__item {
-  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 items-center md:justify-start sm:justify-center justify-center w-full cursor-pointer sm:rounded rounded-none sm:hover:text-white duration-75;
+  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 w-full;
+  @apply items-center md:justify-start sm:justify-center justify-center;
+  @apply cursor-pointer sm:rounded rounded-none sm:hover:text-white duration-75;
 }
 .sidebar__item__title {
   @apply md:flex hidden font-medium text-sm select-none;

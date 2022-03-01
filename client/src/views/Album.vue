@@ -42,7 +42,7 @@
       <suspense>
         <album-content
           :album-id="albumData.album.id"
-          :favourite-tracks="albumData.favouriteTracks"
+          :favourite-tracks="albumData.favouriteTracks || []"
         />
         <template #fallback>
           <track-rows>
