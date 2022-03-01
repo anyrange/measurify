@@ -1,5 +1,13 @@
 <template>
   <template v-if="!loading">
+    <app-bar scroll-target="infopage-title">
+      <template #title>
+        {{ trackData.track.name }}
+      </template>
+      <template #right>
+        <spotify-link :id="trackData.track.id" type="track" />
+      </template>
+    </app-bar>
     <infopage-header :item="trackData.track" type="track" />
     <container>
       <cards>

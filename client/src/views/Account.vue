@@ -1,5 +1,5 @@
 <template>
-  <h1 class="h-title mb-4">Account</h1>
+  <h1 class="h-title my-4">Account</h1>
   <div class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
     <profile-badge />
     <template v-if="!loading">

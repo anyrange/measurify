@@ -10,17 +10,19 @@
       >
         <div class="flex-1 flex overflow-y-hidden">
           <app-navigation-sidebar />
-          <main class="flex-1 flex flex-col bg-gray-900-spotify relative">
+          <main class="flex-1 flex flex-col bg-gray-900-spotify">
             <div
               id="content-window"
               class="
                 overflow-y-auto
                 flex flex-col
                 h-full
-                p-4
+                px-4
+                pb-4
                 mb-12
                 sm:px-8 sm:mb-0
               "
+              style="overflow: overlay"
             >
               <router-view />
             </div>

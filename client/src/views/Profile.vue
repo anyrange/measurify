@@ -6,8 +6,26 @@
   </template>
   <template v-else>
     <template v-if="!loading">
+      <app-bar scroll-target="infopage-title" fixed>
+        <template #title>
+          {{ profile.user.username }}
+        </template>
+        <template #right>
+          <spotify-link :id="profile.user.spotifyID" type="user" />
+          <template v-if="isUserProfile">
+            <base-button shape="circle">
+              <base-link :to="{ name: 'account' }">
+                <icon
+                  class="w-7 h-7 hover:cursor-pointer block text-white"
+                  icon="ic:baseline-settings"
+                />
+              </base-link>
+            </base-button>
+          </template>
+        </template>
+      </app-bar>
       <div class="w-full flex flex-col gap-2 -mb-1.5">
-        <div class="w-full flex flex-row items-center text-ce gap-2.5">
+        <div class="w-full flex flex-row items-center gap-2.5">
           <div
             class="relative flex flex-none duration-300"
             :class="[imageClass]"
@@ -51,11 +69,12 @@
             "
           >
             <div class="flex flex-col">
-              <spotify-link
-                :link="`https://open.spotify.com/user/${profile.user.spotifyID}`"
+              <h1
+                class="text-xl sm:text-2xl font-medium text-white truncate"
+                id="infopage-title"
               >
                 {{ profile.user.display_name }}
-              </spotify-link>
+              </h1>
               <h3 class="font-light truncate">{{ profile.user.username }}</h3>
             </div>
           </div>
@@ -73,7 +92,10 @@
                   History
                 </base-link>
               </div>
-              <div v-if="!isUserProfile" class="profile-nav-link">
+              <div
+                v-if="!isUserProfile && !profile.inactive"
+                class="profile-nav-link"
+              >
                 <base-link :to="{ name: 'profile-compatibility' }">
                   Compatibility
                 </base-link>
