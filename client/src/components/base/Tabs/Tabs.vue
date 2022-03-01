@@ -29,3 +29,12 @@ provide("state", {
 
 provide("selectTab", (tab) => emit("update:modelValue", tab));
 </script>
+
+<style>
+.horizontal-scroll-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>
