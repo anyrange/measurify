@@ -11,37 +11,36 @@ export default async function (fastify) {
         querystring: {
           type: "object",
           properties: {
+            range: { type: "number", minimum: 1, maximum: 50, default: 20 },
             firstDate: { type: "string", format: "date" },
             lastDate: { type: "string", format: "date" },
+            page: { type: "number", minimum: 1, default: 1 },
+            search: { type: "string", default: "" },
           },
         },
         response: {
           200: {
-            type: "array",
-            items: {
-              type: "object",
-              required: ["time", "playtime", "plays"],
-              properties: {
-                time: { type: "number" },
-                playtime: { type: "number" },
-                plays: { type: "number" },
-              },
+            type: "object",
+            properties: {
+              status: { type: "number" },
+              albums: { $ref: "topItems#" },
+              pages: { type: "number" },
             },
           },
         },
-        tags: ["reports"],
+        tags: ["user"],
       },
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const user = req.user;
+      const { range, page } = req.query;
 
-      const { firstDate, lastDate } = req.query;
+      const _id = req.session.get("id");
 
-      const options = { _id: user._id, firstDate, lastDate };
-      const hourlyActivity = await fastify.userHourlyActivity(options);
+      const options = { _id, range, page };
+      const top = await fastify.userTopAlbums(options);
 
-      reply.send(hourlyActivity);
+      reply.send(top);
     }
   );
 }

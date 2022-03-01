@@ -12,10 +12,7 @@ export default async function (fastify) {
           type: "object",
           properties: {
             range: { type: "number", minimum: 1, maximum: 50, default: 20 },
-            firstDate: { type: "string", format: "date" },
-            lastDate: { type: "string", format: "date" },
             page: { type: "number", minimum: 1, default: 1 },
-            search: { type: "string", default: "" },
           },
         },
         response: {
@@ -23,22 +20,30 @@ export default async function (fastify) {
             type: "object",
             properties: {
               status: { type: "number" },
-              albums: { $ref: "topItems#" },
               pages: { type: "number" },
+              tracks: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    ...fastify.getSchema("track").properties,
+                    plays: { type: "number" },
+                    duration_ms: { type: "number" },
+                  },
+                },
+              },
             },
           },
         },
-        tags: ["top"],
+        tags: ["user"],
       },
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
       const { range, page } = req.query;
+      const user = req.user;
 
-      const _id = req.session.get("id");
-
-      const options = { _id, range, page };
-      const top = await fastify.userTopAlbums(options);
+      const top = await fastify.userTopTracks({ _id: user._id, range, page });
 
       reply.send(top);
     }

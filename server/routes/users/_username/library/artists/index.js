@@ -12,20 +12,29 @@ export default async function (fastify) {
           type: "object",
           properties: {
             range: { type: "number", minimum: 1, maximum: 50, default: 20 },
+            page: { type: "number", minimum: 1, default: 1 },
           },
         },
         response: {
-          200: { $ref: "top" },
+          200: {
+            type: "object",
+            properties: {
+              status: { type: "number" },
+              artists: { $ref: "topItems#" },
+              pages: { type: "number" },
+            },
+          },
         },
         tags: ["user"],
       },
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { range } = req.query;
-      const user = req.user;
+      const { range, page } = req.query;
 
-      const top = await fastify.userTop({ _id: user._id, range });
+      const _id = req.session.get("id");
+
+      const top = await fastify.userTopArtists({ _id, range, page });
 
       reply.send(top);
     }

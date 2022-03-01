@@ -1,4 +1,4 @@
-import { addImage } from "#server/utils/index.js";
+import { addImage, formatTrack } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -27,7 +27,6 @@ export default async function (fastify) {
         },
         tags: ["other"],
       },
-      preValidation: [fastify.auth],
     },
     async function (req, reply) {
       const id = req.session.get("id");
@@ -48,11 +47,7 @@ export default async function (fastify) {
       reply.send({
         albums: res.albums.items.map(addImage),
         artists: res.artists.items.map(addImage),
-        tracks: res.tracks.items.map((track) =>
-          Object.assign(track, {
-            image: track.album.images.length ? track.album.images[0].url : "",
-          })
-        ),
+        tracks: res.tracks.items.map(formatTrack),
       });
     }
   );
