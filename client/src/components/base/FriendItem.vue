@@ -27,26 +27,26 @@
           {{ friend.display_name }}
         </base-link>
         <template v-if="friend.lastPlayed">
-          <span class="justify-end" :title="getRealtiveTime(friend.lastPlayed)">
-            {{ getShortRelativeTime(friend.lastPlayed) }}
-          </span>
+          <div class="justify-end">
+            <span :title="getRealtiveTime(friend.lastPlayed)">
+              {{ getShortRelativeTime(friend.lastPlayed) }}
+            </span>
+          </div>
         </template>
       </div>
       <template v-if="friend.lastTrack">
-        <div class="flex items-center">
+        <div class="w-full flex items-center">
           <icon icon="entypo:beamed-note" class="mr-1 h-4 w-4" />
           <base-link
+            class="truncate hover:underline"
             :to="{
               name: 'track',
               params: {
                 trackId: friend.lastTrack.id,
               },
             }"
-            class="w-full flex hover:underline"
           >
-            <span class="line-clamp-1">
-              {{ friend.lastTrack.name }}
-            </span>
+            {{ friend.lastTrack.name }}
           </base-link>
         </div>
       </template>

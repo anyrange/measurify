@@ -50,6 +50,6 @@ export default {
   },
   shortcuts: {
     "default-border": "border-secondary-dark",
-    "default-focus": "outline-none focus:outline-none focus-visible:ring-1",
+    "default-focus": "outline-none focus:outline-none focus-visible:ring-1.5",
   },
 };
