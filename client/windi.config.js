@@ -46,4 +46,9 @@ export default {
       scale: ["active", "group-hover"],
     },
   },
+  plugins: [
+    require("windicss/plugin/line-clamp"),
+    require("windicss/plugin/typography"),
+    require("windicss/plugin/filters"),
+  ],
 };

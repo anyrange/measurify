@@ -7,7 +7,7 @@
           <base-button shape="circle">
             <base-link :to="{ name: 'search' }">
               <icon
-                class="w-4 h-4 hover:cursor-pointer"
+                class="w-4 h-4 hover:cursor-pointer block"
                 icon="ant-design:user-add-outlined"
               />
             </base-link>

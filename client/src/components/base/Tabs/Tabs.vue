@@ -1,12 +1,10 @@
 <template>
-  <div class="fullwidth">
-    <ul
-      id="horizontal-scrollbar"
-      class="horizontal-scroll-wrapper sm:mx-0 -mx-4 px-4 sm:px-0"
-    >
-      <slot />
-    </ul>
-  </div>
+  <ul
+    id="horizontal-scrollbar"
+    class="horizontal-scroll-wrapper w-full sm:mx-0 -mx-4 px-4 sm:px-0"
+  >
+    <slot />
+  </ul>
 </template>
 
 <script setup>

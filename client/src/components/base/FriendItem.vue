@@ -18,43 +18,38 @@
         image-type="profile"
       />
     </base-link>
-    <div class="flex flex-col">
-      <div class="fullwidth">
-        <div class="flex flex-row gap-2 items-center justify-between w-full">
-          <base-link
-            :to="{ name: 'profile', params: { username: friend.username } }"
-            class="link truncate"
-          >
-            {{ friend.display_name }}
-          </base-link>
-          <template v-if="friend.lastPlayed">
-            <span
-              class="flex flex-none justify-end truncate"
-              :title="getRealtiveTime(friend.lastPlayed)"
-            >
-              {{ getShortRelativeTime(friend.lastPlayed) }}
-            </span>
-          </template>
-        </div>
-      </div>
-      <div class="fullwidth truncate">
-        <template v-if="friend.lastTrack">
-          <div class="flex items-center">
-            <icon icon="entypo:beamed-note" class="mr-1 h-4 w-4" />
-            <base-link
-              :to="{
-                name: 'track',
-                params: {
-                  trackId: friend.lastTrack.id,
-                },
-              }"
-              class="flex w-full truncate hover:underline"
-            >
-              {{ friend.lastTrack.name }}
-            </base-link>
-          </div>
+    <div class="flex flex-col w-full">
+      <div class="flex w-full gap-2 items-center justify-between">
+        <base-link
+          :to="{ name: 'profile', params: { username: friend.username } }"
+          class="link line-clamp-1"
+        >
+          {{ friend.display_name }}
+        </base-link>
+        <template v-if="friend.lastPlayed">
+          <span class="justify-end" :title="getRealtiveTime(friend.lastPlayed)">
+            {{ getShortRelativeTime(friend.lastPlayed) }}
+          </span>
         </template>
       </div>
+      <template v-if="friend.lastTrack">
+        <div class="flex items-center">
+          <icon icon="entypo:beamed-note" class="mr-1 h-4 w-4" />
+          <base-link
+            :to="{
+              name: 'track',
+              params: {
+                trackId: friend.lastTrack.id,
+              },
+            }"
+            class="flex w-full hover:underline"
+          >
+            <span class="line-clamp-1">
+              {{ friend.lastTrack.name }}
+            </span>
+          </base-link>
+        </div>
+      </template>
     </div>
   </div>
 </template>

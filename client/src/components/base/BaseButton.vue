@@ -13,9 +13,9 @@
       </span>
     </template>
     <template v-else>
-      <span class="text-center flex" :class="slotClass">
+      <div class="flex justify-center">
         <slot />
-      </span>
+      </div>
     </template>
   </button>
 </template>
@@ -38,11 +38,6 @@ const props = defineProps({
     type: String,
     required: false,
     default: "md",
-  },
-  place: {
-    type: String,
-    required: false,
-    default: "center",
   },
   dense: {
     type: Boolean,
@@ -84,12 +79,6 @@ const SPINNER_SIZES = {
   lg: "w-6 h-6",
 };
 
-const PLACEMENTS = {
-  left: "justify-start",
-  center: "justify-center",
-  right: "justify-end",
-};
-
 const SHAPES = {
   circle: {
     sm: "h-7 w-7 !px-0",
@@ -118,10 +107,6 @@ const buttonClass = computed(() => {
     shape,
     width,
   ]);
-});
-
-const slotClass = computed(() => {
-  return createClass([PLACEMENTS[props.place]]);
 });
 
 const spinnerClass = computed(() => {

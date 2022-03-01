@@ -2,19 +2,7 @@
   <aside>
     <div class="px-2 md:flex flex-row hidden text-white">
       <div class="h-12 flex items-center border-b default-border w-full">
-        <base-button place="left" fullwidth @click="goBack">
-          <div class="flex gap-3 items-center">
-            <icon
-              class="w-6 h-6"
-              :icon="
-                showBackButton ? 'ic:baseline-arrow-back' : 'ic:round-home'
-              "
-            />
-            <span class="text-lg font-medium">
-              {{ showBackButton ? "Back" : "Home" }}
-            </span>
-          </div>
-        </base-button>
+        <div class="px-2 text-lg font-medium text-white">spotiworm</div>
       </div>
     </div>
     <nav class="mt-2 sidebar" :class="[{ 'items-center': smallerThanMd }]">
@@ -34,12 +22,10 @@
           </base-button>
         </div>
       </template>
-
       <base-link :to="{ name: 'home' }" v-wave class="sidebar__item">
         <icon class="sidebar__item__icon" icon="ic:round-home" />
         <span class="sidebar__item__title">Overview</span>
       </base-link>
-
       <template v-if="isAuthenticated">
         <base-link
           v-wave
@@ -75,35 +61,17 @@
 </template>
 
 <script setup>
-import { inject, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { createAsyncProcess } from "@/composable/useAsync";
 import { useBreakpoints } from "@/composable/useBreakpoints";
+import { createAsyncProcess } from "@/composable/useAsync";
+import { useAuth } from "@/composable/useAuth";
 import { useUserStore } from "@/stores/user";
 import { redirect } from "@/api";
-import { useAuth } from "@/composable/useAuth";
 
-const initialHistoryLength = inject("historyLength");
-
-const route = useRoute();
-const router = useRouter();
 const userStore = useUserStore();
-
 const { isAuthenticated } = useAuth();
-
 const { smallerThanMd } = useBreakpoints();
 
 const { loading, run: login } = createAsyncProcess(redirect);
-
-const showBackButton = computed(() => {
-  return route.name && route.name !== "home";
-});
-
-const goBack = () => {
-  if (!showBackButton.value) return;
-  const hasHistory = window.history.length - initialHistoryLength !== 0;
-  hasHistory ? router.back() : router.push({ name: "home" });
-};
 </script>
 
 <style>
