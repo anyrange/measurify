@@ -1,7 +1,7 @@
 <template>
   <div class="text-center w-full">
     <div class="mt-1 text-base">
-      <span class="text-white font-semibold"> Oopps </span>
+      <span class="text-white font-semibold"> Ooops </span>
       <p class="font-normal">
         <slot>{{ message }}</slot>
       </p>
@@ -14,6 +14,7 @@ const props = defineProps({
   type: {
     type: String,
     required: false,
+    default: "empty",
   },
 });
 
