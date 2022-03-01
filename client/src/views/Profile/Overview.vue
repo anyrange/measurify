@@ -32,7 +32,7 @@
                   title="now"
                 >
                   <base-img :src="now_playing" alt="Listening Now" />
-                  <figcaption>Listening now</figcaption>
+                  <figcaption>Listening</figcaption>
                 </figure>
               </template>
             </track-row>

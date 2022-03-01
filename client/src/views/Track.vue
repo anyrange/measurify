@@ -15,12 +15,15 @@
         <card :title="getDuration(trackData.duration_ms)">track length</card>
         <card :title="formatDate(trackData.release_date)">release date</card>
         <card
-          v-if="trackData.overview.playtime"
+          v-if="trackData.overview?.playtime"
           :title="trackData.overview.playtime"
         >
           minutes listened
         </card>
-        <card v-if="trackData.overview.plays" :title="trackData.overview.plays">
+        <card
+          v-if="trackData.overview?.plays"
+          :title="trackData.overview.plays"
+        >
           times played
         </card>
         <card
@@ -166,6 +169,7 @@ const {
 watch(trackId, run, { immediate: true });
 
 const filteredTrackRates = computed(() => {
+  if (!trackData.value.rates) return [];
   return Object.entries(trackData.value.rates).filter((item) => item[1]);
 });
 </script>

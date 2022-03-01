@@ -12,7 +12,6 @@
             :color="smallerThanMd ? 'transparent' : 'white'"
             :shape="smallerThanMd ? 'circle' : 'round'"
             :fullwidth="!smallerThanMd"
-            :loading="loading"
             @click="redirect"
           >
             <template v-if="smallerThanMd">

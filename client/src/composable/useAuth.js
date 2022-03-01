@@ -19,7 +19,6 @@ export const useAuth = () => {
   });
 
   const isUserProfile = computed(() => {
-    if (!isAuthenticated.value) return false;
     return profile.value.user.username === user.value.username;
   });
 

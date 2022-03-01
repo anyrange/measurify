@@ -12,7 +12,7 @@
         </template>
         <template #right>
           <spotify-link :id="profile.user.spotifyID" type="user" />
-          <template v-if="isUserProfile">
+          <template v-if="isAuthenticated && isUserProfile">
             <base-button shape="circle">
               <base-link :to="{ name: 'account' }">
                 <icon
@@ -36,7 +36,9 @@
               image-type="profile"
               class="h-full w-full rounded-full object-cover"
             />
-            <template v-if="!isUserProfile && isOverviewPage">
+            <template
+              v-if="isAuthenticated && !isUserProfile && isOverviewPage"
+            >
               <div class="absolute bottom-0 right-0">
                 <base-button
                   shape="circle"
@@ -92,14 +94,16 @@
                   History
                 </base-link>
               </div>
-              <div
-                v-if="!isUserProfile && !profile.inactive"
-                class="profile-nav-link"
-              >
-                <base-link :to="{ name: 'profile-compatibility' }">
-                  Compatibility
-                </base-link>
-              </div>
+              <template v-if="isAuthenticated">
+                <div
+                  v-if="!isUserProfile && !profile.inactive"
+                  class="profile-nav-link"
+                >
+                  <base-link :to="{ name: 'profile-compatibility' }">
+                    Compatibility
+                  </base-link>
+                </div>
+              </template>
               <div class="profile-nav-link">
                 <base-link :to="{ name: 'profile-following' }">
                   Following
@@ -155,7 +159,7 @@ const profileStore = useProfileStore();
 const friendsStore = useFriendsStore();
 
 const { xlAndLarger } = useBreakpoints();
-const { isUserProfile } = useAuth();
+const { isUserProfile, isAuthenticated } = useAuth();
 
 const { profile } = storeToRefs(profileStore);
 
