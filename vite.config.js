@@ -17,7 +17,9 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    Windi(),
+    Windi({
+      config: resolve(_dirname, "windi.config.js"),
+    }),
     Components({
       dirs: ["src/components"],
       extensions: ["vue"],
