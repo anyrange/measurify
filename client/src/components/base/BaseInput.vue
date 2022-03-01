@@ -1,30 +1,26 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <label
+  <label class="flex flex-col gap-2">
+    <span
+      class="font-normal text-base text-secondary-lightest"
       v-if="label.length"
-      :for="label"
-      class="font-normal text-base text-gray-300"
     >
       {{ label }}
-    </label>
+    </span>
     <input
       v-bind="$attrs"
-      :id="label"
       :value="modelValue"
       class="
         h-9
         px-2
         rounded
-        border border-gray-600-spotify
-        hover:border-gray-500-spotify hover:border-opacity-20
-        placeholder-gray-500-spotify
+        placeholder-secondary-lighter
         default-focus
         disabled:opacity-40
-        bg-gray-700-spotify
+        bg-secondary-darker
       "
       @input="handleInput($event.target.value)"
     />
-  </div>
+  </label>
 </template>
 
 <script setup>

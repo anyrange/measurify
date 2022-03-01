@@ -11,7 +11,7 @@
         w-6
         h-6
         text-white
-        hover:text-green-500-spotify
+        hover:text-primary
         cursor-pointer
         duration-200
       "

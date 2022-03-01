@@ -14,7 +14,7 @@
       horizontal-scroll-card
     "
     :class="{
-      'bg-gray-600-spotify': isActive,
+      'bg-secondary-light': isActive,
       'opacity-40 cursor-not-allowed': disabled,
     }"
     @click="activateTab(name)"

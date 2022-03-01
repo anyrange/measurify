@@ -30,7 +30,7 @@
           >
             times
             <span
-              class="cursor-pointer font-bold text-green-500-spotify"
+              class="cursor-pointer font-bold text-primary"
               @click="
                 currentItem = rate[0];
                 modalOpened = true;
@@ -51,7 +51,7 @@
                 <h3 class="font-semibold text-xl sm:text-2xl">
                   Most streamed tracks
                 </h3>
-                <span class="text-gray-500-spotify">
+                <span class="text-secondary-lighter">
                   The amount of times a track by
                   {{ artistData.artist.name }} appears in your top
                   <strong>
@@ -70,7 +70,7 @@
                   :key="index"
                   class="flex flex-row items-end gap-x-2 text-base"
                 >
-                  <span class="text-gray-500-spotify">#{{ track.place }}</span>
+                  <span class="text-secondary-lighter">#{{ track.place }}</span>
                   <base-link
                     class="link"
                     :to="{ name: 'track', params: { trackId: track.id } }"

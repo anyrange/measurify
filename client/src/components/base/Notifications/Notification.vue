@@ -100,10 +100,10 @@ const destroy = () => {
 
 <style>
 .notify {
-  @apply relative mt-4 p-2 table rounded text-sm bg-gray-700-spotify;
+  @apply relative mt-4 p-2 table rounded text-sm bg-secondary-dark;
 }
 .notify-progress {
-  @apply absolute bottom-0 left-0 h-1 rounded bg-gray-600-spotify z-50;
+  @apply absolute bottom-0 left-0 h-1 rounded bg-secondary-light z-50;
 }
 .notify-info {
   @apply text-blue-500;
@@ -124,7 +124,7 @@ const destroy = () => {
   @apply pl-2 pr-3;
 }
 .notify-close {
-  @apply rounded-full text-gray-500-spotify justify-center inline-flex duration-150 cursor-pointer p-1 bg-gray-600-spotify hover:bg-opacity-20;
+  @apply rounded-full text-secondary-lighter justify-center inline-flex duration-150 cursor-pointer p-1 bg-secondary-light hover:bg-opacity-20;
 }
 .notify-action-btn {
   @apply p-2 rounded-sm uppercase duration-100 hover:bg-white hover:bg-opacity-5;

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-3 rounded bg-gray-800-spotify p-1 pr-3">
+  <div class="flex items-center gap-3 rounded bg-secondary-darker p-1 pr-3">
     <base-link
       class="link flex-none rounded"
       :to="{

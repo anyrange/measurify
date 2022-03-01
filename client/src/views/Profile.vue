@@ -202,16 +202,16 @@ const imageClass = computed(() => {
 
 <style>
 .profile-nav {
-  @apply flex w-full flex-row gap-x-3  border-b-1 border-gray-800-spotify;
+  @apply flex w-full flex-row gap-x-3  border-b-1 border-secondary-darker;
 }
 .profile-nav .profile-nav-link {
-  @apply flex flex-shrink-0 flex-none hover:text-green-500-spotify;
+  @apply flex flex-shrink-0 flex-none hover:text-primary;
 }
 .profile-nav .profile-nav-link a {
   @apply py-2 px-1;
 }
 .profile-nav .router-link-exact-active {
-  @apply text-green-500-spotify;
+  @apply text-primary;
   box-shadow: 0px 1px 0px #22c55e;
 }
 </style>

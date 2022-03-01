@@ -1,17 +1,19 @@
 <template>
   <header
-    v-show="showAppBar"
     class="
       top-0
       z-12
       sm:-mx-8
       -mx-4
-      bg-gray-900-spotify
+      bg-secondary-darkest
       shadow-md
       sm:shadow-none
+      duration-200
+      transition-all
     "
     :class="[
       [fixed ? 'sticky mb-2' : 'sm:sticky fixed -mb-8'],
+      [showAppBar ? 'opacity-100' : 'opacity-0'],
       { 'sm:w-auto w-full ': !fixed },
     ]"
   >

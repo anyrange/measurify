@@ -60,11 +60,11 @@ const props = defineProps({
 });
 
 const COLORS = {
-  green: "bg-green-500-spotify text-white",
+  green: "bg-primary text-white",
   red: "bg-red-600 text-white",
   white: "bg-white text-black",
-  transparent: "bg-transparent text-gray-400-spotify",
-  gray: "bg-gray-800-spotify text-gray-400-spotify",
+  transparent: "bg-transparent text-secondary-lighter",
+  gray: "bg-secondary-darker text-secondary-lighter",
 };
 
 const BUTTON_SIZES = {

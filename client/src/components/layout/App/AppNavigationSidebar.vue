@@ -66,12 +66,12 @@ const userStore = useUserStore();
 
 <style>
 .sidebar {
-  @apply sm:bg-gray-800-spotify bg-gray-900-spotify z-50;
+  @apply sm:bg-secondary-darker bg-secondary-darkest z-50;
   @apply flex flex-row sm:flex-col gap-2 flex-none;
   @apply sm:h-screen h-12 sm:px-2 p-0;
   @apply sm:w-20 md:w-60 xl:w-60 w-full;
   @apply sm:relative fixed bottom-0 sm:inset-0;
-  @apply border-t sm:border-none border-gray-700-spotify;
+  @apply border-t sm:border-none border-secondary-dark;
 }
 .sidebar__item {
   @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 w-full;

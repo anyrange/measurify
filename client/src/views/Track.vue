@@ -65,7 +65,7 @@
             <div
               class="
                 text-white text-sm
-                bg-gray-700-spotify bg-opacity-20
+                bg-secondary-dark bg-opacity-20
                 duration-75
                 shadow-md
                 p-2

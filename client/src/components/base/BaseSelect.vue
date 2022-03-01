@@ -1,12 +1,11 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <label
+  <label class="flex flex-col gap-2">
+    <span
       v-if="label.length"
-      :for="label"
-      class="font-normal text-base text-gray-300"
+      class="font-normal text-base text-secondary-lightest"
     >
       {{ label }}
-    </label>
+    </span>
     <div class="relative w-full inline-block">
       <select
         :id="label"
@@ -19,11 +18,9 @@
           rounded
           appearance-none
           font-medium
-          border border-gray-600-spotify
-          hover:border-gray-500-spotify hover:border-opacity-20
           default-focus
           disabled:opacity-40
-          bg-gray-700-spotify
+          bg-secondary-darker
         "
       >
         <option
@@ -48,7 +45,7 @@
         <icon class="h-4 w-4" icon="ic:round-keyboard-arrow-down" />
       </div>
     </div>
-  </div>
+  </label>
 </template>
 
 <script setup>

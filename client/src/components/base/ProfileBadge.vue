@@ -4,8 +4,8 @@
       rounded-lg
       cursor-pointer
       duration-150
-      bg-gray-700-spotify
-      hover:bg-gray-600-spotify
+      bg-secondary-dark
+      hover:bg-secondary-light
       select-none
     "
   >
@@ -22,10 +22,10 @@
             alt="profile avatar"
           />
           <div class="flex flex-col">
-            <p class="font-medium text-gray-400-spotify text-lg">
+            <p class="font-medium text-lg text-secondary-lighter">
               {{ userStore.user.display_name }}
             </p>
-            <p class="text-gray-500-spotify text-sm">Open profile</p>
+            <p class="text-secondary-lighter text-sm">Open profile</p>
           </div>
         </div>
         <div class="flex flex-row items-center">

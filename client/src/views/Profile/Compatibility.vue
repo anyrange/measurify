@@ -14,17 +14,9 @@
               {{ profileStore.profile.user.username }}
             </span>
           </div>
-          <div
-            class="
-              bg-opacity-10
-              w-full
-              sm:w-2/5
-              rounded-full
-              bg-green-500-spotify
-            "
-          >
+          <div class="w-full rounded-full bg-opacity-10 bg-primary sm:w-2/5">
             <div
-              class="h-1.8 rounded-l-full rounded-r-full bg-green-500-spotify"
+              class="h-1.8 rounded-l-full rounded-r-full bg-primary"
               :style="{
                 width: `${Math.round(compatibilityData.compatibility)}%`,
               }"

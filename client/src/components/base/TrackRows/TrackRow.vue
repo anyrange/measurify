@@ -1,13 +1,13 @@
 <template>
   <li
-    class="hover:bg-gray-800-spotify"
-    :class="{ 'bg-gray-800-spotify': current }"
+    class="hover:bg-secondary-darker"
+    :class="{ 'bg-secondary-darker': current }"
   >
     <div class="flex flex-row items-center gap-3 rounded px-1 py-1">
       <span v-if="place !== false" class="w-6 font-normal text-base">
         {{ place }}
       </span>
-      <figure class="flex flex-1 flex-row items-center gap-3 truncate">
+      <figure class="flex flex-1 flex-row items-center gap-3">
         <base-link
           class="flex-none flex-shrink-0"
           :to="{ name: 'track', params: { trackId: track.id } }"
@@ -19,24 +19,33 @@
             :alt="track.name"
           />
         </base-link>
-        <figcaption class="truncate">
+        <figcaption class="w-full">
           <base-link
-            class="link text-sm"
+            class="link line-clamp-1 text-sm"
             :to="{ name: 'track', params: { trackId: track.id } }"
           >
             {{ track.name }}
           </base-link>
-          <div class="truncate">
-            <multi-router
-              custom-class="pointer-events-none leading-4 text-sm hover:no-underline sm:hover:underline sm:pointer-events-auto"
+          <!-- <div class="truncate"> -->
+          <div class="w-full">
+            <artists-names
+              class="
+                pointer-events-none
+                leading-4
+                text-sm
+                hover:no-underline
+                sm:hover:underline sm:pointer-events-auto
+                line-clamp-1
+              "
               :routes="track.artists"
             />
           </div>
+          <!-- </div> -->
         </figcaption>
       </figure>
-      <div v-if="track.album !== false" class="hidden flex-1 truncate md:flex">
+      <div v-if="track.album !== false" class="hidden w-full flex-1 md:flex">
         <base-link
-          class="link truncate"
+          class="link line-clamp-1"
           :to="{ name: 'album', params: { albumId: track.album.id } }"
         >
           {{ track.album.name }}
@@ -45,7 +54,7 @@
       <span class="hidden w-10 text-center lg:flex">
         {{ getDuration(track.duration_ms) }}
       </span>
-      <div v-if="plays || date" class="ml-auto mr-1 w-1/4 text-right">
+      <div v-if="plays || date" class="ml-auto mr-1 w-1/5 text-right">
         <template v-if="date">
           <slot name="date">
             <span :title="formatDate(track.played_at)">

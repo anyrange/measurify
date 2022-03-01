@@ -12,7 +12,7 @@
     <div
       class="
         h-52
-        bg-gray-700-spotify bg-opacity-20
+        bg-secondary-dark bg-opacity-20
         hover:bg-opacity-60
         flex flex-shrink-0 flex-none flex-col
         items-center
@@ -48,7 +48,7 @@
           opacity-100
           sm:opacity-0
           duration-200
-          bg-gray-700-spotify
+          bg-secondary-dark
           p-1
           rounded
           shadow-sm

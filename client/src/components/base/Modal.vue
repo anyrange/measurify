@@ -25,7 +25,7 @@
               v-show="show"
               class="
                 relative
-                bg-gray-900-spotify
+                bg-secondary-darkest
                 rounded
                 text-left
                 overflow-hidden
@@ -48,8 +48,8 @@
                   w-8
                   h-8
                   p-1
-                  text-gray-500-spotify
-                  hover:bg-gray-800-spotify
+                  text-secondary-lighter
+                  hover:bg-secondary-darker
                   rounded-full
                   duration-100
                   cursor-pointer

@@ -1,7 +1,7 @@
 <template>
   <span
     class="
-      bg-gray-700-spotify bg-opacity-50
+      bg-secondary-dark bg-opacity-50
       text-white
       rounded
       font-medium

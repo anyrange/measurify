@@ -14,7 +14,7 @@
                 w-13
                 h-13
                 rounded-full
-                bg-gray-600-spotify
+                bg-secondary-light
                 animate-pulse
               "
             >

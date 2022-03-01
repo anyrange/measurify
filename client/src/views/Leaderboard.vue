@@ -11,13 +11,13 @@
       <tab name="tracks"> Tracks </tab>
     </tabs>
   </div>
-  <ul class="w-full flex flex-col divide-gray-800-spotify divide-y">
+  <ul class="w-full flex flex-col divide-secondary-darker divide-y">
     <template v-if="!loading">
       <li v-for="(item, index) in sortedLeaderboard" :key="item.id">
         <div
           class="w-full flex flex-row items-center py-3"
           :class="{
-            'bg-gray-700-spotify rounded bg-opacity-70':
+            'bg-secondary-dark rounded bg-opacity-70':
               isAuthenticated && item.display_name === user.display_name,
           }"
         >
@@ -46,7 +46,7 @@
               >
                 {{ item.display_name }}
               </base-link>
-              <span class="font-semibold text-base text-gray-500-spotify">
+              <span class="font-semibold text-base text-secondary-lighter">
                 {{
                   mode === "minutes" ? item.listened.time : item.listened.count
                 }}

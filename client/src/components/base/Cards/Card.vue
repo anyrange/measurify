@@ -1,7 +1,7 @@
 <template>
   <div
     class="
-      bg-gray-700-spotify bg-opacity-50
+      bg-secondary-dark bg-opacity-50
       break-inside
       rounded-md
       w-auto
@@ -10,7 +10,7 @@
     "
   >
     <div class="flex flex-row items-center gap-3">
-      <span class="font-bold text-base text-green-500-spotify">
+      <span class="font-bold text-base text-primary">
         {{ formattedTitle }}
       </span>
       <slot name="title"></slot>

@@ -3,8 +3,8 @@
     <h6 class="truncate font-normal text-sm sm:text-base">
       {{ name }}
     </h6>
-    <div class="rounded-full bg-green-500-spotify bg-opacity-10">
-      <div class="h-1 rounded-l-full bg-green-500-spotify" :style="barStyle" />
+    <div class="rounded-full bg-opacity-10 bg-primary">
+      <div class="h-1 rounded-l-full bg-primary" :style="barStyle" />
     </div>
   </div>
 </template>

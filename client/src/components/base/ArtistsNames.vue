@@ -1,9 +1,8 @@
 <template>
   <template v-for="(item, index) in routes" :key="index">
     <base-link
-      class="truncate"
-      :class="customClass"
-      :to="{ name: 'artist', params: { artistId: item.id || '' } }"
+      v-bind="$attrs"
+      :to="{ name: 'artist', params: { artistId: item.id } }"
     >
       {{ item.name }}
     </base-link>
@@ -16,11 +15,6 @@ defineProps({
   routes: {
     type: Array,
     required: true,
-  },
-  customClass: {
-    type: String,
-    required: false,
-    default: "link",
   },
 });
 </script>
