@@ -30,9 +30,9 @@
           <template v-if="friend.lastPlayed">
             <span
               class="flex flex-none justify-end truncate"
-              :title="getDateFromNow(friend.lastPlayed)"
+              :title="getRealtiveTime(friend.lastPlayed)"
             >
-              {{ getDateFromNowShort(friend.lastPlayed) }}
+              {{ getShortRelativeTime(friend.lastPlayed) }}
             </span>
           </template>
         </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { getDateFromNowShort, getDateFromNow } from "@/utils";
+import { getShortRelativeTime, getRealtiveTime } from "@/utils";
 
 defineProps({
   friend: {

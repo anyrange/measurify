@@ -45,16 +45,20 @@
       <span class="w-10 lg:flex hidden text-center">
         {{ getDuration(track.duration_ms) }}
       </span>
-      <div v-if="playsOrDate !== false" class="w-1/4 ml-auto mr-1 text-right">
-        <template v-if="playsOrDate === 'date'">
-          <slot name="current-track">
+      <div v-if="plays || date" class="w-1/4 ml-auto mr-1 text-right">
+        <template v-if="date">
+          <slot name="date">
             <span :title="formatDate(track.played_at)">
-              {{ getDateFromNow(track.played_at) }}
+              {{ getRealtiveTime(track.played_at) }}
             </span>
           </slot>
         </template>
-        <span v-else-if="playsOrDate === 'plays'">
-          {{ track.plays ? `${track.plays} plays` : "not played" }}
+        <span v-if="plays">
+          {{
+            track.plays
+              ? `${track.plays} ${track.plays === 1 ? "play" : "plays"}`
+              : ""
+          }}
         </span>
       </div>
     </div>
@@ -62,7 +66,7 @@
 </template>
 
 <script setup>
-import { getDateFromNow, getDuration, formatDate } from "@/utils";
+import { getRealtiveTime, getDuration, formatDate } from "@/utils";
 
 defineProps({
   track: {
@@ -79,9 +83,15 @@ defineProps({
     required: false,
     default: false,
   },
-  playsOrDate: {
-    type: [String, Boolean],
-    required: true,
+  plays: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  date: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 </script>

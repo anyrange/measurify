@@ -5,7 +5,7 @@
       <track-row
         v-for="(item, index) in tracksList"
         :key="index"
-        plays-or-date="plays"
+        plays
         :track="{
           ...item,
           album: false,

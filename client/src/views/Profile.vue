@@ -56,7 +56,7 @@
               >
                 {{ profile.user.display_name }}
               </spotify-link>
-              <h3 class="font-light truncate">@{{ profile.user.username }}</h3>
+              <h3 class="font-light truncate">{{ profile.user.username }}</h3>
             </div>
           </div>
         </div>
@@ -92,7 +92,21 @@
           </horizontal-scroll>
         </div>
       </div>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition :name="route.meta.transition || 'fade'" mode="out-in">
+          <keep-alive>
+            <suspense>
+              <template #default>
+                <component
+                  :is="Component"
+                  :key="route.meta.usePathKey ? route.path : undefined"
+                />
+              </template>
+              <template #fallback> Loading... </template>
+            </suspense>
+          </keep-alive>
+        </transition>
+      </router-view>
     </template>
     <template v-else>
       <loading-spinner />
@@ -104,17 +118,23 @@
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import { useUserStore } from "@/stores/user.js";
-import { useProfileStore } from "@/stores/profile.js";
+import { useProfileStore } from "@/stores/profile";
+import { useFriendsStore } from "@/stores/friends";
+import { useBreakpoints } from "@/composable/useBreakpoints";
 import { createAsyncProcess } from "@/composable/useAsync";
 import { useFollow } from "@/composable/useFollow";
+import { useAuth } from "@/composable/useAuth";
 import { getProfile } from "@/api";
 
 const route = useRoute();
 const username = computed(() => route.params.username);
 
-const userStore = useUserStore();
 const profileStore = useProfileStore();
+const friendsStore = useFriendsStore();
+
+const { xlAndLarger } = useBreakpoints();
+const { isUserProfile } = useAuth();
+
 const { profile } = storeToRefs(profileStore);
 
 function updateProfile(data) {
@@ -137,15 +157,14 @@ const { followProcessGoing, toggleFollow } = useFollow({
   username: computed(() => profile.value.user.username),
   onUpdate: () => {
     profile.value.followed = !profile.value.followed;
+    if (xlAndLarger.value) {
+      friendsStore.updateFriends();
+    }
   },
 });
 
 const isOverviewPage = computed(() => {
   return route.name === "profile-overview";
-});
-
-const isUserProfile = computed(() => {
-  return profile.value.user.username === userStore.user.username;
 });
 
 const imageClass = computed(() => {

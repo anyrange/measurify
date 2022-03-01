@@ -1,11 +1,6 @@
 <template>
   <track-rows>
-    <track-row
-      v-for="(item, index) in moreTracks"
-      :key="index"
-      :track="item"
-      :plays-or-date="false"
-    />
+    <track-row v-for="(item, index) in moreTracks" :key="index" :track="item" />
   </track-rows>
 </template>
 

@@ -32,9 +32,6 @@ const routes = [
         name: "profile-overview",
       };
     },
-    meta: {
-      authRequired: true,
-    },
     children: [
       {
         path: "",
@@ -85,7 +82,6 @@ const routes = [
     name: "leaderboard",
     meta: {
       title: "Listeners Leaderboard",
-      authRequired: true,
     },
     component: () => import("@/views/Leaderboard.vue"),
   },

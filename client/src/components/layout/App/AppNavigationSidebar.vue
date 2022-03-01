@@ -40,7 +40,7 @@
         <span class="sidebar__item__title">Overview</span>
       </base-link>
 
-      <template v-if="userStore.isAuthenticated">
+      <template v-if="isAuthenticated">
         <base-link
           v-wave
           class="sidebar__item"
@@ -77,21 +77,21 @@
 <script setup>
 import { inject, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useBreakpoints } from "@vueuse/core";
 import { createAsyncProcess } from "@/composable/useAsync";
+import { useBreakpoints } from "@/composable/useBreakpoints";
 import { useUserStore } from "@/stores/user";
 import { redirect } from "@/api";
-import { BREAKPOINTS } from "@/config";
+import { useAuth } from "@/composable/useAuth";
+
+const initialHistoryLength = inject("historyLength");
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
-const breakpoints = useBreakpoints(BREAKPOINTS);
+const { isAuthenticated } = useAuth();
 
-const smallerThanMd = breakpoints.smaller("md");
-
-const initialHistoryLength = inject("historyLength");
+const { smallerThanMd } = useBreakpoints();
 
 const { loading, run: login } = createAsyncProcess(redirect);
 

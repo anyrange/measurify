@@ -19,11 +19,11 @@ api.interceptors.response.use(
     if (error.response.status === 401) {
       router.push("/");
       user.logout();
+      notify.show({
+        type: "danger",
+        message: error.response?.data?.message || "Something went wrong!",
+      });
     }
-    notify.show({
-      type: "danger",
-      message: error?.response?.data?.message || "Something went wrong!",
-    });
     return Promise.reject(error);
   }
 );
@@ -99,6 +99,12 @@ export function getMoreTracks(id) {
 }
 export function getArtist(id) {
   return api.get(`/infopage/artist/${id}`);
+}
+export function getArtistAlbums(id) {
+  return api.get(`/infopage/artist/${id}/albums`);
+}
+export function getRelatedArtists(id) {
+  return api.get(`/infopage/artist/${id}/related-artists`);
 }
 export function getAlbum(id) {
   return api.get(`/infopage/album/${id}`);

@@ -1,7 +1,7 @@
-import { dayjs } from "./dates";
+import dayjs from "@/dayjs";
 
-export const isEmpty = (str) => {
-  return !str || str.length === 0;
+export const notEmpty = (array) => {
+  return Array.isArray(array) && array.length !== 0;
 };
 
 export const debounce = (fn, delay = 0, immediate = false) => {
@@ -49,11 +49,11 @@ export const orderByDate = (array, key) => {
   );
 };
 
-export const getDateFromNow = (date) => {
+export const getRealtiveTime = (date) => {
   return dayjs(Date.parse(date)).fromNow();
 };
 
-export const getDateFromNowShort = (date) => {
+export const getShortRelativeTime = (date) => {
   return dayjs(Date.parse(date)).locale("s-en").fromNow(true);
 };
 

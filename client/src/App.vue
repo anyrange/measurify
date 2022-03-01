@@ -10,7 +10,7 @@
       >
         <div class="flex-1 flex overflow-y-hidden">
           <app-navigation-sidebar />
-          <main class="flex-1 flex flex-col bg-gray-900-spotify">
+          <main class="flex-1 flex flex-col bg-gray-900-spotify relative">
             <div
               id="content-window"
               class="
@@ -25,7 +25,7 @@
               <router-view />
             </div>
           </main>
-          <app-friends-sidebar v-if="xlAndLarger" />
+          <app-friends-sidebar :show="xlAndLarger" />
         </div>
       </div>
     </template>
@@ -38,14 +38,11 @@ import { provide } from "vue";
 import { useNavigator } from "@/composable/useNavigator";
 import { createAsyncProcess } from "@/composable/useAsync";
 import { useUserStore } from "@/stores/user";
-import { useBreakpoints } from "@vueuse/core";
-import { BREAKPOINTS } from "@/config";
+import { useBreakpoints } from "@/composable/useBreakpoints";
 
 const userStore = useUserStore();
 const { isMobile } = useNavigator();
-const breakpoints = useBreakpoints(BREAKPOINTS);
-
-const xlAndLarger = breakpoints.greater("xl");
+const { xlAndLarger } = useBreakpoints();
 
 provide("historyLength", window.history.length);
 

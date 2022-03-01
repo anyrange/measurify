@@ -14,15 +14,13 @@
         relative
       "
     >
-      <div
+      <skeleton
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
-        class="w-32 h-32 object-cover shadow-lg bg-gray-800-spotify"
-      >
-        &nbsp;
-      </div>
-      <span class="bg-gray-600-spotify w-24 h-2 rounded mt-1.8"> &nbsp; </span>
+        class="w-32 h-32 shadow-lg"
+      />
+      <skeleton class="w-24 h-3 rounded mt-2" />
     </div>
   </div>
 </template>

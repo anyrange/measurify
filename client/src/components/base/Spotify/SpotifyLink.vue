@@ -3,10 +3,6 @@
     <h1 class="text-xl sm:text-2xl font-medium text-white truncate">
       <slot />
     </h1>
-    <!-- <Link :to="href"> 
-    
-    </Link>
-     -->
     <a :href="link" class="appearance-none" target="_blank" rel="no-referrer">
       <icon
         class="
@@ -22,14 +18,6 @@
       />
     </a>
   </div>
-
-  <!-- <a
-    href="https://open.spotify.com/user/qmqg3caywrap0z5d7zsyosnvz"
-    class="appearance-none"
-    target="_blank"
-    rel="no-referrer"
-    >
-    </a> -->
 </template>
 
 <script setup>

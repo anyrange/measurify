@@ -1,25 +1,12 @@
 <template>
   <template v-if="!loading">
+    <infopage-header :item="albumData.album" type="album" />
     <container>
-      <figure class="responsive-picture">
-        <base-img
-          parallax
-          :src="albumData.album.image"
-          :alt="albumData.album.name"
-          image-type="album"
-          class="responsive-picture__image"
-        />
-        <figcaption class="responsive-picture__title">
-          <spotify-link
-            :link="`https://open.spotify.com/album/${albumData.album.id}`"
-          >
-            {{ albumData.album.name }}
-          </spotify-link>
-        </figcaption>
-      </figure>
       <cards>
         <card v-if="albumData.isLiked" title="❤">liked</card>
         <card :title="albumData.total_tracks">tracks amount</card>
+        <card :title="albumData.label">record label</card>
+        <card :title="albumData.release_date">released</card>
       </cards>
       <container-item>
         <container-item-label>Audio features</container-item-label>
@@ -87,13 +74,12 @@ async function fetchAlbum() {
   updateAlbum(null);
   if (!albumId.value) return;
 
-  const [data, albumArtists, albumContent] = await Promise.all([
+  const [data, albumArtists] = await Promise.all([
     getAlbum(albumId.value),
     getAlbumArtists(albumId.value),
   ]);
 
   data.album.artists = albumArtists;
-  data.content = albumContent;
 
   updateAlbum(data);
 

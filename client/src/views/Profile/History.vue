@@ -18,7 +18,7 @@
             <track-row-skeleton />
           </template>
           <template v-else>
-            <track-row :track="item" plays-or-date="date" />
+            <track-row :track="item" date />
           </template>
         </div>
       </track-rows>

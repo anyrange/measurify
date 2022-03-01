@@ -1,22 +1,7 @@
 <template>
   <template v-if="!loading">
+    <infopage-header :item="trackData.track" type="track" />
     <container>
-      <figure class="responsive-picture">
-        <base-img
-          parallax
-          :src="trackData.track.image"
-          :alt="trackData.track.name"
-          image-type="track"
-          class="responsive-picture__image"
-        />
-        <figcaption class="responsive-picture__title">
-          <spotify-link
-            :link="`https://open.spotify.com/track/${trackData.track.id}`"
-          >
-            {{ trackData.track.name }}
-          </spotify-link>
-        </figcaption>
-      </figure>
       <cards>
         <card v-if="trackData.isLiked" title="❤">liked</card>
         <card :title="getDuration(trackData.duration_ms)">track length</card>

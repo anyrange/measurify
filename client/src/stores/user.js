@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", () => {
   }
   async function logout() {
     try {
-      router.push({ name: "home" });
+      await router.push({ name: "home" });
       await apiLogout();
       user.value = null;
     } catch (error) {

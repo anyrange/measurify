@@ -1,24 +1,18 @@
 <template>
-  <a
-    v-if="typeof to == 'string' && to.startsWith('http')"
-    :href="to"
-    target="_blank"
-    rel="no-referrer"
-    class="text-white"
-    v-bind="$attrs"
-  >
-    <slot />
-  </a>
-  <router-link v-else :to="to">
+  <router-link :aria-label="to.name" :to="to" v-bind="attrs">
     <slot />
   </router-link>
 </template>
 
 <script setup>
+import { useAttrs } from "vue";
+
 defineProps({
   to: {
     type: [String, Object],
     required: true,
   },
 });
+
+const attrs = useAttrs();
 </script>
