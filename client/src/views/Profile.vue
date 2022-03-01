@@ -36,7 +36,7 @@
               image-type="profile"
               class="h-full w-full rounded-full object-cover"
             />
-            <template v-if="!isUserProfile">
+            <template v-if="!isUserProfile && isOverviewPage">
               <div class="absolute bottom-0 right-0">
                 <base-button
                   shape="circle"
