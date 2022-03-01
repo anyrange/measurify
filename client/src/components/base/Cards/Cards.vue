@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full masonry">
+  <div class="masonry w-full">
     <slot></slot>
   </div>
 </template>

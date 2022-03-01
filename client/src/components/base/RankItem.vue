@@ -1,7 +1,7 @@
 <template>
-  <div class="flex gap-3 items-center p-1 pr-3 rounded bg-gray-800-spotify">
+  <div class="flex items-center gap-3 rounded bg-gray-800-spotify p-1 pr-3">
     <base-link
-      class="link rounded flex-none"
+      class="link flex-none rounded"
       :to="{
         name: type,
         params: {

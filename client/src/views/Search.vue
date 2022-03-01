@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1 my-4">
+  <div class="my-4 flex flex-col gap-1">
     <h1 class="h-title">Search</h1>
     <h2 class="h-subtitle">We'll try to find everything you're looking for</h2>
   </div>

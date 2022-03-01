@@ -1,9 +1,9 @@
 <template>
-  <div class="flex flex-col gap-2 w-auto text-white">
-    <h6 class="text-sm sm:text-base font-normal truncate">
+  <div class="w-auto flex flex-col gap-2 text-white">
+    <h6 class="truncate font-normal text-sm sm:text-base">
       {{ name }}
     </h6>
-    <div class="bg-opacity-10 rounded-full bg-green-500-spotify">
+    <div class="rounded-full bg-green-500-spotify bg-opacity-10">
       <div class="h-1 rounded-l-full bg-green-500-spotify" :style="barStyle" />
     </div>
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid lg:grid-cols-4 lg:grid-rows-2 grid-cols-2 grid-rows-4 gap-2">
+  <div class="grid grid-cols-2 grid-rows-4 gap-2 lg:grid-cols-4 lg:grid-rows-2">
     <audio-feature
       v-for="(feature, index) in formatedFeatures"
       :key="index"

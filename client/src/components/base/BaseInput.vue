@@ -3,7 +3,7 @@
     <label
       v-if="label.length"
       :for="label"
-      class="text-gray-300 text-base font-normal"
+      class="font-normal text-base text-gray-300"
     >
       {{ label }}
     </label>

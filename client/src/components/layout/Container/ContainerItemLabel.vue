@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between">
-    <div class="text-xl text-white font-medium">
+    <div class="font-medium text-white text-xl">
       <slot></slot>
     </div>
     <div>

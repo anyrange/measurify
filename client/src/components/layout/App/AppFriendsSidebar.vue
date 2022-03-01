@@ -1,13 +1,13 @@
 <template>
   <template v-if="showFriends">
-    <aside class="hidden md:flex flex-col w-60 px-2">
-      <div class="h-12 flex items-center border-b default-border text-white">
-        <div class="flex w-full justify-between items-center">
-          <span class="text-lg font-medium">Friend Activity</span>
+    <aside class="hidden w-60 flex-col px-2 md:flex">
+      <div class="default-border h-12 flex items-center border-b text-white">
+        <div class="w-full flex items-center justify-between">
+          <span class="font-medium text-lg">Friend Activity</span>
           <base-button shape="circle">
             <base-link :to="{ name: 'search' }">
               <icon
-                class="w-4 h-4 hover:cursor-pointer block"
+                class="block h-4 w-4 hover:cursor-pointer"
                 icon="ant-design:user-add-outlined"
               />
             </base-link>
@@ -15,7 +15,7 @@
         </div>
       </div>
       <template v-if="isAuthenticated">
-        <ul class="overflow-y-auto h-full">
+        <ul class="h-full overflow-y-auto">
           <template v-if="!friends">
             <loading-spinner />
           </template>
@@ -33,7 +33,7 @@
         </ul>
       </template>
       <template v-else>
-        <p class="mt-2 text-white font-light text-center">
+        <p class="mt-2 font-light text-center text-white">
           Sign In with your Spotify account to see your spotiworm followers
           activity
         </p>

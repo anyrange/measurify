@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  "@alexanderniebuhr/prettier-plugin-unocss": ^0.0.4
   "@iconify/vue": ^3.1.3
   "@rushstack/eslint-patch": ^1.1.0
   "@vitejs/plugin-vue": ^1.10.2
@@ -70,6 +71,7 @@ dependencies:
   workbox-window: 6.5.0
 
 devDependencies:
+  "@alexanderniebuhr/prettier-plugin-unocss": 0.0.4
   "@iconify/vue": 3.1.3_vue@3.2.31
   "@rushstack/eslint-patch": 1.1.0
   "@vitejs/plugin-vue": 1.10.2_vite@2.8.4
@@ -87,6 +89,17 @@ devDependencies:
   windicss: 3.5.0
 
 packages:
+  /@alexanderniebuhr/prettier-plugin-unocss/0.0.4:
+    resolution:
+      {
+        integrity: sha512-uuuNFjp+WNGsP7V5C7F7uot4a8imccsRf9DYXuQquzXzxLEfzWfqYy/cZUNUk4+fOpLbXGlPUxrJvPAcPau0Ow==,
+      }
+    dependencies:
+      "@unocss/preset-uno": 0.25.1
+      import-fresh: 3.3.0
+      prettier: 2.5.1
+    dev: true
+
   /@antfu/utils/0.4.0:
     resolution:
       {
@@ -1803,6 +1816,43 @@ packages:
       {
         integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==,
       }
+
+  /@unocss/core/0.25.1:
+    resolution:
+      {
+        integrity: sha512-YYX40KA2rhsm6aTKTGpE0bi9E7RoAcuqMo/L+f6DmBSwtTXdflckoa903rxgOa6HOLH9fXgOJP9jHt3O/5ysPA==,
+      }
+    dev: true
+
+  /@unocss/preset-mini/0.25.1:
+    resolution:
+      {
+        integrity: sha512-NBfa2/t0TIAT//L8OVskDDQJ3OREjLwDzWMBNO86rvM0VPCIBvCmkKuFR3zxQcWK+aegISeScJA9Zcdk3qJjHA==,
+      }
+    dependencies:
+      "@unocss/core": 0.25.1
+    dev: true
+
+  /@unocss/preset-uno/0.25.1:
+    resolution:
+      {
+        integrity: sha512-e5lvCF5GD52nD/7l/k4TJedw5AgsVGTs/6rKxE9DP0G5oGszKjx+oHLzoYvCP2aQAcallnZ/CxXTbOvqCQCVxQ==,
+      }
+    dependencies:
+      "@unocss/core": 0.25.1
+      "@unocss/preset-mini": 0.25.1
+      "@unocss/preset-wind": 0.25.1
+    dev: true
+
+  /@unocss/preset-wind/0.25.1:
+    resolution:
+      {
+        integrity: sha512-y5gkCCNiGsonqI8OOmtMVXgEMjPDtr+ihxnS3oDptYR4CcBE1cREhLgZocChHHQNEMN9Qx2GsoMN9l6RsoExiA==,
+      }
+    dependencies:
+      "@unocss/core": 0.25.1
+      "@unocss/preset-mini": 0.25.1
+    dev: true
 
   /@vitejs/plugin-vue/1.10.2_vite@2.8.4:
     resolution:
@@ -5669,6 +5719,15 @@ packages:
     resolution:
       {
         integrity: sha512-DsEPLY1dE5HF3BxCRBmD4uYZ+5DCbvatnolqTqcxEgKVZnL2kUfyu7b8pPQ5+hTBkdhU9SLUmK0/pHb07RE4WQ==,
+      }
+    engines: { node: ">=10.13.0" }
+    hasBin: true
+    dev: true
+
+  /prettier/2.5.1:
+    resolution:
+      {
+        integrity: sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==,
       }
     engines: { node: ">=10.13.0" }
     hasBin: true

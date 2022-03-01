@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1 my-4">
+  <div class="my-4 flex flex-col gap-1">
     <h1 class="h-title">Leaderboard</h1>
     <h2 class="h-subtitle">
       This is just a leaderboard, you can sort it by 'minutes' or 'tracks'
@@ -11,27 +11,27 @@
       <tab name="tracks"> Tracks </tab>
     </tabs>
   </div>
-  <ul class="flex flex-col w-full divide-gray-800-spotify divide-y">
+  <ul class="w-full flex flex-col divide-gray-800-spotify divide-y">
     <template v-if="!loading">
       <li v-for="(item, index) in sortedLeaderboard" :key="item.id">
         <div
-          class="w-full py-3 flex flex-row items-center"
+          class="w-full flex flex-row items-center py-3"
           :class="{
             'bg-gray-700-spotify rounded bg-opacity-70':
               isAuthenticated && item.display_name === user.display_name,
           }"
         >
-          <span class="flex flex-none w-10 ml-4 text-lg font-extrabold">
+          <span class="ml-4 w-10 flex flex-none font-extrabold text-lg">
             {{ index + 1 }}
           </span>
           <div class="flex flex-row items-center">
-            <div class="flex flex-col flex-none">
+            <div class="flex flex-none flex-col">
               <base-link
                 :to="{ name: 'profile', params: { username: item.username } }"
               >
                 <div class="relative">
                   <base-img
-                    class="text-white object-cover w-13 h-13 rounded-full"
+                    class="h-13 w-13 rounded-full object-cover text-white"
                     image-type="profile"
                     :src="item.avatar"
                     :alt="item.display_name"
@@ -39,14 +39,14 @@
                 </div>
               </base-link>
             </div>
-            <div class="flex flex-col ml-3 truncate">
+            <div class="ml-3 flex flex-col truncate">
               <base-link
-                class="text-base text-white truncate hover:underline"
+                class="truncate text-base text-white hover:underline"
                 :to="{ name: 'profile', params: { username: item.username } }"
               >
                 {{ item.display_name }}
               </base-link>
-              <span class="text-base font-semibold text-gray-500-spotify">
+              <span class="font-semibold text-base text-gray-500-spotify">
                 {{
                   mode === "minutes" ? item.listened.time : item.listened.count
                 }}

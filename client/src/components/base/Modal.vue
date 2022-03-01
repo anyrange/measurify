@@ -1,25 +1,25 @@
 <template>
   <teleport to="body">
     <transition
-      enter-active-class="transition ease-out duration-200 transform"
+      enter-active-class="transform transition duration-200 ease-out"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-100 transform"
+      leave-active-class="transform transition duration-100 ease-in"
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-show="show" class="absolute inset-0 bg-black bg-opacity-40 z-50">
+      <div v-show="show" class="absolute inset-0 z-50 bg-black bg-opacity-40">
         <div
           class="fixed inset-0 flex items-center justify-center"
           @click="close"
         >
           <transition
-            enter-active-class="transition ease-out duration-200 transform"
-            enter-from-class="opacity-0 translate-y-10 scale-95"
-            enter-to-class="opacity-100 translate-y-0 scale-100"
-            leave-active-class="ease-in duration-100"
-            leave-from-class="opacity-100 translate-y-0 scale-100"
-            leave-to-class="opacity-50 translate-y-10 scale-50"
+            enter-active-class="transform transition duration-200 ease-out"
+            enter-from-class="translate-y-10 scale-95 opacity-0"
+            enter-to-class="translate-y-0 scale-100 opacity-100"
+            leave-active-class="duration-100 ease-in"
+            leave-from-class="translate-y-0 scale-100 opacity-100"
+            leave-to-class="translate-y-10 scale-50 opacity-50"
           >
             <div
               v-show="show"

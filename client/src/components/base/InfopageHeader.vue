@@ -28,13 +28,13 @@
         sm:w-40 sm:h-40 sm:rounded-full sm:bg-local sm:bg-cover sm:mb-4
       "
     />
-    <div class="w-full sm:border-none border-b default-border md:mb-0 mb-4">
+    <div class="default-border mb-4 w-full border-b sm:border-none md:mb-0">
       <figcaption
-        class="relative mx-4 mb-2 sm:m-0 md:text-left sm:text-center text-left"
+        class="relative mx-4 mb-2 text-left sm:m-0 md:text-left sm:text-center"
       >
         <h1
           id="infopage-title"
-          class="text-xl sm:text-2xl font-medium text-white line-clamp-2"
+          class="line-clamp-2 font-medium text-white text-xl sm:text-2xl"
         >
           {{ item.name }}
         </h1>

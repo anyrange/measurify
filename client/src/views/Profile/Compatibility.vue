@@ -24,7 +24,7 @@
             "
           >
             <div
-              class="h-1.8 rounded-l-full bg-green-500-spotify rounded-r-full"
+              class="h-1.8 rounded-l-full rounded-r-full bg-green-500-spotify"
               :style="{
                 width: `${Math.round(compatibilityData.compatibility)}%`,
               }"
@@ -47,7 +47,7 @@
         <container-item-label>
           Artists Rank (Yours/Theirs)
         </container-item-label>
-        <div class="flex gap-2 flex-wrap">
+        <div class="flex flex-wrap gap-2">
           <template
             v-for="(item, index) in compatibilityData.artists"
             :key="index"
@@ -60,7 +60,7 @@
         <container-item-label>
           Tracks Rank (Yours/Theirs)
         </container-item-label>
-        <div class="flex gap-2 flex-wrap">
+        <div class="flex flex-wrap gap-2">
           <template
             v-for="(item, index) in compatibilityData.tracks"
             :key="index"

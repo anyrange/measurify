@@ -23,7 +23,7 @@
         class="notify-close"
         @click="closeNotification(notification)"
       >
-        <icon class="w-6 h-6" icon="ic:round-close" />
+        <icon class="h-6 w-6" icon="ic:round-close" />
       </span>
     </div>
   </div>

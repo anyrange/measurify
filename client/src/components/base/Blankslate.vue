@@ -1,7 +1,7 @@
 <template>
-  <div class="text-center w-full">
+  <div class="w-full text-center">
     <div class="mt-1 text-base">
-      <span class="text-white font-semibold"> Ooops </span>
+      <span class="font-semibold text-white"> Ooops </span>
       <p class="font-normal">
         <slot>{{ message }}</slot>
       </p>

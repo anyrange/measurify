@@ -28,7 +28,7 @@
             <track-row :track="currentTrack" current date>
               <template #date>
                 <figure
-                  class="flex flex-row gap-1 items-center justify-end"
+                  class="flex flex-row items-center justify-end gap-1"
                   title="now"
                 >
                   <base-img :src="now_playing" alt="Listening Now" />

@@ -18,9 +18,9 @@
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
-        class="w-32 h-32 shadow-lg"
+        class="h-32 w-32 shadow-lg"
       />
-      <skeleton class="w-24 h-3 rounded mt-2" />
+      <skeleton class="mt-2 h-3 w-24 rounded" />
     </div>
   </div>
 </template>

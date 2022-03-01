@@ -2,9 +2,9 @@
   <teleport to="body">
     <div class="notifications-bottom-left">
       <transition-group
-        enter-to-class="opacity-100 scale-100"
-        enter-active-class="transition ease-out duration-150 transform opacity-0 scale-75"
-        leave-active-class="transition ease-in duration-150 transform opacity-0 scale-75"
+        enter-to-class="scale-100 opacity-100"
+        enter-active-class="scale-75 transform opacity-0 transition duration-150 ease-out"
+        leave-active-class="scale-75 transform opacity-0 transition duration-150 ease-in"
       >
         <notification
           v-for="notification in notifications"

@@ -3,17 +3,17 @@
     class="hover:bg-gray-800-spotify"
     :class="{ 'bg-gray-800-spotify': current }"
   >
-    <div class="flex flex-row items-center rounded gap-3 px-1 py-1">
-      <span v-if="place !== false" class="w-6 text-base font-normal">
+    <div class="flex flex-row items-center gap-3 rounded px-1 py-1">
+      <span v-if="place !== false" class="w-6 font-normal text-base">
         {{ place }}
       </span>
-      <figure class="flex flex-row flex-1 truncate items-center gap-3">
+      <figure class="flex flex-1 flex-row items-center gap-3 truncate">
         <base-link
-          class="flex-shrink-0 flex-none"
+          class="flex-none flex-shrink-0"
           :to="{ name: 'track', params: { trackId: track.id } }"
         >
           <base-img
-            class="w-12 h-12 object-cover"
+            class="h-12 w-12 object-cover"
             image-type="track"
             :src="track.image"
             :alt="track.name"
@@ -28,24 +28,24 @@
           </base-link>
           <div class="truncate">
             <multi-router
-              custom-class="text-sm leading-4 hover:no-underline sm:hover:underline pointer-events-none sm:pointer-events-auto"
+              custom-class="pointer-events-none leading-4 text-sm hover:no-underline sm:hover:underline sm:pointer-events-auto"
               :routes="track.artists"
             />
           </div>
         </figcaption>
       </figure>
-      <div v-if="track.album !== false" class="flex-1 md:flex hidden truncate">
+      <div v-if="track.album !== false" class="hidden flex-1 truncate md:flex">
         <base-link
-          class="truncate link"
+          class="link truncate"
           :to="{ name: 'album', params: { albumId: track.album.id } }"
         >
           {{ track.album.name }}
         </base-link>
       </div>
-      <span class="w-10 lg:flex hidden text-center">
+      <span class="hidden w-10 text-center lg:flex">
         {{ getDuration(track.duration_ms) }}
       </span>
-      <div v-if="plays || date" class="w-1/4 ml-auto mr-1 text-right">
+      <div v-if="plays || date" class="ml-auto mr-1 w-1/4 text-right">
         <template v-if="date">
           <slot name="date">
             <span :title="formatDate(track.played_at)">

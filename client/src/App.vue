@@ -5,12 +5,12 @@
     </template>
     <template v-else>
       <div
-        class="flex flex-col h-screen text-sm text-gray-500-spotify"
+        class="h-screen flex flex-col text-gray-500-spotify text-sm"
         :class="{ 'custom-scrollbar': !isMobile }"
       >
-        <div class="flex-1 flex overflow-y-hidden">
+        <div class="flex flex-1 overflow-y-hidden">
           <app-navigation-sidebar />
-          <main class="flex-1 flex flex-col bg-gray-900-spotify">
+          <main class="flex flex-1 flex-col bg-gray-900-spotify">
             <div
               id="content-window"
               class="

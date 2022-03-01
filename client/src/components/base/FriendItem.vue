@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row gap-2 items-center w-full">
+  <div class="w-full flex flex-row items-center gap-2">
     <base-link
       :to="{ name: 'profile', params: { username: friend.username } }"
       class="flex-none rounded-full"
@@ -18,8 +18,8 @@
         image-type="profile"
       />
     </base-link>
-    <div class="flex flex-col w-full">
-      <div class="flex w-full gap-2 items-center justify-between">
+    <div class="w-full flex flex-col">
+      <div class="w-full flex items-center justify-between gap-2">
         <base-link
           :to="{ name: 'profile', params: { username: friend.username } }"
           class="link line-clamp-1"
@@ -42,7 +42,7 @@
                 trackId: friend.lastTrack.id,
               },
             }"
-            class="flex w-full hover:underline"
+            class="w-full flex hover:underline"
           >
             <span class="line-clamp-1">
               {{ friend.lastTrack.name }}

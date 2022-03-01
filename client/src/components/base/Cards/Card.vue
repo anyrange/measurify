@@ -10,12 +10,12 @@
     "
   >
     <div class="flex flex-row items-center gap-3">
-      <span class="text-green-500-spotify text-base font-bold">
+      <span class="font-bold text-base text-green-500-spotify">
         {{ formattedTitle }}
       </span>
       <slot name="title"></slot>
     </div>
-    <span class="text-white text-sm">
+    <span class="text-sm text-white">
       <slot />
     </span>
   </div>

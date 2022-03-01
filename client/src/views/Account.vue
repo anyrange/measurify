@@ -1,6 +1,6 @@
 <template>
-  <h1 class="h-title my-4">Account</h1>
-  <div class="md:w-full lg:w-1/2 2xl:w-2/6 flex flex-col gap-4">
+  <h1 class="my-4 h-title">Account</h1>
+  <div class="flex flex-col gap-4 md:w-full lg:w-1/2 2xl:w-2/6">
     <profile-badge />
     <template v-if="!loading">
       <base-input
@@ -22,7 +22,7 @@
     <template v-else>
       <field-skeleton />
     </template>
-    <div class="flex items-end justify-between w-full">
+    <div class="w-full flex items-end justify-between">
       <div class="w-2/4">
         <template v-if="!loading">
           <base-select

@@ -8,7 +8,7 @@
     v-bind="$attrs"
   >
     <template v-if="loading">
-      <span class="text-center justify-center flex">
+      <span class="flex justify-center text-center">
         <icon class="animate-spin" :class="spinnerClass" icon="gg:spinner" />
       </span>
     </template>

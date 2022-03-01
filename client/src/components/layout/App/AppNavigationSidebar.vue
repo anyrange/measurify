@@ -1,11 +1,11 @@
 <template>
   <aside>
-    <div class="px-2 md:flex flex-row hidden text-white">
-      <div class="h-12 flex items-center border-b default-border w-full">
-        <div class="px-2 text-lg font-medium text-white">spotiworm</div>
+    <div class="hidden flex-row px-2 text-white md:flex">
+      <div class="default-border h-12 w-full flex items-center border-b">
+        <div class="px-2 font-medium text-lg text-white">spotiworm</div>
       </div>
     </div>
-    <nav class="mt-2 sidebar" :class="[{ 'items-center': smallerThanMd }]">
+    <nav class="sidebar mt-2" :class="[{ 'items-center': smallerThanMd }]">
       <template v-if="!userStore.isAuthenticated">
         <div class="sidebar__item">
           <base-button
@@ -16,7 +16,7 @@
             @click="login"
           >
             <template v-if="smallerThanMd">
-              <icon class="w-6 h-6" icon="fa6-brands:spotify" />
+              <icon class="h-6 w-6" icon="fa6-brands:spotify" />
             </template>
             <template v-else> Log in with Spotify </template>
           </base-button>

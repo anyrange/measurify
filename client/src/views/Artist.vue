@@ -30,7 +30,7 @@
           >
             times
             <span
-              class="text-green-500-spotify font-bold cursor-pointer"
+              class="cursor-pointer font-bold text-green-500-spotify"
               @click="
                 currentItem = rate[0];
                 modalOpened = true;
@@ -48,7 +48,7 @@
           <modal :show="modalOpened" @close="modalOpened = false">
             <div class="flex flex-col gap-3 p-3">
               <div class="flex flex-col gap-1">
-                <h3 class="sm:text-2xl text-xl font-semibold">
+                <h3 class="font-semibold text-xl sm:text-2xl">
                   Most streamed tracks
                 </h3>
                 <span class="text-gray-500-spotify">

@@ -11,6 +11,7 @@
   >
     <div
       class="
+        h-52
         bg-gray-700-spotify bg-opacity-20
         hover:bg-opacity-60
         flex flex-shrink-0 flex-none flex-col
@@ -27,12 +28,14 @@
         :src="item.image"
         :alt="item.name"
         :image-type="type"
-        class="w-32 h-32 object-cover shadow-lg"
+        class="h-32 w-32 object-cover shadow-lg"
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
       />
-      <span class="text-white text-sm font-medium truncate w-32 text-center">
+      <span
+        class="line-clamp-2 w-32 font-medium text-center text-sm text-white"
+      >
         {{ item.name }}
       </span>
       <div

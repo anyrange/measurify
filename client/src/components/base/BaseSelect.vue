@@ -3,11 +3,11 @@
     <label
       v-if="label.length"
       :for="label"
-      class="text-gray-300 text-base font-normal"
+      class="font-normal text-base text-gray-300"
     >
       {{ label }}
     </label>
-    <div class="relative inline-block w-full">
+    <div class="relative w-full inline-block">
       <select
         :id="label"
         v-model="value"
@@ -45,7 +45,7 @@
           pointer-events-none
         "
       >
-        <icon class="w-4 h-4" icon="ic:round-keyboard-arrow-down" />
+        <icon class="h-4 w-4" icon="ic:round-keyboard-arrow-down" />
       </div>
     </div>
   </div>

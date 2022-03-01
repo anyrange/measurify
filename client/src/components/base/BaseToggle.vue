@@ -3,12 +3,12 @@
     <label
       v-if="label"
       :for="label"
-      class="text-gray-300 text-base font-normal mb-2"
+      class="mb-2 font-normal text-base text-gray-300"
     >
       {{ label }}
     </label>
-    <div class="flex items-center group">
-      <div class="relative inline-block w-12 mr-2 align-middle select-none">
+    <div class="group flex items-center">
+      <div class="relative mr-2 w-12 inline-block select-none align-middle">
         <input
           id="toggle"
           type="checkbox"

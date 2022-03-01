@@ -15,20 +15,20 @@
       { 'sm:w-auto w-full ': !fixed },
     ]"
   >
-    <div class="h-14 sm:h-12 -px-3 sm:-px-6">
-      <div class="flex h-full w-full justify-between items-center">
+    <div class="-px-3 h-14 sm:h-12 sm:-px-6">
+      <div class="h-full w-full flex items-center justify-between">
         <div class="flex items-center gap-1">
           <slot name="left">
             <base-button shape="circle" @click="goBack">
               <icon
-                class="w-6 h-6 block text-white"
+                class="block h-6 w-6 text-white"
                 :icon="
                   showBackButton ? 'ic:baseline-arrow-back' : 'ic:round-home'
                 "
               />
             </base-button>
           </slot>
-          <span class="text-white text-lg w-full line-clamp-1">
+          <span class="line-clamp-1 w-full text-lg text-white">
             <slot name="title"> </slot>
           </span>
         </div>

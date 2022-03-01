@@ -1,7 +1,7 @@
 <template>
   <ul
     id="horizontal-scrollbar"
-    class="horizontal-scroll-wrapper w-full sm:mx-0 -mx-4 px-4 sm:px-0"
+    class="-mx-4 horizontal-scroll-wrapper w-full px-4 sm:mx-0 sm:px-0"
   >
     <slot />
   </ul>

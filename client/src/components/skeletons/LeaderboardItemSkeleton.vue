@@ -1,11 +1,10 @@
 <template>
-  <div class="w-full py-3 flex flex-row items-center">
-    <span class="flex flex-none w-10 ml-4 text-lg font-extrabold">
-      <!-- <skeleton class="w-3 h-3 rounded-full" /> -->
+  <div class="w-full flex flex-row items-center py-3">
+    <span class="ml-4 w-10 flex flex-none font-extrabold text-lg">
       {{ props.place }}
     </span>
     <div class="flex flex-row items-center">
-      <div class="flex flex-col flex-none">
+      <div class="flex flex-none flex-col">
         <div>
           <div class="relative">
             <div
@@ -24,9 +23,9 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-col gap-2 ml-3 truncate">
-        <skeleton class="w-18 h-3 rounded" />
-        <skeleton class="w-6 h-4 rounded" />
+      <div class="ml-3 flex flex-col gap-2 truncate">
+        <skeleton class="h-3 w-18 rounded" />
+        <skeleton class="h-4 w-6 rounded" />
       </div>
     </div>
   </div>

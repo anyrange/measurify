@@ -1,27 +1,27 @@
 <template>
   <div class="pagination">
     <button
-      class="pagination-item default-focus"
+      class="default-focus pagination-item"
       type="button"
       :disabled="isInFirstPage"
       aria-label="Go to first page"
       @click="onClickFirstPage"
     >
-      <icon class="icon w-5 h-5" icon="ic:round-keyboard-double-arrow-left" />
+      <icon class="icon h-5 w-5" icon="ic:round-keyboard-double-arrow-left" />
     </button>
     <button
-      class="pagination-item default-focus"
+      class="default-focus pagination-item"
       type="button"
       :disabled="isInFirstPage"
       aria-label="Go to previous page"
       @click="onClickPreviousPage"
     >
-      <icon class="icon w-5 h-5" icon="ic:round-keyboard-arrow-left" />
+      <icon class="icon h-5 w-5" icon="ic:round-keyboard-arrow-left" />
     </button>
     <button
       v-for="(page, index) in pages"
       :key="index"
-      class="pagination-item default-focus"
+      class="default-focus pagination-item"
       type="button"
       :disabled="page.isDisabled"
       :class="{ active: isPageActive(page.name) }"
@@ -31,22 +31,22 @@
       {{ page.name }}
     </button>
     <button
-      class="pagination-item default-focus"
+      class="default-focus pagination-item"
       type="button"
       :disabled="isInLastPage"
       aria-label="Go to next page"
       @click="onClickNextPage"
     >
-      <icon class="icon w-5 h-5" icon="ic:round-keyboard-arrow-right" />
+      <icon class="icon h-5 w-5" icon="ic:round-keyboard-arrow-right" />
     </button>
     <button
-      class="pagination-item default-focus"
+      class="default-focus pagination-item"
       type="button"
       :disabled="isInLastPage"
       aria-label="Go to last page"
       @click="onClickLastPage"
     >
-      <icon class="icon w-5 h-5" icon="ic:round-keyboard-double-arrow-right" />
+      <icon class="icon h-5 w-5" icon="ic:round-keyboard-double-arrow-right" />
     </button>
   </div>
 </template>

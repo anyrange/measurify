@@ -16,7 +16,7 @@
             <base-button shape="circle">
               <base-link :to="{ name: 'account' }">
                 <icon
-                  class="w-7 h-7 hover:cursor-pointer block text-white"
+                  class="block h-7 w-7 text-white hover:cursor-pointer"
                   icon="ic:baseline-settings"
                 />
               </base-link>
@@ -24,7 +24,7 @@
           </template>
         </template>
       </app-bar>
-      <div class="w-full flex flex-col gap-2 -mb-1.5">
+      <div class="-mb-1.5 w-full flex flex-col gap-2">
         <div class="w-full flex flex-row items-center gap-2.5">
           <div
             class="relative flex flex-none duration-300"
@@ -34,7 +34,7 @@
               :src="profile.user.avatar"
               :alt="profile.user.username"
               image-type="profile"
-              class="object-cover rounded-full w-full h-full"
+              class="h-full w-full rounded-full object-cover"
             />
             <template v-if="!isUserProfile">
               <div class="absolute bottom-0 right-0">
@@ -47,7 +47,7 @@
                   @click="toggleFollow"
                 >
                   <icon
-                    class="w-3 h-3"
+                    class="h-3 w-3"
                     :icon="
                       profile.followed ? 'akar-icons:cross' : 'akar-icons:plus'
                     "
@@ -70,12 +70,12 @@
           >
             <div class="flex flex-col">
               <h1
-                class="text-xl sm:text-2xl font-medium text-white truncate"
+                class="truncate font-medium text-white text-xl sm:text-2xl"
                 id="infopage-title"
               >
                 {{ profile.user.display_name }}
               </h1>
-              <h3 class="font-light truncate">{{ profile.user.username }}</h3>
+              <h3 class="truncate font-light">{{ profile.user.username }}</h3>
             </div>
           </div>
         </div>
