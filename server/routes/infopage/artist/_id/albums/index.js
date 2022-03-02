@@ -19,10 +19,13 @@ export default async function (fastify) {
     async function (req, reply) {
       const artistID = req.params.id;
 
-      const token = await fastify.getRandomToken();
+      const [token, country] = await Promise.all([
+        fastify.getRandomToken(),
+        fastify.getCountry(req.session.get("id")),
+      ]);
 
       const albums = await fastify.spotifyAPI({
-        route: `artists/${artistID}/albums?include_groups=album&market=US`,
+        route: `artists/${artistID}/albums?include_groups=album&market=${country}`,
         token,
       });
 
