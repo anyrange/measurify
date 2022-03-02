@@ -1,7 +1,9 @@
 import fp from "fastify-plugin";
 import User from "#server/models/User.js";
 
-export const tracks = async ({ _id, range, page = 1 }) => {
+export const tracks = async ({ _id, range = 10, page = 1 }) => {
+  if (!_id) return { tracks: [], pages: 1 };
+
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
