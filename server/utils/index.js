@@ -10,7 +10,7 @@ export function timeDiff(start, end) {
 }
 
 export function arrLastEl(arr) {
-  if (!arr.length) return null;
+  if (!arr?.length) return null;
   return arr.slice(-1)[0];
 }
 

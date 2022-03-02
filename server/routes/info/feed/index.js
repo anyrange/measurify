@@ -1,3 +1,5 @@
+import { arrLastEl } from "#server/utils/index.js";
+
 export default async function (fastify) {
   fastify.addHook("onSend", async (request, reply) => {
     if (reply.statusCode === 200)
@@ -30,11 +32,17 @@ export default async function (fastify) {
                         username: { type: "string" },
                         display_name: { type: "string" },
                         avatar: { type: "string" },
-                        track: {
-                          id: { type: "string" },
-                          name: { type: "string" },
-                          image: { type: "string" },
-                          played_at: { type: "string", format: "datetime" },
+                        tracks: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              id: { type: "string" },
+                              name: { type: "string" },
+                              image: { type: "string" },
+                              played_at: { type: "string", format: "datetime" },
+                            },
+                          },
                         },
                       },
                     },
@@ -72,7 +80,17 @@ export default async function (fastify) {
       userActivity.forEach((activity) => {
         const date = activity.track.played_at.toISOString().split("T")[0];
 
-        formatedActivity[date] = [...(formatedActivity[date] || []), activity];
+        const lastAdded = arrLastEl(formatedActivity[date]);
+        const sameUser = lastAdded && lastAdded.username === activity.username;
+        if (sameUser) {
+          lastAdded.tracks.push(activity.track);
+          return;
+        }
+
+        formatedActivity[date] = [
+          ...(formatedActivity[date] || []),
+          { ...activity, tracks: [activity.track] },
+        ];
       });
 
       reply.send({
