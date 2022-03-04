@@ -32,6 +32,13 @@ export function redirect() {
   window.location.href = `${SERVER_URI}/auth/login`;
 }
 
+export function getStats() {
+  return api.get("/info/stats");
+}
+export function getFeed(page = 1, limit = 20) {
+  return api.get("/info/feed", { params: { page, limit } });
+}
+
 export function checkAuthorization() {
   return api.get("/auth/check");
 }

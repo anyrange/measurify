@@ -7,7 +7,7 @@
     </div>
     <nav class="sidebar mt-2" :class="[{ 'items-center': smallerThanMd }]">
       <template v-if="!isAuthenticated">
-        <div class="sidebar__item">
+        <div class="sidebar__item order-last sm:order-none">
           <base-button
             :color="smallerThanMd ? 'transparent' : 'white'"
             :shape="smallerThanMd ? 'circle' : 'round'"
@@ -26,7 +26,9 @@
       </template>
       <base-link :to="{ name: 'home' }" v-wave class="sidebar__item">
         <icon class="sidebar__item__icon" icon="ic:round-home" />
-        <span class="sidebar__item__title">Overview</span>
+        <span class="sidebar__item__title">
+          {{ isAuthenticated ? "Feed" : "Overview" }}
+        </span>
       </base-link>
       <template v-if="isAuthenticated">
         <base-link

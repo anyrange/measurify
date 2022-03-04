@@ -6,18 +6,25 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: overlay;
   overscroll-behavior-y: none;
 }
 
 .custom-scrollbar #content-window::-webkit-scrollbar,
 #horizontal-scrollbar::-webkit-scrollbar,
 #friends-list::-webkit-scrollbar {
+  overflow: overlay;
   @apply w-2 h-1;
 }
+
+.custom-scrollbar #feedList::-webkit-scrollbar {
+  overflow: overlay;
+  @apply w-2 h-0;
+}
+
 .custom-scrollbar #content-window::-webkit-scrollbar-thumb,
 #horizontal-scrollbar::-webkit-scrollbar-thumb,
-#friends-list::-webkit-scrollbar-thumb {
+#friends-list::-webkit-scrollbar-thumb,
+#feedList::-webkit-scrollbar-thumb {
   @apply rounded-lg bg-secondary-dark;
 }
 

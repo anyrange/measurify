@@ -19,31 +19,29 @@
             :alt="track.name"
           />
         </base-link>
-        <div class="truncate">
+        <div class="fullwidth">
           <base-link
-            class="link text-sm"
+            class="link w-full truncate text-sm"
             :to="{ name: 'track', params: { trackId: track.id } }"
           >
             {{ track.name }}
           </base-link>
-          <div class="truncate">
-            <div class="w-full">
-              <div class="truncate">
-                <artists-names
-                  class="
-                    truncate
-                    pointer-events-none
-                    leading-4
-                    text-sm
-                    hover:no-underline
-                    sm:hover:underline sm:pointer-events-auto
-                    line-clamp-1
-                  "
-                  :routes="track.artists"
-                />
-              </div>
+          <template v-if="track.artists">
+            <div class="w-full truncate">
+              <artists-names
+                class="
+                  truncate
+                  pointer-events-none
+                  leading-4
+                  text-sm
+                  hover:no-underline
+                  sm:hover:underline sm:pointer-events-auto
+                  line-clamp-1
+                "
+                :routes="track.artists"
+              />
             </div>
-          </div>
+          </template>
         </div>
       </div>
       <div
@@ -57,13 +55,16 @@
           {{ track.album.name }}
         </base-link>
       </div>
-      <span class="hidden w-10 text-center lg:flex">
+      <span v-if="track.duration" class="hidden w-10 text-center lg:flex">
         {{ getDuration(track.duration_ms) }}
       </span>
       <div v-if="plays || date" class="ml-auto mr-1 w-1/5 text-right">
         <template v-if="date">
           <slot name="date">
-            <span :title="formatDate(track.played_at)">
+            <span
+              class="text-xs sm:text-sm"
+              :title="formatDate(track.played_at)"
+            >
               {{ getRealtiveTime(track.played_at) }}
             </span>
           </slot>
