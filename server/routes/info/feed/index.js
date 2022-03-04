@@ -163,7 +163,16 @@ const getActivityAgg = (_id, limit, page) => [
         played_at: "$listeningHistory.played_at",
         name: { $first: "$tracks.name" },
         id: { $first: "$tracks._id" },
-        artists: "$artists",
+        artists: {
+          $map: {
+            input: "$artists",
+            as: "artist",
+            in: {
+              id: "$$artist._id",
+              name: "$$artist.name",
+            },
+          },
+        },
         image: { $first: "$tracks.images.lowQuality" },
       },
     },
