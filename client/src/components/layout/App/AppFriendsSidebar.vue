@@ -34,8 +34,7 @@
       </template>
       <template v-else>
         <p class="mt-2 font-light text-center text-white">
-          Sign In with your Spotify account to see your spotiworm followers
-          activity
+          Sign In with your Spotify account to see your friends activity
         </p>
       </template>
     </aside>

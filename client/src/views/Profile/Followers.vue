@@ -53,5 +53,5 @@ const { loading, run } = createAsyncProcess(fetchFollowers);
 
 run();
 
-title.value = `${profileStore.profile.user.display_name}'s followers`;
+title.value = `People Following ${profileStore.profile.user.display_name}`;
 </script>

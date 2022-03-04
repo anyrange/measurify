@@ -95,10 +95,7 @@
                 </base-link>
               </div>
               <template v-if="isAuthenticated">
-                <div
-                  v-if="!isUserProfile && !profile.inactive"
-                  class="profile-nav-link"
-                >
+                <div v-if="!isUserProfile" class="profile-nav-link">
                   <base-link :to="{ name: 'profile-compatibility' }">
                     Compatibility
                   </base-link>
@@ -118,21 +115,7 @@
           </horizontal-scroll>
         </div>
       </div>
-      <router-view v-slot="{ Component }">
-        <transition :name="route.meta.transition || 'fade'" mode="out-in">
-          <keep-alive>
-            <suspense>
-              <template #default>
-                <component
-                  :is="Component"
-                  :key="route.meta.usePathKey ? route.path : undefined"
-                />
-              </template>
-              <template #fallback> Loading... </template>
-            </suspense>
-          </keep-alive>
-        </transition>
-      </router-view>
+      <router-view />
     </template>
     <template v-else>
       <loading-spinner />
