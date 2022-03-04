@@ -23,6 +23,7 @@ export default async function (fastify) {
               pages: { type: "number" },
               userActivity: {
                 type: "object",
+                additionalProperties: false,
                 patternProperties: {
                   "^[0-9]{4}-[0-9]{2}-[0-9]{2}$": {
                     type: "array",
@@ -39,6 +40,7 @@ export default async function (fastify) {
                             properties: {
                               id: { type: "string" },
                               name: { type: "string" },
+                              artists: { $ref: "entities#" },
                               image: { type: "string" },
                               played_at: { type: "string", format: "datetime" },
                             },
@@ -48,29 +50,31 @@ export default async function (fastify) {
                     },
                   },
                 },
-                additionalProperties: false,
               },
             },
           },
         },
         tags: ["other"],
       },
+      preValidation: [fastify.auth],
     },
     async function (req, reply) {
       const { limit, page } = req.query;
+      const id = req.session.get("id");
 
-      const [userActivity, userListened] = await Promise.all([
-        fastify.db.User.aggregate(getActivityAgg(limit, page)),
-        fastify.db.User.find(
-          {
-            "settings.privacy": { $ne: "private" },
+      const [userActivity, user] = await Promise.all([
+        fastify.db.User.aggregate(getActivityAgg(id, limit, page)),
+        fastify.db.User.findById(id, "follows").populate({
+          path: "follows",
+          match: {
+            "settings.privacy": "public",
             "tokens.refreshToken": { $ne: "" },
           },
-          "listened.count"
-        ),
+          select: "listened.count",
+        }),
       ]);
 
-      const historyLength = userListened.reduce(
+      const historyLength = user.follows.reduce(
         (acc, cur) => acc + cur.listened.count,
         0
       );
@@ -82,6 +86,7 @@ export default async function (fastify) {
 
         const lastAdded = arrLastEl(formatedActivity[date]);
         const sameUser = lastAdded && lastAdded.username === activity.username;
+
         if (sameUser) {
           lastAdded.tracks.push(activity.track);
           return;
@@ -101,19 +106,30 @@ export default async function (fastify) {
   );
 }
 
-const getActivityAgg = (limit, page) => [
+const getActivityAgg = (_id, limit, page) => [
+  { $match: { _id } },
+  { $project: { follows: 1 } },
+  {
+    $lookup: {
+      from: "users",
+      localField: "follows",
+      foreignField: "_id",
+      as: "user",
+    },
+  },
+  { $unwind: { path: "$user" } },
   {
     $match: {
-      "settings.privacy": { $ne: "private" },
-      "tokens.refreshToken": { $ne: "" },
+      "user.settings.privacy": "public",
+      "user.tokens.refreshToken": { $ne: "" },
     },
   },
   {
-    $project: {
-      listeningHistory: 1,
-      display_name: 1,
-      username: "$settings.username",
-      avatar: 1,
+    $addFields: {
+      display_name: "$user.display_name",
+      avatar: "$user.avatar",
+      username: "$user.settings.username",
+      listeningHistory: "$user.listeningHistory",
     },
   },
   { $unwind: { path: "$listeningHistory" } },
@@ -129,6 +145,15 @@ const getActivityAgg = (limit, page) => [
     },
   },
   {
+    $lookup: {
+      from: "artists",
+      localField: "tracks.artists",
+      foreignField: "_id",
+      as: "artists",
+    },
+  },
+  { $addFields: { artists: { id: "$artists._id" } } },
+  {
     $project: {
       _id: 1,
       display_name: 1,
@@ -138,6 +163,7 @@ const getActivityAgg = (limit, page) => [
         played_at: "$listeningHistory.played_at",
         name: { $first: "$tracks.name" },
         id: { $first: "$tracks._id" },
+        artists: "$artists",
         image: { $first: "$tracks.images.lowQuality" },
       },
     },
