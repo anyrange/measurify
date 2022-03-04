@@ -99,7 +99,7 @@ export default async function (fastify) {
       const [top, { history }] = await Promise.all(requests);
 
       const plays = user.listened?.count || 0;
-      const playtime = user.listened?.time || 0 / 60;
+      const playtime = (user.listened?.time || 0) / 60;
 
       const response = {
         user,

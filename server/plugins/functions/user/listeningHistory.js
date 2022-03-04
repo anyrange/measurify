@@ -76,8 +76,9 @@ const plugin = fp(async function plugin(fastify) {
         .count("total"),
     ]);
 
+    const totalListened = count[0]?.total || 0;
     return {
-      pages: Math.ceil((count[0]?.total || 0) / range) || 1,
+      pages: Math.ceil(totalListened / range) || 1,
       history: listeningHistory,
     };
   };
@@ -111,13 +112,14 @@ const plugin = fp(async function plugin(fastify) {
       })
       .lean();
 
+    const totalListened = listened?.count || 0;
     return {
       history:
         listeningHistory?.map((item) => ({
           ...item.track,
           played_at: item.played_at,
         })) || [],
-      pages: Math.ceil((listened?.count || 0) / range) || 1,
+      pages: Math.ceil(totalListened / range) || 1,
     };
   };
 
