@@ -70,14 +70,18 @@
               sm:justify-start
             "
           >
-            <div class="flex flex-col">
-              <h1
-                class="truncate font-medium text-white text-xl sm:text-2xl"
-                id="infopage-title"
-              >
-                {{ profile.user.display_name }}
-              </h1>
-              <h3 class="truncate font-light">{{ profile.user.username }}</h3>
+            <div class="fullwidth">
+              <div class="w-full flex flex-col">
+                <h1
+                  class="truncate font-medium text-white text-xl sm:text-2xl"
+                  id="infopage-title"
+                >
+                  {{ profile.user.display_name }}
+                </h1>
+                <h3 class="truncate font-light">
+                  {{ profile.user.username }}
+                </h3>
+              </div>
             </div>
           </div>
         </div>

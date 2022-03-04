@@ -1,8 +1,8 @@
 <template>
   <span
     class="
-      bg-secondary-dark bg-opacity-50
-      text-white
+      bg-secondary-darker
+      text-secondary-lightest
       rounded
       font-medium
       flex flex-shrink-0 flex-none

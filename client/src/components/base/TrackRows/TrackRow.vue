@@ -7,7 +7,7 @@
       <span v-if="place !== false" class="w-6 font-normal text-base">
         {{ place }}
       </span>
-      <div class="flex flex-1 flex-row items-center gap-3 truncate">
+      <div class="flex flex-1 flex-row items-center gap-3">
         <base-link
           class="flex-none flex-shrink-0"
           :to="{ name: 'track', params: { trackId: track.id } }"
@@ -19,24 +19,22 @@
             :alt="track.name"
           />
         </base-link>
-        <div class="fullwidth">
+        <div class="block">
           <base-link
-            class="link w-full truncate text-sm"
+            class="link line-clamp-1 text-sm"
             :to="{ name: 'track', params: { trackId: track.id } }"
           >
             {{ track.name }}
           </base-link>
           <template v-if="track.artists">
-            <div class="w-full truncate">
+            <div class="line-clamp-1">
               <artists-names
                 class="
-                  truncate
                   pointer-events-none
                   leading-4
                   text-sm
                   hover:no-underline
                   sm:hover:underline sm:pointer-events-auto
-                  line-clamp-1
                 "
                 :routes="track.artists"
               />
@@ -44,12 +42,9 @@
           </template>
         </div>
       </div>
-      <div
-        v-if="track.album !== false"
-        class="hidden w-full flex-1 truncate md:flex"
-      >
+      <div v-if="track.album !== false" class="hidden w-full flex-1 md:flex">
         <base-link
-          class="link truncate"
+          class="link line-clamp-1"
           :to="{ name: 'album', params: { albumId: track.album.id } }"
         >
           {{ track.album.name }}

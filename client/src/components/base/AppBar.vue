@@ -5,11 +5,12 @@
       z-12
       sm:-mx-8
       -mx-4
-      bg-secondary-darkest
+      bg-secondary-darkest/85
       shadow-md
       sm:shadow-none
       duration-200
       transition-all
+      blur-lg
     "
     :class="[
       [fixed ? 'sticky mb-2' : 'sm:sticky fixed -mb-8'],
@@ -30,7 +31,7 @@
               />
             </base-button>
           </slot>
-          <span class="line-clamp-1 w-full text-lg text-white">
+          <span class="line-clamp-1 text-lg text-white">
             <slot name="title"> </slot>
           </span>
         </div>

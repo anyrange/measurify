@@ -11,11 +11,7 @@ export default {
         scale: ["active", "group-hover"],
       },
     },
-    plugins: [
-      require("windicss/plugin/line-clamp"),
-      require("windicss/plugin/typography"),
-      require("windicss/plugin/filters"),
-    ],
+
     extend: {
       colors: {
         primary: "#1ed760",
@@ -48,6 +44,11 @@ export default {
       },
     },
   },
+  plugins: [
+    require("windicss/plugin/line-clamp"),
+    require("windicss/plugin/typography"),
+    require("windicss/plugin/filters"),
+  ],
   shortcuts: {
     "default-border": "border-secondary-dark",
     "default-focus": "outline-none focus:outline-none focus-visible:ring-1.5",

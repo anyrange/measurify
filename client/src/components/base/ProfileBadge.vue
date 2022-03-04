@@ -21,8 +21,8 @@
             :src="userStore.user.avatar"
             alt="profile avatar"
           />
-          <div class="flex flex-col">
-            <p class="font-medium text-lg text-secondary-lighter">
+          <div class="fullwidth flex flex-col">
+            <p class="truncate font-medium text-lg text-secondary-lighter">
               {{ userStore.user.display_name }}
             </p>
             <p class="text-secondary-lighter text-sm">Open profile</p>

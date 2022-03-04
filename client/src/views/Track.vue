@@ -65,7 +65,7 @@
             <div
               class="
                 text-white text-sm
-                bg-secondary-dark bg-opacity-20
+                bg-secondary-darker
                 duration-75
                 shadow-md
                 p-2
@@ -75,7 +75,7 @@
               "
             >
               <pre
-                class="whitespace-pre-wrap font-sans"
+                class="whitespace-pre-wrap font-sans text-base"
                 v-html="lyrics || 'Lyrics not found'"
               />
             </div>

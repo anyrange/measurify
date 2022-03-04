@@ -12,16 +12,17 @@
     <div
       class="
         h-52
-        bg-secondary-dark bg-opacity-20
-        hover:bg-opacity-60
-        flex flex-shrink-0 flex-none flex-col
-        items-center
+        w-38
+        bg-secondary-darker
+        hover:bg-secondary-dark/20
         duration-200
         rounded-md
-        gap-3
         p-3
         group
         relative
+        flex flex-none flex-shrink-0 flex-col
+        items-center
+        gap-3
       "
     >
       <base-img
@@ -34,7 +35,7 @@
         ]"
       />
       <span
-        class="line-clamp-2 w-32 font-medium text-center text-sm text-white"
+        class="line-clamp-2 w-full font-medium text-center text-sm text-white"
       >
         {{ item.name }}
       </span>

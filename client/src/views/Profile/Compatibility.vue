@@ -14,7 +14,7 @@
               {{ profileStore.profile.user.username }}
             </span>
           </div>
-          <div class="w-full rounded-full bg-opacity-10 bg-primary sm:w-2/5">
+          <div class="w-full rounded-full bg-primary/10 sm:w-2/5">
             <div
               class="h-1.8 rounded-l-full rounded-r-full bg-primary"
               :style="{

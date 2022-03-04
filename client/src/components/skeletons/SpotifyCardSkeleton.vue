@@ -3,8 +3,9 @@
     <div
       class="
         h-52
-        bg-secondary-dark bg-opacity-20
-        hover:bg-opacity-60
+        w-38
+        bg-secondary-darker
+        hover:bg-secondary-dark/20
         flex flex-shrink-0 flex-none flex-col
         items-center
         duration-200

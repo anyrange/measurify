@@ -1,14 +1,5 @@
 <template>
-  <div
-    class="
-      bg-secondary-dark bg-opacity-50
-      break-inside
-      rounded-md
-      w-auto
-      mb-2
-      p-2
-    "
-  >
+  <div class="break-inside mb-2 w-auto rounded-md bg-secondary-darker p-2">
     <div class="flex flex-row items-center gap-3">
       <span class="font-bold text-base text-primary">
         {{ formattedTitle }}

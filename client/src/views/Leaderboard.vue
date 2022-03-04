@@ -13,33 +13,35 @@
   </div>
   <ul class="w-full flex flex-col divide-secondary-darker divide-y">
     <template v-if="!loading">
-      <li v-for="(item, index) in sortedLeaderboard" :key="item.id">
-        <div
-          class="w-full flex flex-row items-center py-3"
-          :class="{
-            'bg-secondary-dark rounded bg-opacity-70':
-              isAuthenticated && item.display_name === user.display_name,
-          }"
-        >
-          <span class="ml-4 w-10 flex flex-none font-extrabold text-lg">
-            {{ index + 1 }}
-          </span>
-          <div class="flex flex-row items-center">
-            <div class="flex flex-none flex-col">
-              <base-link
-                :to="{ name: 'profile', params: { username: item.username } }"
-              >
-                <div class="relative">
-                  <base-img
-                    class="h-13 w-13 rounded-full object-cover text-white"
-                    image-type="profile"
-                    :src="item.avatar"
-                    :alt="item.display_name"
-                  />
-                </div>
-              </base-link>
-            </div>
-            <div class="ml-3 flex flex-col truncate">
+      <li
+        v-for="(item, index) in sortedLeaderboard"
+        :key="item.id"
+        class="w-full flex flex-row items-center py-3"
+        :class="{
+          'bg-secondary-darker rounded':
+            isAuthenticated && item.display_name === user.display_name,
+        }"
+      >
+        <span class="ml-4 w-10 flex flex-none font-extrabold text-lg">
+          {{ index + 1 }}
+        </span>
+        <div class="w-full flex flex-row items-center">
+          <div class="flex flex-none flex-col">
+            <base-link
+              :to="{ name: 'profile', params: { username: item.username } }"
+            >
+              <div class="relative">
+                <base-img
+                  class="h-13 w-13 rounded-full object-cover text-white"
+                  image-type="profile"
+                  :src="item.avatar"
+                  :alt="item.display_name"
+                />
+              </div>
+            </base-link>
+          </div>
+          <div class="fullwidth">
+            <div class="ml-3 w-full flex flex-col">
               <base-link
                 class="truncate text-base text-white hover:underline"
                 :to="{ name: 'profile', params: { username: item.username } }"

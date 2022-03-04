@@ -23,7 +23,7 @@
           </div>
         </div>
       </div>
-      <div class="ml-3 flex flex-col gap-2 truncate">
+      <div class="ml-3 flex flex-col gap-2">
         <skeleton class="h-3 w-18 rounded" />
         <skeleton class="h-4 w-6 rounded" />
       </div>
