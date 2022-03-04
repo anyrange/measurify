@@ -38,6 +38,9 @@ export function checkAuthorization() {
 export function getCurrentUser() {
   return api.get("/users/me");
 }
+export function deleteAccount() {
+  return api.delete("/users/me");
+}
 export function logout() {
   return api.get("/auth/logout");
 }
