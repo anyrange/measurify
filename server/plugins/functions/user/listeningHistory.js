@@ -117,7 +117,7 @@ const plugin = fp(async function plugin(fastify) {
           ...item.track,
           played_at: item.played_at,
         })) || [],
-      pages: Math.ceil(listened?.count || 0 / range) || 1,
+      pages: Math.ceil((listened?.count || 0) / range) || 1,
     };
   };
 
