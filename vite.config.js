@@ -36,8 +36,8 @@ export default defineConfig({
         name: "measurify",
         short_name: "measurify",
         description: "Measure your listening history and get stats",
-        theme_color: "#0b0b0b",
-        background_color: "#0b0b0b",
+        theme_color: "#121212",
+        background_color: "#121212",
         display: "standalone",
         icons: [
           {
