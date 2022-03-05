@@ -5,12 +5,11 @@
       z-12
       sm:-mx-8
       -mx-4
-      bg-secondary-darkest/85
+      bg-secondary-darkest
       shadow-md
       sm:shadow-none
       duration-200
       transition-all
-      blur-lg
     "
     :class="[
       [fixed ? 'sticky mb-2' : 'sm:sticky fixed -mb-8'],
@@ -18,7 +17,7 @@
       { 'sm:w-auto w-full ': !fixed },
     ]"
   >
-    <div class="-px-3 h-14 sm:h-12 sm:-px-6">
+    <div class="-px-3 h-13 sm:h-12 sm:-px-6">
       <div class="h-full w-full flex items-center justify-between">
         <div class="flex items-center gap-1">
           <slot name="left">
