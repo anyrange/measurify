@@ -56,11 +56,12 @@
       <div v-if="plays || date" class="ml-auto mr-1 w-1/5 text-right">
         <template v-if="date">
           <slot name="date">
-            <span
-              class="text-xs sm:text-sm"
-              :title="formatDate(track.played_at)"
-            >
-              {{ getRealtiveTime(track.played_at) }}
+            <span :title="formatDate(track.played_at)">
+              {{
+                smallerThanMd
+                  ? getShortRelativeTime(track.played_at)
+                  : getRealtiveTime(track.played_at)
+              }}
             </span>
           </slot>
         </template>
@@ -77,7 +78,13 @@
 </template>
 
 <script setup>
-import { getRealtiveTime, getDuration, formatDate } from "@/utils";
+import {
+  getRealtiveTime,
+  getShortRelativeTime,
+  getDuration,
+  formatDate,
+} from "@/utils";
+import { useBreakpoints } from "@/composable/useBreakpoints";
 
 defineProps({
   track: {
@@ -105,4 +112,6 @@ defineProps({
     default: false,
   },
 });
+
+const { smallerThanMd } = useBreakpoints();
 </script>
