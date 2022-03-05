@@ -1,31 +1,13 @@
 import fp from "fastify-plugin";
-import User from "../../../../models/User.js";
+import User from "#server/models/User.js";
 
-export const albums = ({
-  _id,
-  firstDate,
-  lastDate,
-  range,
-  page = 1,
-  search,
-}) => {
+export const albums = async ({ _id, range = 10, page = 1 }) => {
+  if (!_id) return { albums: [], pages: 1 };
+
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
     { $unwind: { path: "$listeningHistory" } },
-  ];
-
-  if (firstDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $gte: new Date(firstDate) } },
-    });
-
-  if (lastDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $lte: new Date(lastDate) } },
-    });
-
-  agg.push(
     {
       $lookup: {
         from: "tracks",
@@ -44,25 +26,19 @@ export const albums = ({
     },
     {
       $addFields: {
-        id: { $first: "$albums._id" },
+        id: { $first: "$tracks.album" },
         name: { $first: "$albums.name" },
-        image: { $first: "$albums.image" },
+        image: { $first: "$albums.images.mediumQuality" },
       },
-    }
-  );
-
-  if (search) {
-    const query = new RegExp(
-      `.*${search.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")}.*`,
-      "i"
-    );
-    agg.push({ $match: { name: { $regex: query } } });
-  }
-
-  agg.push(
+    },
     {
       $group: {
-        _id: { id: "$id", name: "$name", image: "$image" },
+        _id: {
+          id: "$id",
+          name: "$name",
+          image: "$image",
+          album: { $first: "$tracks.album" },
+        },
         plays: { $sum: 1 },
       },
     },
@@ -76,21 +52,21 @@ export const albums = ({
     { $sort: { plays: -1, name: 1 } },
     {
       $group: {
-        _id: "",
-        albums: {
-          $push: { id: "$id", name: "$name", image: "$image", plays: "$plays" },
-        },
-        items: { $sum: 1 },
+        _id: null,
+        albums: { $push: "$$ROOT" },
+        count: { $sum: 1 },
       },
     },
     {
       $project: {
-        items: 1,
+        count: { $ceil: { $divide: ["$count", range] } },
         albums: { $slice: ["$albums", (page - 1) * range, range] },
       },
-    }
-  );
-  return User.aggregate(agg);
+    },
+  ];
+  const [res] = await User.aggregate(agg);
+
+  return { albums: res?.albums || [], pages: res?.count || 1 };
 };
 
 export default fp(async (fastify) => fastify.decorate("userTopAlbums", albums));

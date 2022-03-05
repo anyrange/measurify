@@ -5,16 +5,16 @@ import { artists } from "./artists.js";
 
 export default fp(async function plugin(fastify) {
   fastify.decorate("userTop", async (options) => {
-    const res = await Promise.all([
+    const [t, al, art] = await Promise.all([
       tracks(options),
       albums(options),
       artists(options),
     ]);
 
     return {
-      tracks: res[0][0]?.tracks || [],
-      albums: res[1][0]?.albums || [],
-      artists: res[2][0]?.artists || [],
+      tracks: t.tracks,
+      albums: al.albums,
+      artists: art.artists,
     };
   });
 });

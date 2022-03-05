@@ -48,9 +48,23 @@ const plugin = fp(async function plugin(fastify) {
           id: "$_id",
           name: { $first: "$tracks.name" },
           duration_ms: { $first: "$tracks.duration_ms" },
-          image: { $first: "$tracks.image" },
-          album: { $first: "$albums" },
-          artists: "$artists",
+          image: { $first: "$tracks.images.mediumQuality" },
+          album: {
+            id: { $first: "$albums._id" },
+            name: { $first: "$albums.name" },
+            image: { $first: "$albums.images.lowQuality" },
+          },
+          artists: {
+            $map: {
+              input: "$artists",
+              as: "artist",
+              in: {
+                id: "$$artist._id",
+                name: "$$artist.name",
+                image: "$$artist.images.lowQuality",
+              },
+            },
+          },
         },
       },
       { $sort: { plays: -1, name: 1 } }

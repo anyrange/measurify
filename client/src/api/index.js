@@ -1,5 +1,5 @@
 import axios from "axios";
-import $router from "@/router";
+import router from "@/router";
 import { notify } from "@/services/notify";
 import { useUserStore } from "@/stores/user";
 
@@ -16,13 +16,12 @@ api.interceptors.response.use(
   },
   (error) => {
     const user = useUserStore();
-    if (error.response?.data?.status === 401) {
+    if (error.response.status === 401) {
+      router.push("/");
       user.logout();
-    }
-    if ($router.currentRoute.value.path !== "/") {
       notify.show({
         type: "danger",
-        message: error?.response?.data?.message || "Something went wrong!",
+        message: error.response?.data?.message || "Something went wrong!",
       });
     }
     return Promise.reject(error);
@@ -33,8 +32,21 @@ export function redirect() {
   window.location.href = `${SERVER_URI}/auth/login`;
 }
 
+export function getStats() {
+  return api.get("/info/stats");
+}
+export function getFeed(page = 1, limit = 20) {
+  return api.get("/info/feed", { params: { page, limit } });
+}
+
+export function checkAuthorization() {
+  return api.get("/auth/check");
+}
 export function getCurrentUser() {
   return api.get("/users/me");
+}
+export function deleteAccount() {
+  return api.delete("/users/me");
 }
 export function logout() {
   return api.get("/auth/logout");
@@ -82,20 +94,38 @@ export function getProfileListeningHistory({ username, page, range, search }) {
 export function getProfileCompatibility({ username }) {
   return api.get(`/users/${username}/compatibility`);
 }
+export function getFollowers(username) {
+  return api.get(`/users/${username}/followers`);
+}
+export function getFollowing(username) {
+  return api.get(`/users/${username}/follows`);
+}
 
 export function getTrack(id) {
   return api.get(`/infopage/track/${id}`);
 }
+export function getMoreTracks(id) {
+  return api.get(`/infopage/track/${id}/more-tracks`);
+}
 export function getArtist(id) {
   return api.get(`/infopage/artist/${id}`);
+}
+export function getArtistAlbums(id) {
+  return api.get(`/infopage/artist/${id}/albums`);
+}
+export function getRelatedArtists(id) {
+  return api.get(`/infopage/artist/${id}/related-artists`);
 }
 export function getAlbum(id) {
   return api.get(`/infopage/album/${id}`);
 }
-
-export function getFriends() {
-  return api.get("/friends");
+export function getAlbumArtists(id) {
+  return api.get(`/infopage/album/${id}/artists`);
 }
+export function getAlbumContent(id) {
+  return api.get(`/infopage/album/${id}/content`);
+}
+
 export function getTrackLyrics({ title, artist }) {
   return api.get("/lyrics", {
     params: {
@@ -103,4 +133,11 @@ export function getTrackLyrics({ title, artist }) {
       artist,
     },
   });
+}
+
+export function followProfile(username) {
+  return api.post(`/follow?username=${username}`);
+}
+export function unfollowProfile(username) {
+  return api.delete(`/follow?username=${username}`);
 }

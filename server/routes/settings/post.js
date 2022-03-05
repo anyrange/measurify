@@ -1,4 +1,4 @@
-import User from "../../models/User.js";
+import User from "#server/models/User.js";
 
 export default async function (fastify) {
   fastify.post(
@@ -7,11 +7,11 @@ export default async function (fastify) {
       schema: {
         body: {
           type: "object",
-          required: ["privacy", "username", "autoUpdate", "display_name"],
+          required: ["privacy", "username", "display_name"],
           properties: {
             privacy: {
               type: "string",
-              pattern: "^(public|private|friendsOnly)$",
+              pattern: "^(public|private)$",
             },
             username: {
               type: "string",
@@ -20,7 +20,6 @@ export default async function (fastify) {
               pattern:
                 "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
             },
-            autoUpdate: { type: "boolean" },
             display_name: { type: "string", minLength: 1, maxLength: 30 },
           },
         },
@@ -40,7 +39,7 @@ export default async function (fastify) {
     async function (req, reply) {
       const _id = req.session.get("id");
 
-      const { privacy, username, autoUpdate, display_name } = req.body;
+      const { privacy, username, display_name } = req.body;
 
       const user = await User.findOne(
         { "settings.username": username },
@@ -52,7 +51,7 @@ export default async function (fastify) {
 
       const updateResult = await User.updateOne(
         { _id },
-        { settings: { privacy, username, autoUpdate }, display_name }
+        { settings: { privacy, username }, display_name }
       );
 
       if (updateResult.n === 0) throw this.error("User not found", 404);

@@ -1,5 +1,5 @@
 <template>
-  <suspense-wrapper :loading="loading" :error="error">
+  <template v-if="!loading">
     <container>
       <container-item>
         <container-item-label> Overall </container-item-label>
@@ -14,17 +14,9 @@
               {{ profileStore.profile.user.username }}
             </span>
           </div>
-          <div
-            class="
-              bg-opacity-10
-              w-full
-              sm:w-2/5
-              rounded-full
-              bg-green-500-spotify
-            "
-          >
+          <div class="w-full rounded-full bg-primary/10 sm:w-2/5">
             <div
-              class="h-1.8 rounded-l-full bg-green-500-spotify rounded-r-full"
+              class="h-1.8 rounded-l-full rounded-r-full bg-primary"
               :style="{
                 width: `${Math.round(compatibilityData.compatibility)}%`,
               }"
@@ -47,7 +39,7 @@
         <container-item-label>
           Artists Rank (Yours/Theirs)
         </container-item-label>
-        <div class="flex gap-2 flex-wrap">
+        <div class="flex flex-wrap gap-2">
           <template
             v-for="(item, index) in compatibilityData.artists"
             :key="index"
@@ -60,7 +52,7 @@
         <container-item-label>
           Tracks Rank (Yours/Theirs)
         </container-item-label>
-        <div class="flex gap-2 flex-wrap">
+        <div class="flex flex-wrap gap-2">
           <template
             v-for="(item, index) in compatibilityData.tracks"
             :key="index"
@@ -70,14 +62,28 @@
         </div>
       </container-item>
     </container>
-  </suspense-wrapper>
+  </template>
+  <template v-else>
+    <loading-spinner />
+  </template>
 </template>
 
 <script setup>
-import { useCompatibility } from "@/composable/useProfile";
+import { ref } from "vue";
 import { useProfileStore } from "@/stores/profile";
+import { getProfileCompatibility } from "@/api";
+import { createAsyncProcess } from "@/composable/useAsync";
 
 const profileStore = useProfileStore();
+const compatibilityData = ref(null);
 
-const { compatibilityData, loading, error } = useCompatibility();
+const fetchCompatibility = async () => {
+  compatibilityData.value = await getProfileCompatibility({
+    username: profileStore.profile.user.username,
+  });
+};
+
+const { run, loading } = createAsyncProcess(fetchCompatibility);
+
+run();
 </script>

@@ -1,86 +1,101 @@
 <template>
-  <div class="flex flex-col gap-1">
+  <div class="my-4 flex flex-col gap-1">
     <h1 class="h-title">Leaderboard</h1>
     <h2 class="h-subtitle">
-      This rating is based on the number of minutes you listen to music
+      This is just a leaderboard, you can sort it by 'minutes' or 'tracks'
     </h2>
   </div>
-  <suspense-wrapper :loading="loading" :error="error">
-    <div
-      v-for="(item, index) in leaderboard"
-      :key="item.id"
-      class="flex flex-row p-2 items-center w-full bg-opacity-20 rounded-lg"
-      :class="[
-        isPrivateProfile(item) ? 'opacity-30' : 'opacity-100',
-        item.display_name === user.display_name
-          ? 'bg-gray-500-spotify'
-          : 'bg-gray-600-spotify',
-      ]"
-    >
-      <div class="flex flex-none w-10 ml-4 text-lg font-extrabold">
-        <span>
+  <div class="mb-3 flex items-center">
+    <tabs v-model="mode">
+      <tab name="minutes"> Minutes </tab>
+      <tab name="tracks"> Tracks </tab>
+    </tabs>
+  </div>
+  <ul class="w-full flex flex-col divide-secondary-darker divide-y">
+    <template v-if="!loading">
+      <li
+        v-for="(item, index) in sortedLeaderboard"
+        :key="item.id"
+        class="w-full flex flex-row items-center py-3"
+        :class="{
+          'bg-secondary-darker rounded':
+            isAuthenticated && item.display_name === user.display_name,
+        }"
+      >
+        <span class="ml-4 w-10 flex flex-none font-extrabold text-lg">
           {{ index + 1 }}
         </span>
-      </div>
-      <div class="flex flex-row items-center">
-        <div class="flex flex-col flex-none">
-          <router-link
-            :class="{ 'pointer-events-none': isPrivateProfile(item) }"
-            :to="{ name: 'profile', params: { username: item.username } }"
-          >
-            <div class="relative">
-              <base-img
-                class="text-white object-cover w-11 h-11 rounded-full"
-                image-type="profile"
-                :src="item.avatar"
-                :alt="item.display_name"
-              />
-              <lock-icon
-                v-if="isPrivateProfile(item)"
-                class="cursor-not-allowed inset-center"
-              />
+        <div class="w-full flex flex-row items-center">
+          <div class="flex flex-none flex-col">
+            <base-link
+              :to="{ name: 'profile', params: { username: item.username } }"
+            >
+              <div class="relative">
+                <base-img
+                  class="h-13 w-13 rounded-full object-cover text-white"
+                  image-type="profile"
+                  :src="item.avatar"
+                  :alt="item.display_name"
+                />
+              </div>
+            </base-link>
+          </div>
+          <div class="fullwidth">
+            <div class="ml-3 w-full flex flex-col">
+              <base-link
+                class="truncate text-base text-white hover:underline"
+                :to="{ name: 'profile', params: { username: item.username } }"
+              >
+                {{ item.display_name }}
+              </base-link>
+              <span class="font-semibold text-base text-secondary-lighter">
+                {{
+                  mode === "minutes" ? item.listened.time : item.listened.count
+                }}
+              </span>
             </div>
-          </router-link>
+          </div>
         </div>
-        <div class="flex flex-col ml-4 truncate">
-          <router-link
-            class="text-base text-white truncate"
-            :class="[
-              isPrivateProfile(item)
-                ? 'pointer-events-none'
-                : 'hover:underline',
-            ]"
-            :to="{ name: 'profile', params: { username: item.username } }"
-          >
-            {{ item.display_name }}
-          </router-link>
-          <span class="text-base font-semibold text-gray-500-spotify">
-            {{ item.listened }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </suspense-wrapper>
+      </li>
+    </template>
+    <template v-else>
+      <leaderboard-item-skeleton v-for="i in 25" :key="i" :place="i" />
+    </template>
+  </ul>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { useFetch } from "@/composable/useFetch";
 import { getListenersTop } from "@/api";
 import { useUserStore } from "@/stores/user";
+import { createAsyncProcess } from "@/composable/useAsync";
+import { useAuth } from "@/composable/useAuth";
+
+const { isAuthenticated } = useAuth();
 
 const userStore = useUserStore();
+
 const user = computed(() => userStore.user);
 
 const leaderboard = ref([]);
-const { fetchData, loading, error } = useFetch();
+const mode = ref("minutes");
 
-fetchData(async () => {
-  const { top } = await getListenersTop();
-  leaderboard.value = top;
+const sortedLeaderboard = computed(() => {
+  const newArray = leaderboard.value;
+  const sorted = newArray.sort((a, b) => {
+    if (mode.value === "minutes") {
+      return b.listened.time - a.listened.time;
+    }
+    return b.listened.count - a.listened.count;
+  });
+  return sorted;
 });
 
-const isPrivateProfile = (item) => {
-  return !item.canSee & (item.display_name != user.value.displayName);
+const fetchLeaderboard = async () => {
+  leaderboard.value = await getListenersTop();
 };
+
+const { run, loading } = createAsyncProcess(fetchLeaderboard);
+
+run();
 </script>

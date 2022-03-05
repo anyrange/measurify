@@ -19,7 +19,7 @@ export default async function (fastify) {
         response: {
           200: {
             type: "object",
-            required: ["pages", "history", "status"],
+            required: ["pages", "history"],
             properties: {
               status: { type: "number" },
               pages: { type: "number" },
@@ -39,10 +39,11 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { user } = req;
       const { search, range, page } = req.query;
+      const user = req.user;
 
       const history = await fastify.userListeningHistory({
         _id: user._id,

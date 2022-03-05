@@ -5,94 +5,85 @@ import { useTitle } from "@vueuse/core";
 const routes = [
   {
     path: "/",
-    name: "login",
-    meta: { authForbidden: true },
-    component: () => import("@/views/Login.vue"),
+    name: "home",
+    component: () => import("@/views/Index.vue"),
   },
   {
-    path: "/",
-    name: "home",
-    meta: {
-      authRequired: true,
-    },
-    component: () => import("@/layouts/MainLayout.vue"),
+    path: "/track/:trackId",
+    name: "track",
+    component: () => import("@/views/Track.vue"),
+  },
+  {
+    path: "/artist/:artistId",
+    name: "artist",
+    component: () => import("@/views/Artist.vue"),
+  },
+  {
+    path: "/album/:albumId",
+    name: "album",
+    component: () => import("@/views/Album.vue"),
+  },
+  {
+    path: "/:username",
+    name: "profile",
+    component: () => import("@/views/Profile.vue"),
     redirect: () => {
-      const userStore = useUserStore();
       return {
-        name: "profile",
-        params: {
-          username: userStore.user.username,
-        },
+        name: "profile-overview",
       };
     },
     children: [
       {
-        path: "/:username",
-        name: "profile",
-        component: () => import("@/views/Profile/Profile.vue"),
-        redirect: () => {
-          return {
-            name: "profile-overview",
-          };
-        },
-        children: [
-          {
-            path: "",
-            name: "profile-overview",
-            component: () => import("@/views/Profile/Overview.vue"),
-          },
-          {
-            path: "history",
-            name: "profile-history",
-            component: () => import("@/views/Profile/History.vue"),
-          },
-          {
-            path: "compatibility",
-            name: "profile-compatibility",
-            component: () => import("@/views/Profile/Compatibility.vue"),
-          },
-        ],
+        path: "",
+        name: "profile-overview",
+        component: () => import("@/views/Profile/Overview.vue"),
       },
       {
-        path: "/track/:trackId",
-        name: "track",
-        component: () => import("@/views/Track.vue"),
+        path: "history",
+        name: "profile-history",
+        component: () => import("@/views/Profile/History.vue"),
       },
       {
-        path: "/artist/:artistId",
-        name: "artist",
-        component: () => import("@/views/Artist.vue"),
+        path: "compatibility",
+        name: "profile-compatibility",
+        component: () => import("@/views/Profile/Compatibility.vue"),
       },
       {
-        path: "/album/:albumId",
-        name: "album",
-        component: () => import("@/views/Album.vue"),
+        path: "following",
+        name: "profile-following",
+        component: () => import("@/views/Profile/Following.vue"),
       },
       {
-        path: "/account",
-        name: "account",
-        meta: {
-          title: "Account",
-        },
-        component: () => import("@/views/Account.vue"),
-      },
-      {
-        path: "/friends",
-        name: "friends",
-        meta: {
-          title: "Friends",
-        },
-        component: () => import("@/views/Friends.vue"),
-      },
-      {
-        path: "/leaderboard",
-        name: "leaderboard",
-        meta: {
-          title: "Listeners Leaderboard",
-        },
-        component: () => import("@/views/Leaderboard.vue"),
+        path: "followers",
+        name: "profile-followers",
+        component: () => import("@/views/Profile/Followers.vue"),
       },
     ],
+  },
+  {
+    path: "/account",
+    name: "account",
+    meta: {
+      title: "Account",
+      authRequired: true,
+    },
+    component: () => import("@/views/Account.vue"),
+  },
+  {
+    path: "/search",
+    name: "search",
+    meta: {
+      title: "Search",
+    },
+    component: () => import("@/views/Search.vue"),
+  },
+  {
+    path: "/leaderboard",
+    name: "leaderboard",
+    meta: {
+      title: "Listeners Leaderboard",
+    },
+    component: () => import("@/views/Leaderboard.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
@@ -110,14 +101,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const user = useUserStore();
   const title = useTitle();
+  if (to.meta.authRequired && !user.isAuthenticated)
+    return next({ name: "home" });
+  next();
   if (to.meta.title) {
     title.value = to.meta.title;
   }
-  if (to.meta.authRequired && !user.isAuthenticated)
-    return next({ name: "login" });
-  if (to.meta.authForbidden && user.isAuthenticated)
-    return next({ name: "home" });
-  next();
 });
 
 export default router;

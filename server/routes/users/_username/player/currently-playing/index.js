@@ -1,3 +1,5 @@
+import { formatTrack } from "#server/utils/index.js";
+
 export default async function (fastify) {
   fastify.addHook("onSend", async (req, reply) => {
     if (reply.statusCode === 200) reply.removeHeader("Cache-Control");
@@ -24,24 +26,26 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { user } = req;
+      const user = req.user;
+
+      if (user.leaved)
+        return reply
+          .code(403)
+          .send({ message: `Currently not available for ${user.username}` });
 
       const currentPlayer = await fastify
         .spotifyAPI({
           route: `me/player/currently-playing?market=${user.country}`,
-          token: user.tokens.token,
+          token: user.token,
         })
         .catch(() => reply.code(204).send());
 
       if (!currentPlayer.item) return reply.code(204).send();
 
-      reply.send(
-        Object.assign(currentPlayer.item, {
-          image: currentPlayer.item.album.images[1].url || "",
-        })
-      );
+      reply.send(formatTrack(currentPlayer.item));
     }
   );
 }

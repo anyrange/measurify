@@ -2,9 +2,10 @@ import fastify from "fastify";
 import autoLoad from "fastify-autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import dotenv from "dotenv";
 
+import dotenv from "dotenv";
 dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -13,11 +14,9 @@ const app = fastify();
 // plugins
 
 app.register(import("fastify-cors"), {
-  origin: process.env.CLIENT_URI,
+  origin: process.env.CLIENT_URI || "http://localhost:3000",
   credentials: true,
 });
-
-app.register(import("fastify-websocket"));
 
 if (process.env.NODE_ENV != "production") {
   app.register(import("fastify-swagger"), {

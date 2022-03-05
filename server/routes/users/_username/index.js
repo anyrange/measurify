@@ -6,13 +6,7 @@ export default async function (fastify) {
         query: {
           type: "object",
           properties: {
-            rangeTop: { type: "number", minimum: 1, maximum: 50, default: 6 },
-            rangeGenres: {
-              type: "number",
-              minimum: 1,
-              maximum: 20,
-              default: 10,
-            },
+            rangeTop: { type: "number", minimum: 1, maximum: 50, default: 10 },
             rangeHistory: {
               type: "number",
               minimum: 5,
@@ -31,11 +25,21 @@ export default async function (fastify) {
             type: "object",
             properties: {
               user: { $ref: "user#" },
-              friendship: { type: "string" },
-              overview: { $ref: "overview#" },
+              overview: {
+                type: "object",
+                required: ["plays", "playtime", "meantime"],
+                properties: {
+                  plays: { type: "number" },
+                  playtime: { type: "number" },
+                  meantime: { type: "number" },
+                },
+              },
               top: { $ref: "top#" },
               genres: { type: "array", items: { type: "string" } },
-              leaved: { type: "boolean" },
+              inactive: { type: "boolean" },
+              followed: { type: "boolean" },
+              follows: { type: "number" },
+              followers: { type: "number" },
               history: {
                 type: "array",
                 items: {
@@ -55,49 +59,62 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const { user, requestor } = req;
-      const { rangeTop, rangeHistory, rangeGenres } = req.query;
+      const requestorID = req.session.get("id");
+      const { username } = req.params;
+
+      const user = await fastify.db.User.findOne(
+        {
+          "settings.username": username,
+        },
+        {
+          "tokens.refreshToken": 1,
+          "settings.privacy": 1,
+          listened: 1,
+          genres: { $first: "$genresTimeline.genres" },
+          avatar: 1,
+          display_name: 1,
+          username: "$settings.username",
+          lastLogin: 1,
+          registrationDate: 1,
+          country: 1,
+          spotifyID: "$_id",
+          followers: "$followers",
+          follows: "$follows",
+        }
+      ).lean();
+
+      if (!user) return reply.code(404).send({ message: "User not found" });
+
+      const isPrivate = user.settings.privacy === "private";
+      if (isPrivate && user._id !== requestorID)
+        return reply.code(403).send({ message: "Private profile" });
+
+      const { rangeTop, rangeHistory } = req.query;
 
       const requests = [
         fastify.userTop({ _id: user._id, range: rangeTop }),
         fastify.userListeningHistory({ _id: user._id, range: rangeHistory }),
-        fastify.userOverview({ _id: user._id }),
-        fastify.userGenres({ token: user.tokens.token, range: rangeGenres }),
       ];
 
-      if (requestor)
-        requests.push(
-          fastify.db.User.findOne(
-            { _id: user._id, friends: requestor._id },
-            { "friends.$": 1 }
-          ),
-          fastify.db.FriendRequest.findOne({
-            from: requestor._id,
-            to: user._id,
-          }),
-          fastify.db.FriendRequest.findOne({
-            from: user._id,
-            to: requestor._id,
-          })
-        );
+      const [top, { history }] = await Promise.all(requests);
 
-      const [top, { history }, overview, genres, ...friendship] =
-        await Promise.all(requests);
+      const plays = user.listened?.count || 0;
+      const playtime = (user.listened?.time || 0) / 60;
 
       const response = {
         user,
         top,
         history,
-        overview,
-        genres,
-        friendship: friendship[0]?.friends.length
-          ? "friend"
-          : friendship[1]
-          ? "following"
-          : friendship[2]
-          ? "follow"
-          : "none",
-        leaved: user.tokens.refreshToken === "",
+        overview: {
+          plays,
+          playtime: Math.round(playtime),
+          meantime: (playtime / plays || 1).toFixed(2),
+        },
+        genres: user.genres || [],
+        followers: user.followers?.length || 0,
+        follows: user.follows?.length || 0,
+        inactive: user.tokens.refreshToken === "",
+        followed: user.followers?.includes(requestorID) || false,
       };
 
       reply.send(response);

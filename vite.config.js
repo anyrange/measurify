@@ -1,21 +1,25 @@
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
-import WindiCSS from "vite-plugin-windicss";
+import vue from "@vitejs/plugin-vue";
+import Windi from "vite-plugin-windicss";
 import Components from "unplugin-vue-components/vite";
 
-const _dirname =
-  typeof __dirname !== "undefined"
-    ? __dirname
-    : dirname(fileURLToPath(import.meta.url));
+const _dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   root: "./client",
+  resolve: {
+    alias: {
+      "@": resolve(_dirname, "./client/src"),
+    },
+  },
   plugins: [
     vue(),
-    WindiCSS(),
+    Windi({
+      config: resolve(_dirname, "windi.config.js"),
+    }),
     Components({
       dirs: ["src/components"],
       extensions: ["vue"],
@@ -56,9 +60,4 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: {
-    alias: {
-      "@": resolve(_dirname, "./client/src"),
-    },
-  },
 });

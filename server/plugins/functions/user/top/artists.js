@@ -1,31 +1,13 @@
 import fp from "fastify-plugin";
-import User from "../../../../models/User.js";
+import User from "#server/models/User.js";
 
-export const artists = ({
-  _id,
-  firstDate,
-  lastDate,
-  range,
-  page = 1,
-  search,
-}) => {
+export const artists = async ({ _id, range = 10, page = 1 }) => {
+  if (!_id) return { artists: [], pages: 1 };
+
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
     { $unwind: { path: "$listeningHistory" } },
-  ];
-
-  if (firstDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $gte: new Date(firstDate) } },
-    });
-
-  if (lastDate)
-    agg.push({
-      $match: { "listeningHistory.played_at": { $lte: new Date(lastDate) } },
-    });
-
-  agg.push(
     {
       $lookup: {
         from: "tracks",
@@ -46,24 +28,13 @@ export const artists = ({
     {
       $group: {
         _id: {
-          id: "$artists.id",
+          id: "$artists._id",
           name: "$artists.name",
-          image: "$artists.image",
+          image: "$artists.images.mediumQuality",
         },
         plays: { $sum: 1 },
       },
-    }
-  );
-
-  if (search) {
-    const query = new RegExp(
-      `.*${search.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")}.*`,
-      "i"
-    );
-    agg.push({ $match: { "_id.name": { $regex: query } } });
-  }
-
-  agg.push(
+    },
     {
       $addFields: {
         id: "$_id.id",
@@ -74,21 +45,23 @@ export const artists = ({
     { $sort: { plays: -1, name: 1 } },
     {
       $group: {
-        _id: "",
+        _id: null,
         artists: {
           $push: { id: "$id", name: "$name", image: "$image", plays: "$plays" },
         },
-        items: { $sum: 1 },
+        count: { $sum: 1 },
       },
     },
     {
       $project: {
-        items: 1,
+        count: { $ceil: { $divide: ["$count", range] } },
         artists: { $slice: ["$artists", (page - 1) * range, range] },
       },
-    }
-  );
-  return User.aggregate(agg);
+    },
+  ];
+  const [res] = await User.aggregate(agg);
+
+  return { artists: res?.artists || [], pages: res?.count || 1 };
 };
 
 export default fp(async (fastify) =>

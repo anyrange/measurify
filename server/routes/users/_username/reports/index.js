@@ -20,7 +20,6 @@ export default async function (fastify) {
             type: "object",
             properties: {
               status: { type: "number" },
-              overview: { $ref: "overview#" },
               hourlyActivity: {
                 type: "array",
                 items: {
@@ -50,20 +49,20 @@ export default async function (fastify) {
         },
         tags: ["user"],
       },
+      preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { user } = req;
+      const user = req.user;
       const { firstDate, lastDate } = req.query;
 
       const options = { _id: user._id, firstDate, lastDate };
 
-      const [overview, graph, hourlyActivity] = await Promise.all([
-        fastify.userOverview(options),
+      const [graph, hourlyActivity] = await Promise.all([
         fastify.userGraph(options),
         fastify.userHourlyActivity(options),
       ]);
 
-      reply.send({ overview, graph, hourlyActivity });
+      reply.send({ graph, hourlyActivity });
     }
   );
 }

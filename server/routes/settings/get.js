@@ -1,4 +1,4 @@
-import User from "../../models/User.js";
+import User from "#server/models/User.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -13,7 +13,6 @@ export default async function (fastify) {
               username: { type: "string" },
               id: { type: "string" },
               display_name: { type: "string" },
-              autoUpdate: { type: "boolean" },
               status: { type: "number" },
             },
           },

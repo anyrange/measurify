@@ -1,25 +1,20 @@
 <template>
-  <suspense-wrapper :loading="loading" :error="error">
+  <template v-if="!loading">
+    <app-bar scroll-target="infopage-title">
+      <template #title>
+        {{ albumData.album.name }}
+      </template>
+      <template #right>
+        <spotify-link :id="albumData.album.id" type="album" />
+      </template>
+    </app-bar>
+    <infopage-header :item="albumData.album" type="album" />
     <container>
-      <figure class="responsive-picture">
-        <base-img
-          parallax
-          :src="albumData.album.image"
-          :alt="albumData.album.name"
-          image-type="album"
-          class="responsive-picture__image"
-        />
-        <figcaption class="responsive-picture__title">
-          <spotify-link
-            :link="`https://open.spotify.com/album/${albumData.album.id}`"
-          >
-            {{ albumData.album.name }}
-          </spotify-link>
-        </figcaption>
-      </figure>
       <cards>
         <card v-if="albumData.isLiked" title="❤">liked</card>
         <card :title="albumData.total_tracks">tracks amount</card>
+        <card :title="albumData.label">record label</card>
+        <card :title="albumData.release_date">released</card>
       </cards>
       <container-item>
         <container-item-label>Audio features</container-item-label>
@@ -44,43 +39,62 @@
           />
         </horizontal-scroll>
       </container-item>
-      <container-item v-if="tracksList.length">
-        <container-item-label>Album content</container-item-label>
-        <track-rows>
-          <track-row
-            v-for="(item, index) in tracksList"
-            :key="index"
-            plays-or-date="plays"
-            :track="{
-              ...item,
-              album: false,
-            }"
-          />
-        </track-rows>
-      </container-item>
+      <suspense>
+        <album-content
+          :album-id="albumData.album.id"
+          :favourite-tracks="albumData.favouriteTracks || []"
+        />
+        <template #fallback>
+          <track-rows>
+            <track-row-skeleton
+              v-for="track in albumData.total_tracks"
+              :key="track"
+            />
+          </track-rows>
+        </template>
+      </suspense>
     </container>
-  </suspense-wrapper>
+  </template>
+  <template v-else>
+    <loading-spinner />
+  </template>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useAlbum } from "@/composable/useAlbum";
+import { computed, watch, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useTitle } from "@vueuse/core";
+import { createAsyncProcess } from "@/composable/useAsync";
+import { getAlbum, getAlbumArtists } from "@/api";
 
-const { albumData, loading, error } = useAlbum();
+const route = useRoute();
+const title = useTitle();
 
-const tracksList = computed(() => {
-  const combinedTracks = [
-    ...albumData.value.content,
-    ...albumData.value.favouriteTracks,
-  ];
-  let formattedTracks = [
-    ...new Map(combinedTracks.map((item) => [item["id"], item])).values(),
-  ];
-  formattedTracks.map((track) => {
-    if (!track.plays) track.plays = 0;
-    if (!track.image) track.image = albumData.value.album.image;
-  });
-  formattedTracks.sort((a, b) => b.plays - a.plays);
-  return formattedTracks;
-});
+const albumData = ref(null);
+
+const albumId = computed(() => route.params.albumId);
+
+function updateAlbum(data) {
+  albumData.value = data;
+}
+
+async function fetchAlbum() {
+  updateAlbum(null);
+  if (!albumId.value) return;
+
+  const [data, albumArtists] = await Promise.all([
+    getAlbum(albumId.value),
+    getAlbumArtists(albumId.value),
+  ]);
+
+  data.album.artists = albumArtists;
+
+  updateAlbum(data);
+
+  title.value = albumData.value ? albumData.value.album.name : null;
+}
+
+const { loading, run } = createAsyncProcess(fetchAlbum);
+
+watch(albumId, run, { immediate: true });
 </script>

@@ -1,36 +1,7 @@
-import dayjs from "dayjs";
-import durationPlugin from "dayjs/plugin/duration";
-import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import dayjs from "@/dayjs";
 
-dayjs.locale(
-  {
-    name: "s-en",
-    relativeTime: {
-      future: "in %s",
-      past: "%s ago",
-      s: "few s",
-      m: "1 m",
-      mm: "%d m",
-      h: "1 h",
-      hh: "%d h",
-      d: "1 d",
-      dd: "%d d",
-      M: "1 mn",
-      MM: "%d mn",
-      y: "1 y",
-      yy: "%d y",
-    },
-  },
-  null,
-  true
-);
-dayjs.locale("en");
-
-dayjs.extend(durationPlugin);
-dayjs.extend(relativeTimePlugin);
-
-export const isEmpty = (str) => {
-  return !str || str.length === 0;
+export const notEmpty = (array) => {
+  return Array.isArray(array) && array.length !== 0;
 };
 
 export const debounce = (fn, delay = 0, immediate = false) => {
@@ -78,11 +49,11 @@ export const orderByDate = (array, key) => {
   );
 };
 
-export const getDateFromNow = (date) => {
+export const getRealtiveTime = (date) => {
   return dayjs(Date.parse(date)).fromNow();
 };
 
-export const getDateFromNowShort = (date) => {
+export const getShortRelativeTime = (date) => {
   return dayjs(Date.parse(date)).locale("s-en").fromNow(true);
 };
 

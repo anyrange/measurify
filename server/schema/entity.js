@@ -12,10 +12,8 @@ const entity = {
 const entities = { type: "array", items: entity };
 
 const plugin = fp(async (fastify) => {
-  fastify.addSchema(Object.assign({ $id: "entity", title: "entity" }, entity));
-  fastify.addSchema(
-    Object.assign({ $id: "entities", title: "entities" }, entities)
-  );
+  fastify.addSchema({ $id: "entity", title: "entity", ...entity });
+  fastify.addSchema({ $id: "entities", title: "entities", ...entities });
 });
 
 export default plugin;

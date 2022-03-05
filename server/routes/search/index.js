@@ -1,4 +1,4 @@
-import addImage from "../../utils/addImage.js";
+import { addImage, formatTrack } from "#server/utils/index.js";
 
 export default async function (fastify) {
   fastify.get(
@@ -21,38 +21,57 @@ export default async function (fastify) {
               albums: { $ref: "albums#" },
               artists: { $ref: "entities#" },
               tracks: { $ref: "tracks#" },
-              status: { type: "number" },
+              users: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    username: { type: "string" },
+                    display_name: { type: "string" },
+                    avatar: { type: "string" },
+                  },
+                },
+              },
             },
           },
         },
         tags: ["other"],
       },
-      preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const id = req.session.get("id");
       const { search, limit, page } = req.query;
 
-      const user = await fastify.db.User.findById(
-        id,
-        "tokens.token country"
-      ).lean();
+      const id = req.session.get("id");
+      const [token, country] = await Promise.all([
+        fastify.getRandomToken(),
+        fastify.getCountry(id),
+      ]);
 
-      const res = await fastify.spotifyAPI({
-        route: `search?q=${search}&type=track,artist,album&market=${
-          user.country
-        }&limit=${limit}&offset=${(page - 1) * limit}`,
-        token: user.tokens.token,
-      });
+      const query = new RegExp(
+        `.*${search.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&")}.*`
+      );
+
+      const [res, users] = await Promise.all([
+        fastify.spotifyAPI({
+          route: `search?q=${search}&type=track,artist,album&market=${country}&limit=${limit}&offset=${
+            (page - 1) * limit
+          }`,
+          token,
+        }),
+        fastify.db.User.find(
+          {
+            "settings.username": { $regex: query, $options: "i" },
+            "settings.privacy": "public",
+          },
+          { username: "$settings.username", display_name: 1, avatar: 1 }
+        ).lean(),
+      ]);
 
       reply.send({
         albums: res.albums.items.map(addImage),
         artists: res.artists.items.map(addImage),
-        tracks: res.tracks.items.map((track) =>
-          Object.assign(track, {
-            image: track.album.images.length ? track.album.images[0].url : "",
-          })
-        ),
+        tracks: res.tracks.items.map(formatTrack),
+        users,
       });
     }
   );

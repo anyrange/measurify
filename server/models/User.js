@@ -6,6 +6,10 @@ const schema = new Schema({
   display_name: { type: String, required: true },
   avatar: { type: String },
   country: { type: String, default: "US" },
+  listened: {
+    count: { type: Number, default: 0 },
+    time: { type: Number, default: 0 },
+  },
   listeningHistory: [
     {
       _id: false,
@@ -15,14 +19,21 @@ const schema = new Schema({
   ],
   settings: {
     username: { type: String, unique: true, required: true },
-    autoUpdate: { type: Boolean, default: false, required: true },
     privacy: { type: String, default: "public", required: true },
   },
+  genresTimeline: [
+    {
+      _id: false,
+      genres: [{ type: String }],
+      date: { type: Date, default: Date.now },
+    },
+  ],
   tokens: {
     refreshToken: { type: String, required: true },
     token: { type: String, required: true },
   },
-  friends: [{ type: String, ref: "User" }],
+  followers: { type: [String], ref: "User", default: [] },
+  follows: { type: [String], ref: "User", default: [] },
   lastLogin: { type: Date, default: Date.now },
   registrationDate: { type: Date, default: Date.now },
 });
