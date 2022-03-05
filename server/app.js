@@ -23,8 +23,8 @@ if (process.env.NODE_ENV != "production") {
     routePrefix: "/docs",
     swagger: {
       info: {
-        title: "Spotiworm",
-        description: "Spotiworm API documentation",
+        title: "measurify",
+        description: "measurify API documentation",
       },
     },
     uiConfig: {

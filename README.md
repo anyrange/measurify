@@ -1,4 +1,4 @@
-# spotiworm
+# measurify
 
 Yet another app using Spotify Web API
 

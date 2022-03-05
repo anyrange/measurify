@@ -33,9 +33,9 @@ export default defineConfig({
         sourcemap: true,
       },
       manifest: {
-        name: "Spotiworm",
-        short_name: "Spotiworm",
-        description: "Track your listening history and get stats",
+        name: "measurify",
+        short_name: "measurify",
+        description: "Measure your listening history and get stats",
         theme_color: "#0b0b0b",
         background_color: "#0b0b0b",
         display: "standalone",

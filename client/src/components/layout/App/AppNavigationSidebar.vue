@@ -2,7 +2,7 @@
   <aside>
     <div class="hidden flex-row px-2 text-white md:flex">
       <div class="default-border h-12 w-full flex items-center border-b">
-        <div class="px-2 font-medium text-lg text-white">spotiworm</div>
+        <div class="px-2 font-medium text-lg text-white">measurify</div>
       </div>
     </div>
     <nav class="sidebar mt-2" :class="[{ 'items-center': smallerThanMd }]">

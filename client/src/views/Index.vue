@@ -31,7 +31,7 @@ const title = {
 };
 
 const subtitle = {
-  true: "Your spotiworm feed",
-  false: "Some stats about spotiworm",
+  true: "Your measurify feed",
+  false: "Some stats about measurify",
 };
 </script>
