@@ -79,7 +79,7 @@ export default async function (fastify) {
           const { parseNewTracks } = await import(
             "#server/includes/cron-workers/recentlyPlayed.js"
           );
-          requests.push(parseNewTracks(document, 20));
+          requests.push(parseNewTracks(document, 50));
         }
 
         // update genres timeline if there is none
