@@ -48,9 +48,9 @@
           <modal :show="modalOpened" @close="modalOpened = false">
             <div class="flex flex-col gap-3 p-3">
               <div class="flex flex-col gap-1">
-                <h3 class="font-semibold text-xl sm:text-2xl">
+                <span class="font-semibold text-xl sm:text-2xl">
                   Most streamed tracks
-                </h3>
+                </span>
                 <span class="text-secondary-lighter">
                   The amount of times a track by
                   {{ artistData.artist.name }} appears in your top

@@ -4,6 +4,7 @@
     class="appearance-none"
     target="_blank"
     rel="no-referrer"
+    aria-label="Open Spotify"
   >
     <icon
       class="

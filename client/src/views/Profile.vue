@@ -78,9 +78,9 @@
                 >
                   {{ profile.user.display_name }}
                 </h1>
-                <h3 class="truncate font-light">
+                <span class="truncate font-light">
                   {{ profile.user.username }}
-                </h3>
+                </span>
               </div>
             </div>
           </div>

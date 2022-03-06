@@ -21,7 +21,11 @@
       <div class="h-full w-full flex items-center justify-between">
         <div class="flex items-center gap-1">
           <slot name="left">
-            <base-button shape="circle" @click="goBack">
+            <base-button
+              shape="circle"
+              @click="goBack"
+              :aria-label="showBackButton ? 'Back' : 'Home'"
+            >
               <icon
                 class="block h-6 w-6 text-white"
                 :icon="

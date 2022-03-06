@@ -8,7 +8,7 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-show="show" class="absolute inset-0 z-50 bg-black/40">
+      <div v-if="show" class="absolute inset-0 z-50 bg-black/40">
         <div
           class="fixed inset-0 flex items-center justify-center"
           @click="close"
