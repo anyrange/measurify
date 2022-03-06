@@ -31,7 +31,11 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(moreTracks.map((track) => formatTrack(track)));
+      reply.send(
+        moreTracks
+          .map((track) => formatTrack(track))
+          .filter((track) => track.id !== trackID)
+      );
     }
   );
 }
