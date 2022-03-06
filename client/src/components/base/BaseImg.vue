@@ -8,26 +8,23 @@
     leave-to-class="transform opacity-0"
     mode="out-in"
   >
-    <div v-if="loading">&nbsp;</div>
-    <div
-      v-else-if="parallax"
-      :style="{ backgroundImage: `url('${imageUrl}')` }"
-    />
+    <div v-if="parallax" :style="{ backgroundImage: `url('${imageUrl}')` }" />
     <img
       v-else
-      class="select-none"
+      v-lazy="{
+        src: lazyOptions.src,
+        error: lazyOptions.error,
+        loading: lazyOptions.loading,
+      }"
+      :alt="alt"
       aria-hidden="false"
       draggable="false"
-      loading="lazy"
-      :src="imageUrl"
-      :alt="alt"
     />
   </transition>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-import { createAsyncProcess } from "@/composable/useAsync";
+import { reactive, computed, ref } from "vue";
 import fallbackProfileImage from "@/assets/media/fallback-profile.svg";
 import fallbackTrackImage from "@/assets/media/fallback-track.svg";
 import fallbackArtistImage from "@/assets/media/fallback-artist.svg";
@@ -51,11 +48,6 @@ const props = defineProps({
     required: false,
     default: "profile",
   },
-  avatar: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
 });
 
 const FALLBACK_IMAGES = {
@@ -65,26 +57,35 @@ const FALLBACK_IMAGES = {
   artist: fallbackArtistImage,
 };
 
+const fallbackImage = computed(() => {
+  return FALLBACK_IMAGES[props.imageType];
+});
+
 const imageUrl = ref("");
 
-const checkImage = (url) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = url;
-    img.onload = () => resolve(url);
-    img.onerror = () => reject("Failed to load image");
-  });
-};
+const lazyOptions = reactive({
+  src: props.src,
+  error: fallbackImage.value,
+  loading: fallbackImage.value,
+});
 
-const fetchImage = async () => {
-  try {
-    imageUrl.value = await checkImage(props.src);
-  } catch (err) {
-    imageUrl.value = FALLBACK_IMAGES[props.imageType];
-  }
-};
+if (props.parallax) {
+  const fetchImage = async () => {
+    const checkImage = (url) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => resolve(url);
+        img.onerror = () => reject("Failed to load image");
+      });
+    };
+    try {
+      imageUrl.value = await checkImage(props.src);
+    } catch (err) {
+      imageUrl.value = fallbackImage.value;
+    }
+  };
 
-const { loading, run: handleImage } = createAsyncProcess(fetchImage);
-
-watch(() => props.src, handleImage, { immediate: true });
+  fetchImage();
+}
 </script>
