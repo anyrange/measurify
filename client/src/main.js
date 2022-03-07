@@ -4,7 +4,6 @@ import { createPersistedState } from "./piniaPersisted.js";
 import App from "./App.vue";
 import router from "./router";
 import VWave from "v-wave";
-import VueLazyLoad from "vue3-lazyload";
 import "virtual:windi.css";
 import "./assets/styles/index.css";
 import { registerSW } from "virtual:pwa-register";
@@ -16,4 +15,4 @@ const app = createApp(App);
 const pinia = createPinia();
 pinia.use(createPersistedState({ modules: ["user", "settings"] }));
 
-app.use(router).use(VWave).use(VueLazyLoad).use(pinia).mount("#app");
+app.use(router).use(VWave).use(pinia).mount("#app");

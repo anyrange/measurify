@@ -1,30 +1,38 @@
 <template>
-  <transition
-    enter-active-class="transition ease-out"
-    enter-from-class="transform opacity-0"
-    enter-to-class="transform opacity-100"
-    leave-active-class="transition ease-in"
-    leave-from-class="transform opacity-100"
-    leave-to-class="transform opacity-0"
-    mode="out-in"
-  >
-    <div v-if="parallax" :style="{ backgroundImage: `url('${imageUrl}')` }" />
-    <img
-      v-else
-      v-lazy="{
-        src: lazyOptions.src,
-        error: lazyOptions.error,
-        loading: lazyOptions.loading,
-      }"
-      :alt="alt"
-      aria-hidden="false"
-      draggable="false"
-    />
-  </transition>
+  <div ref="target">
+    <transition
+      enter-active-class="transition ease-out"
+      enter-from-class="transform opacity-0"
+      enter-to-class="transform opacity-100"
+      leave-active-class="transition ease-in"
+      leave-from-class="transform opacity-100"
+      leave-to-class="transform opacity-0"
+      mode="out-in"
+    >
+      <template v-if="loaded">
+        <div v-if="loading">&nbsp;</div>
+        <div
+          v-else-if="parallax"
+          v-bind="$attrs"
+          :style="{ backgroundImage: `url('${imageUrl}')` }"
+        />
+        <img
+          v-else
+          :src="imageUrl"
+          :alt="alt"
+          v-bind="$attrs"
+          aria-hidden="false"
+          draggable="false"
+        />
+      </template>
+    </transition>
+  </div>
 </template>
 
 <script setup>
-import { reactive, computed, ref } from "vue";
+import { ref, watch } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
+import { createAsyncProcess } from "@/composable/useAsync";
 import fallbackProfileImage from "@/assets/media/fallback-profile.svg";
 import fallbackTrackImage from "@/assets/media/fallback-track.svg";
 import fallbackArtistImage from "@/assets/media/fallback-artist.svg";
@@ -57,35 +65,44 @@ const FALLBACK_IMAGES = {
   artist: fallbackArtistImage,
 };
 
-const fallbackImage = computed(() => {
-  return FALLBACK_IMAGES[props.imageType];
-});
-
 const imageUrl = ref("");
+const loaded = ref(false);
 
-const lazyOptions = reactive({
-  src: props.src,
-  error: fallbackImage.value,
-  loading: fallbackImage.value,
+const target = ref(null);
+const targetIsVisible = ref(false);
+
+const checkImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = url;
+    img.onload = () => resolve(url);
+    img.onerror = () => reject("Failed to load image");
+  });
+};
+
+const fetchImage = async () => {
+  try {
+    imageUrl.value = await checkImage(props.src);
+  } catch (err) {
+    imageUrl.value = FALLBACK_IMAGES[props.imageType];
+  } finally {
+    loaded.value = true;
+  }
+};
+
+const { loading, run: loadImage } = createAsyncProcess(fetchImage);
+
+useIntersectionObserver(target, ([{ isIntersecting }]) => {
+  targetIsVisible.value = isIntersecting;
 });
 
-if (props.parallax) {
-  const fetchImage = async () => {
-    const checkImage = (url) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => resolve(url);
-        img.onerror = () => reject("Failed to load image");
-      });
-    };
-    try {
-      imageUrl.value = await checkImage(props.src);
-    } catch (err) {
-      imageUrl.value = fallbackImage.value;
+watch(
+  [() => props.src, targetIsVisible],
+  () => {
+    if (!loaded.value && targetIsVisible.value) {
+      loadImage();
     }
-  };
-
-  fetchImage();
-}
+  },
+  { immediate: true }
+);
 </script>
