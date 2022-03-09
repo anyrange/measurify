@@ -25,7 +25,7 @@ export default async function (fastify) {
       ]);
 
       const albums = await fastify.spotifyAPI({
-        route: `artists/${artistID}/albums?include_groups=album&market=${country}`,
+        route: `artists/${artistID}/albums?include_groups=album,single&market=${country}`,
         token,
       });
 
