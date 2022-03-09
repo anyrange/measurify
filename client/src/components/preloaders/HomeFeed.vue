@@ -53,12 +53,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, shallowRef } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import { getFeed } from "@/api";
 import { formatDate } from "@/utils";
 
-const feedList = ref(null);
+const feedList = shallowRef(null);
 
 const pages = ref(1);
 const page = ref(1);
@@ -73,22 +73,22 @@ useInfiniteScroll(
   feedList,
   async () => {
     if (page.value >= pages.value) return;
-
     page.value++;
 
     const { userActivity, pages: pagesData } = await getFeed(page.value);
-
     pages.value = pagesData;
 
     const data = Object.entries(userActivity);
 
     data.forEach(([date, data]) => {
       if (feed.value[date] !== undefined) {
-        const feedLength = feed.value[date].length;
-        if (feed.value[date][feedLength - 1].username === data[0].username) {
+        const lastItem = feed.value[date].at(-1);
+
+        if (lastItem.username === data[0].username) {
           const firstItem = data.shift();
-          feed.value[date][feedLength - 1].tracks.push(...firstItem.tracks);
+          lastItem.tracks.push(...firstItem.tracks);
         }
+
         feed.value[date] = [...feed.value[date], ...data];
         return;
       }
