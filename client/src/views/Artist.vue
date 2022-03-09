@@ -126,17 +126,9 @@
             </track-rows>
           </container-item>
         </template>
-        <!-- <container-item v-if="artistData.relatedArtists.length">
-        <container-item-label>Related Artists</container-item-label>
-        <horizontal-scroll>
-          <spotify-card
-            v-for="item in artistData.relatedArtists"
-            :key="item.id"
-            :item="item"
-            type="artist"
-          />
-        </horizontal-scroll>
-      </container-item> -->
+        <suspense>
+          <related-artists :artist-id="artistData.artist.id" />
+        </suspense>
       </container>
     </div>
   </async-wrapper>
