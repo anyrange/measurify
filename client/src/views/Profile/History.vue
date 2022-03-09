@@ -22,13 +22,7 @@
           </template>
         </div>
       </track-rows>
-      <div class="mb-4">
-        <blankslate
-          v-if="!loading && !listeningHistory?.history?.length"
-          type="empty"
-        />
-      </div>
-      <div class="flex justify-center">
+      <div class="flex justify-center" v-if="listeningHistory.history?.length">
         <pagination v-model="page" :total-pages="listeningHistory.pages" />
       </div>
     </container-item>

@@ -1,5 +1,5 @@
 <template>
-  <figure
+  <div
     class="
       -mt-4
       -mx-4
@@ -12,11 +12,8 @@
       sm:mx-0 sm:mt-4 sm:items-center sm:gap-0
     "
   >
-    <base-img
-      parallax
-      :src="item.image"
-      :alt="item.name"
-      :image-type="type"
+    <div
+      :style="{ backgroundImage: `url('${item.image}')` }"
       class="
         w-full
         h-92
@@ -29,18 +26,18 @@
       "
     />
     <div class="default-border mb-4 w-full border-b sm:border-none md:mb-0">
-      <figcaption
+      <div
         class="relative mx-4 mb-2 text-left sm:m-0 md:text-left sm:text-center"
       >
-        <h1
+        <div
           id="infopage-title"
           class="line-clamp-2 font-medium text-white text-xl sm:text-2xl"
         >
           {{ item.name }}
-        </h1>
-      </figcaption>
+        </div>
+      </div>
     </div>
-  </figure>
+  </div>
 </template>
 
 <script setup>

@@ -13,9 +13,9 @@
       <home-stats />
     </template>
     <template #fallback>
-      <div class="h-screen items-center justify-center">
+      <!-- <div class="h-screen items-center justify-center">
         <loading-spinner />
-      </div>
+      </div> -->
     </template>
   </suspense>
 </template>

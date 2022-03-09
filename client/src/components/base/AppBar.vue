@@ -1,5 +1,6 @@
 <template>
   <header
+    v-show="showAppBar"
     class="
       top-0
       z-12

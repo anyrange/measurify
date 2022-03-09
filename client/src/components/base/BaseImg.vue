@@ -11,11 +11,6 @@
     >
       <template v-if="loaded">
         <div v-if="loading">&nbsp;</div>
-        <div
-          v-else-if="parallax"
-          v-bind="$attrs"
-          :style="{ backgroundImage: `url('${imageUrl}')` }"
-        />
         <img
           v-else
           :src="imageUrl"
@@ -45,11 +40,6 @@ const props = defineProps({
   alt: {
     type: String,
     required: true,
-  },
-  parallax: {
-    type: Boolean,
-    required: false,
-    default: false,
   },
   imageType: {
     type: String,
