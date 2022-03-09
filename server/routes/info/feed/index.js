@@ -66,10 +66,7 @@ export default async function (fastify) {
         fastify.db.User.aggregate(getActivityAgg(id, limit, page)),
         fastify.db.User.findById(id, "follows").populate({
           path: "follows",
-          match: {
-            "settings.privacy": "public",
-            "tokens.refreshToken": { $ne: "" },
-          },
+          match: { "settings.privacy": "public" },
           select: "listened.count",
         }),
       ]);
