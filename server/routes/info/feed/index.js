@@ -115,12 +115,7 @@ const getActivityAgg = (_id, limit, page) => [
     },
   },
   { $unwind: { path: "$user" } },
-  {
-    $match: {
-      "user.settings.privacy": "public",
-      "user.tokens.refreshToken": { $ne: "" },
-    },
-  },
+  { $match: { "user.settings.privacy": "public" } },
   {
     $addFields: {
       display_name: "$user.display_name",
