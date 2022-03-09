@@ -6,7 +6,9 @@
  */
 
 export function timeDiff(start, end) {
-  return ((end.getTime() - start.getTime()) / 1000).toFixed(2);
+  const diffInMs = end.getTime() - start.getTime();
+  const diffInS = diffInMs / 1000;
+  return Number(diffInS.toFixed(2));
 }
 
 export function arrLastEl(arr) {
