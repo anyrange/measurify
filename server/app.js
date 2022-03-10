@@ -18,6 +18,8 @@ app.register(import("fastify-cors"), {
   credentials: true,
 });
 
+app.register(import("fastify-compress"));
+
 if (process.env.NODE_ENV != "production") {
   app.register(import("fastify-swagger"), {
     routePrefix: "/docs",

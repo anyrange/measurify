@@ -16,11 +16,11 @@ export default async function (fastify) {
             username: {
               type: "string",
               maxLength: 20,
-              minLength: 1,
+              minLength: 3,
               pattern:
                 "^(?!.*(?:overview|listening-history|about|profile|top-listeners|account|track))[a-z0-9_-]{3,16}$",
             },
-            display_name: { type: "string", minLength: 1, maxLength: 30 },
+            display_name: { type: "string", minLength: 3, maxLength: 30 },
           },
         },
         response: {
