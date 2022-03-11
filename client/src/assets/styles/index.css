@@ -41,6 +41,9 @@ body {
 .link {
   @apply text-white hover:underline;
 }
+.break-inside {
+  break-inside: avoid;
+}
 
 a {
   @apply default-focus;

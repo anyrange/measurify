@@ -15,6 +15,7 @@
           v-else
           :src="imageUrl"
           :alt="alt"
+          decoding="async"
           v-bind="$attrs"
           aria-hidden="false"
           draggable="false"
@@ -88,8 +89,8 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
 
 watch(
   [() => props.src, targetIsVisible],
-  () => {
-    if (!loaded.value && targetIsVisible.value) {
+  ([newSrc], [oldSrc]) => {
+    if (targetIsVisible.value && (newSrc !== oldSrc || !loaded.value)) {
       loadImage();
     }
   },

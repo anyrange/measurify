@@ -1,21 +1,10 @@
 <template>
   <header
-    v-show="showAppBar"
-    class="
-      top-0
-      z-12
-      sm:-mx-8
-      -mx-4
-      bg-secondary-darkest
-      shadow-md
-      sm:shadow-none
-      duration-200
-      transition-all
-    "
+    class="-mx-4 top-0 z-1000 transition-all duration-200 sm:-mx-8"
     :class="[
-      [fixed ? 'sticky mb-2' : 'sm:sticky fixed -mb-8'],
-      [showAppBar ? 'opacity-100' : 'opacity-0'],
+      [fixed ? 'sticky mb-2' : 'sm:sticky fixed -mb-12'],
       { 'sm:w-auto w-full ': !fixed },
+      { 'bg-secondary-darkest shadow-md sm:shadow-none': showAppBar },
     ]"
   >
     <div class="-px-3 h-13 sm:h-12 sm:-px-6">
@@ -23,6 +12,7 @@
         <div class="flex items-center gap-1">
           <slot name="left">
             <base-button
+              v-if="isMobile || showAppBar"
               shape="circle"
               @click="goBack"
               :aria-label="showBackButton ? 'Back' : 'Home'"
@@ -35,7 +25,7 @@
               />
             </base-button>
           </slot>
-          <span class="line-clamp-1 text-lg text-white">
+          <span class="line-clamp-1 text-lg text-white" v-show="showAppBar">
             <slot name="title"> </slot>
           </span>
         </div>
@@ -51,6 +41,7 @@
 import { onMounted, ref, computed, inject } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
+import { useNavigator } from "@/composable/useNavigator";
 
 const props = defineProps({
   scrollTarget: {
@@ -68,6 +59,8 @@ const initialHistoryLength = inject("historyLength");
 
 const route = useRoute();
 const router = useRouter();
+
+const { isMobile } = useNavigator();
 
 const targetIsVisible = ref(true);
 

@@ -5,23 +5,7 @@
     </span>
     <div class="flex flex-row items-center">
       <div class="flex flex-none flex-col">
-        <div>
-          <div class="relative">
-            <div
-              class="
-                text-white
-                object-cover
-                w-13
-                h-13
-                rounded-full
-                bg-secondary-light
-                animate-pulse
-              "
-            >
-              &nbsp;
-            </div>
-          </div>
-        </div>
+        <skeleton class="h-13 w-13 rounded-full" />
       </div>
       <div class="ml-3 flex flex-col gap-2">
         <skeleton class="h-3 w-18 rounded" />

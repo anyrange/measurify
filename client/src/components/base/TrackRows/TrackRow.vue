@@ -19,7 +19,7 @@
             :alt="track.name"
           />
         </base-link>
-        <div class="block">
+        <div class="fullwidth block">
           <base-link
             class="link line-clamp-1 text-sm"
             :to="{ name: 'track', params: { trackId: track.id } }"
@@ -68,7 +68,7 @@
         <span v-if="plays">
           {{
             track.plays
-              ? `${track.plays} ${track.plays === 1 ? "play" : "plays"}`
+              ? `${track.plays} ${track.plays === 1 ? "stream" : "streams"}`
               : ""
           }}
         </span>

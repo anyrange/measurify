@@ -5,19 +5,16 @@
     </h1>
     <h2 class="h-subtitle">{{ subtitle[isAuthenticated] }}</h2>
   </div>
-  <suspense>
-    <template v-if="isAuthenticated">
+  <template v-if="isAuthenticated">
+    <suspense>
       <home-feed />
-    </template>
-    <template v-else>
+    </suspense>
+  </template>
+  <template v-else>
+    <suspense>
       <home-stats />
-    </template>
-    <template #fallback>
-      <!-- <div class="h-screen items-center justify-center">
-        <loading-spinner />
-      </div> -->
-    </template>
-  </suspense>
+    </suspense>
+  </template>
 </template>
 
 <script setup>

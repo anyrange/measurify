@@ -64,3 +64,8 @@ export const formatDate = (date) => {
 export const getDuration = (time) => {
   return dayjs.duration(time).format("mm:ss");
 };
+
+export const getDecimals = (number) => {
+  const [before, after] = `${number}`.split(".");
+  return { before, after };
+};

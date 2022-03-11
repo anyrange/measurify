@@ -14,10 +14,10 @@
           sticky
           top-0
           z-99
+          border-b border-secondary
           bg-secondary-darkest
           font-medium
           text-lg text-secondary-lighter
-          border-b border-secondary
         "
       >
         {{ formatDate(date) }}
@@ -89,13 +89,15 @@ useInfiniteScroll(
           lastItem.tracks.push(...firstItem.tracks);
         }
 
-        feed.value[date] = [...feed.value[date], ...data];
+        data.forEach((item) => {
+          if (!item) return;
+          feed.value[date].push(item);
+        });
         return;
       }
-
       feed.value[date] = data;
     });
   },
-  { distance: 300 }
+  { distance: 500 }
 );
 </script>

@@ -28,9 +28,3 @@ const formattedTitle = computed(() =>
     : props.title
 );
 </script>
-
-<style>
-.break-inside {
-  break-inside: avoid;
-}
-</style>
