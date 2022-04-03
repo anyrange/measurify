@@ -5,7 +5,7 @@
         <card :title="profile.overview.plays">tracks played</card>
         <card :title="profile.overview.playtime">minutes listened</card>
         <card :title="getMeanTime(profile.overview.meantime)">
-          avarage track duration
+          average track duration
         </card>
         <card :title="formatDate(profile.user.registrationDate)">joined</card>
         <card :title="profile.user.country">country</card>
@@ -111,7 +111,7 @@ import { computed, ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useProfileStore } from "@/stores/profile";
 import { createAsyncProcess } from "@/composable/useAsync";
-import { formatDate, notEmpty, getDecimals } from "@/utils";
+import { formatDate, notEmpty, getDuration } from "@/utils";
 import { getProfileCurrentTrack } from "@/api";
 import now_playing from "@/assets/media/now_playing.gif";
 
@@ -122,8 +122,7 @@ const currentTrack = ref(null);
 const profile = computed(() => profileStore.profile);
 
 const getMeanTime = (meantime) => {
-  const { before, after } = getDecimals(meantime);
-  return `${before}:${after * 6}`;
+  return getDuration(meantime * 60 * 1000);
 };
 
 const fetchCurrentTrack = async () => {
