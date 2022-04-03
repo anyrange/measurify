@@ -1,5 +1,5 @@
 <template>
-  <label class="flex flex-col gap-2">
+  <label class="relative flex flex-col gap-2">
     <span
       class="font-normal text-base text-secondary-lightest"
       v-if="label.length"
@@ -14,12 +14,15 @@
         px-2
         rounded
         placeholder-secondary-lighter
-        default-focus
         disabled:opacity-40
         bg-secondary-darker
+        default-focus
       "
       @input="handleInput($event.target.value)"
     />
+    <span class="absolute right-2 top-2">
+      <slot name="right"></slot>
+    </span>
   </label>
 </template>
 

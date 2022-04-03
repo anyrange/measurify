@@ -7,6 +7,7 @@ specifiers:
   '@vitejs/plugin-vue': ^1.10.2
   '@vue/eslint-config-prettier': ^7.0.0
   '@vueuse/core': ^7.7.0
+  '@vueuse/router': ^8.2.3
   axios: ^0.21.4
   concurrently: ^6.5.1
   cross-env: ^7.0.3
@@ -44,6 +45,7 @@ specifiers:
 
 dependencies:
   '@vueuse/core': 7.7.0_vue@3.2.31
+  '@vueuse/router': 8.2.3_vue-router@4.0.12+vue@3.2.31
   axios: 0.21.4
   dayjs: 1.10.7
   dotenv: 8.6.0
@@ -1581,8 +1583,36 @@ packages:
       vue-demi: 0.12.1_vue@3.2.31
     dev: false
 
+  /@vueuse/router/8.2.3_vue-router@4.0.12+vue@3.2.31:
+    resolution: {integrity: sha512-nP9uFhFqINj2Kffq0tkl8f+aKYzZQgoPC2ODK5u+mhYa+YCDmvYNPwztTIXT9w01WOnBDlTLXj8Pk6GHMTmxuw==}
+    peerDependencies:
+      vue-router: '>=4.0.0-rc.1'
+    dependencies:
+      '@vueuse/shared': 8.2.3_vue@3.2.31
+      vue-demi: 0.12.1_vue@3.2.31
+      vue-router: 4.0.12_vue@3.2.31
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+    dev: false
+
   /@vueuse/shared/7.7.0_vue@3.2.31:
     resolution: {integrity: sha512-ANzMcUnjuUPJ9nWqMAqYt8p0qon6AH5pP5/V/0RSWkwCIWZwi57ujIaxizzMwnJECUF/73BmsRmpvvtokCIrKw==}
+    peerDependencies:
+      '@vue/composition-api': ^1.1.0
+      vue: ^2.6.0 || ^3.2.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.2.31
+      vue-demi: 0.12.1_vue@3.2.31
+    dev: false
+
+  /@vueuse/shared/8.2.3_vue@3.2.31:
+    resolution: {integrity: sha512-4Cd3s+x8ZwzzAf7o8jS7mEj9pQ1Zsf9aiNBAFg4rHcWeDY0S3XMgvN4ae2hBul7jmi+Ab4REAqiqYWyYqU86qg==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0

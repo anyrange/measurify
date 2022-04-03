@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^7.7.0",
+    "@vueuse/router": "^8.2.3",
     "axios": "^0.21.4",
     "dayjs": "^1.10.7",
     "dotenv": "^8.6.0",

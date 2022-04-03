@@ -134,6 +134,13 @@ export function getTrackLyrics({ title, artist }) {
     },
   });
 }
+export function doSearch(query) {
+  return api.get("/search", {
+    params: {
+      search: query,
+    },
+  });
+}
 
 export function followProfile(username) {
   return api.post(`/follow?username=${username}`);
