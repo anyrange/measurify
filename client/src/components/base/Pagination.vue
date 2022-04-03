@@ -131,7 +131,7 @@ function isPageActive(page) {
   @apply flex items-center;
 }
 .pagination-item {
-  @apply h-9 w-10 rounded flex items-center justify-center text-center hover:bg-secondary-darker appearance-none;
+  @apply h-9 w-10 rounded flex items-center justify-center text-center hover:bg-secondary-darker/50 appearance-none;
 }
 .active {
   @apply bg-secondary-darker;
