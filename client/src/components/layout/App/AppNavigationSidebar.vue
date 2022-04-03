@@ -5,7 +5,10 @@
         <div class="px-2 font-medium text-lg text-white">measurify</div>
       </div>
     </div>
-    <nav class="sidebar mt-2" :class="[{ 'items-center': smallerThanMd }]">
+    <nav
+      class="sidebar z-[9999] mt-2"
+      :class="[{ 'items-center': smallerThanMd }]"
+    >
       <template v-if="!isAuthenticated">
         <div class="sidebar__item order-last sm:order-none">
           <base-button
@@ -68,7 +71,7 @@ const userStore = useUserStore();
 
 <style>
 .sidebar {
-  @apply sm:bg-secondary-darker bg-secondary-darkest z-50;
+  @apply sm:bg-secondary-darker bg-secondary-darkest;
   @apply flex flex-row sm:flex-col gap-2 flex-none;
   @apply sm:h-screen h-12 sm:px-2 p-0;
   @apply sm:w-20 md:w-60 xl:w-60 w-full;

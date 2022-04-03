@@ -1,27 +1,17 @@
 <template>
   <div ref="target">
-    <transition
-      enter-active-class="transition ease-out"
-      enter-from-class="transform opacity-0"
-      enter-to-class="transform opacity-100"
-      leave-active-class="transition ease-in"
-      leave-from-class="transform opacity-100"
-      leave-to-class="transform opacity-0"
-      mode="out-in"
-    >
-      <template v-if="loaded">
-        <div v-if="loading">&nbsp;</div>
-        <img
-          v-else
-          :src="imageUrl"
-          :alt="alt"
-          decoding="async"
-          v-bind="$attrs"
-          aria-hidden="false"
-          draggable="false"
-        />
-      </template>
-    </transition>
+    <template v-if="loaded">
+      <div v-if="loading">&nbsp;</div>
+      <img
+        v-else
+        :src="imageUrl"
+        :alt="alt"
+        decoding="async"
+        v-bind="$attrs"
+        aria-hidden="false"
+        draggable="false"
+      />
+    </template>
   </div>
 </template>
 

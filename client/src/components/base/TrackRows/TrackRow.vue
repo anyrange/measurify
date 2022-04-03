@@ -68,7 +68,7 @@
         <span v-if="plays">
           {{
             track.plays
-              ? `${track.plays} ${track.plays === 1 ? "stream" : "streams"}`
+              ? `${track.plays} ${track.plays === 1 ? "play" : "plays"}`
               : ""
           }}
         </span>

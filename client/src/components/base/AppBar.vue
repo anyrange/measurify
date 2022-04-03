@@ -56,6 +56,7 @@ const props = defineProps({
 });
 
 const initialHistoryLength = inject("historyLength");
+const contentWindow = inject("contentWindow");
 
 const route = useRoute();
 const router = useRouter();
@@ -80,7 +81,6 @@ const goBack = () => {
 };
 
 onMounted(() => {
-  const window = document.querySelector("#content-window");
   const target = document.getElementById(props.scrollTarget);
 
   if (props.fixed) return;
@@ -91,7 +91,8 @@ onMounted(() => {
       targetIsVisible.value = isIntersecting;
     },
     {
-      root: window,
+      root: contentWindow.value,
+      rootMargin: "-20px",
     }
   );
 });

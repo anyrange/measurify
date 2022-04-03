@@ -13,6 +13,7 @@
           <main class="flex flex-1 flex-col bg-secondary-darkest">
             <div
               id="content-window"
+              ref="mainWindow"
               class="
                 overflow-y-auto
                 flex flex-col
@@ -36,7 +37,7 @@
 </template>
 
 <script setup>
-import { provide } from "vue";
+import { provide, ref } from "vue";
 import { useNavigator } from "@/composable/useNavigator";
 import { createAsyncProcess } from "@/composable/useAsync";
 import { useUserStore } from "@/stores/user";
@@ -46,7 +47,11 @@ const userStore = useUserStore();
 const { isMobile } = useNavigator();
 const { xlAndLarger } = useBreakpoints();
 
+const mainWindow = ref();
+
 provide("historyLength", window.history.length);
+
+provide("contentWindow", mainWindow);
 
 const { loading, run } = createAsyncProcess(userStore.updateUser);
 

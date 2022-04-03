@@ -11,7 +11,6 @@ export default {
         scale: ["active", "group-hover"],
       },
     },
-
     extend: {
       colors: {
         primary: "#1ed760",
@@ -51,6 +50,7 @@ export default {
   ],
   shortcuts: {
     "default-border": "border-secondary-dark",
-    "default-focus": "outline-none focus:outline-none focus-visible:ring-1.5",
+    "default-focus":
+      "outline-none focus:outline-none focus-visible:ring-1.5 focus:ring-inset focus:ring-secondary",
   },
 };
