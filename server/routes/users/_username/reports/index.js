@@ -8,42 +8,15 @@ export default async function (fastify) {
           required: ["username"],
           properties: { username: { type: "string" } },
         },
-        querystring: {
-          type: "object",
-          properties: {
-            firstDate: { type: "string", format: "date" },
-            lastDate: { type: "string", format: "date" },
-          },
-        },
+
         response: {
           200: {
             type: "object",
+            required: ["plays", "playtime", "meantime"],
             properties: {
-              status: { type: "number" },
-              hourlyActivity: {
-                type: "array",
-                items: {
-                  type: "object",
-                  required: ["time", "playtime", "plays"],
-                  properties: {
-                    time: { type: "number" },
-                    playtime: { type: "number" },
-                    plays: { type: "number" },
-                  },
-                },
-              },
-              graph: {
-                type: "array",
-                items: {
-                  type: "object",
-                  required: ["date", "duration", "plays"],
-                  properties: {
-                    date: { type: "string", format: "date" },
-                    duration: { type: "number" },
-                    plays: { type: "number" },
-                  },
-                },
-              },
+              plays: { type: "number" },
+              playtime: { type: "number" },
+              meantime: { type: "number" },
             },
           },
         },
@@ -53,16 +26,19 @@ export default async function (fastify) {
     },
     async function (req, reply) {
       const user = req.user;
-      const { firstDate, lastDate } = req.query;
 
-      const options = { _id: user._id, firstDate, lastDate };
+      const res = await fastify.db.User.findById(user._id, {
+        listened: 1,
+      }).lean();
 
-      const [graph, hourlyActivity] = await Promise.all([
-        fastify.userGraph(options),
-        fastify.userHourlyActivity(options),
-      ]);
+      const plays = res.listened?.count || 0;
+      const playtime = (res.listened?.time || 0) / 60;
 
-      reply.send({ graph, hourlyActivity });
+      reply.send({
+        plays,
+        playtime: Math.round(playtime),
+        meantime: (playtime / plays || 1).toFixed(2),
+      });
     }
   );
 }
