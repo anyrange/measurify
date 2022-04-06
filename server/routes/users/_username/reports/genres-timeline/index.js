@@ -46,7 +46,32 @@ export default async function (fastify) {
         return;
       }
 
-      reply.code(500).send();
+      const agg = getAgg(user._id, firstDate, lastDate);
+      const data = await userRef.aggregate(agg);
+
+      reply.send(data[0].genresTimeline);
     }
   );
 }
+
+const getAgg = (_id, firstDate, lastDate = new Date()) => {
+  return [
+    { $match: { _id } },
+    {
+      $project: {
+        genresTimeline: {
+          $filter: {
+            input: "$genresTimeline",
+            as: "item",
+            cond: {
+              $and: [
+                { $lte: ["$$item.date", new Date(lastDate)] },
+                { $gte: ["$$item.date", new Date(firstDate)] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ];
+};
