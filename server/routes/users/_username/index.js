@@ -92,7 +92,7 @@ export default async function (fastify) {
       const { rangeTop, rangeHistory } = req.query;
 
       const requests = [
-        fastify.userTop({ _id: user._id, range: rangeTop }),
+        userTop({ _id: user._id, range: rangeTop }),
         fastify.userListeningHistory({ _id: user._id, range: rangeHistory }),
       ];
 
@@ -120,4 +120,18 @@ export default async function (fastify) {
       reply.send(response);
     }
   );
+
+  const userTop = async (options) => {
+    const [t, al, art] = await Promise.all([
+      fastify.userTopTracks(options),
+      fastify.userTopAlbums(options),
+      fastify.userTopArtists(options),
+    ]);
+
+    return {
+      tracks: t.tracks,
+      albums: al.albums,
+      artists: art.artists,
+    };
+  };
 }

@@ -47,9 +47,9 @@ export default async function (fastify) {
       }
 
       const agg = getAgg(user._id, firstDate, lastDate);
-      const data = await userRef.aggregate(agg);
+      const [data] = await userRef.aggregate(agg);
 
-      reply.send(data[0].genresTimeline);
+      reply.send(data.genresTimeline);
     }
   );
 }
@@ -65,8 +65,8 @@ const getAgg = (_id, firstDate, lastDate = new Date()) => {
             as: "item",
             cond: {
               $and: [
-                { $lte: ["$$item.date", new Date(lastDate)] },
                 { $gte: ["$$item.date", new Date(firstDate)] },
+                { $lte: ["$$item.date", new Date(lastDate)] },
               ],
             },
           },
