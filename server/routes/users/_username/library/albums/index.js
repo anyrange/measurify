@@ -12,10 +12,9 @@ export default async function (fastify) {
           type: "object",
           properties: {
             range: { type: "number", minimum: 1, maximum: 50, default: 20 },
+            page: { type: "number", minimum: 1, default: 1 },
             firstDate: { type: "string", format: "date" },
             lastDate: { type: "string", format: "date" },
-            page: { type: "number", minimum: 1, default: 1 },
-            search: { type: "string", default: "" },
           },
         },
         response: {
@@ -33,11 +32,11 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { range, page } = req.query;
+      const { range, page, firstDate, lastDate } = req.query;
 
       const _id = req.session.get("id");
+      const options = { _id, range, page, firstDate, lastDate };
 
-      const options = { _id, range, page };
       const top = await fastify.userTopAlbums(options);
 
       reply.send(top);

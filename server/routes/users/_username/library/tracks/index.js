@@ -13,6 +13,8 @@ export default async function (fastify) {
           properties: {
             range: { type: "number", minimum: 1, maximum: 50, default: 20 },
             page: { type: "number", minimum: 1, default: 1 },
+            firstDate: { type: "string", format: "date" },
+            lastDate: { type: "string", format: "date" },
           },
         },
         response: {
@@ -40,10 +42,12 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const { range, page } = req.query;
-      const user = req.user;
+      const { range, page, firstDate, lastDate } = req.query;
 
-      const top = await fastify.userTopTracks({ _id: user._id, range, page });
+      const _id = req.session.get("id");
+      const options = { _id, range, page, firstDate, lastDate };
+
+      const top = await fastify.userTopTracks(options);
 
       reply.send(top);
     }

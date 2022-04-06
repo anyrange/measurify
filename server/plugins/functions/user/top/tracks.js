@@ -1,13 +1,32 @@
 import fp from "fastify-plugin";
 import User from "#server/models/User.js";
 
-export const tracks = async ({ _id, range = 10, page = 1 }) => {
+export const tracks = async ({
+  _id,
+  range = 10,
+  page = 1,
+  firstDate,
+  lastDate,
+}) => {
   if (!_id) return { tracks: [], pages: 1 };
 
   const agg = [
     { $match: { _id } },
     { $project: { listeningHistory: 1 } },
     { $unwind: { path: "$listeningHistory" } },
+  ];
+
+  if (firstDate)
+    agg.push({
+      $match: { "listeningHistory.played_at": { $gte: new Date(firstDate) } },
+    });
+
+  if (lastDate)
+    agg.push({
+      $match: { "listeningHistory.played_at": { $lte: new Date(lastDate) } },
+    });
+
+  agg.push(
     {
       $group: {
         _id: "$listeningHistory.track",
@@ -78,8 +97,8 @@ export const tracks = async ({ _id, range = 10, page = 1 }) => {
           },
         },
       },
-    },
-  ];
+    }
+  );
 
   const tracks = await User.aggregate(agg);
 
