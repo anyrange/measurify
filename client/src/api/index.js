@@ -99,10 +99,10 @@ export function getFollowing(username) {
 }
 
 export function followProfile(username) {
-  return api.post("/follow", { params: { username } });
+  return api.post(`/follow?username=${username}`);
 }
 export function unfollowProfile(username) {
-  return api.delete("/follow", { params: { username } });
+  return api.delete(`/follow?username=${username}`);
 }
 
 export function getAccount() {
