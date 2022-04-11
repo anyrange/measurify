@@ -72,7 +72,7 @@ export default async function (fastify) {
       const [
         { artists: userArtists, tracks: userTracks },
         { artists: reqArtists, tracks: reqTracks },
-      ] = await Promise.all([fastify.userTop(opts1), fastify.userTop(opts2)]);
+      ] = await Promise.all([userTop(opts1), userTop(opts2)]);
 
       const artists = [];
       reqArtists.forEach((artist, reqIndex) => {
@@ -134,6 +134,20 @@ export default async function (fastify) {
       });
     }
   );
+
+  const userTop = async (options) => {
+    const [t, al, art] = await Promise.all([
+      fastify.userTopTracks(options),
+      fastify.userTopAlbums(options),
+      fastify.userTopArtists(options),
+    ]);
+
+    return {
+      tracks: t.tracks,
+      albums: al.albums,
+      artists: art.artists,
+    };
+  };
 }
 
 const meanValue = (first = 0, second = 0) => (first + second) / 2;
