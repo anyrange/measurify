@@ -107,6 +107,9 @@
                 Followers
               </base-link>
             </div>
+            <div class="profile-nav-link">
+              <base-link :to="{ name: 'profile-reports' }"> Reports </base-link>
+            </div>
           </nav>
         </horizontal-scroll>
       </div>

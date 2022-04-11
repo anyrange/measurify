@@ -61,6 +61,14 @@ export const formatDate = (date) => {
   return dayjs(date).format("MMM D, YYYY");
 };
 
+export const getTwelveHourTime = (time) => {
+  return dayjs("1/1/1 " + time).format("hh:mm a");
+};
+
+export const formatDateShorter = (date) => {
+  return dayjs(date).format("MMM D");
+};
+
 export const getDuration = (time) => {
   return dayjs.duration(time).format("mm:ss");
 };

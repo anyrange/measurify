@@ -58,6 +58,11 @@ const routes = [
         name: "profile-followers",
         component: () => import("@/views/Profile/Followers.vue"),
       },
+      {
+        path: "reports",
+        name: "profile-reports",
+        component: () => import("@/views/Profile/Reports.vue"),
+      },
     ],
   },
   {
