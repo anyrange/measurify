@@ -28,10 +28,10 @@ export function usePagination(fn, customRange, update = noop) {
     search.value ??= query.search;
   };
 
-  onMounted(async () => {
+  const fetch = () => {
     parseQuery();
-    await fn(pageStateOptions.value);
-  });
+    fn(pageStateOptions.value);
+  };
 
   watch(pageStateOptions, async (query) => {
     update();
@@ -54,5 +54,6 @@ export function usePagination(fn, customRange, update = noop) {
     page,
     range,
     search,
+    fetch,
   };
 }

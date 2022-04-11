@@ -70,9 +70,12 @@
 
 <script setup>
 import { ref } from "vue";
+import { useTitle } from "@vueuse/core";
 import { useProfileStore } from "@/stores/profile";
 import { getProfileCompatibility } from "@/api";
 import { createAsyncProcess } from "@/composable/useAsync";
+
+const title = useTitle();
 
 const profileStore = useProfileStore();
 const compatibilityData = ref(null);
@@ -84,6 +87,8 @@ const fetchCompatibility = async () => {
 };
 
 const { run, loading } = createAsyncProcess(fetchCompatibility);
+
+title.value = `Shared tastes with @${profileStore.profile.user.display_name}`;
 
 run();
 </script>

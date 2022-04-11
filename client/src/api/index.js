@@ -28,7 +28,7 @@ api.interceptors.response.use(
   }
 );
 
-export function redirect() {
+export function login() {
   window.location.href = `${SERVER_URI}/auth/login`;
 }
 
@@ -42,53 +42,50 @@ export function getFeed(page = 1, limit = 20) {
 export function checkAuthorization() {
   return api.get("/auth/check");
 }
+export function logout() {
+  return api.get("/auth/logout");
+}
+
 export function getCurrentUser() {
   return api.get("/users/me");
 }
 export function deleteAccount() {
   return api.delete("/users/me");
 }
-export function logout() {
-  return api.get("/auth/logout");
-}
-export function getAccount() {
-  return api.get("/settings");
-}
-export function updateAccount(settings) {
-  return api.post("/settings", settings);
-}
-
 export function getListenersTop() {
   return api.get("/users/top");
 }
-
-export function getProfile({
-  username,
-  rangeTop = 25,
-  rangeGenres = 15,
-  rangeHistory = 5,
-}) {
+export function getProfileCurrentTrack({ username }) {
+  return api.get(`/users/${username}/player/currently-playing`);
+}
+export function getProfile({ username, rangeTop, rangeGenres, rangeHistory }) {
   return api.get(`/users/${username}`, {
     params: {
-      rangeTop,
-      rangeGenres,
-      rangeHistory,
+      rangeTop: rangeTop || 25,
+      rangeGenres: rangeGenres || 15,
+      rangeHistory: rangeHistory || 5,
     },
   });
 }
 export function getProfileReports({ username }) {
   return api.get(`/users/${username}/reports`);
 }
-export function getProfileCurrentTrack({ username }) {
-  return api.get(`/users/${username}/player/currently-playing`);
+export function getProfileTimelineReport({ username }) {
+  return api.get(`/users/${username}/reports/graph`);
+}
+export function getProfileActivityReport({ username }) {
+  return api.get(`/users/${username}/reports/hourly-activity`);
+}
+export function getProfileGenresReport({ username }) {
+  return api.get(`/users/${username}/reports/genres-timeline`, {
+    params: {
+      range: 7,
+    },
+  });
 }
 export function getProfileListeningHistory({ username, page, range, search }) {
   return api.get(`/users/${username}/listening-history`, {
-    params: {
-      page,
-      range,
-      search,
-    },
+    params: { page, range, search },
   });
 }
 export function getProfileCompatibility({ username }) {
@@ -99,6 +96,24 @@ export function getFollowers(username) {
 }
 export function getFollowing(username) {
   return api.get(`/users/${username}/follows`);
+}
+
+export function followProfile(username) {
+  return api.post("/follow", { params: { username } });
+}
+export function unfollowProfile(username) {
+  return api.delete("/follow", { params: { username } });
+}
+
+export function getAccount() {
+  return api.get("/settings");
+}
+export function updateAccount(settings) {
+  return api.post("/settings", settings);
+}
+
+export function getTrackLyrics({ title, artist }) {
+  return api.get("/lyrics", { params: { title, artist } });
 }
 
 export function getTrack(id) {
@@ -126,25 +141,6 @@ export function getAlbumContent(id) {
   return api.get(`/infopage/album/${id}/content`);
 }
 
-export function getTrackLyrics({ title, artist }) {
-  return api.get("/lyrics", {
-    params: {
-      title,
-      artist,
-    },
-  });
-}
 export function doSearch(query) {
-  return api.get("/search", {
-    params: {
-      search: query,
-    },
-  });
-}
-
-export function followProfile(username) {
-  return api.post(`/follow?username=${username}`);
-}
-export function unfollowProfile(username) {
-  return api.delete(`/follow?username=${username}`);
+  return api.get("/search", { params: { search: query } });
 }

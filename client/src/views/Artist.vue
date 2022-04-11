@@ -124,7 +124,7 @@
         </container-item>
       </template>
       <suspense>
-        <related-artists :artist-id="artistData.artist.id" />
+        <artist-related :artist-id="artistData.artist.id" />
       </suspense>
     </container>
   </async-wrapper>

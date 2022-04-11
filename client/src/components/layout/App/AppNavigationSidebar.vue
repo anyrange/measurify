@@ -15,7 +15,7 @@
             :color="smallerThanMd ? 'transparent' : 'white'"
             :shape="smallerThanMd ? 'circle' : 'round'"
             :fullwidth="!smallerThanMd"
-            @click="redirect"
+            @click="login"
           >
             <template v-if="smallerThanMd">
               <icon
@@ -62,7 +62,7 @@
 import { useBreakpoints } from "@/composable/useBreakpoints";
 import { useAuth } from "@/composable/useAuth";
 import { useUserStore } from "@/stores/user";
-import { redirect } from "@/api";
+import { login } from "@/api";
 
 const { isAuthenticated } = useAuth();
 const { smallerThanMd } = useBreakpoints();

@@ -92,11 +92,13 @@ const scrollToTop = () => {
 
 const { loading, run: getHistory } = createAsyncProcess(fetchHistory);
 
-const { page, search, range } = usePagination(
+const { page, search, range, fetch } = usePagination(
   getHistory,
   listeningHistoryRange,
   scrollToTop
 );
 
 title.value = `${profile.value.user.display_name}'s listening history`;
+
+fetch();
 </script>
