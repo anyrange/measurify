@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export default async function (fastify) {
   fastify.get(
     "",
@@ -40,6 +42,14 @@ export default async function (fastify) {
               followed: { type: "boolean" },
               follows: { type: "number" },
               followers: { type: "number" },
+              reportsAvailability: {
+                type: "object",
+                properties: {
+                  week: { type: "boolean" },
+                  month: { type: "boolean" },
+                  year: { type: "boolean" },
+                },
+              },
               history: {
                 type: "array",
                 items: {
@@ -71,6 +81,7 @@ export default async function (fastify) {
           "settings.privacy": 1,
           listened: 1,
           genres: { $first: "$genresTimeline.genres" },
+          firstListenedTrack: { $last: "$listeningHistory.played_at" },
           avatar: 1,
           display_name: 1,
           username: "$settings.username",
@@ -100,6 +111,7 @@ export default async function (fastify) {
 
       const plays = user.listened?.count || 0;
       const playtime = (user.listened?.time || 0) / 60;
+      const today = dayjs();
 
       const response = {
         user,
@@ -109,6 +121,11 @@ export default async function (fastify) {
           plays,
           playtime: Math.round(playtime),
           meantime: (playtime / plays || 1).toFixed(2),
+        },
+        reportsAvailability: {
+          week: today.diff(user.firstListenedTrack, "week") >= 1,
+          month: today.diff(user.firstListenedTrack, "month") >= 1,
+          year: today.diff(user.firstListenedTrack, "year") >= 1,
         },
         genres: user.genres || [],
         followers: user.followers?.length || 0,
