@@ -44,7 +44,7 @@
             v-for="(item, index) in compatibilityData.artists"
             :key="index"
           >
-            <rank-item type="artist" :item="item" />
+            <compatibility-item type="artist" :item="item" />
           </template>
         </div>
       </container-item>
@@ -57,7 +57,7 @@
             v-for="(item, index) in compatibilityData.tracks"
             :key="index"
           >
-            <rank-item type="track" :item="item" />
+            <compatibility-item type="track" :item="item" />
           </template>
         </div>
       </container-item>
@@ -72,10 +72,10 @@
 import { ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useProfileStore } from "@/stores/profile";
-import { getProfileCompatibility } from "@/api";
 import { createAsyncProcess } from "@/composable/useAsync";
+import { getProfileCompatibility } from "@/api";
 
-const title = useTitle();
+useTitle(`Shared tastes with ${profileStore.profile.user.display_name}`);
 
 const profileStore = useProfileStore();
 const compatibilityData = ref(null);
@@ -87,8 +87,6 @@ const fetchCompatibility = async () => {
 };
 
 const { run, loading } = createAsyncProcess(fetchCompatibility);
-
-title.value = `Shared tastes with @${profileStore.profile.user.display_name}`;
 
 run();
 </script>

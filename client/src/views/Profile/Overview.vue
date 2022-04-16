@@ -13,7 +13,7 @@
     </container-item>
     <container-item v-if="notEmpty(profile.genres)">
       <container-item-label>
-        <base-link :to="{ name: 'profile-history' }" class="link">
+        <base-link :to="{ name: 'profile-reports' }" class="link">
           Genres
         </base-link>
       </container-item-label>
@@ -37,7 +37,7 @@
                   title="now"
                 >
                   <base-img :src="now_playing" alt="Listening Now" />
-                  <figcaption>Listening</figcaption>
+                  <figcaption class="hidden sm:block">Listening</figcaption>
                 </figure>
               </template>
             </track-row>
@@ -111,15 +111,18 @@ import { computed, ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { useProfileStore } from "@/stores/profile";
 import { createAsyncProcess } from "@/composable/useAsync";
-import { formatDate, notEmpty, getDuration } from "@/utils";
 import { getProfileCurrentTrack } from "@/api";
+import { formatDate, notEmpty, getDuration } from "@/utils";
 import now_playing from "@/assets/media/now_playing.gif";
 
 const profileStore = useProfileStore();
-const title = useTitle();
+const profile = computed(() => profileStore.profile);
+
+useTitle(
+  `${profile.value.user.display_name} (@${profile.value.user.username})`
+);
 
 const currentTrack = ref(null);
-const profile = computed(() => profileStore.profile);
 
 const getMeanTime = (meantime) => {
   return getDuration(meantime * 60 * 1000);
@@ -135,6 +138,4 @@ const fetchCurrentTrack = async () => {
 const { loading, run: loadTrack } = createAsyncProcess(fetchCurrentTrack);
 
 loadTrack();
-
-title.value = `${profile.value.user.display_name} (@${profile.value.user.username})`;
 </script>

@@ -2,7 +2,7 @@
   <aside>
     <div class="hidden flex-row px-2 text-white md:flex">
       <div class="default-border h-12 w-full flex items-center border-b">
-        <div class="px-2 font-medium text-lg text-white">measurify</div>
+        <div class="px-2 font-bold text-lg text-white">measurify</div>
       </div>
     </div>
     <nav
@@ -73,7 +73,7 @@ const userStore = useUserStore();
 .sidebar {
   @apply sm:bg-secondary-darker bg-secondary-darkest;
   @apply flex flex-row sm:flex-col gap-2 flex-none;
-  @apply sm:h-screen h-12 sm:px-2 p-0;
+  @apply sm:h-auto h-12 sm:px-2 p-0;
   @apply sm:w-20 md:w-60 xl:w-60 w-full;
   @apply sm:relative fixed bottom-0 sm:inset-0;
   @apply border-t sm:border-none border-secondary-dark;
@@ -90,6 +90,6 @@ const userStore = useUserStore();
   @apply md:h-6 md:w-6 w-8 h-8 fill-current;
 }
 .sidebar .router-link-active {
-  @apply text-white;
+  @apply text-white sm:bg-secondary-dark/60;
 }
 </style>

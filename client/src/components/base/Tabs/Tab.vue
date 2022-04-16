@@ -5,8 +5,8 @@
     class="
       px-5
       py-3
-      text-gray-200 text-sm
-      rounded-md
+      text-white text-sm
+      rounded
       leading-4
       font-medium
       cursor-pointer
@@ -14,7 +14,7 @@
       horizontal-scroll-card
     "
     :class="{
-      'bg-secondary-light': isActive,
+      'bg-secondary-dark': isActive,
       'opacity-40 cursor-not-allowed': disabled,
     }"
     @click="activateTab(name)"

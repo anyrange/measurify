@@ -9,7 +9,7 @@
         :class="{ 'custom-scrollbar': !isMobile }"
       >
         <div class="flex flex-1 overflow-y-hidden">
-          <app-navigation-sidebar />
+          <app-sidebar />
           <main class="flex flex-1 flex-col bg-secondary-darkest">
             <div
               id="content-window"
@@ -28,7 +28,7 @@
               <router-view />
             </div>
           </main>
-          <app-friends-sidebar :show="xlAndLarger" />
+          <app-friends :show="xlAndLarger" />
         </div>
       </div>
     </template>

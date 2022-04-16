@@ -35,23 +35,19 @@
 <script setup>
 import { ref } from "vue";
 import { useTitle } from "@vueuse/core";
-import { getFollowing } from "@/api";
 import { useProfileStore } from "@/stores/profile";
 import { createAsyncProcess } from "@/composable/useAsync";
-
-const title = useTitle();
+import { getFollowing } from "@/api";
 
 const profileStore = useProfileStore();
 
+useTitle(`People ${profileStore.profile.user.display_name} Follows`);
+
 const following = ref([]);
 
-const fetchFollowing = async () => {
+const { loading, run: fetchFollowing } = createAsyncProcess(async () => {
   following.value = await getFollowing(profileStore.profile.user.username);
-};
+});
 
-const { loading, run } = createAsyncProcess(fetchFollowing);
-
-run();
-
-title.value = `People ${profileStore.profile.user.display_name} Follows`;
+fetchFollowing();
 </script>

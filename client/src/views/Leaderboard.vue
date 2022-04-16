@@ -44,22 +44,21 @@
                 </div>
               </base-link>
             </div>
-            <div class="fullwidth">
-              <div class="ml-3 w-full flex flex-col">
-                <base-link
-                  class="truncate text-base text-white hover:underline"
-                  :to="{ name: 'profile', params: { username: item.username } }"
-                >
-                  {{ item.display_name }}
-                </base-link>
-                <span class="font-semibold text-base text-secondary-lighter">
-                  {{
-                    mode === "minutes"
-                      ? item.listened.time
-                      : item.listened.count
-                  }}
-                </span>
-              </div>
+            <div class="ml-3 flex flex-col">
+              <base-link
+                class="line-clamp-1 w-full text-base text-white hover:underline"
+                :to="{
+                  name: 'profile',
+                  params: { username: item.username },
+                }"
+              >
+                {{ item.display_name }}
+              </base-link>
+              <span class="font-semibold text-base text-secondary-lighter">
+                {{
+                  mode === "minutes" ? item.listened.time : item.listened.count
+                }}
+              </span>
             </div>
           </div>
         </li>

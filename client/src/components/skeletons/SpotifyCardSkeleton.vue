@@ -2,8 +2,8 @@
   <div>
     <div
       class="
-        h-52
-        w-38
+        h-56
+        w-43
         bg-secondary-darker
         hover:bg-secondary-dark/20
         flex flex-shrink-0 flex-none flex-col
@@ -20,7 +20,7 @@
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
-        class="h-32 w-32 shadow-lg"
+        class="h-36 w-36 shadow-lg"
       />
       <skeleton class="mt-2 h-3 w-24 rounded" />
     </div>

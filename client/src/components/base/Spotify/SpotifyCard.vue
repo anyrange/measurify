@@ -11,14 +11,13 @@
   >
     <div
       class="
-        h-52
-        w-38
-        bg-secondary-darker
-        hover:bg-secondary-dark/20
+        h-56
+        w-43
+        bg-secondary-darker/40
+        hover:bg-secondary-dark/50
         duration-200
         rounded-md
         p-3
-        group
         relative
         flex flex-none flex-shrink-0 flex-col
         items-center
@@ -29,7 +28,7 @@
         :src="item.image"
         :alt="item.name"
         :image-type="type"
-        class="h-32 w-32 object-cover shadow-lg"
+        class="h-36 w-36 object-cover shadow-lg"
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
@@ -43,13 +42,11 @@
         v-if="item.plays"
         class="
           absolute
-          bottom-1/4
+          bottom-1/3
           right-2
-          group-hover:opacity-100
           opacity-100
-          sm:opacity-0
           duration-200
-          bg-secondary-dark
+          bg-secondary-darker
           p-1
           rounded
           shadow-sm
