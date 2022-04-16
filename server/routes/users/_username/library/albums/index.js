@@ -34,7 +34,7 @@ export default async function (fastify) {
     async function (req, reply) {
       const { range, page, firstDate, lastDate } = req.query;
 
-      const _id = req.session.get("id");
+      const _id = req.user._id;
       const options = { _id, range, page, firstDate, lastDate };
 
       const top = await fastify.userTopAlbums(options);
