@@ -18,7 +18,9 @@
       </div>
       <track-rows>
         <div
-          v-for="(item, index) in loading ? range : listeningHistory.history"
+          v-for="(item, index) in loading
+            ? Number(range)
+            : listeningHistory.history"
           :key="index"
         >
           <template v-if="loading">
@@ -39,32 +41,33 @@
 </template>
 
 <script setup>
-import { computed, ref, inject } from "vue";
+import { ref } from "vue";
 import { useTitle } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { getProfileListeningHistory } from "@/api";
 import { useProfileStore } from "@/stores/profile";
-import { useSettingsStore } from "@/stores/settings.js";
-import { usePagination } from "@/composable/usePagination.js";
-import { useBreakpoints } from "@/composable/useBreakpoints.js";
+import { useSettingsStore } from "@/stores/settings";
+import { usePagination } from "@/composable/usePagination";
+import { useRouteQuery } from "@vueuse/router";
+import { useBreakpoints } from "@/composable/useBreakpoints";
+import { useContentWindow } from "@/composable/useContentWindow";
 import { createAsyncProcess } from "@/composable/useAsync";
+import { getProfileListeningHistory } from "@/api";
 import { RANGE_OPTIONS } from "@/config";
 
-const settingsStore = useSettingsStore();
-const profileStore = useProfileStore();
+const { scrollToTop } = useContentWindow();
 const { xlAndLarger } = useBreakpoints();
+const settingsStore = useSettingsStore();
 
-const title = useTitle();
-const profile = computed(() => profileStore.profile);
-
-const contentWindow = inject("contentWindow");
-
+const profileStore = useProfileStore();
 const { listeningHistoryRange } = storeToRefs(settingsStore);
 
-const listeningHistory = ref({
-  history: [],
-  pages: 0,
-});
+useTitle(`${profileStore.profile.user.display_name}'s listening history`);
+
+const listeningHistory = ref({ history: [], pages: 0 });
+
+const page = useRouteQuery("page", 1);
+const search = useRouteQuery("search", "");
+const range = useRouteQuery("range", listeningHistoryRange.value);
 
 function updateHistory(data) {
   Object.assign(listeningHistory.value, data);
@@ -83,22 +86,14 @@ async function fetchHistory(params) {
   }
 }
 
-const scrollToTop = () => {
-  contentWindow.value.scroll({
-    top: 0,
-    left: 0,
-  });
-};
-
 const { loading, run: getHistory } = createAsyncProcess(fetchHistory);
 
-const { page, search, range, fetch } = usePagination(
-  getHistory,
-  listeningHistoryRange,
-  scrollToTop
-);
-
-title.value = `${profile.value.user.display_name}'s listening history`;
-
-fetch();
+usePagination({
+  fn: getHistory,
+  range,
+  page,
+  search,
+  onUpdate: scrollToTop,
+  immediate: true,
+});
 </script>

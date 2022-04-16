@@ -56,7 +56,7 @@ import { computed } from "vue";
 
 const props = defineProps({
   modelValue: {
-    type: Number,
+    type: [Number, String],
     required: true,
   },
   maxVisibleButtons: {
@@ -72,14 +72,23 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
+const currentPage = computed({
+  get: () => {
+    return Number(props.modelValue);
+  },
+  set: (value) => {
+    emit("update:modelValue", value);
+  },
+});
+
 const startPage = computed(() => {
-  if (props.modelValue === 1) {
+  if (currentPage.value === 1) {
     return 1;
   }
-  if (props.modelValue === props.totalPages) {
+  if (currentPage.value === props.totalPages) {
     return props.totalPages - props.maxVisibleButtons + 1;
   }
-  return props.modelValue - 1;
+  return currentPage.value - 1;
 });
 
 const endPage = computed(() => {
@@ -95,34 +104,34 @@ const pages = computed(() => {
     if (i > 0) {
       range.push({
         name: i,
-        isDisabled: i === props.modelValue,
+        isDisabled: i === currentPage.value,
       });
     }
   }
   return range;
 });
 
-const isInFirstPage = computed(() => props.modelValue === 1);
+const isInFirstPage = computed(() => currentPage.value === 1);
 
-const isInLastPage = computed(() => props.modelValue === props.totalPages);
+const isInLastPage = computed(() => currentPage.value === props.totalPages);
 
 function onClickFirstPage() {
   emit("update:modelValue", 1);
 }
 function onClickPreviousPage() {
-  emit("update:modelValue", props.modelValue - 1);
+  emit("update:modelValue", currentPage.value - 1);
 }
 function onClickPage(page) {
   emit("update:modelValue", page);
 }
 function onClickNextPage() {
-  emit("update:modelValue", props.modelValue + 1);
+  emit("update:modelValue", currentPage.value + 1);
 }
 function onClickLastPage() {
   emit("update:modelValue", props.totalPages);
 }
 function isPageActive(page) {
-  return props.modelValue === page;
+  return currentPage.value === page;
 }
 </script>
 
