@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import durationPlugin from "dayjs/plugin/duration";
 import relativeTimePlugin from "dayjs/plugin/relativeTime";
+import weekday from "dayjs/plugin/weekday";
 
 const shortRealitveTime = {
   name: "s-en",
@@ -26,5 +27,6 @@ dayjs.locale("en");
 
 dayjs.extend(durationPlugin);
 dayjs.extend(relativeTimePlugin);
+dayjs.extend(weekday);
 
 export default dayjs;

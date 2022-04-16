@@ -7,14 +7,14 @@
   />
   <cards class="flex items-center justify-center">
     <card :title="activityHours.timeString12hr"> most active hour </card>
-    <card :title="activityHours.playsPerHour"> plays per hour </card>
   </cards>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { PolarAreaChart } from "vue-chart-3";
 import { Chart, registerables } from "chart.js";
+import { useProfileStore } from "@/stores/profile";
 import { getProfileActivityReport } from "@/api";
 import { getTwelveHourTime } from "@/utils";
 
@@ -25,13 +25,28 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  range: {
+    type: String,
+    required: true,
+  },
 });
+
+const profileStore = useProfileStore();
 
 const activity = ref([]);
 
-activity.value = await getProfileActivityReport({
-  username: props.username,
-});
+const fetchData = async () => {
+  activity.value = await getProfileActivityReport({
+    username: props.username,
+    options: {
+      ...profileStore.dateRanges[props.range],
+    },
+  });
+};
+
+await fetchData();
+
+watch(props, fetchData);
 
 const activityHours = computed(() => {
   const activityData = activity.value.map((item) => item.plays);
@@ -105,6 +120,9 @@ const chartOptions = computed(() => ({
   plugins: {
     legend: {
       display: false,
+    },
+    tooltip: {
+      enabled: false,
     },
     datalabels: {
       display: false,

@@ -15,7 +15,7 @@
       <container-item class="xl:w-4/10">
         <container-item-label> Activity </container-item-label>
         <suspense>
-          <profile-activity-report :username="profileUsername" />
+          <profile-activity-report :username="profileUsername" :range="range" />
           <template #fallback>
             <loading-spinner class="h-[300px]" />
           </template>
@@ -25,7 +25,7 @@
     <container-item class="w-full">
       <container-item-label> Timeline </container-item-label>
       <suspense>
-        <profile-timeline-report :username="profileUsername" />
+        <profile-timeline-report :username="profileUsername" :range="range" />
         <template #fallback>
           <loading-spinner class="h-[500px]" />
         </template>
@@ -35,16 +35,27 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useTitle } from "@vueuse/core";
+import { useRouteQuery } from "@vueuse/router";
 import { useProfileStore } from "@/stores/profile";
 
-const title = useTitle();
 const profileStore = useProfileStore();
+
+useTitle(`${profileStore.profile.user.display_name}'s listening report`);
+
+const rangeOptions = {
+  week: "Last week",
+  month: "Last month",
+  overall: "All time",
+};
+
+const range = useRouteQuery("range", "week");
+
+const currentRange = computed(() => profileStore.dateRanges[range.value]);
+const customRange = ref({ ...currentRange.value });
 
 const profileUsername = computed(() => {
   return profileStore.profile.user.username;
 });
-
-title.value = `${profileStore.profile.user.display_name}'s listening report`;
 </script>
