@@ -75,9 +75,10 @@ import { useProfileStore } from "@/stores/profile";
 import { createAsyncProcess } from "@/composable/useAsync";
 import { getProfileCompatibility } from "@/api";
 
+const profileStore = useProfileStore();
+
 useTitle(`Shared tastes with ${profileStore.profile.user.display_name}`);
 
-const profileStore = useProfileStore();
 const compatibilityData = ref(null);
 
 const fetchCompatibility = async () => {

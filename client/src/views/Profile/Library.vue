@@ -53,8 +53,6 @@ const { scrollToTop } = useContentWindow();
 
 const profileStore = useProfileStore();
 
-console.log(profileStore.profile);
-
 useTitle(`${profileStore.profile.user.display_name}'s music library`);
 
 const type = useRouteQuery("type", "artists");
