@@ -70,21 +70,40 @@ export function getProfile({ username, rangeTop, rangeGenres, rangeHistory }) {
 export function getProfileReports({ username }) {
   return api.get(`/users/${username}/reports`);
 }
-export function getProfileTimelineReport({ username }) {
-  return api.get(`/users/${username}/reports/graph`);
+export function getProfileTimelineReport({ username, options }) {
+  return api.get(`/users/${username}/reports/graph`, {
+    params: { ...options },
+  });
 }
-export function getProfileActivityReport({ username }) {
-  return api.get(`/users/${username}/reports/hourly-activity`);
+export function getProfileActivityReport({ username, options }) {
+  return api.get(`/users/${username}/reports/hourly-activity`, {
+    params: { ...options },
+  });
 }
-export function getProfileGenresReport({ username }) {
+export function getProfileGenresReport({ username, options }) {
   return api.get(`/users/${username}/reports/genres-timeline`, {
     params: {
-      range: 7,
+      ...options,
     },
   });
 }
 export function getProfileListeningHistory({ username, page, range, search }) {
   return api.get(`/users/${username}/listening-history`, {
+    params: { page, range, search },
+  });
+}
+export function getProfileAlbumsLibrary({ username, page, range, search }) {
+  return api.get(`/users/${username}/library/albums`, {
+    params: { page, range, search },
+  });
+}
+export function getProfileArtistsLibrary({ username, page, range, search }) {
+  return api.get(`/users/${username}/library/artists`, {
+    params: { page, range, search },
+  });
+}
+export function getProfileTracksLibrary({ username, page, range, search }) {
+  return api.get(`/users/${username}/library/tracks`, {
     params: { page, range, search },
   });
 }

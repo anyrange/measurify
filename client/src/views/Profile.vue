@@ -72,7 +72,7 @@
               >
                 {{ profile.user.display_name }}
               </h1>
-              <span class="truncate font-light">
+              <span class="truncate">
                 {{ profile.user.username }}
               </span>
             </div>
@@ -106,6 +106,9 @@
               <base-link :to="{ name: 'profile-followers' }">
                 Followers
               </base-link>
+            </div>
+            <div class="profile-nav-link">
+              <base-link :to="{ name: 'profile-library' }"> Library </base-link>
             </div>
             <div class="profile-nav-link">
               <base-link :to="{ name: 'profile-reports' }"> Reports </base-link>
