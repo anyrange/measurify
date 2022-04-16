@@ -113,6 +113,31 @@ const plugin = fp(async function plugin(fastify) {
       .lean();
 
     const totalListened = listened?.count || 0;
+    const brokenItems = listeningHistory
+      .filter((item) => !item.track.album || !item.track.artists.length)
+      .map((item) => item.track._id);
+
+    if (brokenItems.length > 0) {
+      const { addTrack } = await import(
+        "#server/includes/cron-workers/historyParser/tracks.js"
+      );
+      const replacement = await Promise.all(
+        brokenItems.map((id) => addTrack(id))
+      );
+
+      listeningHistory.forEach((item) => {
+        const replacementId = replacement.findIndex(
+          (newItem) => item.track._id === newItem._id
+        );
+
+        if (replacementId === -1) return;
+
+        const newItem = replacement[replacementId];
+        newItem.image = newItem.images.lowQuality;
+        item.track = newItem;
+      });
+    }
+
     return {
       history:
         listeningHistory?.map((item) => ({

@@ -57,7 +57,7 @@ export const addTrack = async (trackID, token) => {
       route: `tracks/${trackID}`,
       token: usableToken,
     }),
-    parseFeatures([trackID], token),
+    parseFeatures([trackID], usableToken),
   ]);
 
   audioFeatures.popularity = track.popularity / 100;
