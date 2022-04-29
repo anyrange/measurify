@@ -33,7 +33,7 @@ export const tracks = async ({
         plays: { $sum: 1 },
       },
     },
-    { $sort: { plays: -1 } },
+    { $sort: { plays: -1, name: 1 } },
     {
       $group: {
         _id: "",
