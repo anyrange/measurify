@@ -5,7 +5,7 @@ export default async function (fastify) {
     if (reply.statusCode === 200)
       reply.header("Cache-Control", "public, max-age=5");
   });
-  fastify.get(
+  fastify.post(
     "",
     {
       schema: {
@@ -13,14 +13,37 @@ export default async function (fastify) {
           type: "object",
           properties: {
             limit: { type: "number", minimum: 3, default: 10 },
-            page: { type: "number", minimum: 1, default: 1 },
+          },
+        },
+        body: {
+          type: "object",
+          properties: {
+            meta: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  username: { type: "string" },
+                  point: { type: "number" },
+                },
+              },
+            },
           },
         },
         response: {
           200: {
             type: "object",
             properties: {
-              pages: { type: "number" },
+              meta: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    username: { type: "string" },
+                    point: { type: "number" },
+                  },
+                },
+              },
               userActivity: {
                 type: "object",
                 additionalProperties: false,
@@ -59,25 +82,16 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const { limit, page } = req.query;
+      const { limit } = req.query;
+      const { meta } = req.body;
       const id = req.session.get("id");
 
-      const [userActivity, user] = await Promise.all([
-        fastify.db.User.aggregate(getActivityAgg(id, limit, page)),
-        fastify.db.User.findById(id, "follows").populate({
-          path: "follows",
-          match: { "settings.privacy": "public" },
-          select: "listened.count",
-        }),
-      ]);
-
-      const historyLength = user.follows.reduce(
-        (acc, cur) => acc + cur.listened.count,
-        0
+      const userActivity = await fastify.db.User.aggregate(
+        getActivityAgg(id, limit, meta)
       );
 
+      // pack activity by date and users
       const formatedActivity = {};
-
       userActivity.forEach((activity) => {
         const date = activity.track.played_at.toISOString().split("T")[0];
 
@@ -95,78 +109,99 @@ export default async function (fastify) {
         ];
       });
 
+      const newMeta = new Map();
+      meta.forEach(({ username, point }) => newMeta.set(username, point));
+      userActivity.forEach(({ username }) =>
+        newMeta.set(username, (newMeta.get(username) || 0) + 1)
+      );
+
       reply.send({
-        pages: Math.ceil(historyLength / limit),
+        meta: Array.from(newMeta, ([key, value]) => ({
+          username: key,
+          point: value,
+        })),
         userActivity: formatedActivity,
       });
     }
   );
 }
 
-const getActivityAgg = (_id, limit, page) => [
-  { $match: { _id } },
-  { $project: { follows: 1 } },
-  {
-    $lookup: {
-      from: "users",
-      localField: "follows",
-      foreignField: "_id",
-      as: "user",
-    },
-  },
-  { $unwind: { path: "$user" } },
-  { $match: { "user.settings.privacy": "public" } },
-  {
-    $addFields: {
-      display_name: "$user.display_name",
-      avatar: "$user.avatar",
-      username: "$user.settings.username",
-      listeningHistory: "$user.listeningHistory",
-    },
-  },
-  { $unwind: { path: "$listeningHistory" } },
-  { $sort: { "listeningHistory.played_at": -1 } },
-  { $skip: (page - 1) * limit },
-  { $limit: limit },
-  {
-    $lookup: {
-      from: "tracks",
-      localField: "listeningHistory.track",
-      foreignField: "_id",
-      as: "tracks",
-    },
-  },
-  {
-    $lookup: {
-      from: "artists",
-      localField: "tracks.artists",
-      foreignField: "_id",
-      as: "artists",
-    },
-  },
-  { $addFields: { artists: { id: "$artists._id" } } },
-  {
-    $project: {
-      _id: 1,
-      display_name: 1,
-      username: 1,
-      avatar: 1,
-      track: {
-        played_at: "$listeningHistory.played_at",
-        name: { $first: "$tracks.name" },
-        id: { $first: "$tracks._id" },
-        artists: {
-          $map: {
-            input: "$artists",
-            as: "artist",
-            in: {
-              id: "$$artist._id",
-              name: "$$artist.name",
-            },
-          },
+const getActivityAgg = (_id, limit, meta = []) => {
+  let condChain = { $slice: ["$user.listeningHistory", 0, limit] };
+
+  if (meta.length) {
+    meta.forEach(({ username, point }) => {
+      condChain = {
+        $cond: {
+          if: { $eq: ["$user.settings.username", username] },
+          then: { $slice: ["$user.listeningHistory", point, limit] },
+          else: condChain,
         },
-        image: { $first: "$tracks.images.lowQuality" },
+      };
+    });
+  }
+
+  return [
+    { $match: { _id } },
+    { $project: { follows: 1 } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "follows",
+        foreignField: "_id",
+        as: "user",
       },
     },
-  },
-];
+    { $unwind: { path: "$user" } },
+    { $match: { "user.settings.privacy": "public" } },
+    {
+      $project: {
+        display_name: "$user.display_name",
+        avatar: "$user.avatar",
+        username: "$user.settings.username",
+        listeningHistory: condChain,
+      },
+    },
+    { $unwind: { path: "$listeningHistory" } },
+    { $sort: { "listeningHistory.played_at": -1 } },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "tracks",
+        localField: "listeningHistory.track",
+        foreignField: "_id",
+        as: "tracks",
+      },
+    },
+    {
+      $lookup: {
+        from: "artists",
+        localField: "tracks.artists",
+        foreignField: "_id",
+        as: "artists",
+      },
+    },
+    { $addFields: { artists: { id: "$artists._id" } } },
+    {
+      $project: {
+        _id: 1,
+        display_name: 1,
+        username: 1,
+        avatar: 1,
+        track: {
+          played_at: "$listeningHistory.played_at",
+          name: { $first: "$tracks.name" },
+          id: { $first: "$tracks._id" },
+          artists: {
+            $map: {
+              input: "$artists",
+              as: "artist",
+              in: { id: "$$artist._id", name: "$$artist.name" },
+            },
+          },
+          image: { $first: "$tracks.images.lowQuality" },
+        },
+      },
+    },
+  ];
+};

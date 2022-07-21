@@ -17,15 +17,21 @@ export default async function (fastify) {
         },
         response: {
           200: {
-            type: "array",
-            items: {
-              type: "object",
-              required: ["time", "playtime", "plays"],
-              properties: {
-                time: { type: "number" },
-                playtime: { type: "number" },
-                plays: { type: "number" },
+            type: "object",
+            properties: {
+              hourlyActivity: {
+                type: "array",
+                items: {
+                  type: "object",
+                  required: ["time", "playtime", "plays"],
+                  properties: {
+                    time: { type: "number" },
+                    playtime: { type: "number" },
+                    plays: { type: "number" },
+                  },
+                },
               },
+              trackingDuration: { type: "number" },
             },
           },
         },
@@ -38,18 +44,38 @@ export default async function (fastify) {
       const { firstDate, lastDate } = req.query;
 
       const options = { _id: user._id, firstDate, lastDate };
+      const agg = getAgg(options);
 
-      const hourlyActivity = await userHourlyActivity(options);
+      const userRef = fastify.db.User;
 
-      reply.send(hourlyActivity);
+      const [activity, [{ days }]] = await Promise.all([
+        userRef.aggregate(agg),
+        userRef.aggregate([
+          { $match: { _id: user._id } },
+          { $project: { "listeningHistory.played_at": 1 } },
+          { $unwind: { path: "$listeningHistory" } },
+          {
+            $project: {
+              time: {
+                $dateToString: {
+                  format: "%Y-%m-%d",
+                  date: "$listeningHistory.played_at",
+                },
+              },
+            },
+          },
+          { $group: { _id: "$time", plays: { $sum: 1 } } },
+          { $count: "days" },
+        ]),
+      ]);
+
+      const hourlyActivity = formatActivity(activity);
+      console.log(days);
+      reply.send({ hourlyActivity, trackingDuration: days });
     }
   );
 
-  const userHourlyActivity = async (opts) => {
-    const agg = getAgg(opts);
-
-    const activity = await fastify.db.User.aggregate(agg);
-
+  const formatActivity = (activity) => {
     const hourlyActivity = [];
     for (let i = 1; i <= 24; i++) {
       hourlyActivity.push(

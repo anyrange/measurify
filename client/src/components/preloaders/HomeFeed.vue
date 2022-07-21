@@ -60,24 +60,20 @@ import { formatDate } from "@/utils";
 
 const feedList = shallowRef(null);
 
-const pages = ref(1);
-const page = ref(1);
+const metainfo = ref([]);
 const feed = ref(null);
 
-const { userActivity, pages: pagesData } = await getFeed(page.value);
+const { userActivity, meta: metaData } = await getFeed(metainfo.value);
 
 feed.value = userActivity;
-pages.value = pagesData;
+metainfo.value = metaData;
 
 useInfiniteScroll(
   feedList,
   async () => {
-    if (page.value >= pages.value) return;
-    page.value++;
+    const { userActivity, meta: metaData } = await getFeed(metainfo.value);
 
-    const { userActivity, pages: pagesData } = await getFeed(page.value);
-    pages.value = pagesData;
-
+    metainfo.value = metaData;
     const data = Object.entries(userActivity);
 
     data.forEach(([date, data]) => {

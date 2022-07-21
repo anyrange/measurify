@@ -35,8 +35,8 @@ export function login() {
 export function getStats() {
   return api.get("/info/stats");
 }
-export function getFeed(page = 1, limit = 20) {
-  return api.get("/info/feed", { params: { page, limit } });
+export function getFeed(meta = [], limit = 20) {
+  return api.post(`/info/feed?limit=${limit}`, { meta });
 }
 
 export function checkAuthorization() {
