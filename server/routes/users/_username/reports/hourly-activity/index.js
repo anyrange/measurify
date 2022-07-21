@@ -70,7 +70,6 @@ export default async function (fastify) {
       ]);
 
       const hourlyActivity = formatActivity(activity);
-      console.log(days);
       reply.send({ hourlyActivity, trackingDuration: days });
     }
   );

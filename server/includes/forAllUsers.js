@@ -17,14 +17,14 @@ export default async function ({ operation = "unknown operation" }, cb) {
 
     const requests = users.map((user) =>
       cb(user).catch((err) => {
-        console.log(`!${operation} [${user.display_name}]: ${err.message}`);
+        console.error(`!${operation} [${user.display_name}]: ${err.message}`);
       })
     );
 
     await Promise.all(requests);
 
     const end = new Date();
-    console.log(
+    console.info(
       `${operation} [${requests.length}]: updated in ${timeDiff(
         start,
         end

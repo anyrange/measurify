@@ -25,14 +25,14 @@ const plugin = fp(async function plugin(fastify) {
         reply.code(400).send({ message, status: 400 });
         break;
       case "MongooseError":
-        console.log(error);
+        console.error(error);
         reply
           .code(503)
           .header("Retry-After", 3000)
           .send({ message: "Try again later", status: 503 });
         break;
       default:
-        console.log(error);
+        console.error(error);
         reply
           .status(500)
           .send({ message: "Something went wrong!", status: 500 });

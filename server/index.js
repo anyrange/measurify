@@ -3,7 +3,7 @@ import app from "./app.js";
 const PORT = process.env.PORT || 8888;
 
 app.listen(PORT, "0.0.0.0", (err) => {
-  if (err) return console.log(err);
+  if (err) return console.error(err);
   console.info(`Docs are available on: http://localhost:${PORT}/docs`);
 });
 

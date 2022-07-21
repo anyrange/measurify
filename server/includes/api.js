@@ -30,17 +30,17 @@ export default async function ({ route, token, body = {}, method = "GET" }) {
   if (res.status === 204) throw Object.assign(new Error(""), { code: 204 });
 
   const json = await res.json().catch(() => {
-    console.log("API Error:", res.statusText, res.status);
-    console.log(`https://api.spotify.com/v1/${route}`);
-    console.log(options);
+    console.error("API Error:", res.statusText, res.status);
+    console.error(`https://api.spotify.com/v1/${route}`);
+    console.error(options);
     throw Object.assign(new Error("Something went wrong"), { code: 500 });
   });
 
   if (json.error) {
-    console.log("API Error:", res.statusText, res.status);
-    console.log(`https://api.spotify.com/v1/${route}`);
+    console.error("API Error:", res.statusText, res.status);
+    console.error(`https://api.spotify.com/v1/${route}`);
     const err = json.error;
-    console.log(err);
+    console.error(err);
     throw Object.assign(new Error(err.message), {
       code: err.status || 500,
     });

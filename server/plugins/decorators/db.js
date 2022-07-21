@@ -14,7 +14,7 @@ mongoose.connect(
     useCreateIndex: true,
   },
   (err) => {
-    if (err) return console.log(`Database connection error: ${err.message}`);
+    if (err) return console.error(`Database connection error: ${err.message}`);
     console.info(`Database successfully connected`);
   }
 );
