@@ -39,8 +39,7 @@ export default async function (fastify) {
         fastify.db.Album.estimatedDocumentCount(),
         fastify.db.Artist.estimatedDocumentCount(),
       ]);
-
-      reply.send({
+      return reply.send({
         users: {
           total: users,
           active: activeUsers,

@@ -13,7 +13,6 @@ export default async function (fastify) {
               username: { type: "string" },
               id: { type: "string" },
               display_name: { type: "string" },
-              status: { type: "number" },
             },
           },
         },
@@ -21,13 +20,13 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const id = req.session.get("id");
+      const id = req.user.id;
 
       const user = await User.findById(id, "display_name settings").lean();
       if (!user) throw fastify.error("User not found", 404);
 
       user.id = id;
-      reply.send(Object.assign(user, user.settings));
+      return reply.send(Object.assign(user, user.settings));
     }
   );
 }

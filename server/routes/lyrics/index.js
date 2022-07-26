@@ -36,7 +36,9 @@ export default async function (fastify) {
         optimizeQuery: true,
       });
 
-      reply.header("Cache-Control", "public, max-age=600").send({ lyrics });
+      return reply
+        .header("Cache-Control", "public, max-age=600")
+        .send({ lyrics });
     }
   );
 }

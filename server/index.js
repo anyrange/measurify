@@ -1,13 +1,14 @@
 import app from "./app.js";
 
-const PORT = process.env.PORT || 8888;
+const port = process.env.PORT || 8888;
 
-app.listen(PORT, "0.0.0.0", (err) => {
+app.listen({ port, host: "0.0.0.0" }, (err) => {
   if (err) return console.error(err);
-  console.info(`Docs are available on: http://localhost:${PORT}/docs`);
+  console.info(`Docs are available on: http://localhost:${port}/docs`);
 });
 
-if (process.env.NODE_ENV == "production") startScheduledJobs();
+const isProduction = process.env.NODE_ENV == "production";
+if (isProduction) startScheduledJobs();
 
 async function startScheduledJobs() {
   const { default: cron } = await import("node-cron");

@@ -1,7 +1,7 @@
 <template>
   <container>
     <cards>
-      <card :title="stats.users.active">users</card>
+      <card :title="stats.users.active">active users</card>
       <card :title="stats.tracks">tracks</card>
       <card :title="stats.albums">albums</card>
       <card :title="stats.artists">artists</card>

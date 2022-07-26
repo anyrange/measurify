@@ -19,8 +19,8 @@ export default async function (fastify) {
                 display_name: { type: "string" },
                 private: { type: "boolean" },
                 lastTrack: { $ref: "entity#" },
-                lastPlayed: { type: "string", format: "datetime" },
-                lastLogin: { type: "string", format: "datetime" },
+                lastPlayed: { type: "string", format: "date-time" },
+                lastLogin: { type: "string", format: "date-time" },
               },
             },
           },
@@ -60,11 +60,11 @@ export default async function (fastify) {
       if (!user) return reply.code(404).send({ message: "User not found" });
 
       const isPrivate = user.settings.privacy === "private";
-      const requestorID = req.session.get("id");
+      const requestorID = await fastify.getId(req);
       if (isPrivate && user._id !== requestorID)
         return reply.code(403).send({ message: "Private profile" });
 
-      reply.send(
+      return reply.send(
         user.followers?.map((user) => ({
           ...user,
           inactive: user.refreshToken === "",

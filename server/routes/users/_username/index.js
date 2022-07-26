@@ -57,7 +57,7 @@ export default async function (fastify) {
                   properties: {
                     ...fastify.getSchema("track").properties,
                     duration_ms: { type: "number" },
-                    played_at: { type: "string", format: "datetime" },
+                    played_at: { type: "string", format: "date-time" },
                   },
                 },
               },
@@ -69,13 +69,11 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const requestorID = req.session.get("id");
+      const requestorID = await fastify.getId(req);
       const { username } = req.params;
 
       const user = await fastify.db.User.findOne(
-        {
-          "settings.username": username,
-        },
+        { "settings.username": username },
         {
           "tokens.refreshToken": 1,
           "settings.privacy": 1,
@@ -134,7 +132,7 @@ export default async function (fastify) {
         followed: user.followers?.includes(requestorID) || false,
       };
 
-      reply.send(response);
+      return reply.send(response);
     }
   );
 

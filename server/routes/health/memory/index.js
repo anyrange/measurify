@@ -11,7 +11,7 @@ export default async function (fastify) {
               rss: { type: "number" },
               heapTotal: { type: "number" },
               external: { type: "number" },
-              date: { type: "string", format: "datetime" },
+              date: { type: "string", format: "date-time" },
             },
           },
         },

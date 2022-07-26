@@ -39,19 +39,24 @@
 <script setup>
 import { provide, ref } from "vue";
 import { useNavigator } from "@/composable/useNavigator";
-import { createAsyncProcess } from "@/composable/useAsync";
 import { useUserStore } from "@/stores/user";
+import { createAsyncProcess } from "@/composable/useAsync";
 import { useBreakpoints } from "@/composable/useBreakpoints";
+import { useQuery } from "@/composable/useQuery";
 
 const userStore = useUserStore();
 const { isMobile } = useNavigator();
 const { xlAndLarger } = useBreakpoints();
+const { query } = useQuery();
 
 const mainWindow = ref();
 
 provide("historyLength", window.history.length);
 
 provide("contentWindow", mainWindow);
+
+const { token } = query;
+if (!userStore.token && token) userStore.token = token;
 
 const { loading, run } = createAsyncProcess(userStore.updateUser);
 

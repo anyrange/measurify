@@ -23,7 +23,7 @@ export default async function (fastify) {
               type: "object",
               properties: {
                 genres: { type: "array", items: { type: "string" } },
-                date: { type: "string", format: "datetime" },
+                date: { type: "string", format: "date-time" },
               },
             },
           },
@@ -33,7 +33,7 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const user = req.user;
+      const user = req.userInfo;
       const { firstDate, lastDate, range } = req.query;
 
       const userRef = fastify.db.User;
@@ -42,14 +42,13 @@ export default async function (fastify) {
         const data = await userRef
           .findById(user._id, { genresTimeline: { $slice: range } })
           .lean();
-        reply.send(data.genresTimeline);
-        return;
+        return reply.send(data.genresTimeline);
       }
 
       const agg = getAgg(user._id, firstDate, lastDate);
       const [data] = await userRef.aggregate(agg);
 
-      reply.send(data.genresTimeline);
+      return reply.send(data.genresTimeline);
     }
   );
 }

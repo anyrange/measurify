@@ -18,10 +18,10 @@ export default async function (fastify) {
     },
     async function (req, reply) {
       const artistID = req.params.id;
-
+      const id = await fastify.getId(req);
       const [token, country] = await Promise.all([
         fastify.getRandomToken(),
-        fastify.getCountry(req.session.get("id")),
+        fastify.getCountry(id),
       ]);
 
       const albums = await fastify.spotifyAPI({
@@ -29,7 +29,7 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(albums.items.map((artist) => addImage(artist, 1)));
+      return reply.send(albums.items.map((artist) => addImage(artist, 1)));
     }
   );
 }

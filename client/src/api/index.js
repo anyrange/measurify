@@ -5,9 +5,15 @@ import { useUserStore } from "@/stores/user";
 
 const SERVER_URI = import.meta.env.VITE_SERVER_URI || "http://localhost:8888";
 
-const api = axios.create({
-  baseURL: SERVER_URI,
-  withCredentials: true,
+const api = axios.create({ baseURL: SERVER_URI });
+
+api.interceptors.request.use((config) => {
+  const user = useUserStore();
+  const token = user.token;
+
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  return config;
 });
 
 api.interceptors.response.use(
@@ -41,9 +47,6 @@ export function getFeed(meta = [], limit = 20) {
 
 export function checkAuthorization() {
   return api.get("/auth/check");
-}
-export function logout() {
-  return api.get("/auth/logout");
 }
 
 export function getCurrentUser() {

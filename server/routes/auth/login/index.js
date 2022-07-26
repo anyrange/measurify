@@ -16,7 +16,7 @@ export default async function (fastify) {
       "user-top-read",
     ];
 
-    reply.redirect(
+    return reply.redirect(
       "https://accounts.spotify.com/authorize?" +
         `response_type=code` +
         `&client_id=${process.env.SPOTIFY_CLIENT_ID}` +

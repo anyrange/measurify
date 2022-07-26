@@ -12,7 +12,7 @@ export default async function (fastify) {
                 username: { type: "string" },
                 avatar: { type: "string" },
                 display_name: { type: "string" },
-                lastLogin: { type: "string", format: "datetime" },
+                lastLogin: { type: "string", format: "date-time" },
                 listened: {
                   type: "object",
                   properties: {
@@ -47,7 +47,7 @@ export default async function (fastify) {
         }
       ).lean();
 
-      reply.send(top);
+      return reply.send(top);
     }
   );
 }

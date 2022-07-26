@@ -3,7 +3,7 @@ import { arrLastEl } from "#server/utils/index.js";
 export default async function (fastify) {
   fastify.addHook("onSend", async (request, reply) => {
     if (reply.statusCode === 200)
-      reply.header("Cache-Control", "public, max-age=5");
+      reply.header("Cache-Control", "public, max-age=10");
   });
   fastify.post(
     "",
@@ -65,7 +65,10 @@ export default async function (fastify) {
                               name: { type: "string" },
                               artists: { $ref: "entities#" },
                               image: { type: "string" },
-                              played_at: { type: "string", format: "datetime" },
+                              played_at: {
+                                type: "string",
+                                format: "date-time",
+                              },
                             },
                           },
                         },
@@ -84,12 +87,11 @@ export default async function (fastify) {
     async function (req, reply) {
       const { limit } = req.query;
       const { meta } = req.body;
-      const id = req.session.get("id");
+      const id = req.user.id;
 
       const userActivity = await fastify.db.User.aggregate(
         getActivityAgg(id, limit, meta)
       );
-
       // pack activity by date and users
       const formatedActivity = {};
       userActivity.forEach((activity) => {
@@ -115,7 +117,7 @@ export default async function (fastify) {
         newMeta.set(username, (newMeta.get(username) || 0) + 1)
       );
 
-      reply.send({
+      return reply.send({
         meta: Array.from(newMeta, ([key, value]) => ({
           username: key,
           point: value,

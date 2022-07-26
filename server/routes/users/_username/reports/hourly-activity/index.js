@@ -40,7 +40,7 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const user = req.user;
+      const user = req.userInfo;
       const { firstDate, lastDate } = req.query;
 
       const options = { _id: user._id, firstDate, lastDate };
@@ -70,7 +70,7 @@ export default async function (fastify) {
       ]);
 
       const hourlyActivity = formatActivity(activity);
-      reply.send({ hourlyActivity, trackingDuration: days });
+      return reply.send({ hourlyActivity, trackingDuration: days });
     }
   );
 

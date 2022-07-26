@@ -26,7 +26,9 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(relatedArtists.artists.map((artist) => addImage(artist, 1)));
+      return reply.send(
+        relatedArtists.artists.map((artist) => addImage(artist, 1))
+      );
     }
   );
 }

@@ -24,20 +24,22 @@ export default async function (fastify) {
           },
         },
         response: {
-          X0X: {
+          "2xx": {
             type: "object",
-            required: ["message", "status"],
-            properties: {
-              message: { type: "string" },
-              status: { type: "number" },
-            },
+            required: ["message"],
+            properties: { message: { type: "string" } },
+          },
+          "4xx": {
+            type: "object",
+            required: ["message"],
+            properties: { message: { type: "string" } },
           },
         },
         tags: ["settings"],
       },
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = req.user.id;
 
       const { privacy, username, display_name } = req.body;
 
@@ -59,7 +61,7 @@ export default async function (fastify) {
       if (updateResult.nModified === 0)
         throw this.error("Nothing to update", 400);
 
-      reply.send({ message: "Successfully updated" });
+      return reply.send({ message: "Successfully updated" });
     }
   );
 }

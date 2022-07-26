@@ -31,7 +31,7 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(
+      return reply.send(
         moreTracks
           .map((track) => formatTrack(track))
           .filter((track) => track.id !== trackID)

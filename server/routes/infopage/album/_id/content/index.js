@@ -18,10 +18,10 @@ export default async function (fastify) {
     },
     async function (req, reply) {
       const albumID = req.params.id;
-
+      const id = await fastify.getId(req);
       const [token, country] = await Promise.all([
         fastify.getRandomToken(),
-        fastify.getCountry(req.session.get("id")),
+        fastify.getCountry(id),
       ]);
 
       const album = await fastify.spotifyAPI({
@@ -29,7 +29,7 @@ export default async function (fastify) {
         token,
       });
 
-      reply.send(
+      return reply.send(
         album.tracks.items.map((track) => ({
           ...track,
           image: arrLastEl(album.images).url || "",

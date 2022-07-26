@@ -54,7 +54,7 @@ export default async function (fastify) {
                   type: "object",
                   properties: {
                     ...fastify.getSchema("track").properties,
-                    lastPlayedAt: { type: "string", format: "datetime" },
+                    lastPlayedAt: { type: "string", format: "date-time" },
                     duration_ms: { type: "number" },
                     plays: { type: "number" },
                   },
@@ -68,7 +68,7 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = await fastify.getId(req);
       const artistID = req.params.id;
 
       const mainInfo = [fastify.db.Artist.findById(artistID).lean()];
@@ -163,7 +163,7 @@ export default async function (fastify) {
         rates,
       };
 
-      reply.send(response);
+      return reply.send(response);
     }
   );
 }

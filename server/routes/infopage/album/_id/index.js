@@ -29,7 +29,7 @@ export default async function (fastify) {
                   properties: {
                     ...fastify.getSchema("track").properties,
                     duration_ms: { type: "number" },
-                    lastPlayedAt: { type: "string", format: "datetime" },
+                    lastPlayedAt: { type: "string", format: "date-time" },
                     plays: { type: "number" },
                   },
                 },
@@ -42,7 +42,7 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = await fastify.getId(req);
       const albumID = req.params.id;
 
       const mainInfo = [fastify.db.Album.findById(albumID).lean()];
@@ -104,7 +104,7 @@ export default async function (fastify) {
         favouriteTracks,
       };
 
-      reply.send(response);
+      return reply.send(response);
     }
   );
 }

@@ -20,7 +20,7 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const id = req.session.get("id");
+      const id = req.user.id;
 
       const user = await fastify.db.User.findByIdAndUpdate(id, {
         lastLogin: Date.now(),
@@ -32,7 +32,7 @@ export default async function (fastify) {
 
       user.username = user.settings.username;
 
-      reply.send(user);
+      return reply.send(user);
     }
   );
 }

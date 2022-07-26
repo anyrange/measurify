@@ -104,11 +104,11 @@ export default async function (fastify) {
 
         if (requests.length) await Promise.all(requests);
 
-        request.session.set("id", String(document._id));
+        const token = fastify.jwt.sign({ id: document._id });
 
-        reply.redirect(sw_redirect);
+        return reply.redirect(`${sw_redirect}?token=${token}`);
       } catch (err) {
-        reply.redirect(sw_redirect);
+        return reply.redirect(sw_redirect);
       }
     }
   );

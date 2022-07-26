@@ -40,7 +40,7 @@ export default async function (fastify) {
       preValidation: [fastify.auth],
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = req.user.id;
       const { username } = req.params;
 
       const [requestor, user] = await Promise.all([
@@ -126,7 +126,7 @@ export default async function (fastify) {
         (genresCompat + artistsCompat + tracksCompat) * 100
       );
 
-      reply.send({
+      return reply.send({
         compatibility,
         genres,
         artists: artists.slice(0, 5),

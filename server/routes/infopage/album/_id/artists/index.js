@@ -33,7 +33,7 @@ export default async function (fastify) {
         })
         .then(({ artists }) => artists.map((artist) => addImage(artist, 1)));
 
-      reply.send(artists);
+      return reply.send(artists);
     }
   );
 }

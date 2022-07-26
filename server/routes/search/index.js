@@ -41,7 +41,7 @@ export default async function (fastify) {
     async function (req, reply) {
       const { search, limit, page } = req.query;
 
-      const id = req.session.get("id");
+      const id = await fastify.getId(req);
       const [token, country] = await Promise.all([
         fastify.getRandomToken(),
         fastify.getCountry(id),
@@ -67,7 +67,7 @@ export default async function (fastify) {
         ).lean(),
       ]);
 
-      reply.send({
+      return reply.send({
         albums: res.albums.items.map(addImage),
         artists: res.artists.items.map(addImage),
         tracks: res.tracks.items.map(formatTrack),

@@ -29,7 +29,7 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const user = req.user;
+      const user = req.userInfo;
 
       if (user.leaved)
         return reply
@@ -45,7 +45,7 @@ export default async function (fastify) {
 
       if (!currentPlayer.item) return reply.code(204).send();
 
-      reply.send(formatTrack(currentPlayer.item));
+      return reply.send(formatTrack(currentPlayer.item));
     }
   );
 }

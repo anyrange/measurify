@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { ref, computed } from "vue";
-import { logout as apiLogout, getCurrentUser, checkAuthorization } from "@/api";
+import { getCurrentUser, checkAuthorization } from "@/api";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);
+  const token = ref(null);
   const router = useRouter();
 
-  const isAuthenticated = computed(() => !!user.value);
+  const isAuthenticated = computed(() => !!user.value && !!token.value);
 
   async function updateUser() {
     try {
@@ -20,13 +21,13 @@ export const useUserStore = defineStore("user", () => {
   }
   async function logout() {
     try {
+      token.value = null;
       await router.push({ name: "home" });
-      await apiLogout();
       user.value = null;
     } catch (error) {
       return Promise.reject(error);
     }
   }
 
-  return { user, isAuthenticated, updateUser, logout };
+  return { user, token, isAuthenticated, updateUser, logout };
 });

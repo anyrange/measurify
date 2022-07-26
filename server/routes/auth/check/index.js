@@ -15,7 +15,8 @@ export default async function (fastify) {
       },
     },
     (req, reply) => {
-      reply.send({ authenticated: !!req.session.get("id") });
+      const token = req.headers.authorization?.split(" ")[1];
+      return reply.send({ authenticated: !!token });
     }
   );
 }

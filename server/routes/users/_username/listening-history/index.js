@@ -30,7 +30,7 @@ export default async function (fastify) {
                   properties: {
                     ...fastify.getSchema("track").properties,
                     duration_ms: { type: "number" },
-                    played_at: { type: "string", format: "datetime" },
+                    played_at: { type: "string", format: "date-time" },
                   },
                 },
               },
@@ -43,7 +43,7 @@ export default async function (fastify) {
     },
     async function (req, reply) {
       const { search, range, page } = req.query;
-      const user = req.user;
+      const user = req.userInfo;
 
       const history = await fastify.userListeningHistory({
         _id: user._id,
@@ -52,7 +52,7 @@ export default async function (fastify) {
         search,
       });
 
-      reply.send(history);
+      return reply.send(history);
     }
   );
 }

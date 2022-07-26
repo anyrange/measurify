@@ -25,7 +25,7 @@ export default async function (fastify) {
       preHandler: [fastify.getUserInfo],
     },
     async function (req, reply) {
-      const user = req.user;
+      const user = req.userInfo;
 
       const res = await fastify.db.User.findById(user._id, {
         listened: 1,
@@ -34,7 +34,7 @@ export default async function (fastify) {
       const plays = res.listened?.count || 0;
       const playtime = (res.listened?.time || 0) / 60;
 
-      reply.send({
+      return reply.send({
         plays,
         playtime: Math.round(playtime),
         meantime: (playtime / plays || 1).toFixed(2),

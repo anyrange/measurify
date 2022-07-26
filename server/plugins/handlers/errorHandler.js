@@ -19,11 +19,9 @@ const plugin = fp(async function plugin(fastify) {
 
     switch (name) {
       case "JsonWebTokenError":
-        reply.code(400).send({ message, status: 400 });
-        break;
+        return reply.code(400).send({ message, status: 400 });
       case "FetchError":
-        reply.code(400).send({ message, status: 400 });
-        break;
+        return reply.code(400).send({ message, status: 400 });
       case "MongooseError":
         console.error(error);
         reply

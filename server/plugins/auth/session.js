@@ -3,24 +3,23 @@
 import fp from "fastify-plugin";
 
 export default fp(async function (fastify) {
-  const YEAR = 60 * 60 * 24 * 365;
-  const domain = new URL(process.env.VITE_SERVER_URI).hostname;
+  fastify.register(import("@fastify/jwt"), {
+    secret: process.env.SECRET_COOKIE,
+  });
 
-  fastify.register(import("fastify-secure-session"), {
-    cookieName: "sw_session",
-    key: Buffer.from(process.env.SECRET_COOKIE, "hex"),
-    cookie: {
-      path: "/",
-      sameSite: "none",
-      httpOnly: true,
-      secure: true,
-      maxAge: YEAR,
-      domain,
-    },
+  fastify.decorate("getId", async function (request) {
+    if (!request.headers.authorization) return null;
+
+    const token = request.headers.authorization.split(" ")[1];
+    const decoded = await fastify.jwt.decode(token);
+    return decoded.id;
   });
 
   fastify.decorate("auth", async function (request, reply) {
-    if (!request.session.get("id"))
-      return reply.code(401).send({ message: "Unauthorized" });
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.code(401).send({ message: "Unauthorized" });
+    }
   });
 });

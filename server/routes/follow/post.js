@@ -14,7 +14,7 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = req.user.id;
       const username = req.query.username;
 
       const user = await fastify.db.User.findOne(
@@ -42,7 +42,7 @@ export default async function (fastify) {
         ),
       ]);
 
-      reply.code(204).send();
+      return reply.code(204).send();
     }
   );
 }

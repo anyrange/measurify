@@ -20,7 +20,7 @@ export default async function (fastify) {
               audioFeatures: { $ref: "audioFeatures#" },
               release_date: { type: "string" },
               duration_ms: { type: "number" },
-              lastPlayedAt: { type: "string", format: "datetime" },
+              lastPlayedAt: { type: "string", format: "date-time" },
               isPlaying: { type: "boolean" },
               isLiked: { type: "boolean" },
               rates: { $ref: "rates#" },
@@ -31,7 +31,7 @@ export default async function (fastify) {
       },
     },
     async function (req, reply) {
-      const _id = req.session.get("id");
+      const _id = await fastify.getId(req);
       const trackID = req.params.id;
 
       const mainInfo = [
@@ -162,7 +162,7 @@ export default async function (fastify) {
         isPlaying: currentPlayer.item?.id === trackID,
       };
 
-      reply.send(response);
+      return reply.send(response);
     }
   );
 }

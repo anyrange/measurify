@@ -1,5 +1,5 @@
 import fastify from "fastify";
-import autoLoad from "fastify-autoload";
+import autoLoad from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -13,15 +13,15 @@ const app = fastify();
 
 // plugins
 
-app.register(import("fastify-cors"), {
+app.register(import("@fastify/cors"), {
   origin: process.env.CLIENT_URI || "http://localhost:3000",
   credentials: true,
 });
 
-app.register(import("fastify-compress"));
+app.register(import("@fastify/compress"));
 
 if (process.env.NODE_ENV != "production") {
-  app.register(import("fastify-swagger"), {
+  app.register(import("@fastify/swagger"), {
     routePrefix: "/docs",
     swagger: {
       info: {
