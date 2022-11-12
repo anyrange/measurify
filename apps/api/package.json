@@ -1,0 +1,32 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production node src/index.js"
+  },
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "dependencies": {
+    "@fastify/autoload": "^5.4.1",
+    "@fastify/compress": "^6.1.1",
+    "@fastify/cors": "^8.1.1",
+    "@fastify/jwt": "^6.3.2",
+    "@fastify/swagger": "^8.1.0",
+    "dayjs": "^1.11.6",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.9.2",
+    "fastify-plugin": "^4.3.0",
+    "genius-lyrics-api": "^3.2.0",
+    "mongoose": "5.13.14",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^3.2.10"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.20"
+  }
+}

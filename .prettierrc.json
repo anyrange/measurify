@@ -1,5 +1,0 @@
-{
-  "semi": true,
-  "singleQuote": false,
-  "plugins": ["@alexanderniebuhr/prettier-plugin-unocss"]
-}
