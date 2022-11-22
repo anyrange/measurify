@@ -34,10 +34,7 @@
             times
             <span
               class="cursor-pointer font-bold text-primary"
-              @click="
-                currentItem = rate[0]
-                modalOpened = true
-              "
+              @click="openModal(rate[0])"
             >
               {{ artistData.artist.name }}
             </span>
@@ -150,6 +147,11 @@ const modalOpened = ref(false)
 const currentItem = ref("")
 
 const artistData = ref(null)
+
+const openModal = (item) => {
+  modalOpened.value = true
+  currentItem.value = item
+}
 
 function updateArtist(data) {
   artistData.value = data
