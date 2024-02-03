@@ -17,9 +17,9 @@
           Genres
         </base-link>
       </container-item-label>
-      <horizontal-scroll>
+      <div class="flex gap-2 flex-wrap">
         <badge v-for="genre in profile.genres" :key="genre">{{ genre }}</badge>
-      </horizontal-scroll>
+      </div>
     </container-item>
     <container-item v-if="notEmpty(profile.history)">
       <container-item-label>

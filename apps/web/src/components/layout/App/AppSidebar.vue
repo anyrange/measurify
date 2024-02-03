@@ -1,5 +1,5 @@
 <template>
-  <aside>
+  <aside class="bg-secondary-darkest border-r border-secondary-darker">
     <div class="hidden flex-row px-2 text-white md:flex">
       <div class="default-border h-12 w-full flex items-center border-b">
         <div class="px-2 font-bold text-lg text-white">measurify</div>
@@ -71,7 +71,6 @@ const userStore = useUserStore()
 
 <style>
 .sidebar {
-  @apply sm:bg-secondary-darker bg-secondary-darkest;
   @apply flex flex-row sm:flex-col gap-2 flex-none;
   @apply sm:h-auto h-12 sm:px-2 p-0;
   @apply sm:w-20 md:w-60 xl:w-60 w-full;
@@ -79,17 +78,17 @@ const userStore = useUserStore()
   @apply border-t sm:border-none border-secondary-dark;
 }
 .sidebar__item {
-  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-3 p-2 w-full;
+  @apply flex sm:flex-row flex-col flex-grow sm:flex-grow-0 gap-4 p-2 w-full;
   @apply items-center md:justify-start sm:justify-center justify-center;
-  @apply cursor-pointer sm:rounded rounded-none sm:hover:text-white duration-75;
+  @apply cursor-pointer sm:rounded rounded-none sm:hover:text-white duration-200;
 }
 .sidebar__item__title {
-  @apply md:flex hidden font-medium text-sm select-none;
+  @apply md:flex hidden font-medium text-lg select-none;
 }
 .sidebar__item__icon {
-  @apply md:h-6 md:w-6 w-8 h-8 fill-current;
+  @apply md:h-7 md:w-7 w-8 h-8 fill-current;
 }
 .sidebar .router-link-active {
-  @apply text-white sm:bg-secondary-dark/60;
+  @apply text-white;
 }
 </style>

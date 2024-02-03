@@ -1,6 +1,6 @@
 <template>
   <li
-    class="hover:bg-secondary-darker"
+    class="hover:bg-secondary-darker duration-75"
     :class="{ 'bg-secondary-darker': current }"
   >
     <div class="flex flex-row items-center gap-3 rounded px-1 py-1">
@@ -20,12 +20,9 @@
           />
         </base-link>
         <div class="fullwidth block">
-          <base-link
-            class="link line-clamp-1 text-sm"
-            :to="{ name: 'track', params: { trackId: track.id } }"
-          >
+          <span class="line-clamp-1 text-base text-white">
             {{ track.name }}
-          </base-link>
+          </span>
           <template v-if="track.artists">
             <div class="line-clamp-1">
               <artists-names

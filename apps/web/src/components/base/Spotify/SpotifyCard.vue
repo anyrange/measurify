@@ -10,30 +10,25 @@
     }"
   >
     <div
-      class="h-56 w-43 bg-secondary-darker/40 hover:bg-secondary-dark/50 duration-200 rounded-md p-3 relative flex flex-none flex-shrink-0 flex-col items-center gap-3"
+      class="w-43 hover:bg-secondary-dark/50 duration-200 rounded-md p-3 relative flex flex-none flex-shrink-0 flex-col items-center"
     >
       <base-img
         :src="item.image"
         :alt="item.name"
         :image-type="type"
-        class="h-36 w-36 object-cover shadow-lg"
+        class="h-40 w-40 object-cover shadow-lg"
         :class="[
           type === 'artist' || 'profile' ? 'rounded-full' : 'rounded-md',
         ]"
       />
       <span
-        class="line-clamp-2 w-full font-medium text-center text-sm text-white"
+        class="line-clamp-2 w-full font-medium text-center text-base font-medium text-white mt-1"
       >
         {{ item.name }}
       </span>
-      <div
-        v-if="item.plays"
-        class="absolute bottom-1/3 right-2 opacity-100 duration-200 bg-secondary-darker p-1 rounded shadow-sm"
-      >
-        <span class="text-xs">
-          {{ item.plays }} {{ item.plays > 1 ? "plays" : "play" }}
-        </span>
-      </div>
+      <template v-if="item.plays">
+        {{ item.plays }} {{ item.plays > 1 ? "plays" : "play" }}
+      </template>
     </div>
   </base-link>
 </template>

@@ -1,6 +1,8 @@
 <template>
   <template v-if="showFriends">
-    <aside class="hidden w-60 flex-col px-2 md:flex">
+    <aside
+      class="hidden w-60 flex-col px-2 md:flex bg-secondary-darkest border-l border-secondary-darker"
+    >
       <div class="default-border h-12 flex items-center border-b text-white">
         <div class="w-full flex items-center justify-between">
           <span class="font-medium text-lg">Friend Activity</span>

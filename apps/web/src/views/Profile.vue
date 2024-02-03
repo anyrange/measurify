@@ -171,7 +171,7 @@ const isOverviewPage = computed(() => {
   @apply flex w-full flex-row gap-x-3  border-b-1 border-secondary-darker;
 }
 .profile-nav .profile-nav-link {
-  @apply flex flex-shrink-0 flex-none hover:text-primary;
+  @apply flex flex-shrink-0 flex-none hover:text-primary duration-200;
 }
 .profile-nav .profile-nav-link a {
   @apply py-2 px-1;
