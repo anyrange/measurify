@@ -21,7 +21,7 @@
     "fastify": "^4.9.2",
     "fastify-plugin": "^4.3.0",
     "genius-lyrics-api": "^3.2.0",
-    "mongoose": "5.13.14",
+    "mongoose": "5.13.20",
     "node-cron": "^3.0.2",
     "node-fetch": "^3.2.10"
   },
